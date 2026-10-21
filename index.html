@@ -20,8 +20,8 @@
   --ink:#0c1a3d; --ink-2:#2f3d5e; --muted:#66728d; --faint:#9aa4ba;
   --accent:#1d5bd8; --accent-2:#3d7bff; --accent-soft:#eaf1ff; --accent-ink:#1749b8;
   --ok:#12804c; --ok-soft:#e3f5eb; --warn:#b4570a; --warn-soft:#fff1de; --bad:#d6342c; --bad-soft:#fdecea;
-  --c-airbnb:#ff385c; --c-booking:#003b95; --c-mmt:#f59e0b; --c-direct:#16a34a;
-  --city-1:#0e9f8b; --city-2:#38a8e8; --city-3:#8b5cf6;
+  --c-airbnb:#ff385c; --c-booking:#2f6fe0; --c-mmt:#d97706; --c-direct:#16a34a;
+  --city-1:#0e9f8b; --city-2:#e0742f; --city-3:#8b5cf6;
   --seg:#eef2f8; --seg-on:#ffffff; --tipbg:#0c1a3d; --tipink:#fff;
   --shadow:0 1px 2px rgba(12,26,61,.04),0 12px 32px -18px rgba(12,26,61,.18);
   --shadow-lg:0 30px 70px -28px rgba(12,26,61,.38);
@@ -31,7 +31,13 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
-html{background:var(--bg);-webkit-text-size-adjust:100%}
+html{background:var(--bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button,a,input,select,label,[role=button]{touch-action:manipulation}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--ink);color:#fff;padding:10px 14px;border-radius:12px;font-weight:700;text-decoration:none}
+.skip:focus{top:12px}
+.modal,.sheet .in,.pop,.menu,.hm-wrap,.tbl-wrap{overscroll-behavior:contain}
+.mcard:hover{border-color:var(--hair-2);box-shadow:var(--shadow)}
+[role=button]{cursor:pointer}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -351,6 +357,44 @@ button.sstat:hover{background:var(--surface-2)}
 .strip .bar{grid-row:1;height:30px;border-radius:8px;margin:0 1px;border:0;padding:0 6px;color:#fff;font-size:10px;font-weight:700;text-align:left;white-space:nowrap;overflow:hidden}
 .strip .now{grid-row:1;width:2px;height:100%;background:var(--ink);justify-self:start;z-index:2}
 .strip-l{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:6px}
+.mlist{display:flex;flex-direction:column;gap:10px}
+.mcard{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;border:1px solid var(--hair);background:var(--surface);border-radius:18px;padding:13px 14px;box-shadow:0 1px 2px rgba(12,26,61,.04);color:inherit}
+.mcard.hl{border-color:color-mix(in srgb,var(--accent) 40%,transparent);background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+.mtop{display:flex;align-items:center;gap:11px;min-width:0}
+.mtt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.mtt b{font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mtt span{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mright{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none}
+.mright b{font-size:15px;font-weight:800;letter-spacing:-.02em}
+.mright small{font-size:11px;color:var(--muted)}
+.mthumb{width:48px;height:48px;border-radius:12px;overflow:hidden;flex:none;background:var(--hair)}
+.mthumb img,.mthumb svg{width:100%;height:100%;object-fit:cover;display:block}
+.mdot{width:12px;height:12px;border-radius:50%;flex:none;margin:0 4px}
+.mline{font-size:12.5px;padding-left:2px}.mline span{color:var(--muted)}
+.mstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;background:var(--surface-2);border-radius:12px;padding:9px 11px}
+.mst{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mst span{font-size:10.5px;color:var(--muted);font-weight:600}
+.mst b{font-size:14px;font-weight:750;letter-spacing:-.01em}
+.mbar{display:block;height:4px;border-radius:99px;background:var(--hair-2);overflow:hidden;margin-top:3px}
+.mbar i{display:block;height:100%;border-radius:99px}
+.mfoot{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:12px}
+.chip-s{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:650;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--hair);border-radius:99px;padding:3px 9px}
+.chip-s.date{color:var(--accent-ink);background:var(--accent-soft);border-color:transparent}
+.hm-wrap{overflow-x:auto;overscroll-behavior-x:contain;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}
+.hm-wrap::-webkit-scrollbar{display:none}
+.hm{display:grid;width:max-content;row-gap:4px}
+.hm-n{position:sticky;left:-16px;z-index:2;background:var(--surface);border:0;text-align:left;font-size:12px;font-weight:650;padding:0 8px 0 0;height:24px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:8px 0 8px -8px rgba(12,26,61,.25);color:var(--ink)}
+.hm-h{height:34px;font-size:11px;color:var(--muted)}
+.hm-n.hm-h{font-weight:700}
+.hm-d{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.hm-d small{font-size:9px;opacity:.75}.hm-d span{font-weight:700;color:var(--ink-2)}
+.hm-d.we span,.hm-d.we small{color:var(--accent-ink)}
+.hm-d.td span{background:var(--accent);color:#fff;border-radius:7px;padding:0 5px}
+.hm-c{display:grid;place-items:center;height:24px}
+.hm-c.td{background:var(--accent-soft)}
+.hm-c i{width:20px;height:20px;border-radius:6px;background:var(--hair-2);display:block}
+.hm-key{display:flex;gap:14px;align-items:center;font-size:11.5px;color:var(--muted);margin-top:8px}
+.hm-key i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--hair-2);margin-right:5px;vertical-align:-1px}
 .pcard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 
 /* ---------- boards ---------- */
@@ -399,6 +443,23 @@ button.sstat:hover{background:var(--surface-2)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:max(26px,calc(env(safe-area-inset-bottom,0px) + 92px));z-index:70;background:var(--tipbg);color:var(--tipink);padding:11px 20px;border-radius:99px;font-weight:650;font-size:13px;box-shadow:var(--shadow-lg);max-width:calc(100% - 32px);text-align:center}
 .tip{position:fixed;z-index:80;pointer-events:none;background:var(--tipbg);color:var(--tipink);font-size:11.5px;font-weight:550;padding:8px 11px;border-radius:12px;max-width:260px;line-height:1.45;box-shadow:var(--shadow-lg);white-space:pre-line}
 body:not(.is-admin) .admin{display:none!important}
+.toast{display:flex;align-items:center;gap:14px}
+.toast .undo{border:0;background:none;color:var(--accent-2);font-weight:800;padding:2px 4px;font-size:13px}
+@media (prefers-reduced-motion:no-preference){
+  .scrim{animation:fadeIn .2s ease both}
+  .modal{animation:popIn .28s cubic-bezier(.2,.8,.2,1) both}
+  .sheet .in{animation:slideIn .32s cubic-bezier(.2,.8,.2,1) both}
+  .pop,.menu{animation:popIn .2s cubic-bezier(.2,.8,.2,1) both;transform-origin:top}
+  .toast{animation:toastIn .3s cubic-bezier(.2,.8,.2,1) both}
+  ::view-transition-old(root),::view-transition-new(root){animation-duration:.22s}
+  .btn,.fbtn,.mcard,.pcard,.tabbar button,.nav button,.circle,.fgo,.nu{transition:transform .14s ease,background-color .15s ease,border-color .15s ease,box-shadow .15s ease}
+  .btn:active,.fbtn:active,.mcard:active,.pcard:active,.tabbar button:active,.circle:active,.fgo:active,.nu:active{transform:scale(.97)}
+}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0}}
+@keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.98)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(24px)}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}}
 @media (pointer:coarse){
   .legend button{min-height:36px;padding:4px 2px}
   .drow input{width:28px;height:28px;margin:0}
@@ -510,16 +571,9 @@ body:not(.is-admin) .admin{display:none!important}
   .stat{min-width:0;padding:10px 12px;border-radius:16px}
   .stat b{font-size:19px}
   .stat span{font-size:11px;line-height:1.25;display:block}
-  .tbl-wrap{overflow:visible;margin:0}
-  .tbl,.tbl tbody{display:block}
-  .tbl thead{display:none}
-  .tbl tr{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;padding:12px 2px;border-bottom:1px solid var(--hair)}
-  .tbl tbody tr:last-child{border-bottom:0}
-  .tbl td{border:0;padding:0;white-space:normal;font-size:12px}
-  .tbl td.r{text-align:left}
-  .tbl td:first-child{flex:1 0 100%;font-size:13px}
-  .tbl td[data-l]:not(:first-child)::before{content:attr(data-l) " ";color:var(--muted);font-weight:500}
-  .tbl td:empty{display:none}
+  .tbl-wrap{margin:0 -16px;padding:0 16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+  .tbl td:first-child,.tbl th:first-child{position:sticky;left:-16px;z-index:1;background:var(--surface);box-shadow:8px 0 10px -10px rgba(12,26,61,.35)}
+  .tbl tr.hl td:first-child{background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
   .card.clip{height:auto!important}
   .next-up{grid-template-columns:minmax(0,1fr)}
   .cal-name{font-size:12px}
@@ -543,15 +597,17 @@ body:not(.is-admin) .admin{display:none!important}
   .phero h2{font-size:32px}
   .modal-wrap{place-items:end center;padding:0}
   .modal{border-radius:28px 28px 0 0;max-height:92vh}
+  @media (prefers-reduced-motion:no-preference){.modal,.pop,.pop.r{animation:sheetUp .3s cubic-bezier(.2,.8,.2,1) both}}
 }
 </style>
 </head>
 <body>
+<a class="skip" href="#view">Skip to dashboard</a>
 <div class="shell">
   <header class="topbar">
     <button class="brand" id="brandBtn" aria-label="Jabula Getaways, go to overview">
       <span class="mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M2.5 18.5l6-9 3.6 5.2 2.6-3.6 6.8 7.4z" fill="#fff"/><circle cx="16.8" cy="6.3" r="2.1" fill="#ffd27a"/></svg></span>
-      <span><b>Jabula Getaways</b><small>Stays in the hills</small></span>
+      <span><b translate="no">Jabula Getaways</b><small>Stays in the hills</small></span>
     </button>
     <nav class="nav" id="nav" aria-label="Main"></nav>
     <div class="top-r">
@@ -575,7 +631,7 @@ body:not(.is-admin) .admin{display:none!important}
   <main id="main">
     <div id="lead"></div>
     <section class="fwrap" id="filters" aria-label="Filters"></section>
-    <div id="view" class="grid"></div>
+    <div id="view" class="grid" tabindex="-1"></div>
   </main>
 </div>
 <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
@@ -590,7 +646,9 @@ const SEED={"props":[{"property_id":"P01","property":"Oak House, Rajpur Road","c
 (function(){
 /* ============ helpers ============ */
 const $=s=>document.querySelector(s);
-function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(v==null||v===false)continue;if(x==='class')e.className=v;else if(x==='text')e.textContent=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else e.setAttribute(x,v===true?'':v)}for(const c of k.flat(9)){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}return e}
+function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(v==null||v===false)continue;if(x==='class')e.className=v;else if(x==='text')e.textContent=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else e.setAttribute(x,v===true?'':v)}for(const c of k.flat(9)){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}
+  if(a&&typeof a.onclick==='function'&&!/^(button|a|input|select|label|summary|textarea)$/.test(t)&&!e.hasAttribute('role')){e.setAttribute('role','button');e.tabIndex=0;e.addEventListener('keydown',ev=>{if(ev.target===e&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}})}
+  return e}
 const NS='http://www.w3.org/2000/svg';
 function sv(t,a,...k){const e=document.createElementNS(NS,t);if(a)for(const[x,v]of Object.entries(a)){if(v==null)continue;if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else e.setAttribute(x,v)}k.flat(9).forEach(c=>c!=null&&e.append(c.nodeType?c:document.createTextNode(String(c))));return e}
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -770,6 +828,13 @@ function heat(w,{rows,cols,val,tip,onRow}){
     cols.forEach((c,j)=>{const v=val(i,j);const rect=sv('rect',{x:lw+j*cw+1,y,width:Math.max(1,cw-2),height:ch,rx:Math.min(5,cw/3),fill:v>0?acc:hair,'fill-opacity':v>0?.18+.82*v:.55,'data-tip':tip(i,j),style:'cursor:pointer'});rect.addEventListener('click',()=>onRow(r.id));s.append(rect)})});
   return s;
 }
+function heatPhone(rows,cols){
+  const tIdx=cols.findIndex(c=>c.today);const acc=css('--accent');
+  const grid=h('div',{class:'hm',style:{gridTemplateColumns:`92px repeat(${cols.length},26px)`}},
+    h('div',{class:'hm-n hm-h'},'Stay'),cols.map((c,j)=>{const d=pd(c.a),we=[0,6].includes(d.getDay());return h('div',{class:'hm-h hm-d'+(c.today?' td':'')+(we?' we':'')},h('small',null,'SMTWTFS'[d.getDay()]),h('span',null,d.getDate()))}),
+    rows.flatMap(r=>[h('button',{class:'hm-n',onclick:()=>go('property',{propId:r.id})},r.label),...cols.map((c,j)=>h('div',{class:'hm-c'+(c.today?' td':''),'aria-label':`${r.label} ${fmtD(c.a)} ${r.vals[j]?'booked':'empty'}`},h('i',{style:r.vals[j]?{background:acc,opacity:.25+.75*r.vals[j]}:null})))]));
+  const wrap=h('div',{class:'hm-wrap'},grid);pending.push(()=>{if(tIdx>2)wrap.scrollLeft=(tIdx-2)*26});
+  return h('div',null,wrap,h('div',{class:'hm-key'},h('span',null,h('i',{style:{background:acc}}),'Booked'),h('span',null,h('i',null),'Empty'),h('span',{class:'grow'}),'Swipe for more dates'))}
 function scatter(w,{pts,xFmt,yFmt,xLab,yLab,onClick,hh=320}){
   const l=58,r=16,t=16,b=40,s=svgRoot(w,hh);const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
   const xmax=Math.min(1,niceMax(Math.max(...xs,.1)*1.08)),ymax=niceMax(Math.max(...ys,1)*1.08);const muted=css('--muted'),line=css('--hair-2');
@@ -832,17 +897,32 @@ const pillPrio=s=>h('span',{class:'pill '+({High:'p-bad',Medium:'p-warn',Low:'p-
 const chd=c=>h('span',{class:'chd'},h('i',{style:{background:chColor(c)}}),c);
 const who=(name,sub)=>h('div',{class:'who'},h('div',{class:'av',style:{background:avc(name)}},ini(name)),h('div',null,h('b',null,name),sub?h('span',null,sub):null));
 const delta=(a,b,inv)=>{if(!b||!isFinite(a/b))return h('span',{class:'delta flat'},'—');const d=(a-b)/Math.abs(b);const good=inv?d<=0:d>=0;return h('span',{class:'delta '+(Math.abs(d)<.005?'flat':good?'up':'down'),'data-tip':'vs previous period'},(d>=0?'▲ ':'▼ ')+Math.abs(d*100).toFixed(Math.abs(d)<.1?1:0)+'%')};
-function table(cols,rows,{sort,onSort,onRow,hl}={}){
+const PHONE=()=>innerWidth<760;
+function table(cols,rows,{sort,onSort,onRow,hl,card}={}){
+  if(card&&PHONE())return h('div',{class:'mlist'},rows.map(r=>h(onRow?'button':'div',{class:'mcard'+(hl&&hl(r)?' hl':''),onclick:onRow?()=>onRow(r):null},card(r))));
   return h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,cols.map(c=>{const on=sort&&sort[0]===c.k;return h('th',{class:(c.r?'r ':'')+(onSort&&c.k?'sort':''),onclick:onSort&&c.k?()=>onSort(c.k):null,'aria-sort':on?(sort[1]>0?'ascending':'descending'):null},c.t,on?h('span',{class:'ar'},sort[1]>0?'↑':'↓'):null)}))),
     h('tbody',null,rows.map(r=>h('tr',{class:(onRow?'click ':'')+(hl&&hl(r)?'hl':''),onclick:onRow?()=>onRow(r):null},cols.map(c=>h('td',{class:(c.r?'r num ':'')+(c.m?'m':''),'data-l':c.t||null},c.f(r))))))))
 }
+const mStat=(l,v,bar,color)=>h('div',{class:'mst'},h('span',null,l),h('b',{class:'num'},v),bar!=null?h('i',{class:'mbar'},h('i',{style:{width:Math.max(3,Math.min(100,bar*100))+'%',background:color||'var(--accent)'}})):null);
+const mTop=(lead,title,sub,right)=>h('div',{class:'mtop'},lead,h('div',{class:'mtt'},h('b',null,title),sub?h('span',null,sub):null),right?h('div',{class:'mright'},right):null);
+const thumb=p=>h('span',{class:'mthumb'},scene(p,120,120));
+function propCard(r){const p=D.P[r.id];return[mTop(thumb(p),short(p.property),`${p.area}, ${p.city} · ${p.type} · ${p.bedrooms} BR`,r.inHouse!=null?h('span',{class:'pill '+(r.inHouse?'p-ok':'p-mute')},r.inHouse?'Occupied':'Vacant'):null),
+  h('div',{class:'mstats'},mStat('Occupancy',pct(r.occ),r.occ,r.occ>=.7?'var(--ok)':r.occ<.4?'var(--warn)':'var(--accent)'),mStat('Avg rate',inrK(r.adr)),mStat('Profit',inrK(r.profit))),
+  h('div',{class:'mfoot'},r.rating?h('span',{class:'chip-s'},'★ '+r.rating.toFixed(1)+(r.reviews?` (${r.reviews})`:'')):null,r.next?h('span',{class:'chip-s'},'Next arrival '+fmtD(r.next)):null,r.issues?h('span',{class:'pill p-warn'},`${r.issues} open issue${r.issues>1?'s':''}`):null)]}
+function bookCard(b,{showProp=true,amount='gross'}={}){return[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${b.guests} guest${b.guests>1?'s':''}`,[h('b',{class:'num'},inr(amount==='net'?b.net:b.gross)),h('small',null,`${b.nights} night${b.nights>1?'s':''}`)]),
+  showProp?h('div',{class:'mline'},h('b',null,short(b.pname)),h('span',null,` · ${b.area}, ${b.city}`)):null,
+  h('div',{class:'mfoot'},h('span',{class:'chip-s date'},`${fmtD(b.check_in)}${b.arrival_time?' '+b.arrival_time:''} → ${fmtD(b.check_out)}`),chd(b.channel),h('span',{class:'grow'}),pillStatus(b.status),b.pay!=='n/a'&&b.pay!=='Not due'?pillPay(b.pay):null)]}
 function sortBy(arr,[k,dir]){return[...arr].sort((a,b)=>{const x=a[k],y=b[k];return(typeof x==='string'?x.localeCompare(y):(x||0)-(y||0))*dir})}
-let toastT;function toast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=h('div',{class:'toast',role:'status'},m);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),3000)}
+let toastT;function toast(m,undo){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=h('div',{class:'toast',role:'status'},m,undo?h('button',{class:'undo',onclick:()=>{t.remove();undo()}},'Undo'):null);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),undo?5000:3000)}
 
 /* ============ navigation ============ */
 const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Money','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3']];
 const SUB={overview:'How the business is doing for the period you pick',desk:'Who arrives and leaves — select rows to share with staff',calendar:'Every stay, night by night',properties:'Compare listings and open any one for detail',property:'Everything about one listing',money:'Profit, platform fees, expenses and payouts',ops:'Cleaning turnovers and maintenance',bookings:'Every booking from the form'};
-function go(v,extra){S.view=v;if(extra)Object.assign(S,extra);S.pop=null;try{history.replaceState(null,'','#'+(v==='property'?'properties':v))}catch(e){}render();window.scrollTo({top:0,behavior:'smooth'})}
+const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function go(v,extra){S.view=v;if(extra)Object.assign(S,extra);S.pop=null;try{history.replaceState(null,'','#'+(v==='property'?'properties':v))}catch(e){}
+  const swap=()=>{render();window.scrollTo({top:0})};if(document.startViewTransition&&!calm()){const t=document.startViewTransition(swap);t.ready.catch(()=>{});t.finished.catch(()=>{})}else swap()}
+function countUp(root){if(calm())return;root.querySelectorAll('[data-count]').forEach(el=>{const t=el.textContent,m=t.match(/^([^\d−-]*)([\d.,]+)(.*)$/);if(!m)return;const target=parseFloat(m[2].replace(/,/g,'')),dec=(m[2].split('.')[1]||'').length,t0=performance.now();
+  const step=now=>{const k=Math.min(1,(now-t0)/750),e=1-Math.pow(1-k,3);el.textContent=m[1]+(target*e).toFixed(dec)+m[3];if(k<1)requestAnimationFrame(step);else el.textContent=t};requestAnimationFrame(step)})}
 function navIcon(d){const s=sv('svg',{viewBox:'0 0 24 24'});s.append(sv('path',{d}));return s}
 function renderChrome(){
   const openIss=D.M.filter(m=>m.status!=='Closed'&&fP(D.P[m.property_id])).length,urgent=D.M.filter(m=>m.status!=='Closed'&&m.priority==='High'&&fP(D.P[m.property_id])).length;
@@ -911,7 +991,7 @@ function renderFilters(){
     return panel('Period',PRESETS.filter(([k])=>k!=='custom').map(([k,l])=>rb('per',f.preset===k,l,()=>{applyPreset(k);saveF();S.pop=null;render()})),h('div',{class:'grp'},'Custom range'),h('div',{class:'dates'},a,h('span',{class:'range-label'},'to'),z))}));
   bar.append(seg('city','city','City',f.cities.length?f.cities.join(', '):'All cities',()=>panel('City',CITIES.map(c=>cb(f.cities.includes(c),`${c} (${D.props.filter(p=>p.city===c).length})`,()=>toggleIn('cities',c),cityColor(c))))));
   bar.append(seg('prop','prop','Properties',f.props.length?(f.props.length===1?short(D.P[f.props[0]]?.property||''):`${f.props.length} selected`):`All ${D.props.filter(fP).length} stays`,()=>{
-    const q=h('input',{class:'search',placeholder:'Search properties',value:S.popQ,id:'popQ',type:'search'});
+    const q=h('input',{class:'search',placeholder:'Search properties…',value:S.popQ,id:'popQ',type:'search'});
     const list=h('div');const draw=()=>{const ql=S.popQ.toLowerCase();list.replaceChildren(...CITIES.flatMap(c=>{const ps=D.props.filter(p=>p.city===c&&(!ql||p.property.toLowerCase().includes(ql)));return ps.length?[h('div',{class:'grp'},c),...ps.map(p=>cb(f.props.includes(p.property_id),h('span',null,short(p.property),h('span',{style:{color:'var(--muted)'}},' · '+p.area)),()=>toggleIn('props',p.property_id)))]:[]}))};
     q.addEventListener('input',()=>{S.popQ=q.value;draw()});draw();if(matchMedia('(hover:hover)').matches)setTimeout(()=>q.focus(),0);
     return panel('Properties',q,list,h('div',{class:'pop-foot'},h('button',{class:'btn sm',onclick:()=>setF({props:[]})},'Clear'),h('button',{class:'btn sm',onclick:close},'Done')))}));
@@ -934,8 +1014,8 @@ function overview(v){
   // KPI strip
   const tint=c=>({background:`color-mix(in srgb, ${c} 13%, transparent)`,color:c});
   const SI={net:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',profit:'M3 17l6-6 4 4 8-8M15 7h6v6',occ:'M3 18V8M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5M7 11.5a1.5 1.5 0 100-.01',adr:'M3 12l9-9h8v8l-9 9zM15.5 8.5a1 1 0 100-.01',revpar:'M4 20V10M10 20V4M16 20v-7M22 20H2'};
-  const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));return h('div',{class:'sstat','data-tip':tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num'},val),h('span',{class:'l'},label),h('span',{class:'d'},d)),h('div',{class:'sp'},spark(sp,color,72,30)))};
-  const pay=h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Expected payouts not yet received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num'},inrK(dueAmt)),h('span',{class:'l'},'Payouts to chase'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.pay==='Short').length} short-paid`},`${due.length} bookings`))));
+  const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));return h('div',{class:'sstat','data-tip':tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d)),h('div',{class:'sp'},spark(sp,color,72,30)))};
+  const pay=h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Expected payouts not yet received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Payouts to chase'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.pay==='Short').length} short-paid`},`${due.length} bookings`))));
   v.append(h('section',{class:'strip-stats glass s12','aria-label':'Key numbers'},
     st1('net','Net payout',inrK(s.net),delta(s.net,p.net),ms.map(m=>m.net),css('--accent'),`After platform fees · ${s.count} bookings. Counts in the check-in month.`),
     st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),ms.map(m=>m.profit),css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
@@ -966,7 +1046,7 @@ function overview(v){
   const rowsH=props.map((p,i)=>({id:p.property_id,label:short(p.property),sub:`${p.area}, ${p.city}\n${pct(sum(occ[i],x=>x)/cols.length)} occupied in this period`,o:sum(occ[i],x=>x)})).map((r,i)=>({...r,i})).sort((a,b)=>b.o-a.o);
   let hh;const cut=innerWidth<760&&!S.heatAll&&rowsH.length>10;const rowsV=cut?rowsH.slice(0,10):rowsH;
   v.append(card('s12','Occupancy by property',{hint:(byDay?'each square is a night':'each square is a week')+' · busiest first · tap a row to open',acts:[btnPNG(()=>hh,'Occupancy by property')]},
-    props.length?(hh=chart(w=>heat(w,{rows:rowsV,cols,val:(i,j)=>occ[rowsH[i].i][j],tip:(i,j)=>`${rowsH[i].label} · ${byDay?fmtD(cols[j].a,{weekday:'short',day:'numeric',month:'short'}):'week of '+fmtD(cols[j].a)}\n${byDay?(occ[rowsH[i].i][j]?'Booked':'Empty'):pct(occ[rowsH[i].i][j])+' occupied'}`,onRow:id=>go('property',{propId:id})}))):h('div',{class:'empty'},'No properties match these filters.'),
+    props.length&&PHONE()&&byDay?heatPhone(rowsV.map(r=>({...r,vals:occ[r.i]})),cols):props.length?(hh=chart(w=>heat(w,{rows:rowsV,cols,val:(i,j)=>occ[rowsH[i].i][j],tip:(i,j)=>`${rowsH[i].label} · ${byDay?fmtD(cols[j].a,{weekday:'short',day:'numeric',month:'short'}):'week of '+fmtD(cols[j].a)}\n${byDay?(occ[rowsH[i].i][j]?'Booked':'Empty'):pct(occ[rowsH[i].i][j])+' occupied'}`,onRow:id=>go('property',{propId:id})}))):h('div',{class:'empty'},'No properties match these filters.'),
     rowsH.length>10&&innerWidth<760?h('button',{class:'btn sm',style:{alignSelf:'flex-start'},onclick:()=>{S.heatAll=!S.heatAll;render()}},S.heatAll?'Show busiest 10':`Show all ${rowsH.length}`):null));
   // city comparison
   const cityStats=CITIES.filter(c=>!f.cities.length||f.cities.includes(c)).map(c=>{const sv_={...S.f};const save=S.f.cities;S.f.cities=[c];const st=stats(f.from,f.to);S.f.cities=save;return{c,...st,perL:st.listings?st.profit/st.listings:0}});
@@ -987,10 +1067,10 @@ function overview(v){
     h('div',{class:'foot-note'},leads.length?`Median ${[...leads].sort((a,b)=>a-b)[Math.floor(leads.length/2)]} days ahead. Short lead times leave room for last-minute pricing.`:'No bookings in this period.')));
   // leaders
   const rowsP=props.map(p=>{const st=stats(f.from,f.to,p.property_id);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);return{id:p.property_id,name:short(p.property),city:p.city,area:p.area,occ:st.occ,adr:st.adr,net:st.net,profit:st.profit,rating:rated.length?sum(rated,b=>b.rating)/rated.length:null,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length}});
-  const ranked=sortBy(rowsP,['profit',-1]);const list=S.leaders==='top'?ranked.slice(0,6):ranked.slice(-6).reverse();
+  const ranked=sortBy(rowsP,['profit',-1]);const nL=PHONE()?3:6,list=S.leaders==='top'?ranked.slice(0,nL):ranked.slice(-nL).reverse();
   const colsL=[{t:'Property',f:r=>who(r.name,`${r.area}, ${r.city}`)},{t:'Occupancy',r:1,f:r=>pct(r.occ)},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Profit',r:1,f:r=>h('b',null,inr(r.profit))},{t:'Rating',r:1,f:r=>r.rating?'★ '+r.rating.toFixed(1):'–'},{t:'Issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'}];
   v.append(card('s7','Property ranking',{hint:'by profit in this period',acts:[h('div',{class:'seg'},h('button',{'aria-pressed':S.leaders==='top',onclick:()=>{S.leaders='top';render()}},'Best'),h('button',{'aria-pressed':S.leaders==='bottom',onclick:()=>{S.leaders='bottom';render()}},'Needs attention')),btnExport(()=>exportRows(ranked.map(r=>({Property:r.name,Area:r.area,City:r.city,'Occupancy %':+(r.occ*100).toFixed(1),'Avg nightly rate':Math.round(r.adr),'Net payout':r.net,Profit:r.profit,Rating:r.rating?+r.rating.toFixed(2):'','Open issues':r.issues})),'Property ranking'))]},
-    table(colsL,list,{onRow:r=>go('property',{propId:r.id})}),h('button',{class:'btn sm',style:{alignSelf:'flex-start'},onclick:()=>go('properties')},'See all properties',icon('chev'))));
+    table(colsL,list,{onRow:r=>go('property',{propId:r.id}),card:propCard}),h('button',{class:'btn sm',style:{alignSelf:'flex-start'},onclick:()=>go('properties')},'See all properties',icon('chev'))));
   // attention
   const urgent=D.M.filter(m=>m.status!=='Closed'&&fP(D.P[m.property_id])).sort((a,b)=>({High:0,Medium:1,Low:2}[a.priority]-{High:0,Medium:1,Low:2}[b.priority])||a.reported_on.localeCompare(b.reported_on)).slice(0,4);
   const chase=sortBy(due,['check_in',1]).slice(0,4);
@@ -1108,7 +1188,7 @@ function properties(v){
     worst?h('div',{class:'hb',style:{gridTemplateColumns:'1fr auto',cursor:'pointer'},onclick:()=>go('property',{propId:worst.id})},h('div',{class:'who'},h('div',null,h('span',null,'Quietest'),h('b',null,`${worst.name} · ${worst.area}`))),h('span',{class:'pill p-warn'},pct(worst.occ))):null));
   const cols=[{t:'Property',k:'name',f:r=>h('div',{class:'who'},h('div',{style:{width:'44px',height:'32px',borderRadius:'8px',overflow:'hidden',flex:'none'}},scene(r.p,88,64)),h('div',null,h('b',null,r.name),h('span',null,`${r.area}, ${r.city} · ${r.type} · ${r.beds} BR`)))},{t:'',f:r=>r.inHouse?h('span',{class:'pill p-ok'},'Occupied'):h('span',{class:'pill p-mute'},'Vacant')},{t:'Own',k:'own',f:r=>r.own},{t:'Occupancy',k:'occ',r:1,f:r=>pct(r.occ)},{t:'Avg rate',k:'adr',r:1,f:r=>inr(r.adr)},{t:'RevPAR',k:'revpar',r:1,f:r=>inr(r.revpar)},{t:'Net payout',k:'net',r:1,f:r=>inr(r.net)},{t:'Profit',k:'profit',r:1,f:r=>h('b',null,inr(r.profit))},{t:'Rating',k:'rating',r:1,f:r=>r.reviews?`★ ${r.rating.toFixed(1)} (${r.reviews})`:'–'},{t:'Issues',k:'issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'},{t:'Next arrival',k:'next',f:r=>r.next?fmtD(r.next):'–'}];
   v.append(card('s12','All properties',{hint:'tap a column to sort · tap a row to open',acts:[btnExport(()=>exportRows(sortBy(rows,S.lb.sort).map(r=>({Property:r.name,Area:r.area,City:r.city,Type:r.type,Bedrooms:r.beds,Ownership:r.own,'Occupancy %':+(r.occ*100).toFixed(1),'Avg rate ₹':Math.round(r.adr),'RevPAR ₹':Math.round(r.revpar),'Net payout ₹':r.net,'Profit ₹':r.profit,Rating:r.reviews?+r.rating.toFixed(2):'',Reviews:r.reviews,'Open issues':r.issues,'Next arrival':r.next})),'Properties'))]},
-    table(cols,sortBy(rows,S.lb.sort).slice(0,innerWidth<760&&!S.propAll?10:999),{sort:S.lb.sort,onSort:k=>{S.lb.sort=[k,S.lb.sort[0]===k?-S.lb.sort[1]:-1];render()},onRow:r=>go('property',{propId:r.id})}),
+    table(cols,sortBy(rows,S.lb.sort).slice(0,innerWidth<760&&!S.propAll?10:999),{card:r=>propCard({...r,inHouse:r.inHouse}),sort:S.lb.sort,onSort:k=>{S.lb.sort=[k,S.lb.sort[0]===k?-S.lb.sort[1]:-1];render()},onRow:r=>go('property',{propId:r.id})}),
     innerWidth<760&&rows.length>10?h('button',{class:'btn sm',style:{alignSelf:'flex-start'},onclick:()=>{S.propAll=!S.propAll;render()}},S.propAll?'Show top 10':`Show all ${rows.length}`):null));
 }
 function property(v){
@@ -1137,9 +1217,9 @@ function property(v){
   v.append(card('s5','Where the money goes',{hint:rangeLabel()},ce.length?h('div',{style:{display:'grid',gridTemplateColumns:'130px 1fr',gap:'14px',alignItems:'center'}},donut(130,{parts:ce.map(([k,val],i)=>({value:val,color:pal[i%8],tip:`${k}: ${inr(val)}`})),center:inrK(sum(ce,x=>x[1])),sub:'expenses'}),h('div',null,ce.map(([k,val],i)=>h('div',{class:'hb',style:{gridTemplateColumns:'1fr auto'}},h('span',{class:'chd'},h('i',{style:{background:pal[i%8],borderRadius:'3px'}}),k),h('span',{class:'v num'},inr(val)))))):h('div',{class:'empty'},'No expenses in this period.')));
   // guests
   const gl=sortBy(bs,['check_in',-1]).slice(0,10);
-  v.append(card('s7 fit','Guests',{hint:'latest first',acts:[btnExport(()=>exportRows(sortBy(bs,['check_in',-1]).map(bookRow),short(p.property)+' bookings'))]},table([{t:'Guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''} · ${b.channel}`)},{t:'Dates',f:b=>`${fmtD(b.check_in)} → ${fmtD(b.check_out)}`},{t:'Payout',r:1,f:b=>inr(b.net)},{t:'Stay',f:b=>pillStatus(b.status)},{t:'Rating',r:1,f:b=>b.rating?'★ '+b.rating:'–'}],gl,{onRow:openBooking})));
+  v.append(card('s7 fit','Guests',{hint:'latest first',acts:[btnExport(()=>exportRows(sortBy(bs,['check_in',-1]).map(bookRow),short(p.property)+' bookings'))]},table([{t:'Guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''} · ${b.channel}`)},{t:'Dates',f:b=>`${fmtD(b.check_in)} → ${fmtD(b.check_out)}`},{t:'Payout',r:1,f:b=>inr(b.net)},{t:'Stay',f:b=>pillStatus(b.status)},{t:'Rating',r:1,f:b=>b.rating?'★ '+b.rating:'–'}],gl,{onRow:openBooking,card:b=>bookCard(b,{showProp:false,amount:'net'})})));
   const mt=sortBy(D.M.filter(m=>m.property_id===p.property_id),['reported_on',-1]);
-  v.append(card('s5','Maintenance history',{acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('issue',p.property_id)},icon('plus'),'Issue')]},mt.length?table([{t:'Issue',f:m=>h('div',{class:'who'},h('div',null,h('b',null,m.issue),h('span',null,`${m.ticket_id} · ${fmtD(m.reported_on)} · ${m.assigned_to}`)))},{t:'',f:m=>m.status==='Closed'?h('span',{class:'pill p-mute'},'Closed'):pillPrio(m.priority)},{t:'Cost',r:1,f:m=>m.cost?inr(m.cost):'–'}],mt):h('div',{class:'empty'},'No issues logged.')));
+  v.append(card('s5','Maintenance history',{acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('issue',p.property_id)},icon('plus'),'Issue')]},mt.length?table([{t:'Issue',f:m=>h('div',{class:'who'},h('div',null,h('b',null,m.issue),h('span',null,`${m.ticket_id} · ${fmtD(m.reported_on)} · ${m.assigned_to}`)))},{t:'',f:m=>m.status==='Closed'?h('span',{class:'pill p-mute'},'Closed'):pillPrio(m.priority)},{t:'Cost',r:1,f:m=>m.cost?inr(m.cost):'–'}],mt,{card:m=>[mTop(null,m.issue,`${m.ticket_id} · ${fmtD(m.reported_on)} · ${m.assigned_to}`,[m.status==='Closed'?h('span',{class:'pill p-mute'},'Closed'):pillPrio(m.priority),m.cost?h('small',{class:'num'},inr(m.cost)):null])]}):h('div',{class:'empty'},'No issues logged.')));
   if(p.ownership==='Managed'){const rows=ks.map((k,i)=>({k,...mm[i]}));
     v.append(card('s12','Owner statement',{hint:`owner share ${Math.round((p.owner_share||0)*100)}% of net payout`,acts:[btnExport(()=>exportRows(rows.map(r=>({Month:mLong(r.k),Stays:r.count,Nights:r.nightsAttr,'Gross ₹':r.gross,'Platform fees ₹':r.fee,'Net payout ₹':r.net,'Owner share ₹':r.owner,'Expenses ₹':r.exp,'Business keeps ₹':r.profit})),short(p.property)+' owner statement'))]},
       table([{t:'Month',f:r=>mLong(r.k)},{t:'Stays',r:1,f:r=>r.count},{t:'Gross',r:1,f:r=>inr(r.gross)},{t:'Platform fees',r:1,f:r=>inr(-r.fee)},{t:'Net payout',r:1,f:r=>inr(r.net)},{t:'Owner share',r:1,f:r=>h('b',null,inr(r.owner))},{t:'Expenses',r:1,f:r=>inr(-r.exp)},{t:'Business keeps',r:1,f:r=>inr(r.profit)}],rows,{hl:r=>r.k===TODAY.slice(0,7)})))}
@@ -1163,10 +1243,10 @@ function money(v){
   // channel economics
   const att=D.B.filter(b=>fB(b)&&b.check_in>=f.from&&b.check_in<=f.to);
   const ce2=CHN.map(c=>{const bs=att.filter(b=>b.channel===c);return{c,n:bs.length,gross:sum(bs,b=>b.gross),fee:sum(bs,b=>b.fee),net:sum(bs,b=>b.net),stay:bs.length?sum(bs,b=>b.nights)/bs.length:0,adr:sum(bs,b=>b.nights)?sum(bs,b=>b.room)/sum(bs,b=>b.nights):0}});
-  v.append(card('s6','Channel economics',{hint:rangeLabel()},table([{t:'Channel',f:r=>chd(r.c)},{t:'Bookings',r:1,f:r=>r.n},{t:'Avg stay',r:1,f:r=>r.stay.toFixed(1)+' n'},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Fees',r:1,f:r=>inr(r.fee)},{t:'Fee %',r:1,f:r=>pct(r.gross?r.fee/r.gross:0,1)},{t:'Net',r:1,f:r=>h('b',null,inr(r.net))}],ce2)));
+  v.append(card('s6','Channel economics',{hint:rangeLabel()},table([{t:'Channel',f:r=>chd(r.c)},{t:'Bookings',r:1,f:r=>r.n},{t:'Avg stay',r:1,f:r=>r.stay.toFixed(1)+' n'},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Fees',r:1,f:r=>inr(r.fee)},{t:'Fee %',r:1,f:r=>pct(r.gross?r.fee/r.gross:0,1)},{t:'Net',r:1,f:r=>h('b',null,inr(r.net))}],ce2,{card:r=>[mTop(h('span',{class:'mdot',style:{background:chColor(r.c)}}),r.c,`${r.n} bookings · ${r.stay.toFixed(1)} nights avg`,[h('b',{class:'num'},inrK(r.net)),h('small',null,'net')]),h('div',{class:'mstats'},mStat('Avg rate',inrK(r.adr)),mStat('Fees',inrK(r.fee)),mStat('Fee share',pct(r.gross?r.fee/r.gross:0,1),r.gross?r.fee/r.gross/.25:0,'var(--bad)'))]})));
   const due=sortBy(D.B.filter(b=>fB(b)&&(b.pay==='Pending'||b.pay==='Short')),['check_in',1]);
   v.append(card('s6 fit','Payouts to chase',{hint:`${due.length} · ${inrK(sum(due,b=>b.net-b.received))} outstanding`,acts:[btnExport(()=>exportRows(due.map(b=>({Booking:b.booking_id,Guest:b.guest,Property:short(b.pname),Channel:b.channel,'Check-in':b.check_in,'Expected ₹':b.net,'Received ₹':b.received,'Gap ₹':b.net-b.received,Status:b.pay})),'Payouts to chase'))]},
-    due.length?table([{t:'Booking',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'Channel',f:b=>chd(b.channel)},{t:'Gap',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))},{t:'',f:b=>pillPay(b.pay)}],due.slice(0,8),{onRow:openBooking}):h('div',{class:'empty'},'All payouts reconciled.')));
+    due.length?table([{t:'Booking',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'Channel',f:b=>chd(b.channel)},{t:'Gap',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))},{t:'',f:b=>pillPay(b.pay)}],due.slice(0,8),{onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--bad)'}},inr(b.net-b.received)),pillPay(b.pay)]),h('div',{class:'mfoot'},chd(b.channel),h('span',{class:'chip-s date'},'Checked in '+fmtD(b.check_in)))]}):h('div',{class:'empty'},'All payouts reconciled.')));
 }
 
 /* ============ OPS ============ */
@@ -1179,10 +1259,10 @@ function ops(v){
   const board=(key,cols)=>{if(innerWidth>=760)return h('div',{class:'board'},cols.map(([t,l,tile])=>col(t,l,tile)));const on=Math.min(S.boardTab?.[key]??0,cols.length-1);
     return h('div',{class:'board-m'},h('div',{class:'seg',role:'group'},cols.map(([t,l],i)=>h('button',{'aria-pressed':i===on,onclick:()=>{S.boardTab={...S.boardTab,[key]:i};render()}},`${t} ${l.length}`))),col(cols[on][0],cols[on][1],cols[on][2]))};
   const tTile=b=>{const p=D.P[b.property_id],t=D.T[b.booking_id],done=t&&t.status==='Done',turn=D.starts.has(b.property_id+'|'+b.check_out);
-    return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,short(p.property)),turn?h('span',{class:'pill p-bad'},'Same-day'):null,h('span',{class:'end'},done?h('span',{class:'pill p-ok'},'✓ Cleaned'):h('span',{class:'pill p-warn'},'To clean'))),h('div',{class:'m'},`${p.area} · ${fmtD(b.check_out,{weekday:'short',day:'numeric'})} 11:00 · ${p.bedrooms} BR · ${p.bedrooms*2} linen sets`),h('div',{class:'row'},who(p.cleaner),done?null:h('button',{class:'btn sm admin end',onclick:()=>{extra.turnDone.push(b.booking_id);saveExtra();refresh();toast('Marked as cleaned')}},'Mark cleaned')))};
+    return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,short(p.property)),turn?h('span',{class:'pill p-bad'},'Same-day'):null,h('span',{class:'end'},done?h('span',{class:'pill p-ok'},'✓ Cleaned'):h('span',{class:'pill p-warn'},'To clean'))),h('div',{class:'m'},`${p.area} · ${fmtD(b.check_out,{weekday:'short',day:'numeric'})} 11:00 · ${p.bedrooms} BR · ${p.bedrooms*2} linen sets`),h('div',{class:'row'},who(p.cleaner),done?null:h('button',{class:'btn sm admin end',onclick:()=>{extra.turnDone.push(b.booking_id);saveExtra();refresh();toast(`${short(p.property)} marked as cleaned`,()=>{extra.turnDone=extra.turnDone.filter(x=>x!==b.booking_id);saveExtra();refresh()})}},'Mark cleaned')))};
   v.append(card('s12','Cleaning turnovers',{hint:'from check-outs · red = next guest arrives the same day',acts:[btnExport(()=>exportRows(outs.map(b=>{const p=D.P[b.property_id];return{Date:b.check_out,Property:short(p.property),Area:p.area,City:p.city,Housekeeping:p.cleaner,Bedrooms:p.bedrooms,'Linen sets':p.bedrooms*2,'Same-day turn':D.starts.has(b.property_id+'|'+b.check_out)?'Yes':'',Status:(D.T[b.booking_id]||{}).status==='Done'?'Cleaned':'To clean'}}),'Cleaning schedule'))]},
     board('clean',[['Today',outs.filter(b=>b.check_out===TODAY),tTile],['Tomorrow',outs.filter(b=>b.check_out===d1),tTile],['Later',outs.filter(b=>b.check_out>d1),tTile]])));
-  const mTile=m=>{const next=m.status==='Open'?'In progress':m.status==='In progress'?'Closed':null;return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,m.issue),h('span',{class:'end'},m.status==='Closed'?h('span',{class:'pill p-mute'},m.cost?inr(m.cost):'Closed'):pillPrio(m.priority))),h('div',{class:'m'},`${short(m.pname)} · ${m.ticket_id} · ${m.status==='Closed'?'fixed in '+diff(m.reported_on,m.closed_on||TODAY)+' d':diff(m.reported_on,TODAY)+' days open'}`),h('div',{class:'row'},who(m.assigned_to),next?h('button',{class:'btn sm admin end',onclick:()=>{extra.maintStatus[m.ticket_id]=next;saveExtra();refresh();toast(`${m.ticket_id} → ${next}`)}},next==='Closed'?'Close':'Start'):null))};
+  const mTile=m=>{const next=m.status==='Open'?'In progress':m.status==='In progress'?'Closed':null;return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,m.issue),h('span',{class:'end'},m.status==='Closed'?h('span',{class:'pill p-mute'},m.cost?inr(m.cost):'Closed'):pillPrio(m.priority))),h('div',{class:'m'},`${short(m.pname)} · ${m.ticket_id} · ${m.status==='Closed'?'fixed in '+diff(m.reported_on,m.closed_on||TODAY)+' d':diff(m.reported_on,TODAY)+' days open'}`),h('div',{class:'row'},who(m.assigned_to),next?h('button',{class:'btn sm admin end',onclick:()=>{const was=extra.maintStatus[m.ticket_id];extra.maintStatus[m.ticket_id]=next;saveExtra();refresh();toast(`${m.ticket_id} moved to ${next}`,()=>{if(was)extra.maintStatus[m.ticket_id]=was;else delete extra.maintStatus[m.ticket_id];saveExtra();refresh()})}},next==='Closed'?'Close':'Start'):null))};
   const pr=m=>({High:0,Medium:1,Low:2}[m.priority]);
   v.append(card('s12','Maintenance',{acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('issue')},icon('plus'),'Log issue'),btnExport(()=>exportRows(D.M.filter(m=>fP(D.P[m.property_id])).map(m=>({Ticket:m.ticket_id,Property:short(m.pname),City:m.city,Issue:m.issue,Priority:m.priority,'Assigned to':m.assigned_to,Status:m.status,'Reported on':m.reported_on,'Closed on':m.closed_on||'','Cost ₹':m.cost||''})),'Maintenance'))]},
     board('maint',[['Open',open.filter(m=>m.status==='Open').sort((a,b)=>pr(a)-pr(b)),mTile],['In progress',open.filter(m=>m.status==='In progress').sort((a,b)=>pr(a)-pr(b)),mTile],['Closed',sortBy(closed,['closed_on',-1]).slice(0,5),mTile]])));
@@ -1192,11 +1272,11 @@ function ops(v){
 function bookings(v){
   const st=S.bk;const ql=st.q.toLowerCase();const per=innerWidth<760?20:60;if(st.lim<per||st.lim%per)st.lim=per;const f=S.f;
   const rows=sortBy(D.B.filter(b=>fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))&&b.check_in>=f.from&&b.check_in<=f.to&&(st.status==='All'||b.status===st.status)&&(!ql||(b.guest+' '+b.booking_id+' '+b.pname).toLowerCase().includes(ql))),st.sort);
-  const q=h('input',{class:'search',type:'search',placeholder:'Search guest, booking ID, property',value:st.q,id:'bkQ',style:{flex:'1 1 220px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;st.lim=60;render();const n=$('#bkQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
+  const q=h('input',{class:'search',type:'search',placeholder:'Search guest, booking ID, property…',value:st.q,id:'bkQ',style:{flex:'1 1 220px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;st.lim=60;render();const n=$('#bkQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
   const cols=[{t:'Booking',k:'booking_id',m:1,f:b=>b.booking_id},{t:'Guest',k:'guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''}`)},{t:'Property',k:'pname',f:b=>h('div',{class:'who'},h('div',null,h('b',null,short(b.pname)),h('span',null,b.area+', '+b.city)))},{t:'Channel',k:'channel',f:b=>chd(b.channel)},{t:'Check-in',k:'check_in',f:b=>fmtD(b.check_in)+(b.arrival_time?' · '+b.arrival_time:'')},{t:'Nights',k:'nights',r:1,f:b=>b.nights},{t:'Gross',k:'gross',r:1,f:b=>inr(b.gross)},{t:'Payout',k:'net',r:1,f:b=>inr(b.net)},{t:'Stay',k:'status',f:b=>pillStatus(b.status)},{t:'Payout status',k:'pay',f:b=>pillPay(b.pay)}];
   v.append(card('s12','Bookings',{hint:`${rows.length} checking in ${rangeLabel()}`,acts:[btnExport(()=>exportRows(rows.map(bookRow),'Bookings'))]},
     h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}},q,h('div',{class:'seg'},['All','Upcoming','In-house','Completed','Cancelled'].map(x=>h('button',{'aria-pressed':st.status===x,onclick:()=>{st.status=x;st.lim=per;render()}},x))),h('button',{class:'btn primary admin',onclick:()=>openForm('booking')},icon('plus'),'New booking')),
-    rows.length?table(cols,rows.slice(0,st.lim),{sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openBooking}):h('div',{class:'empty'},'No bookings match. Try a wider period or clear filters.'),
+    rows.length?table(cols,rows.slice(0,st.lim),{card:b=>bookCard(b),sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openBooking}):h('div',{class:'empty'},'No bookings match. Try a wider period or clear filters.'),
     rows.length>st.lim?h('button',{class:'btn',style:{alignSelf:'center'},onclick:()=>{st.lim+=per;render()}},`Show ${Math.min(per,rows.length-st.lim)} more of ${rows.length}`):null));
 }
 
@@ -1220,7 +1300,7 @@ function openForm(kind,pid){
   const sel=h('select',{id:'fProp'},CITIES.map(c=>h('optgroup',{label:c},props.filter(p=>p.city===c).map(p=>h('option',{value:p.property_id,selected:p.property_id===pid||null},`${short(p.property)} — ${p.area}`)))));
   const err=h('div',{class:'err',hidden:true});const fail=m=>{err.hidden=false;err.textContent=m};
   if(kind==='booking'){
-    const g=h('input',{id:'fGuest',placeholder:'Full name',autocomplete:'off'}),n=h('input',{id:'fN',type:'number',min:1,max:20,value:2}),ch=h('select',{id:'fCh'},CHN.map(c=>h('option',null,c))),ci=h('input',{id:'fCi',type:'date',value:TOMORROW}),co=h('input',{id:'fCo',type:'date',value:add(TOMORROW,2)}),at=h('input',{id:'fAt',type:'time',value:'14:00',step:900}),rate=h('input',{id:'fRate',type:'number',min:0,step:50}),cl=h('input',{id:'fCl',type:'number',min:0,step:50});
+    const g=h('input',{id:'fGuest',placeholder:'e.g. Riya Sharma',autocomplete:'off',autocapitalize:'words',spellcheck:'false'}),n=h('input',{id:'fN',type:'number',inputmode:'numeric',min:1,max:20,value:2}),ch=h('select',{id:'fCh'},CHN.map(c=>h('option',null,c))),ci=h('input',{id:'fCi',type:'date',value:TOMORROW}),co=h('input',{id:'fCo',type:'date',value:add(TOMORROW,2)}),at=h('input',{id:'fAt',type:'time',value:'14:00',step:900}),rate=h('input',{id:'fRate',type:'number',inputmode:'numeric',min:0,step:50}),cl=h('input',{id:'fCl',type:'number',inputmode:'numeric',min:0,step:50});
     const sm=h('div',{class:'sum'});let ok=false;const setR=()=>{const p=D.P[sel.value];rate.value=p.base_rate;cl.value=p.cleaning_fee};setR();
     const calc=()=>{const nn=diff(ci.value,co.value),gr=nn*(+rate.value||0)+(+cl.value||0),fe=Math.round(gr*(D.fee[ch.value]||0));sm.replaceChildren(...[['Nights',nn>0?nn:'–'],['Gross',nn>0?inr(gr):'–'],['Fee',nn>0?inr(fe):'–'],['Payout',nn>0?inr(gr-fe):'–']].map(([l,x])=>h('div',null,h('span',null,l),h('b',{class:'num'},String(x)))));
       const clash=D.B.find(b=>b.ok&&b.property_id===sel.value&&b.check_in<co.value&&b.check_out>ci.value);err.hidden=true;ok=true;
@@ -1231,10 +1311,10 @@ function openForm(kind,pid){
         const id='BK'+(Math.max(...D.B.map(b=>+b.booking_id.slice(2)||0))+1);extra.bookings.push({booking_id:id,submitted_at:new Date().toISOString().slice(0,16),property_id:sel.value,guest:g.value.trim(),guests:+n.value||1,channel:ch.value,check_in:ci.value,check_out:co.value,arrival_time:at.value,nightly_rate:+rate.value,cleaning_fee:+cl.value,booking_status:'Confirmed',rating:null});
         saveExtra();closeLayer();refresh();toast(`${id} saved — in the live version this row goes straight into the Bookings sheet`)}},'Save booking')]);
   } else if(kind==='expense'){
-    const cat=h('select',{id:'fCat'},['Cleaning','Laundry','Electricity','Internet','Supplies','Repairs','Staff salary','Other'].map(c=>h('option',null,c))),amt=h('input',{id:'fAmt',type:'number',min:1,placeholder:'0'}),dt=h('input',{id:'fDt',type:'date',value:TODAY}),ven=h('input',{id:'fVen',placeholder:'Who was paid'}),via=h('select',{id:'fVia'},['UPI','Cash','Bank transfer','Card','Auto-debit'].map(c=>h('option',null,c)));
+    const cat=h('select',{id:'fCat'},['Cleaning','Laundry','Electricity','Internet','Supplies','Repairs','Staff salary','Other'].map(c=>h('option',null,c))),amt=h('input',{id:'fAmt',type:'number',inputmode:'numeric',min:1,placeholder:'e.g. 1500'}),dt=h('input',{id:'fDt',type:'date',value:TODAY}),ven=h('input',{id:'fVen',placeholder:'e.g. Doon Electricals',autocomplete:'off'}),via=h('select',{id:'fVia'},['UPI','Cash','Bank transfer','Card','Auto-debit'].map(c=>h('option',null,c)));
     modal('Add expense',h('div',{class:'form'},fld('Property',sel,1),fld('Category',cat),fld('Amount (₹)',amt),fld('Date',dt),fld('Paid via',via),fld('Vendor',ven,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){fail('Enter an amount above zero.');return}extra.expenses.push({date:dt.value,property_id:sel.value,category:cat.value,amount:+amt.value,vendor:ven.value,paid_via:via.value,notes:null});saveExtra();closeLayer();refresh();toast('Expense added')}},'Save expense')]);
   } else {
-    const is=h('input',{id:'fIs',placeholder:'What’s wrong?'}),pr=h('select',{id:'fPr'},h('option',{value:'High'},'Urgent'),h('option',{value:'Medium',selected:true},'Soon'),h('option',{value:'Low'},'Routine')),as=h('select',{id:'fAs'},['Caretaker','Electrician','Plumber','Carpenter','AC service','ISP'].map(c=>h('option',null,c)));
+    const is=h('input',{id:'fIs',placeholder:'e.g. Geyser not heating…',autocomplete:'off'}),pr=h('select',{id:'fPr'},h('option',{value:'High'},'Urgent'),h('option',{value:'Medium',selected:true},'Soon'),h('option',{value:'Low'},'Routine')),as=h('select',{id:'fAs'},['Caretaker','Electrician','Plumber','Carpenter','AC service','ISP'].map(c=>h('option',null,c)));
     modal('Log maintenance issue',h('div',{class:'form'},fld('Property',sel,1),fld('Issue',is,1),fld('Priority',pr),fld('Assign to',as),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!is.value.trim()){fail('Describe the issue.');return}const id='MT'+(Math.max(...D.M.map(m=>+m.ticket_id.slice(2)||0))+1);extra.maint.push({ticket_id:id,property_id:sel.value,reported_on:TODAY,issue:is.value.trim(),priority:pr.value,assigned_to:as.value,status:'Open',cost:null,closed_on:null});saveExtra();closeLayer();refresh();toast(id+' logged')}},'Log issue')]);
   }
 }
@@ -1281,6 +1361,7 @@ function render(){
   const v=$('#view');v.replaceChildren();
   ({overview,desk,calendar,properties,property,money,ops,bookings})[S.view](v);
   fillRows(v);
+  if(!S.counted&&S.view==='overview'){S.counted=true;countUp(v)}
   requestAnimationFrame(()=>{pending.splice(0).forEach(fn=>fn());fitHeights(v)});
 }
 /* No grey holes: when a row of cards doesn't reach the right edge, the last card in it widens to fill. Runs before charts draw, so they draw at the final width. */
