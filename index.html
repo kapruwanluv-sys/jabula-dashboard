@@ -469,7 +469,7 @@ body:not(.is-admin) .admin{display:none!important}
   .btn.icon{min-width:38px;min-height:38px;justify-content:center}
   .chip{min-height:32px}
 }
-.tabbar{display:none}
+.tabbar,.tabwrap{display:none}
 
 
 /* ---------- tablet ---------- */
@@ -495,6 +495,20 @@ body:not(.is-admin) .admin{display:none!important}
   .topbar{justify-content:space-between}
   .tabbar{display:flex;position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:45;border-radius:26px;padding:7px;gap:2px;overflow-x:auto;scrollbar-width:none;background:var(--surface);border:1px solid var(--glass-line);box-shadow:var(--shadow-lg);max-width:640px;margin:0 auto}
   .tabbar::-webkit-scrollbar{display:none}
+
+  /* swipeable tab bar: wrapper carries the fixed position so the hints can sit on top */
+  .tabwrap{display:block;position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:45;max-width:640px;margin:0 auto}
+  .tabwrap .tabbar{position:relative;left:auto;right:auto;bottom:auto;max-width:none;margin:0;padding-bottom:11px}
+  .tb-arrow{position:absolute;top:calc(50% - 4px);transform:translateY(-50%) scale(.85);width:28px;height:28px;border-radius:50%;border:1px solid var(--glass-line);background:var(--surface);box-shadow:var(--shadow-md,0 4px 14px rgba(0,0,0,.12));display:grid;place-items:center;color:var(--accent-ink);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:2}
+  .tb-arrow svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .tb-arrow.l{left:4px}.tb-arrow.r{right:4px}
+  .tabwrap.more-r .tb-arrow.r,.tabwrap.more-l .tb-arrow.l{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1)}
+  .tabwrap.more-r .tb-arrow.r{animation:tbnudge 2.4s ease-in-out 1.2s 2}
+  @keyframes tbnudge{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(3px)}}
+  .tb-track{position:absolute;left:50%;bottom:6px;width:56px;margin-left:-28px;height:3px;border-radius:3px;background:var(--hair-2);overflow:hidden;opacity:0;transition:opacity .2s}
+  .tabwrap.scrollable .tb-track{opacity:1}
+  .tb-track i{position:absolute;top:0;bottom:0;left:0;border-radius:3px;background:var(--accent);opacity:.75}
+  @media (prefers-reduced-motion:reduce){.tabwrap.more-r .tb-arrow.r{animation:none}}
   .tabbar{overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;gap:4px;padding:7px 8px;--fl:0px;--fr:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%)}
   .tabbar button{flex:0 0 auto;min-width:74px;scroll-snap-align:center;border:0;background:none;border-radius:19px;padding:8px 12px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;font-weight:650;letter-spacing:.01em;color:var(--muted);white-space:nowrap}
   .tabbar button[aria-current="page"]{color:var(--accent-ink);background:var(--accent-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 18%,transparent)}
@@ -673,7 +687,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
     <div id="view" class="grid" tabindex="-1"></div>
   </main>
 </div>
-<nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
+<div class="tabwrap" id="tabwrap"><nav class="tabbar" id="tabbar" aria-label="Sections"></nav><button class="tb-arrow l" id="tbL" type="button" aria-label="Show previous sections" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="tb-arrow r" id="tbR" type="button" aria-label="Show more sections" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button><span class="tb-track" aria-hidden="true"><i id="tbThumb"></i></span></div>
 <div id="tip" class="tip" hidden></div>
 <div id="layer"></div>
 <script>
@@ -982,7 +996,11 @@ function go(v,extra){S.view=v;if(extra)Object.assign(S,extra);S.pop=null;try{his
 function countUp(root){if(calm())return;root.querySelectorAll('[data-count]').forEach(el=>{const t=el.textContent,m=t.match(/^([^\d−-]*)([\d.,]+)(.*)$/);if(!m)return;const target=parseFloat(m[2].replace(/,/g,'')),dec=(m[2].split('.')[1]||'').length,t0=performance.now();
   const step=now=>{const k=Math.min(1,(now-t0)/750),e=1-Math.pow(1-k,3);el.textContent=m[1]+(target*e).toFixed(dec)+m[3];if(k<1)requestAnimationFrame(step);else el.textContent=t};requestAnimationFrame(step)})}
 /* phone tab bar slides sideways: fade the edge that has more tabs behind it */
-function tabEdges(){const tb=$('#tabbar');if(!tb)return;const max=tb.scrollWidth-tb.clientWidth;tb.style.setProperty('--fl',tb.scrollLeft>4?'28px':'0px');tb.style.setProperty('--fr',tb.scrollLeft<max-4?'34px':'0px')}
+function tabEdges(){const tb=$('#tabbar'),w=$('#tabwrap');if(!tb||!w)return;const max=tb.scrollWidth-tb.clientWidth,l=tb.scrollLeft>4,r=tb.scrollLeft<max-4;
+  tb.style.setProperty('--fl',l?'34px':'0px');tb.style.setProperty('--fr',r?'40px':'0px');w.classList.toggle('more-l',l);w.classList.toggle('more-r',r);w.classList.toggle('scrollable',max>4);
+  const th=$('#tbThumb');if(th&&max>4){const f=tb.clientWidth/tb.scrollWidth;th.style.width=(f*100)+'%';th.style.left=(tb.scrollLeft/tb.scrollWidth*100)+'%'}}
+function tabPeek(){const tb=$('#tabbar');if(!tb||!PHONE()||calm()||store.get('jg_tb_peek'))return;if(tb.scrollWidth-tb.clientWidth<8)return;store.set('jg_tb_peek',1);
+  setTimeout(()=>{tb.scrollTo({left:tb.scrollLeft+110,behavior:'smooth'});setTimeout(()=>tb.scrollTo({left:Math.max(0,tb.scrollLeft-110),behavior:'smooth'}),850)},1100)}
 function navIcon(d){const s=sv('svg',{viewBox:'0 0 24 24'});s.append(sv('path',{d}));return s}
 function renderChrome(){
   const openIss=D.M.filter(m=>m.status!=='Closed'&&fP(D.P[m.property_id])).length,urgent=D.M.filter(m=>m.status!=='Closed'&&m.priority==='High'&&fP(D.P[m.property_id])).length;
@@ -1658,6 +1676,9 @@ menuBtn.addEventListener('click',e=>{e.stopPropagation();setMenu(menu.hidden)});
 document.addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'){setMenu(false);if(S.pop){S.pop=null;renderFilters()}}});
 $('#brandBtn').addEventListener('click',()=>go('overview'));
 $('#tabbar').addEventListener('scroll',tabEdges,{passive:true});addEventListener('resize',tabEdges);
+$('#tbR').addEventListener('click',()=>{const tb=$('#tabbar');tb.scrollBy({left:tb.clientWidth*.7,behavior:calm()?'auto':'smooth'})});
+$('#tbL').addEventListener('click',()=>{const tb=$('#tabbar');tb.scrollBy({left:-tb.clientWidth*.7,behavior:calm()?'auto':'smooth'})});
+setTimeout(tabPeek,600);
 document.querySelectorAll('[data-new]').forEach(b=>b.addEventListener('click',()=>openForm(b.dataset.new)));
 
 /* ============ render ============ */
