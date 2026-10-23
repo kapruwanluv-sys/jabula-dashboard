@@ -1511,8 +1511,8 @@ function waStatusKids(){const{s,sheet,bot}=statusBits(),act=lastBotActivity();
     h('span',{class:'grow'}),s==='demo'?h('button',{class:'btn sm primary',onclick:connectModal},'Connect live data'):h('button',{class:'btn sm',onclick:()=>{manualRefresh();BOT.state='checking';checkBot()}},'Refresh')]}
 
 /* ============ WHATSAPP: live summary of what the bot is doing ============ */
-const STAGES=['Asked','Quoted','Requested','Held','Booked'],ENDED=['Expired','Cancelled'],LSTAT=['New','Contacted','Won','Lost'];
-const STC={Asked:'p-mute',Quoted:'p-acc',Requested:'p-acc',Held:'p-warn',Booked:'p-ok',Expired:'p-bad',Cancelled:'p-bad'};
+const STAGES=['Viewed','Asked','Quoted','Requested','Held','Booked'],ENDED=['Expired','Cancelled'],LSTAT=['New','Contacted','Won','Lost'];
+const STC={Viewed:'p-mute',Asked:'p-mute',Quoted:'p-acc',Requested:'p-acc',Held:'p-warn',Booked:'p-ok',Expired:'p-bad',Cancelled:'p-bad'};
 const pillStage=s=>h('span',{class:'pill '+(STC[s]||'p-mute')},s||'—');
 const pillLs=s=>h('span',{class:'pill '+({New:'p-acc',Contacted:'p-warn',Won:'p-ok',Lost:'p-mute'}[s]||'p-mute')},s||'New');
 function demoLeads(){ /* demo mode only: sample enquiries so the tab shows how it works */
@@ -1541,7 +1541,7 @@ function whatsapp(v){
   // live strip
   v.append(h('div',{class:'s12 wa-live glass',id:'waStatus'},waStatusKids()));
   // KPIs (tap to filter the list below)
-  const booked=W.reached('Booked'),asked=W.guests.length,follow=W.guests.filter(l=>['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)&&l.status!=='Lost'&&l.status!=='Won');
+  const booked=W.reached('Booked'),asked=W.guests.length,follow=W.guests.filter(l=>(['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)||l.asked_team)&&l.status!=='Lost'&&l.status!=='Won');
   const k=(n,l,sub,fn)=>h('button',{class:'stat glass',onclick:fn||null,style:fn?{cursor:'pointer'}:null},h('b',{class:'num'},n),h('span',null,l),sub?h('small',{style:{color:'var(--muted)'}},sub):null);
   const setL=p=>{Object.assign(st,{type:'All',stage:'All',status:'All',lim:25},p);render();setTimeout(()=>{const el=$('#waLeads');el&&el.scrollIntoView({behavior:calm()?'auto':'smooth'})},60)};
   v.append(h('div',{class:'s12 stat-row wa-kpis'},
@@ -1549,7 +1549,7 @@ function whatsapp(v){
     k(W.reached('Quoted'),'Got a price',asked?pct(W.reached('Quoted')/asked)+' of enquiries':'',()=>setL({type:'Guests',stage:'Quoted+'})),
     k(booked,'Booked via WhatsApp',asked?pct(booked/asked)+' conversion':'',()=>setL({type:'Guests',stage:'Booked'})),
     k(inrK(sum(W.waB.filter(b=>b.ok),b=>b.gross)),'WhatsApp revenue',`${W.waB.filter(b=>b.ok).length} direct bookings · no platform fee`),
-    k(follow.length,'Worth a follow-up','got a price, didn’t book',()=>setL({type:'Guests',stage:'Follow-up'})),
+    k(follow.length,'Worth a follow-up','got a price or wants a call',()=>setL({type:'Guests',stage:'Follow-up'})),
     k(W.hosts.length,'Hosting leads',`${W.hosts.filter(l=>l.status==='New').length} new`,()=>setL({type:'Hosting'})),
     k(W.reqs.filter(r=>(r.status||'New')==='New').length,'Open requests','add-ons & cancellations'),
     k(W.issues.filter(m=>m.status!=='Closed').length,'Guest issues open','reported on WhatsApp',()=>go('ops'))));
@@ -1557,14 +1557,14 @@ function whatsapp(v){
   const tf=st.win==='all'?(W.guests.map(l=>l.day).filter(Boolean).sort()[0]||add(TODAY,-29)):f.from;const days=diff(tf,f.to)+1;
   const wk=days>45||(PHONE()&&days>14),keys=[];for(let d=wk?add(f.to,-7*Math.ceil(days/7)+1):tf;d<=f.to;d=add(d,wk?7:1))keys.push(d);
   const bucket=l=>{let i=keys.length-1;while(i>0&&l.day<keys[i])i--;return i};
-  const ser=[['Booked','--ok',l=>l.stage==='Booked'],['Still deciding','--accent',l=>['Asked','Quoted','Held','Requested'].includes(l.stage)],['Dropped','--hair-2',l=>ENDED.includes(l.stage)]].map(([name,c,fn])=>{const vals=keys.map(()=>0);W.guests.filter(l=>l.day>=keys[0]).filter(fn).forEach(l=>vals[bucket(l)]++);return{name,color:css(c),vals}});
+  const ser=[['Booked','--ok',l=>l.stage==='Booked'],['Still deciding','--accent',l=>['Viewed','Asked','Quoted','Held','Requested'].includes(l.stage)],['Dropped','--hair-2',l=>ENDED.includes(l.stage)]].map(([name,c,fn])=>{const vals=keys.map(()=>0);W.guests.filter(l=>l.day>=keys[0]).filter(fn).forEach(l=>vals[bucket(l)]++);return{name,color:css(c),vals}});
   const legend=h('div',{class:'legend'},ser.map(s=>h('span',null,h('i',{style:{background:s.color}}),`${s.name} ${sum(s.vals,x=>x)}`)));
   let th;v.append(card('s8','Enquiries over time',{hint:`per ${wk?'week':'day'} · number on each bar = enquiries`,acts:[btnPNG(()=>th,'WhatsApp enquiries')]},legend,
     th=chart(w=>countBars(w,{cats:keys.map(d=>({label:wk?fmtD(d):fmtD(d),tip:`${wk?'Week from ':''}${fmtD(d,{weekday:'short',day:'numeric',month:'short'})}`})),series:ser,stack:true,hh:PHONE()?200:230}))));
   // funnel
-  const fun=['Asked','Quoted','Held','Booked'].map(s=>({s,n:W.reached(s)}));const top=Math.max(1,fun[0].n);
+  const fun=['Viewed','Asked','Quoted','Held','Booked'].map(s=>({s,n:W.reached(s)}));const top=Math.max(1,fun[0].n);
   v.append(card('s4','Enquiry funnel',{hint:'how far people got · tap a step'},
-    h('div',{class:'funnel'},fun.map((x,i)=>h('button',{class:'fstep',onclick:()=>setL({type:'Guests',stage:x.s==='Asked'?'All':x.s+'+'})},h('span',{class:'fl'},x.s==='Asked'?'Asked about dates':x.s==='Quoted'?'Got a price':x.s==='Held'?'Held dates':'Booked'),
+    h('div',{class:'funnel'},fun.map((x,i)=>h('button',{class:'fstep',onclick:()=>setL({type:'Guests',stage:x.s==='Viewed'?'All':x.s+'+'})},h('span',{class:'fl'},x.s==='Viewed'?'Opened a stay':x.s==='Asked'?'Asked about dates':x.s==='Quoted'?'Got a price':x.s==='Held'?'Held dates':'Booked'),
       h('span',{class:'fb'},h('i',{style:{width:Math.max(4,x.n/top*100)+'%',background:i===3?'var(--ok)':'var(--accent)',opacity:1-i*.12}})),h('b',{class:'num'},x.n),h('small',null,i?pct(x.n/top):'')))),
     h('div',{class:'row',style:{gap:'6px',flexWrap:'wrap',marginTop:'10px'}},[['Requested','special requests'],['Expired','hold ran out'],['Cancelled','released']].map(([s,t])=>h('button',{class:'chip-s',onclick:()=>setL({type:'Guests',stage:s})},`${W.guests.filter(l=>l.stage===s).length} ${t}`)))));
   // demand by stay: one clear row per stay - name + "3 asked · 1 booked", bar underneath
@@ -1581,7 +1581,7 @@ function whatsapp(v){
     dh=chart(w=>countBars(w,{cats:wks.map(d=>({label:fmtD(d),tip:`Week from ${fmtD(d,{weekday:'short',day:'numeric',month:'short'})}`})),series:[{name:'Asked',color:css('--accent'),vals:askV},{name:'Booked',color:css('--ok'),vals:bkV}],stack:false,hh:PHONE()?200:220}))));
   // leads list with filters
   const ql=st.q.toLowerCase();
-  const stageOk=l=>st.stage==='All'||(st.stage==='Follow-up'?['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)&&!['Won','Lost'].includes(l.status):st.stage.endsWith('+')?(STAGES.slice(STAGES.indexOf(st.stage.slice(0,-1))).includes(l.stage)):l.stage===st.stage);
+  const stageOk=l=>st.stage==='All'||(st.stage==='Follow-up'?(['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)||l.asked_team)&&!['Won','Lost'].includes(l.status):st.stage.endsWith('+')?(STAGES.slice(STAGES.indexOf(st.stage.slice(0,-1))).includes(l.stage)):l.stage===st.stage);
   let rows=W.P.filter(l=>(st.type==='All'||(st.type==='Hosting')===(l.kind==='owner'))&&(l.kind==='owner'?st.stage==='All':stageOk(l))&&(st.status==='All'||l.status===st.status)&&(!ql||[l.name,l.phone,l.pname,l.location,l.city].join(' ').toLowerCase().includes(ql)));
   rows=sortBy(rows,st.sort);
   const q=h('input',{class:'search',type:'search',placeholder:'Search name, phone, stay…',value:st.q,id:'waQ',style:{flex:'1 1 200px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;render();const n=$('#waQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
@@ -1589,11 +1589,11 @@ function whatsapp(v){
   const cols=[{t:'When',k:'created_at',m:1,f:l=>fmtD(l.day)+' '+String(l.created_at||'').slice(11,16)},{t:'Person',k:'name',f:l=>who(l.name||'Guest',phoneTxt(l.phone))},{t:'Type',k:'kind',f:l=>h('span',{class:'chip-s'},l.kind==='owner'?'🏠 Hosting':'🧳 Guest')},
     {t:'Stay / location',k:'pname',f:l=>l.kind==='owner'?(l.location||'–'):h('div',{class:'who'},h('div',null,h('b',null,l.pname||'Any stay'),h('span',null,l.city)))},
     {t:'Dates',k:'check_in',f:l=>l.check_in?`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`:(l.kind==='owner'?[l.property_type,l.bedrooms?l.bedrooms+' BR':''].filter(Boolean).join(' · '):'–')},
-    {t:'Guests',k:'guests',r:1,f:l=>l.guests||''},{t:'Price',k:'quoted',r:1,f:l=>l.quoted?inr(+l.quoted):''},{t:'Stage',k:'stage',f:l=>l.kind==='owner'?'':pillStage(l.stage)},{t:'Follow-up',k:'status',f:l=>pillLs(l.status)}];
+    {t:'Guests',k:'guests',r:1,f:l=>l.guests||''},{t:'Price',k:'quoted',r:1,f:l=>l.quoted?inr(+l.quoted):''},{t:'Stage',k:'stage',f:l=>l.kind==='owner'?'':pillStage(l.stage)},{t:'Follow-up',k:'status',f:l=>[pillLs(l.status),l.asked_team?h('span',{class:'pill p-warn',style:{marginLeft:'4px'}},'📞 wants a call'):null]}];
   v.append(card('s12','Leads',{id:'waLeads',hint:`${rows.length} of ${W.P.length} · ${waWin().label.toLowerCase()} · tap a row for the full journey`,acts:[btnExport(()=>exportRows(rows.map(l=>({When:l.created_at,Type:l.kind==='owner'?'Hosting':'Guest',Name:l.name,Phone:phoneTxt(l.phone),Stay:l.pname||l.location||'',City:l.city,'Check-in':l.check_in||'','Check-out':l.check_out||'',Guests:l.guests||'','Quoted ₹':l.quoted||'',Stage:l.stage||'',Status:l.status,'Asked for team':l.asked_team||''})),'WhatsApp leads'))]},
     h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}},q,
       h('div',{class:'seg'},['All','Guests','Hosting'].map(x=>h('button',{'aria-pressed':st.type===x,onclick:()=>{st.type=x;st.lim=25;render()}},x))),
-      selF(st.stage,[['All','Any stage'],['Follow-up','Worth a follow-up'],['Asked','Asked'],['Quoted','Quoted'],['Quoted+','Quoted or further'],['Requested','Special request'],['Held','Held'],['Booked','Booked'],['Expired','Expired'],['Cancelled','Cancelled']],x=>{st.stage=x;st.lim=25;render()}),
+      selF(st.stage,[['All','Any stage'],['Follow-up','Worth a follow-up'],['Viewed','Opened a stay'],['Asked','Asked'],['Quoted','Quoted'],['Quoted+','Quoted or further'],['Requested','Special request'],['Held','Held'],['Booked','Booked'],['Expired','Expired'],['Cancelled','Cancelled']],x=>{st.stage=x;st.lim=25;render()}),
       selF(st.status,[['All','Any follow-up status'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()})),
     rows.length?table(cols,rows.slice(0,st.lim),{sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openLead,card:l=>[mTop(h('span',{class:'av',style:{background:avc(l.name||'G')}},ini(l.name||'G')),l.name||'Guest',`${l.kind==='owner'?'🏠 Hosting':'🧳 '+(l.pname||'Guest')} · ${fmtD(l.day)}`,l.kind==='owner'?pillLs(l.status):pillStage(l.stage)),
       h('div',{class:'mfoot'},l.check_in?h('span',{class:'chip-s date'},`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`):l.location?h('span',{class:'chip-s'},l.location):null,l.quoted?h('span',{class:'chip-s'},inr(+l.quoted)):null,h('span',{class:'grow'}),pillLs(l.status))]})
