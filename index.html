@@ -637,6 +637,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .sr-bar{height:8px;border-radius:8px;background:var(--hair);overflow:hidden}.sr-bar>i{display:block;height:100%;border-radius:8px;background:var(--accent);overflow:hidden}.sr-bar>i>i{display:block;height:100%;background:var(--ok)}
 .wa-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.wa-kpis .stat{min-width:0}
 @media (max-width:760px){.wa-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.wa-kpis .stat small{font-size:11.5px}.fstep{grid-template-columns:104px 1fr 30px 38px}}
+.loading-live{display:flex;align-items:center;gap:14px;padding:18px 6px}.spin-dot{width:22px;height:22px;border-radius:50%;border:3px solid var(--hair-2);border-top-color:var(--accent);animation:spin 1s linear infinite;flex:none}@keyframes spin{to{transform:rotate(360deg)}}
 /* live data, WhatsApp tab */
 .btn.danger{background:var(--bad,#d93a2b);color:#fff;border-color:transparent}.btn.danger-t{color:var(--bad,#d93a2b)}
 .wa-live{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;font-size:13.5px;flex-wrap:wrap}
@@ -1443,7 +1444,7 @@ function connectModal(){
     [h('button',{class:'btn',onclick:closeLayer},'Use demo data'),go_]);
   k.addEventListener('keydown',e=>{if(e.key==='Enter')go_.click()});
 }
-function disconnect(){store.set('jg_key','');LIVE.key='';LIVE.ok=null;S.data=SEED;S.source='Demo data';S.loadedAt=new Date();refresh();toast('This device is disconnected from the live sheet')}
+function disconnect(){store.set('jg_key','');store.set('jg_live_cache',null);LIVE.key='';LIVE.ok=null;S.data=SEED;S.source='Demo data';S.loadedAt=new Date();refresh();toast('This device is disconnected from the live sheet')}
 function confirmBox(title,text,okLabel,danger,fn){modal(title,h('div',{class:'form'},h('p',{class:'full',style:{margin:0}},text)),[h('button',{class:'btn',onclick:closeLayer},'Keep'),h('button',{class:'btn '+(danger?'danger':'primary'),onclick:()=>{closeLayer();fn()}},okLabel)])}
 const nextId=(arr,field,prefix)=>prefix+(Math.max(0,...arr.map(x=>+String(x[field]||'').replace(/\D/g,'')||0).filter(n=>n<1e7))+1);
 const waLink=p=>'https://wa.me/'+String(p||'').replace(/\D/g,'');
@@ -1483,7 +1484,7 @@ function openBlock(){const props=D.props;const sel=h('select',null,CITIES.map(c=
    Sheet: green only if the last read succeeded within 12 min; amber if reads are failing; grey in demo.
    Bot:   green only if the bot server answered its health check (every 2 min); red if not. */
 const BOT={state:CONFIG.BOT_URL?'checking':'none',at:0};
-function liveState(){if(!live())return'demo';return LIVE.ok&&Date.now()-LIVE.okAt<12*6e4?'live':'offline'}
+function liveState(){if(!live())return'demo';if(LIVE.ok===null)return'syncing';return LIVE.ok&&Date.now()-LIVE.okAt<12*6e4?'live':'offline'}
 async function checkBot(){if(!CONFIG.BOT_URL||document.hidden)return;const c=new AbortController(),t=setTimeout(()=>c.abort(),15000);
   try{const r=await fetch(CONFIG.BOT_URL.replace(/\/$/,'')+'/',{cache:'no-store',signal:c.signal});BOT.state=r.ok?'up':'stuck'}catch(e){BOT.state='down'}finally{clearTimeout(t);BOT.at=Date.now();paintStatus()}}
 function lastBotActivity(){if(!live())return null;const ts=[];
@@ -1493,7 +1494,7 @@ function lastBotActivity(){if(!live())return null;const ts=[];
   const now=new Date(),v=ts.filter(Boolean).map(String).map(x=>new Date(x.length<=10?x+'T12:00':x)).filter(d=>!isNaN(d)&&d<=now).sort((a,b)=>a-b).pop();return v||null}
 const agoTxt=d=>{if(!d)return'–';const m=Math.round((Date.now()-d)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
 function statusBits(){const s=liveState(),hm=d=>d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
-  const sheet={live:['live','Live',`Live sheet · updated ${agoTxt(LIVE.okAt)}`],offline:['offline','Offline',`Can’t reach the sheet${LIVE.err?' ('+LIVE.err+')':''} · showing data from ${hm(S.loadedAt)}`],demo:['demo','Demo · Connect','Demo data on this device · tap to connect']}[s];
+  const sheet={syncing:['demo','Updating…',`Showing this device’s copy from ${LIVE.cachedAt?hm(new Date(LIVE.cachedAt)):'earlier'} · fetching the latest from the sheet`],live:['live','Live',`Live sheet · updated ${agoTxt(LIVE.okAt)}`],offline:['offline','Offline',`Can’t reach the sheet${LIVE.err?' ('+LIVE.err+')':''} · showing data from ${hm(S.loadedAt)}`],demo:['demo','Demo · Connect','Demo data on this device · tap to connect']}[s];
   const bot={up:['live','Bot online','The WhatsApp bot answered its health check '+agoTxt(BOT.at)],stuck:['offline','Bot restarting','The bot reported a problem and is being restarted automatically'],down:['down','Bot not responding','The WhatsApp bot did not answer its health check '+agoTxt(BOT.at)],checking:['demo','Checking bot…','Checking the WhatsApp bot'],none:['demo','Bot status n/a','']}[BOT.state];
   return{s,sheet,bot}}
 function paintStatus(){const b=$('#liveBadge');if(!b||!D)return;const{s,sheet}=statusBits();
@@ -1504,7 +1505,7 @@ function waStatusKids(){const{s,sheet,bot}=statusBits(),act=lastBotActivity();
   const ff=S.f,act2=[...ff.cities,...ff.props.map(id=>D.P[id]?short(D.P[id].property):id)];
   const hm=d=>d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
   const win=h('div',{class:'seg',role:'group','aria-label':'Activity window'},WAWIN.map(([k,l])=>h('button',{'aria-pressed':(S.wa&&S.wa.win||'30')===k,onclick:()=>{(S.wa||(S.wa={})).win=k;render()}},l.replace('Last ',''))));
-  return[light(sheet[0],'Sheet: '+(s==='live'?'live':s==='offline'?'offline':'demo'),sheet[2],s==='demo'?connectModal:s==='offline'?()=>manualRefresh():null),
+  return[light(sheet[0],'Sheet: '+(s==='live'?'live':s==='offline'?'offline':s==='syncing'?'updating…':'demo'),sheet[2],s==='demo'?connectModal:s==='offline'?()=>manualRefresh():null),
     light(bot[0],bot[1],bot[2],()=>{BOT.state='checking';paintStatus();checkBot()}),
     s==='live'?h('span',{class:'light-note'},`Data as of ${hm(new Date(LIVE.okAt))} · last bot activity ${agoTxt(act)} · auto-refresh every 2 min`):h('span',{class:'light-note'},s==='demo'?'Showing sample enquiries. Connect to see the real bot.':'Showing the last data until the sheet answers again.'),
     h('div',{class:'wa-row'},h('span',{class:'light-note'},'Showing activity:'),win,act2.length?h('span',{class:'chip-s'},'Filtered: '+act2.join(', ')):h('span',{class:'light-note'},'All stays'),act2.length?h('button',{class:'btn sm',onclick:()=>setF({cities:[],props:[]})},'Clear filters'):null),
@@ -1656,13 +1657,19 @@ function fromWorkbook(wb){
     maint:sheetRows(wb,'Maintenance','Ticket').map(r=>({ticket_id:String(r.Ticket),property_id:r['Property ID'],reported_on:dI(r['Reported on']),issue:r.Issue,priority:r.Priority,assigned_to:r['Assigned to']||'Caretaker',status:r.Status,cost:r['Cost (₹)'],closed_on:dI(r['Closed on'])}))};
 }
 let loading=null;
+function showLoading(){const v=$('#view');if(!v)return;v.replaceChildren(h('section',{class:'card glass s12'},h('div',{class:'loading-live'},h('span',{class:'spin-dot'}),h('div',null,h('b',null,'Loading live data from the Google Sheet…'),h('div',{class:'light-note'},'Usually 5-10 seconds; up to a minute if Google is waking up. This device will open instantly next time.')))));const b=$('#liveBadge');if(b){b.className='live-badge demo';b.querySelector('.lb-t').textContent='Updating…'}}
 async function load(){
   if(loading)return loading;
   loading=(async()=>{
-    if(live()){try{S.data=await liveLoad();S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null}catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);if(/unauthorized/.test(e.message)){LIVE.key='';store.set('jg_key','');toast('The access key was changed - connect again.')}else toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data)S.data=SEED}}
+    if(live()){
+      // open instantly: show this device's last live copy (or a loading card), then update in the background
+      if(!S.data){const c=store.get('jg_live_cache');if(c&&c.data){S.data=c.data;S.source='Live sheet';LIVE.cachedAt=c.at;S.loadedAt=new Date(c.at);refresh()}else showLoading()}
+      try{S.data=await Promise.race([liveLoad(),new Promise((_,no)=>setTimeout(()=>no(new Error('Google took over 90 s')),9e4))]);
+        S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null;LIVE.cachedAt=null;store.set('jg_live_cache',{at:Date.now(),data:S.data})}
+      catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);if(/unauthorized/.test(e.message)){LIVE.key='';store.set('jg_key','');store.set('jg_live_cache',null);toast('The access key was changed - connect again.')}else toast('Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data)S.data=SEED}}
     else if(CONFIG.DATA_URL){try{const r=await fetch(CONFIG.DATA_URL,{cache:'no-store'});if(!r.ok)throw 0;S.data=fromWorkbook(XLSX.read(await r.arrayBuffer(),{type:'array',cellDates:true}));S.source='Live sheet'}catch(e){toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data)S.data=SEED}}
     else if(!S.data)S.data=SEED;
-    S.loadedAt=new Date();refresh();
+    if(!LIVE.cachedAt)S.loadedAt=new Date();refresh();
   })();
   try{await loading}finally{loading=null}
 }
