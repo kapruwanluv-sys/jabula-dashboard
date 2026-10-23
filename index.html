@@ -635,9 +635,30 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .sr-n{display:inline-flex;align-items:center;gap:8px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sr-n i{width:8px;height:8px;border-radius:50%;flex:none}
 .sr-v{color:var(--muted);font-size:12.5px;white-space:nowrap;flex:none}.sr-v b{color:var(--ink)}
 .sr-bar{height:8px;border-radius:8px;background:var(--hair);overflow:hidden}.sr-bar>i{display:block;height:100%;border-radius:8px;background:var(--accent);overflow:hidden}.sr-bar>i>i{display:block;height:100%;background:var(--ok)}
-.wa-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.wa-kpis .stat{min-width:0}
+.wa-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.wa-kpis .stat{min-width:0}.wa-kpis .stat small{display:block;margin-top:2px}
 @media (max-width:760px){.wa-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.wa-kpis .stat small{font-size:11.5px}.fstep{grid-template-columns:104px 1fr 30px 38px}}
 .loading-live{display:flex;align-items:center;gap:14px;padding:18px 6px}.spin-dot{width:22px;height:22px;border-radius:50%;border:3px solid var(--hair-2);border-top-color:var(--accent);animation:spin 1s linear infinite;flex:none}@keyframes spin{to{transform:rotate(360deg)}}
+
+.lead-ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.person{display:flex;flex-direction:column;gap:9px;text-align:left;font:inherit;color:inherit;cursor:pointer;background:var(--glass);border:1px solid var(--hair-2);border-left:4px solid var(--hair-2);border-radius:18px;padding:13px 14px;min-width:0;transition:transform .14s ease,box-shadow .15s ease}
+.person:hover{box-shadow:var(--shadow-md,0 6px 20px rgba(0,0,0,.08))}.person:active{transform:scale(.99)}
+.person.heat-hot{border-left-color:var(--bad,#d93a2b);background:linear-gradient(90deg,color-mix(in srgb,var(--bad,#d93a2b) 7%,transparent),transparent 45%),var(--glass)}
+.person.heat-warm{border-left-color:var(--warn)}.person.heat-booked,.person.heat-won{border-left-color:var(--ok)}
+.p-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.p-id{display:flex;flex-direction:column;min-width:0}.p-id b{display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.p-id span{color:var(--muted);font-size:12.5px}
+.newdot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.p-why{font-size:13px;font-weight:600;color:var(--ink);line-height:1.4}.person.heat-hot .p-why{color:var(--bad,#d93a2b)}
+.p-latest{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.p-latest .chip-s{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:12.5px}
+.pill.heat{font-weight:700;white-space:nowrap}
+.why-box{margin:10px 0;padding:10px 12px;border-radius:14px;background:var(--hair)}.why-box ul{margin:4px 0 0;padding-left:18px}.why-box li{font-size:13.5px}
+.timeline{display:flex;flex-direction:column;gap:12px}.tl-date{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.tl-day{display:flex;flex-direction:column;gap:6px}
+.tl-item{display:flex;flex-direction:column;gap:4px;text-align:left;font:inherit;color:inherit;background:var(--glass);border:1px solid var(--hair-2);border-radius:14px;padding:10px 12px;cursor:pointer}
+.tl-top{display:flex;align-items:center;gap:8px;min-width:0}.tl-top b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tl-time{color:var(--muted);font-size:12px}
+.tl-meta{color:var(--muted);font-size:12.5px}
+@media (max-width:760px){.people{grid-template-columns:1fr}.person{padding:12px}}
 /* live data, WhatsApp tab */
 .btn.danger{background:var(--bad,#d93a2b);color:#fff;border-color:transparent}.btn.danger-t{color:var(--bad,#d93a2b)}
 .wa-live{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;font-size:13.5px;flex-wrap:wrap}
@@ -1519,7 +1540,7 @@ const pillLs=s=>h('span',{class:'pill '+({New:'p-acc',Contacted:'p-warn',Won:'p-
 function demoLeads(){ /* demo mode only: sample enquiries so the tab shows how it works */
   if(S._demoLeads)return S._demoLeads;const out=[],props=D.props,names=['Aarav Mehta','Isha Kapoor','Rohan Das','Meera Iyer','Kabir Singh','Tara Joshi','Vivaan Rao','Ananya Bose','Dev Malhotra','Sara Thomas','Arjun Nair','Pooja Verma'];
   for(let i=0;i<34;i++){const p=props[(i*7)%props.length],day=add(TODAY,-(i%18)),ci=add(TODAY,6+(i*3)%40),st=['Asked','Quoted','Quoted','Held','Booked','Expired','Cancelled','Requested','Asked','Booked'][i%10];
-    out.push({lead_id:'LDDEMO'+i,created_at:day+'T1'+(i%10)+':0'+(i%6),kind:'stay',name:names[i%names.length],phone:'+9190000'+String(10000+i*37).slice(-5),status:st==='Booked'?'Won':i%4?'New':'Contacted',stage:st,stage_at:day+'T18:00',property_id:p.property_id,check_in:ci,check_out:add(ci,2+(i%3)),guests:2+(i%4),quoted:Math.round((p.base_rate*(2+(i%3))+p.cleaning_fee)*.95/10)*10,asked_team:i%9===0?'yes':'',city:p.city})}
+    const w=i%22,nm=names[w%names.length].split(' ')[0]+' '+['Mehta','Kapoor','Das','Iyer','Singh','Joshi','Rao','Bose','Malhotra','Thomas','Nair','Verma','Chopra','Reddy','Bhatt','Sethi','Arora','Negi','Rawat','Bisht','Gupta','Saxena'][w];out.push({lead_id:'LDDEMO'+i,created_at:day+'T1'+(i%10)+':0'+(i%6),last_active_at:day+'T1'+(i%10)+':0'+(i%6),times_asked:i%7===0?2:1,kind:'stay',name:nm,phone:'+9190000'+String(10000+w*37).slice(-5),status:st==='Booked'?'Won':i%4?'New':'Contacted',stage:st,stage_at:day+'T18:00',property_id:p.property_id,check_in:ci,check_out:add(ci,2+(i%3)),guests:2+(i%4),quoted:Math.round((p.base_rate*(2+(i%3))+p.cleaning_fee)*.95/10)*10,asked_team:i%9===0?'yes':'',city:p.city})}
   ['Landour, Mussoorie|Villa|3|Already on Airbnb','Rajpur Road, Dehradun|Apartment|2|New to renting','Tapovan, Rishikesh|Cottage|1|Booking.com'].forEach((x,i)=>{const[a,t,b,l]=x.split('|');out.push({lead_id:'LDHOST'+i,created_at:add(TODAY,-i*4)+'T11:00',kind:'owner',name:['Neha Arora','Vikram Rawat','Sunil Negi'][i],phone:'+9198000'+(20000+i),status:['New','Contacted','Won'][i],location:a,property_type:t,bedrooms:b,listed_today:l})});
   return S._demoLeads=out}
 const WAWIN=[['7','Last 7 days'],['30','Last 30 days'],['90','Last 90 days'],['all','All time']];
@@ -1537,20 +1558,21 @@ function waData(){
   return{L,P,guests,hosts,reached,waB,reqs,issues};
 }
 function whatsapp(v){
-  const st=S.wa||(S.wa={type:'All',stage:'All',status:'All',q:'',sort:['created_at',-1],lim:25,win:'30'});if(!st.win)st.win='30';const W=waData(),f={...S.f,...waWin()};
+  const st=S.wa||(S.wa={type:'All',stage:'All',status:'All',q:'',sort:['created_at',-1],lim:25,win:'30',mode:'people',heat:'All',psort:'hot'});if(!st.win)st.win='30';if(!st.mode)Object.assign(st,{mode:'people',heat:'All',psort:'hot'});
+  if(!S.waSeenSession){S.waPrevSeen=+(store.get('jg_wa_seen')||0);store.set('jg_wa_seen',Date.now());S.waSeenSession=true}const W=waData(),f={...S.f,...waWin()};
   const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':Math.round(m/60)+' h ago'};
   // live strip
   v.append(h('div',{class:'s12 wa-live glass',id:'waStatus'},waStatusKids()));
   // KPIs (tap to filter the list below)
-  const booked=W.reached('Booked'),asked=W.guests.length,follow=W.guests.filter(l=>(['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)||l.asked_team)&&l.status!=='Lost'&&l.status!=='Won');
+  const PEOPLE=heatPeople(W.guests);const booked=W.reached('Booked'),asked=W.guests.length,follow=W.guests.filter(l=>(['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)||l.asked_team)&&l.status!=='Lost'&&l.status!=='Won');
   const k=(n,l,sub,fn)=>h('button',{class:'stat glass',onclick:fn||null,style:fn?{cursor:'pointer'}:null},h('b',{class:'num'},n),h('span',null,l),sub?h('small',{style:{color:'var(--muted)'}},sub):null);
-  const setL=p=>{Object.assign(st,{type:'All',stage:'All',status:'All',lim:25},p);render();setTimeout(()=>{const el=$('#waLeads');el&&el.scrollIntoView({behavior:calm()?'auto':'smooth'})},60)};
+  const setL=p=>{Object.assign(st,{type:'All',stage:'All',status:'All',heat:'All',lim:25},p);render();setTimeout(()=>{const el=$('#waLeads');el&&el.scrollIntoView({behavior:calm()?'auto':'smooth'})},60)};
   v.append(h('div',{class:'s12 stat-row wa-kpis'},
-    k(asked,'Guest enquiries',waWin().label,()=>setL({type:'Guests'})),
+    k(asked,'Guest enquiries',`from ${PEOPLE.length} ${PEOPLE.length===1?'person':'people'} · ${waWin().label.toLowerCase()}`,()=>setL({type:'Guests',mode:'people'})),
+    k(PEOPLE.filter(p=>p.label==='Hot').length,'🔥 Hot leads','stopped at payment or close to it',()=>setL({type:'Guests',mode:'people',heat:'Hot',psort:'hot'})),
     k(W.reached('Quoted'),'Got a price',asked?pct(W.reached('Quoted')/asked)+' of enquiries':'',()=>setL({type:'Guests',stage:'Quoted+'})),
     k(booked,'Booked via WhatsApp',asked?pct(booked/asked)+' conversion':'',()=>setL({type:'Guests',stage:'Booked'})),
     k(inrK(sum(W.waB.filter(b=>b.ok),b=>b.gross)),'WhatsApp revenue',`${W.waB.filter(b=>b.ok).length} direct bookings · no platform fee`),
-    k(follow.length,'Worth a follow-up','got a price or wants a call',()=>setL({type:'Guests',stage:'Follow-up'})),
     k(W.hosts.length,'Hosting leads',`${W.hosts.filter(l=>l.status==='New').length} new`,()=>setL({type:'Hosting'})),
     k(W.reqs.filter(r=>(r.status||'New')==='New').length,'Open requests','add-ons & cancellations'),
     k(W.issues.filter(m=>m.status!=='Closed').length,'Guest issues open','reported on WhatsApp',()=>go('ops'))));
@@ -1580,26 +1602,49 @@ function whatsapp(v){
   let dh;v.append(card('s6','When guests want to come',{hint:`check-in week · next ${nW} weeks`,acts:[btnPNG(()=>dh,'WhatsApp demand')]},
     h('div',{class:'legend'},h('span',null,h('i',{style:{background:css('--accent')}}),`Asked ${sum(askV,x=>x)}`),h('span',null,h('i',{style:{background:css('--ok')}}),`Booked ${sum(bkV,x=>x)}`)),
     dh=chart(w=>countBars(w,{cats:wks.map(d=>({label:fmtD(d),tip:`Week from ${fmtD(d,{weekday:'short',day:'numeric',month:'short'})}`})),series:[{name:'Asked',color:css('--accent'),vals:askV},{name:'Booked',color:css('--ok'),vals:bkV}],stack:false,hh:PHONE()?200:220}))));
-  // leads list with filters
+  // leads: grouped per person (default, hottest first) or every enquiry flat
   const ql=st.q.toLowerCase();
-  const stageOk=l=>st.stage==='All'||(st.stage==='Follow-up'?(['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)||l.asked_team)&&!['Won','Lost'].includes(l.status):st.stage.endsWith('+')?(STAGES.slice(STAGES.indexOf(st.stage.slice(0,-1))).includes(l.stage)):l.stage===st.stage);
-  let rows=W.P.filter(l=>(st.type==='All'||(st.type==='Hosting')===(l.kind==='owner'))&&(l.kind==='owner'?st.stage==='All':stageOk(l))&&(st.status==='All'||l.status===st.status)&&(!ql||[l.name,l.phone,l.pname,l.location,l.city].join(' ').toLowerCase().includes(ql)));
-  rows=sortBy(rows,st.sort);
   const q=h('input',{class:'search',type:'search',placeholder:'Search name, phone, stay…',value:st.q,id:'waQ',style:{flex:'1 1 200px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;render();const n=$('#waQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
   const selF=(val,opts,fn)=>{const s=h('select',{class:'btn sm'},opts.map(([v_,t])=>h('option',{value:v_,selected:v_===val||null},t)));s.addEventListener('change',()=>fn(s.value));return s};
-  const cols=[{t:'When',k:'created_at',m:1,f:l=>fmtD(l.day)+' '+String(l.created_at||'').slice(11,16)},{t:'Person',k:'name',f:l=>who(l.name||'Guest',phoneTxt(l.phone))},{t:'Type',k:'kind',f:l=>h('span',{class:'chip-s'},l.kind==='owner'?'🏠 Hosting':'🧳 Guest')},
-    {t:'Stay / location',k:'pname',f:l=>l.kind==='owner'?(l.location||'–'):h('div',{class:'who'},h('div',null,h('b',null,l.pname||'Any stay'),h('span',null,l.city)))},
-    {t:'Dates',k:'check_in',f:l=>l.check_in?`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`:(l.kind==='owner'?[l.property_type,l.bedrooms?l.bedrooms+' BR':''].filter(Boolean).join(' · '):'–')},
-    {t:'Guests',k:'guests',r:1,f:l=>l.guests||''},{t:'Price',k:'quoted',r:1,f:l=>l.quoted?inr(+l.quoted):''},{t:'Stage',k:'stage',f:l=>l.kind==='owner'?'':pillStage(l.stage)},{t:'Follow-up',k:'status',f:l=>[pillLs(l.status),l.asked_team?h('span',{class:'pill p-warn',style:{marginLeft:'4px'}},'📞 wants a call'):null]}];
-  v.append(card('s12','Leads',{id:'waLeads',hint:`${rows.length} of ${W.P.length} · ${waWin().label.toLowerCase()} · tap a row for the full journey`,acts:[btnExport(()=>exportRows(rows.map(l=>({When:l.created_at,Type:l.kind==='owner'?'Hosting':'Guest',Name:l.name,Phone:phoneTxt(l.phone),Stay:l.pname||l.location||'',City:l.city,'Check-in':l.check_in||'','Check-out':l.check_out||'',Guests:l.guests||'','Quoted ₹':l.quoted||'',Stage:l.stage||'',Status:l.status,'Asked for team':l.asked_team||''})),'WhatsApp leads'))]},
-    h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}},q,
-      h('div',{class:'seg'},['All','Guests','Hosting'].map(x=>h('button',{'aria-pressed':st.type===x,onclick:()=>{st.type=x;st.lim=25;render()}},x))),
-      selF(st.stage,[['All','Any stage'],['Follow-up','Worth a follow-up'],['Viewed','Opened a stay'],['Asked','Asked'],['Quoted','Quoted'],['Quoted+','Quoted or further'],['Requested','Special request'],['Held','Held'],['Booked','Booked'],['Expired','Expired'],['Cancelled','Cancelled']],x=>{st.stage=x;st.lim=25;render()}),
-      selF(st.status,[['All','Any follow-up status'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()})),
-    rows.length?table(cols,rows.slice(0,st.lim),{sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openLead,card:l=>[mTop(h('span',{class:'av',style:{background:avc(l.name||'G')}},ini(l.name||'G')),l.name||'Guest',`${l.kind==='owner'?'🏠 Hosting':'🧳 '+(l.pname||'Guest')} · ${fmtD(l.day)}`,l.kind==='owner'?pillLs(l.status):pillStage(l.stage)),
-      h('div',{class:'mfoot'},l.check_in?h('span',{class:'chip-s date'},`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`):l.location?h('span',{class:'chip-s'},l.location):null,l.quoted?h('span',{class:'chip-s'},inr(+l.quoted)):null,h('span',{class:'grow'}),pillLs(l.status))]})
-      :h('div',{class:'empty'},'No leads match. Try another period or clear the filters.'),
-    rows.length>st.lim?h('button',{class:'btn',style:{alignSelf:'center'},onclick:()=>{st.lim+=25;render()}},`Show more (${rows.length-st.lim})`):null));
+  const modeSeg=h('div',{class:'seg'},[['people','People'],['all','All enquiries']].map(([m,t])=>h('button',{'aria-pressed':st.mode===m,onclick:()=>{st.mode=m;st.lim=25;render()}},t)));
+  const typeSeg=h('div',{class:'seg'},['All','Guests','Hosting'].map(x=>h('button',{'aria-pressed':st.type===x,onclick:()=>{st.type=x;st.lim=25;render()}},x)));
+  if(st.mode!=='all'){
+    const seen=S.waPrevSeen||0;
+    let people=heatPeople(W.P).filter(p=>(st.type==='All'||(st.type==='Hosting')===p.host)&&(st.heat==='All'||p.label===st.heat)&&(st.status==='All'||p.status===st.status)
+      &&(!ql||p.rows.map(l=>[l.name,l.phone,l.pname,l.location,l.city].join(' ')).join(' ').toLowerCase().includes(ql)));
+    people.sort(st.psort==='recent'?(a,b)=>b.last.localeCompare(a.last):(a,b)=>(b.score-a.score)||b.last.localeCompare(a.last));
+    const counts={};heatPeople(W.P).forEach(p=>counts[p.label]=(counts[p.label]||0)+1);
+    const pcardEl=p=>{const l=p.top,isNew=seen>0&&actDate(p.last).getTime()>seen,stay=p.host?(l.location||'Property owner'):(l.pname||l.city||'Any stay');
+      return h('button',{class:'person heat-'+p.label.toLowerCase(),onclick:()=>openPerson(p)},
+        h('div',{class:'p-top'},h('span',{class:'av',style:{background:avc(l.name||'G')}},ini(l.name||'G')),
+          h('div',{class:'p-id'},h('b',null,l.name||'Guest',isNew?h('i',{class:'newdot','aria-label':'new activity'}):null),h('span',null,phoneTxt(l.phone))),heatPill(p.label)),
+        h('div',{class:'p-why'},p.why.slice(0,3).join(' · ')),
+        h('div',{class:'p-latest'},h('span',{class:'chip-s'},(p.host?'🏠 ':'🧳 ')+stay),l.check_in?h('span',{class:'chip-s date'},`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`):null,l.quoted?h('span',{class:'chip-s'},inr(+l.quoted)):null,p.host?null:pillStage(l.stage)),
+        h('div',{class:'p-foot'},h('span',null,`${p.rows.length} enquir${p.rows.length===1?'y':'ies'} · active ${agoTxt(actDate(p.last))}`),pillLs(p.status)))};
+    v.append(card('s12','Leads by person',{id:'waLeads',hint:`${people.length} people · ${waWin().label.toLowerCase()} · ${st.psort==='recent'?'most recent first':'hottest first'} · 🔵 = new since your last visit`,
+      acts:[btnExport(()=>exportRows(people.map(p=>({Heat:p.label,Why:p.why.join('; '),Name:p.latest.name,Phone:phoneTxt(p.latest.phone),Enquiries:p.rows.length,'Last active':p.last,'Latest stay':p.latest.pname||p.latest.location||'','Check-in':p.latest.check_in||'','Quoted ₹':p.latest.quoted||'',Stage:p.latest.stage||'','Follow-up':p.status})),'WhatsApp leads by person'))]},
+      h('div',{class:'lead-ctl'},modeSeg,typeSeg,h('div',{class:'seg'},[['hot','Hottest'],['recent','Recent']].map(([m,t])=>h('button',{'aria-pressed':(st.psort||'hot')===m,onclick:()=>{st.psort=m;render()}},t)))),
+      h('div',{class:'lead-ctl'},q,selF(st.heat,[['All','Any heat'],...['Hot','Warm','Cool','Booked','Won','Lost'].filter(x=>counts[x]).map(x=>[x,`${HEAT[x][0]} ${x} (${counts[x]})`])],x=>{st.heat=x;st.lim=25;render()}),
+        selF(st.status,[['All','Any follow-up'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()})),
+      people.length?h('div',{class:'people'},people.slice(0,st.lim).map(pcardEl)):h('div',{class:'empty'},'No one matches. Try another window or clear the filters.'),
+      people.length>st.lim?h('button',{class:'btn',style:{alignSelf:'center'},onclick:()=>{st.lim+=25;render()}},`Show more (${people.length-st.lim})`):null));
+  }else{
+    const stageOk=l=>st.stage==='All'||(st.stage==='Follow-up'?(['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)||l.asked_team)&&!['Won','Lost'].includes(l.status):st.stage.endsWith('+')?(STAGES.slice(STAGES.indexOf(st.stage.slice(0,-1))).includes(l.stage)):l.stage===st.stage);
+    let rows=W.P.filter(l=>(st.type==='All'||(st.type==='Hosting')===(l.kind==='owner'))&&(l.kind==='owner'?st.stage==='All':stageOk(l))&&(st.status==='All'||l.status===st.status)&&(!ql||[l.name,l.phone,l.pname,l.location,l.city].join(' ').toLowerCase().includes(ql)));
+    rows=sortBy(rows.map(l=>({...l,last_active:lastAct(l)})),st.sort[0]==='created_at'?['last_active',st.sort[1]]:st.sort);
+    const cols=[{t:'Last active',k:'created_at',m:1,f:l=>fmtD(l.last_active.slice(0,10))+' '+l.last_active.slice(11,16)},{t:'Person',k:'name',f:l=>who(l.name||'Guest',phoneTxt(l.phone))},{t:'Type',k:'kind',f:l=>h('span',{class:'chip-s'},l.kind==='owner'?'🏠 Hosting':'🧳 Guest')},
+      {t:'Stay / location',k:'pname',f:l=>l.kind==='owner'?(l.location||'–'):h('div',{class:'who'},h('div',null,h('b',null,l.pname||'Any stay'),h('span',null,l.city)))},
+      {t:'Dates',k:'check_in',f:l=>l.check_in?`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`:(l.kind==='owner'?[l.property_type,l.bedrooms?l.bedrooms+' BR':''].filter(Boolean).join(' · '):'–')},
+      {t:'Guests',k:'guests',r:1,f:l=>l.guests||''},{t:'Price',k:'quoted',r:1,f:l=>l.quoted?inr(+l.quoted):''},{t:'Stage',k:'stage',f:l=>l.kind==='owner'?'':pillStage(l.stage)},{t:'Follow-up',k:'status',f:l=>[pillLs(l.status),l.asked_team?h('span',{class:'pill p-warn',style:{marginLeft:'4px'}},'📞 wants a call'):null]}];
+    v.append(card('s12','All enquiries',{id:'waLeads',hint:`${rows.length} of ${W.P.length} · ${waWin().label.toLowerCase()} · tap a row for details`,acts:[btnExport(()=>exportRows(rows.map(l=>({'Last active':l.last_active,Type:l.kind==='owner'?'Hosting':'Guest',Name:l.name,Phone:phoneTxt(l.phone),Stay:l.pname||l.location||'',City:l.city,'Check-in':l.check_in||'','Check-out':l.check_out||'',Guests:l.guests||'','Quoted ₹':l.quoted||'','Times asked':l.times_asked||1,Stage:l.stage||'',Status:l.status,'Asked for team':l.asked_team||''})),'WhatsApp enquiries'))]},
+      h('div',{class:'lead-ctl'},modeSeg,typeSeg),
+      h('div',{class:'lead-ctl'},q,selF(st.stage,[['All','Any stage'],['Follow-up','Worth a follow-up'],['Viewed','Opened a stay'],['Asked','Asked'],['Quoted','Quoted'],['Quoted+','Quoted or further'],['Requested','Special request'],['Held','Held'],['Booked','Booked'],['Expired','Expired'],['Cancelled','Cancelled']],x=>{st.stage=x;st.lim=25;render()}),
+        selF(st.status,[['All','Any follow-up'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()})),
+      rows.length?table(cols,rows.slice(0,st.lim),{sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openLead,card:l=>[mTop(h('span',{class:'av',style:{background:avc(l.name||'G')}},ini(l.name||'G')),l.name||'Guest',`${l.kind==='owner'?'🏠 Hosting':'🧳 '+(l.pname||'Guest')} · ${fmtD(l.last_active.slice(0,10))}`,l.kind==='owner'?pillLs(l.status):pillStage(l.stage)),
+        h('div',{class:'mfoot'},l.check_in?h('span',{class:'chip-s date'},`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`):l.location?h('span',{class:'chip-s'},l.location):null,l.quoted?h('span',{class:'chip-s'},inr(+l.quoted)):null,h('span',{class:'grow'}),pillLs(l.status))]})
+        :h('div',{class:'empty'},'No enquiries match. Try another window or clear the filters.'),
+      rows.length>st.lim?h('button',{class:'btn',style:{alignSelf:'center'},onclick:()=>{st.lim+=25;render()}},`Show more (${rows.length-st.lim})`):null));
+  }
   // requests, issues, bookings
   const rq=sortBy(W.reqs,['created_at',-1]).slice(0,8);
   v.append(card('s4','Requests',{hint:'add-ons & cancellations from guests'},rq.length?h('div',{class:'mlist'},rq.map(r=>h('div',{class:'mcard'},mTop(h('span',{class:'av',style:{background:'var(--accent)'}},r.addon==='Cancellation'?'✕':'＋'),r.addon||'Request',`${r.booking_id||'–'} · ${phoneTxt(r.phone)}${r.details?' · '+r.details:''}`,(r.status||'New')==='New'&&S.admin&&r.request_id?h('button',{class:'btn sm',onclick:()=>save('requests','update',{match:{request_id:r.request_id},fields:{status:'Done'}},'Request marked done')},'Done'):h('span',{class:'pill p-mute'},r.status||'New'))))):h('div',{class:'empty'},'No requests in this period.')));
@@ -1614,6 +1659,62 @@ function whatsapp(v){
     h('li',null,'Don’t send promotions or broadcasts to these numbers unless the person agreed to receive them.'),
     h('li',null,'If someone asks you to delete their data, open their lead and use “Delete lead”. Bookings stay (tax records). The bot also does this when they type DELETE MY DATA.'),
     h('li',null,'Keep this dashboard private: only enter the access key on your own devices; use Disconnect on any device you stop using.'))));
+}
+/* ============ people: enquiries grouped per person, ranked by how hot they are ============
+   Same scoring as the bot's #leads: stopping at payment (held / hold expired) ranks highest, then special requests,
+   asking for a call, a price, repeat interest, a near check-in; recent activity lifts, old activity cools. */
+const STAGE_HEAT={Viewed:10,Asked:25,Quoted:45,Cancelled:55,Requested:70,Held:85,Expired:90};
+const lastAct=l=>String(l.last_active_at||l.stage_at||l.created_at||'');
+const actDate=s=>new Date(s.length<=10?s+'T12:00':s);
+const HEAT={Hot:['🔥','p-bad','Hot'],Warm:['🟠','p-warn','Warm'],Cool:['⚪','p-mute','Cool'],Booked:['✅','p-ok','Booked'],Won:['✅','p-ok','Won'],Lost:['✖','p-mute','Lost']};
+const heatPill=lb=>h('span',{class:'pill heat '+HEAT[lb][1]},HEAT[lb][0]+' '+HEAT[lb][2]);
+function heatPeople(leads){
+  const by={};leads.forEach(l=>{const k=String(l.phone||'').replace(/\D/g,'').slice(-10)||('id:'+l.lead_id);(by[k]=by[k]||[]).push(l)});
+  return Object.entries(by).map(([key,rs])=>{
+    rs.sort((a,b)=>lastAct(b).localeCompare(lastAct(a)));
+    const host=rs.every(l=>l.kind==='owner'),why=[],stays=rs.filter(l=>l.kind!=='owner');let best=0,top=null;
+    const open=stays.filter(l=>l.stage!=='Booked'),booked=stays.filter(l=>l.stage==='Booked');
+    stays.forEach(l=>{const t=+l.times_asked||1,dd=l.check_in?diff(TODAY,l.check_in):null,soon=dd!=null&&dd>=0&&dd<=14&&l.stage!=='Booked';
+      const sc=(STAGE_HEAT[l.stage]||0)+(l.asked_team?15:0)+(t>1?10:0)+(soon?10:0);if(l.stage!=='Booked'&&sc>best){best=sc;top=l}
+      [{Expired:'stopped at payment (hold expired)',Held:'holding dates - not paid yet',Requested:'special request waiting for you',Cancelled:'released the held dates',Quoted:'got a price'}[l.stage],
+       l.asked_team?'asked for a call':null,t>1?`asked ${t}×`:null,soon?`check-in in ${dd} day${dd===1?'':'s'}`:null].forEach(x=>{if(x&&!why.includes(x))why.push(x)})});
+    const age=diff(lastAct(rs[0]).slice(0,10)||TODAY,TODAY),status=rs[0].status||'New';
+    if(!host){best+=age<=1?15:age<=3?8:age>14?-20:0;best+=Math.min(10,5*(open.length-1))}
+    const RANK=['stopped at payment','holding dates','special request','asked for a call','released','got a price','asked ','check-in'];
+    why.sort((a,b)=>{const r=x=>{const i=RANK.findIndex(k=>x.startsWith(k));return i<0?99:i};return r(a)-r(b)});
+    if(open.length>1)why.push(`${open.length} open enquiries`);
+    let label;
+    if(host){label=status==='Won'?'Won':status==='Lost'?'Lost':status==='New'&&age<=7?'Hot':'Warm';if(!why.length)why.push(status==='New'?'new property-owner lead':status.toLowerCase())}
+    else if(status==='Lost')label='Lost';else if(status==='Won'||(!open.length&&booked.length))label='Booked';else label=best>=80?'Hot':best>=45?'Warm':'Cool';
+    if(!why.length)why.push(label==='Booked'?'booked':'browsing');
+    return{key,rows:rs,latest:rs[0],top:top||rs[0],last:lastAct(rs[0]),score:host?(label==='Hot'?75:40):label==='Booked'?-1:best,label,why,host,open,booked,status}});
+}
+/* several sheet updates as one action: shown at once, one message, stops on the first refusal */
+async function saveMany(tab,items,msg){for(const[match,fields]of items){const ok=await save(tab,'update',{match,fields},null);if(!ok)return false}if(items.length)toast(msg+(live()?' ✓':' · demo only'));return true}
+function openPerson(p){
+  const l=p.latest,dig=p.key,same=x=>dig&&String(x.phone||'').replace(/\D/g,'').slice(-10)===dig;
+  const bks=D.B.filter(same),reqs=(S.data.requests||[]).filter(same),tix=D.M.filter(same);
+  const real=live()?(S.data.leads||[]):[];const isReal=p.rows.some(r=>real.find(x=>x.lead_id===r.lead_id));
+  const notes=h('textarea',{rows:3,placeholder:'Notes for the team (e.g. called, wants 10% off for 4 nights)…',style:{width:'100%',borderRadius:'12px',padding:'10px',border:'1px solid var(--hair-2)',background:'var(--glass)'}});notes.value=p.rows.map(r=>r.owner_notes).find(Boolean)||'';
+  const setStatus=s=>{if(!isReal){toast('Demo lead - connect live data to update real leads');return}closeLayer();saveMany('leads',p.rows.filter(r=>r.lead_id).map(r=>[{lead_id:r.lead_id},{status:s}]),`${l.name||'Guest'} marked ${s}`)};
+  const days={};p.rows.forEach(r=>{const d0=lastAct(r).slice(0,10)||'?';(days[d0]=days[d0]||[]).push(r)});
+  const item=r=>h('button',{class:'tl-item',onclick:()=>openLead(r)},
+    h('div',{class:'tl-top'},r.kind==='owner'?h('span',{class:'chip-s'},'🏠 Hosting'):pillStage(r.stage),h('b',null,r.kind==='owner'?(r.location||'Property owner'):(r.pname||r.city||'Any stay')),h('span',{class:'tl-time'},String(lastAct(r)).slice(11,16))),
+    h('div',{class:'tl-meta'},[r.check_in?`${fmtD(r.check_in)} → ${fmtD(r.check_out)}`:'',r.guests?`${r.guests} guests`:'',r.quoted?inr(+r.quoted):'',(+r.times_asked||1)>1?`asked ${r.times_asked}×`:'',r.asked_team?'📞 wants a call':'',r.notes&&/unavailable|not possible/.test(r.notes)?r.notes:''].filter(Boolean).join(' · ')||'opened the chat'));
+  $('#layer').replaceChildren(h('div',{class:'scrim',onclick:closeLayer}),h('aside',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':'Person '+(l.name||'')},h('div',{class:'in'},
+    h('div',{class:'body'},h('button',{class:'x','aria-label':'Close',onclick:closeLayer,style:{position:'absolute',top:'14px',right:'14px'}},'✕'),
+      h('div',{class:'tags'},heatPill(p.label),pillLs(p.status),p.host?h('span',{class:'chip-s'},'🏠 Hosting lead'):h('span',{class:'chip-s'},`🧳 ${p.rows.length} enquir${p.rows.length===1?'y':'ies'}`)),
+      h('h2',null,l.name||'Guest'),h('div',{style:{color:'var(--muted)'}},`${phoneTxt(l.phone)} · last active ${agoTxt(actDate(p.last))}`),
+      h('div',{class:'why-box'},h('b',null,p.label==='Hot'?'Why this is hot':'Signals'),h('ul',null,p.why.map(w=>h('li',null,w)))),
+      l.phone?h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap',margin:'10px 0'}},h('a',{class:'btn sm primary',href:waLink(l.phone),target:'_blank',rel:'noopener'},'Open WhatsApp chat'),h('a',{class:'btn sm',href:'tel:'+phoneTxt(l.phone)},'Call')):null,
+      S.admin?h('div',null,h('h3',{style:{margin:'12px 0 6px'}},'Follow-up (applies to all their enquiries)'),h('div',{class:'seg'},LSTAT.map(s=>h('button',{'aria-pressed':p.status===s,onclick:()=>setStatus(s)},s))),
+        h('div',{style:{marginTop:'10px'}},notes),h('div',{class:'row',style:{gap:'8px',marginTop:'8px'}},h('button',{class:'btn sm',onclick:()=>{if(!isReal){toast('Demo lead - connect live data to save notes');return}closeLayer();save('leads','update',{match:{lead_id:l.lead_id},fields:{owner_notes:notes.value.trim()}},'Notes saved')}},'Save notes'))):null,
+      h('h3',{style:{margin:'16px 0 6px'}},'Timeline'),
+      h('div',{class:'timeline'},Object.keys(days).sort().reverse().map(d0=>h('div',{class:'tl-day'},h('div',{class:'tl-date'},d0==='?'?'Earlier':d0===TODAY?'Today':d0===add(TODAY,-1)?'Yesterday':fmtD(d0,{weekday:'short',day:'numeric',month:'short'})),days[d0].map(item)))),
+      (bks.length||reqs.length||tix.length)?h('div',null,h('h3',{style:{margin:'16px 0 6px'}},'Also from this number'),h('div',{class:'mlist'},
+        ...bks.slice(0,4).map(b=>h('button',{class:'mcard',onclick:()=>openBooking(b)},mTop(h('span',{class:'av',style:{background:'var(--ok)'}},'B'),`${b.booking_id} · ${short(b.pname)}`,`${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.status}`,null))),
+        ...reqs.slice(0,3).map(r=>h('div',{class:'mcard'},mTop(h('span',{class:'av',style:{background:'var(--accent)'}},'R'),r.addon,`${r.booking_id||''} · ${r.status||'New'}`,null))),
+        ...tix.slice(0,3).map(m=>h('div',{class:'mcard'},mTop(h('span',{class:'av',style:{background:'var(--warn)'}},'!'),m.issue,`${m.ticket_id} · ${m.status}`,null))))):null))));
 }
 function openLead(l){
   const related=(arr,fn)=>arr.filter(fn);const dig=String(l.phone||'').replace(/\D/g,'').slice(-10),same=x=>dig&&String(x.phone||'').replace(/\D/g,'').slice(-10)===dig;
