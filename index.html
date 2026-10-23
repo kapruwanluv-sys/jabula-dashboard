@@ -611,7 +611,7 @@ body:not(.is-admin) .admin{display:none!important}
 .live-badge.offline{color:var(--warn)}
 @media (max-width:760px){.live-badge{padding:0 10px;font-size:12px}}
 .light{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--hair);border:0;font:inherit;color:inherit;cursor:default}
-button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{color:var(--muted);font-size:12.5px}
+button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{color:var(--muted);font-size:12.5px}.wa-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-basis:100%}
 @media (prefers-reduced-motion:reduce){.live-badge.live .lb-dot,.light.live i{animation:none}}
 /* live data, WhatsApp tab */
 .btn.danger{background:var(--bad,#d93a2b);color:#fff;border-color:transparent}.btn.danger-t{color:var(--bad,#d93a2b)}
@@ -1016,7 +1016,7 @@ function renderFilters(){
     open?body():null)};
   const cb=(checked,label,on,sw)=>h('label',null,h('input',{type:'checkbox',checked:checked||null,onchange:on}),sw?h('span',{class:'sw',style:{background:sw}}):null,label);
   const rb=(name,checked,label,on)=>h('label',null,h('input',{type:'radio',name,checked:checked||null,onchange:on}),label);
-  if(!['desk','calendar'].includes(S.view))bar.append(seg('period','period','Period',rangeLabel(),()=>{
+  if(!['desk','calendar','whatsapp'].includes(S.view))bar.append(seg('period','period','Period',rangeLabel(),()=>{
     const a=h('input',{type:'date',class:'date',value:f.from,'aria-label':'From'}),z=h('input',{type:'date',class:'date',value:f.to,'aria-label':'To',min:f.from});
     a.addEventListener('change',()=>{if(a.value&&a.value<=z.value)setF({preset:'custom',from:a.value})});z.addEventListener('change',()=>{if(z.value&&z.value>=a.value)setF({preset:'custom',to:z.value})});
     return panel('Period',PRESETS.filter(([k])=>k!=='custom').map(([k,l])=>rb('per',f.preset===k,l,()=>{applyPreset(k);saveF();S.pop=null;render()})),h('div',{class:'grp'},'Custom range'),h('div',{class:'dates'},a,h('span',{class:'range-label'},'to'),z))}));
@@ -1440,7 +1440,7 @@ function lastBotActivity(){if(!live())return null;const ts=[];
   (S.data.leads||[]).forEach(l=>{ts.push(l.stage_at,l.created_at)});(S.data.requests||[]).forEach(r=>ts.push(r.created_at));
   (S.data.bookings||[]).filter(b=>b.source==='WhatsApp').forEach(b=>ts.push(b.submitted_at));
   (S.data.maint||[]).filter(m=>m.source==='WhatsApp').forEach(m=>ts.push(m.reported_at?new Date(+m.reported_at*1000).toISOString().slice(0,16):m.reported_on));
-  const v=ts.filter(Boolean).map(String).sort().pop();return v?new Date(v.length<=10?v+'T12:00':v):null}
+  const now=new Date(),v=ts.filter(Boolean).map(String).map(x=>new Date(x.length<=10?x+'T12:00':x)).filter(d=>!isNaN(d)&&d<=now).sort((a,b)=>a-b).pop();return v||null}
 const agoTxt=d=>{if(!d)return'–';const m=Math.round((Date.now()-d)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
 function statusBits(){const s=liveState(),hm=d=>d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
   const sheet={live:['live','Live',`Live sheet · updated ${agoTxt(LIVE.okAt)}`],offline:['offline','Offline',`Can’t reach the sheet${LIVE.err?' ('+LIVE.err+')':''} · showing data from ${hm(S.loadedAt)}`],demo:['demo','Demo · Connect','Demo data on this device · tap to connect']}[s];
@@ -1451,9 +1451,13 @@ function paintStatus(){const b=$('#liveBadge');if(!b||!D)return;const{s,sheet}=s
   const w=$('#waStatus');if(w)w.replaceChildren(...waStatusKids())}
 function waStatusKids(){const{s,sheet,bot}=statusBits(),act=lastBotActivity();
   const light=(cls,label,tip,onclick)=>h(onclick?'button':'span',{class:'light '+cls,'data-tip':tip,onclick:onclick||null},h('i'),h('b',null,label));
+  const ff=S.f,act2=[...ff.cities,...ff.props.map(id=>D.P[id]?short(D.P[id].property):id)];
+  const hm=d=>d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
+  const win=h('div',{class:'seg',role:'group','aria-label':'Activity window'},WAWIN.map(([k,l])=>h('button',{'aria-pressed':(S.wa&&S.wa.win||'30')===k,onclick:()=>{(S.wa||(S.wa={})).win=k;render()}},l.replace('Last ',''))));
   return[light(sheet[0],'Sheet: '+(s==='live'?'live':s==='offline'?'offline':'demo'),sheet[2],s==='demo'?connectModal:s==='offline'?()=>manualRefresh():null),
     light(bot[0],bot[1],bot[2],()=>{BOT.state='checking';paintStatus();checkBot()}),
-    s==='live'?h('span',{class:'light-note'},`Last bot activity ${agoTxt(act)} · sheet updated ${agoTxt(LIVE.okAt)} · auto-refresh every 2 min`):h('span',{class:'light-note'},s==='demo'?'Showing sample enquiries. Connect to see the real bot.':'Showing the last data until the sheet answers again.'),
+    s==='live'?h('span',{class:'light-note'},`Data as of ${hm(new Date(LIVE.okAt))} · last bot activity ${agoTxt(act)} · auto-refresh every 2 min`):h('span',{class:'light-note'},s==='demo'?'Showing sample enquiries. Connect to see the real bot.':'Showing the last data until the sheet answers again.'),
+    h('div',{class:'wa-row'},h('span',{class:'light-note'},'Showing activity:'),win,act2.length?h('span',{class:'chip-s'},'Filtered: '+act2.join(', ')):h('span',{class:'light-note'},'All stays'),act2.length?h('button',{class:'btn sm',onclick:()=>setF({cities:[],props:[]})},'Clear filters'):null),
     h('span',{class:'grow'}),s==='demo'?h('button',{class:'btn sm primary',onclick:connectModal},'Connect live data'):h('button',{class:'btn sm',onclick:()=>{manualRefresh();BOT.state='checking';checkBot()}},'Refresh')]}
 
 /* ============ WHATSAPP: live summary of what the bot is doing ============ */
@@ -1467,8 +1471,10 @@ function demoLeads(){ /* demo mode only: sample enquiries so the tab shows how i
     out.push({lead_id:'LDDEMO'+i,created_at:day+'T1'+(i%10)+':0'+(i%6),kind:'stay',name:names[i%names.length],phone:'+9190000'+String(10000+i*37).slice(-5),status:st==='Booked'?'Won':i%4?'New':'Contacted',stage:st,stage_at:day+'T18:00',property_id:p.property_id,check_in:ci,check_out:add(ci,2+(i%3)),guests:2+(i%4),quoted:Math.round((p.base_rate*(2+(i%3))+p.cleaning_fee)*.95/10)*10,asked_team:i%9===0?'yes':'',city:p.city})}
   ['Landour, Mussoorie|Villa|3|Already on Airbnb','Rajpur Road, Dehradun|Apartment|2|New to renting','Tapovan, Rishikesh|Cottage|1|Booking.com'].forEach((x,i)=>{const[a,t,b,l]=x.split('|');out.push({lead_id:'LDHOST'+i,created_at:add(TODAY,-i*4)+'T11:00',kind:'owner',name:['Neha Arora','Vikram Rawat','Sunil Negi'][i],phone:'+9198000'+(20000+i),status:['New','Contacted','Won'][i],location:a,property_type:t,bedrooms:b,listed_today:l})});
   return S._demoLeads=out}
+const WAWIN=[['7','Last 7 days'],['30','Last 30 days'],['90','Last 90 days'],['all','All time']];
+function waWin(){const w=(S.wa&&S.wa.win)||'30';return w==='all'?{from:'2000-01-01',to:TODAY,label:'All time'}:{from:add(TODAY,-(+w-1)),to:TODAY,label:WAWIN.find(x=>x[0]===w)[1]}}
 function waData(){
-  const f=S.f,raw=live()?(S.data.leads||[]):demoLeads();
+  const f={...S.f,...waWin()},raw=live()?(S.data.leads||[]):demoLeads();
   const L=raw.filter(l=>l.phone||l.name).map(l=>{const p=D.P[l.property_id];return{...l,day:String(l.created_at||'').slice(0,10),stage:l.kind==='owner'?null:(l.stage||'Asked'),status:l.status||'New',pname:p?short(p.property):'',city:p?p.city:(l.city||''),area:p?p.area:''}});
   const inP=l=>l.day>=f.from&&l.day<=f.to,inCity=l=>!f.cities.length||!l.city||f.cities.includes(l.city),inProp=l=>!f.props.length||f.props.includes(l.property_id);
   const P=L.filter(l=>inP(l)&&inCity(l)&&(l.kind==='owner'||inProp(l)));
@@ -1480,7 +1486,7 @@ function waData(){
   return{L,P,guests,hosts,reached,waB,reqs,issues};
 }
 function whatsapp(v){
-  const st=S.wa||(S.wa={type:'All',stage:'All',status:'All',q:'',sort:['created_at',-1],lim:25});const W=waData(),f=S.f;
+  const st=S.wa||(S.wa={type:'All',stage:'All',status:'All',q:'',sort:['created_at',-1],lim:25,win:'30'});if(!st.win)st.win='30';const W=waData(),f={...S.f,...waWin()};
   const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':Math.round(m/60)+' h ago'};
   // live strip
   v.append(h('div',{class:'s12 wa-live glass',id:'waStatus'},waStatusKids()));
@@ -1489,7 +1495,7 @@ function whatsapp(v){
   const k=(n,l,sub,fn)=>h('button',{class:'stat glass',onclick:fn||null,style:fn?{cursor:'pointer'}:null},h('b',{class:'num'},n),h('span',null,l),sub?h('small',{style:{color:'var(--muted)'}},sub):null);
   const setL=p=>{Object.assign(st,{type:'All',stage:'All',status:'All',lim:25},p);render();setTimeout(()=>{const el=$('#waLeads');el&&el.scrollIntoView({behavior:calm()?'auto':'smooth'})},60)};
   v.append(h('div',{class:'s12 stat-row'},
-    k(asked,'Guest enquiries',rangeLabel(),()=>setL({type:'Guests'})),
+    k(asked,'Guest enquiries',waWin().label,()=>setL({type:'Guests'})),
     k(W.reached('Quoted'),'Got a price',asked?pct(W.reached('Quoted')/asked)+' of enquiries':'',()=>setL({type:'Guests',stage:'Quoted+'})),
     k(booked,'Booked via WhatsApp',asked?pct(booked/asked)+' conversion':'',()=>setL({type:'Guests',stage:'Booked'})),
     k(inrK(sum(W.waB.filter(b=>b.ok),b=>b.gross)),'WhatsApp revenue',`${W.waB.filter(b=>b.ok).length} direct bookings · no platform fee`),
@@ -1498,7 +1504,7 @@ function whatsapp(v){
     k(W.reqs.filter(r=>(r.status||'New')==='New').length,'Open requests','add-ons & cancellations'),
     k(W.issues.filter(m=>m.status!=='Closed').length,'Guest issues open','reported on WhatsApp',()=>go('ops'))));
   // trend: enquiries per day/week, split by outcome
-  const days=diff(f.from,f.to)+1,wk=days>45,keys=[];for(let d=f.from;d<=f.to;d=add(d,wk?7:1))keys.push(d);
+  const tf=st.win==='all'?(W.guests.map(l=>l.day).filter(Boolean).sort()[0]||add(TODAY,-29)):f.from;const days=diff(tf,f.to)+1,wk=days>45,keys=[];for(let d=tf;d<=f.to;d=add(d,wk?7:1))keys.push(d);
   const bucket=l=>{let i=keys.length-1;while(i>0&&l.day<keys[i])i--;return i};
   const ser=[['Booked','--ok',l=>l.stage==='Booked'],['In progress','--accent',l=>['Asked','Quoted','Held','Requested'].includes(l.stage)],['Dropped','--hair-2',l=>ENDED.includes(l.stage)]].map(([name,c,fn])=>{const vals=keys.map(()=>0);W.guests.filter(fn).forEach(l=>vals[bucket(l)]++);return{name,color:css(c),vals}});
   let th;v.append(card('s8','Enquiries over time',{hint:`per ${wk?'week':'day'} · green = booked · blue = still deciding · grey = dropped`,acts:[btnPNG(()=>th,'WhatsApp enquiries')]},
@@ -1529,7 +1535,7 @@ function whatsapp(v){
     {t:'Stay / location',k:'pname',f:l=>l.kind==='owner'?(l.location||'–'):h('div',{class:'who'},h('div',null,h('b',null,l.pname||'Any stay'),h('span',null,l.city)))},
     {t:'Dates',k:'check_in',f:l=>l.check_in?`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`:(l.kind==='owner'?[l.property_type,l.bedrooms?l.bedrooms+' BR':''].filter(Boolean).join(' · '):'–')},
     {t:'Guests',k:'guests',r:1,f:l=>l.guests||''},{t:'Price',k:'quoted',r:1,f:l=>l.quoted?inr(+l.quoted):''},{t:'Stage',k:'stage',f:l=>l.kind==='owner'?'':pillStage(l.stage)},{t:'Follow-up',k:'status',f:l=>pillLs(l.status)}];
-  v.append(card('s12','Leads',{id:'waLeads',hint:`${rows.length} of ${W.P.length} in ${rangeLabel()} · tap a row for the full journey`,acts:[btnExport(()=>exportRows(rows.map(l=>({When:l.created_at,Type:l.kind==='owner'?'Hosting':'Guest',Name:l.name,Phone:phoneTxt(l.phone),Stay:l.pname||l.location||'',City:l.city,'Check-in':l.check_in||'','Check-out':l.check_out||'',Guests:l.guests||'','Quoted ₹':l.quoted||'',Stage:l.stage||'',Status:l.status,'Asked for team':l.asked_team||''})),'WhatsApp leads'))]},
+  v.append(card('s12','Leads',{id:'waLeads',hint:`${rows.length} of ${W.P.length} · ${waWin().label.toLowerCase()} · tap a row for the full journey`,acts:[btnExport(()=>exportRows(rows.map(l=>({When:l.created_at,Type:l.kind==='owner'?'Hosting':'Guest',Name:l.name,Phone:phoneTxt(l.phone),Stay:l.pname||l.location||'',City:l.city,'Check-in':l.check_in||'','Check-out':l.check_out||'',Guests:l.guests||'','Quoted ₹':l.quoted||'',Stage:l.stage||'',Status:l.status,'Asked for team':l.asked_team||''})),'WhatsApp leads'))]},
     h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}},q,
       h('div',{class:'seg'},['All','Guests','Hosting'].map(x=>h('button',{'aria-pressed':st.type===x,onclick:()=>{st.type=x;st.lim=25;render()}},x))),
       selF(st.stage,[['All','Any stage'],['Follow-up','Worth a follow-up'],['Asked','Asked'],['Quoted','Quoted'],['Quoted+','Quoted or further'],['Requested','Special request'],['Held','Held'],['Booked','Booked'],['Expired','Expired'],['Cancelled','Cancelled']],x=>{st.stage=x;st.lim=25;render()}),
