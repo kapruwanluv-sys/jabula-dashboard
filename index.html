@@ -5,8 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f8fc">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dashboard">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="robots" content="noindex,nofollow">
-<title>Jabula Getaways</title>
+<title>Host Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://images.unsplash.com">
@@ -701,6 +707,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
         <input type="file" id="xlsxIn" accept=".xlsx,.xls" hidden>
         <button class="btn sm admin" id="resetDemo">Reset demo</button>
       </div></div>
+      <div id="installBox" hidden><h3>App</h3><div class="row" style="margin-top:8px;align-items:center"><button class="btn sm primary" id="installBtn" type="button" hidden>Install app</button><span class="foot-note" id="installNote" style="margin:0"></span></div></div>
       <div class="foot-note" id="menuNote"></div>
     </div>
   </header>
@@ -1835,6 +1842,19 @@ $('#connectBtn').addEventListener('click',()=>{setMenu(false);live()?confirmBox(
 if(CONFIG.API_URL&&!LIVE.key)setTimeout(connectModal,700);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-S.loadedAt>CONFIG.REFRESH_MINUTES*6e4)load()});
 })();
+</script>
+<script>
+/* Installable app: register the offline helper, offer "Install app" where the browser supports it, and show the
+   Add-to-Home-Screen steps on iPhone. Hidden when already running as an installed app. */
+(()=>{const box=document.getElementById('installBox'),btn=document.getElementById('installBtn'),note=document.getElementById('installNote');
+  const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  if('serviceWorker' in navigator&&isSecureContext)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  if(standalone||!box)return;
+  let ask=null;
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();ask=e;box.hidden=false;btn.hidden=false;note.textContent='Adds an icon to your home screen.'});
+  btn.addEventListener('click',async()=>{if(!ask)return;ask.prompt();try{await ask.userChoice}catch(e){}ask=null;btn.hidden=true;note.textContent='Installed apps open full screen from your home screen.'});
+  addEventListener('appinstalled',()=>{box.hidden=true});
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent)){box.hidden=false;note.textContent='On iPhone: tap Share, then “Add to Home Screen”.'}})();
 </script>
 
 </body>
