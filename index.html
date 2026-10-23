@@ -679,6 +679,12 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .journey{display:flex;gap:4px;margin:12px 0 4px}.jstep{flex:1;display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
 .jstep i{height:6px;border-radius:6px;background:var(--hair-2)}.jstep.done i{background:var(--ok)}.jstep.done{color:var(--ink)}.jstep.stop i{background:var(--bad,#d93a2b)}
 .rules{margin:4px 0 0;padding-left:18px;color:var(--muted);font-size:13.5px;line-height:1.6}
+.p-sum{font-size:12px;color:var(--muted);line-height:1.35}
+.person.upset{box-shadow:0 0 0 2px rgba(214,52,44,.35),var(--shadow)!important}
+.sum-box{margin:10px 0;padding:10px 12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--hair)}
+.sum-box b{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.sum-box.upset{background:var(--bad-soft);border-color:rgba(214,52,44,.25)}
+.sum-chips{display:flex;flex-wrap:wrap;gap:6px}.chip-s.upset{background:var(--bad-soft);color:var(--bad);font-weight:700}
 </style>
 </head>
 <body>
@@ -1623,10 +1629,12 @@ function whatsapp(v){
     people.sort(st.psort==='recent'?(a,b)=>b.last.localeCompare(a.last):(a,b)=>(b.score-a.score)||b.last.localeCompare(a.last));
     const counts={};heatPeople(W.P).forEach(p=>counts[p.label]=(counts[p.label]||0)+1);
     const pcardEl=p=>{const l=p.top,isNew=seen>0&&actDate(p.last).getTime()>seen,stay=p.host?(l.location||'Property owner'):(l.pname||l.city||'Any stay');
-      return h('button',{class:'person heat-'+p.label.toLowerCase(),onclick:()=>openPerson(p)},
+      const sum=guestSummary(p).filter(x=>x.k!=='upset').slice(0,3);
+      return h('button',{class:'person heat-'+p.label.toLowerCase()+(p.upset?' upset':''),onclick:()=>openPerson(p)},
         h('div',{class:'p-top'},h('span',{class:'av',style:{background:avc(l.name||'G')}},ini(l.name||'G')),
           h('div',{class:'p-id'},h('b',null,l.name||'Guest',isNew?h('i',{class:'newdot','aria-label':'new activity'}):null),h('span',null,phoneTxt(l.phone))),heatPill(p.label)),
         h('div',{class:'p-why'},p.why.slice(0,3).join(' · ')),
+        sum.length?h('div',{class:'p-sum'},'✦ '+sum.map(x=>x.t).join(' · ')):null,
         h('div',{class:'p-latest'},h('span',{class:'chip-s'},(p.host?'🏠 ':'🧳 ')+stay),l.check_in?h('span',{class:'chip-s date'},`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`):null,l.quoted?h('span',{class:'chip-s'},inr(+l.quoted)):null,p.host?null:pillStage(l.stage)),
         h('div',{class:'p-foot'},h('span',null,`${p.rows.length} enquir${p.rows.length===1?'y':'ies'} · active ${agoTxt(actDate(p.last))}`),pillLs(p.status)))};
     v.append(card('s12','Leads by person',{id:'waLeads',hint:`${people.length} people · ${waWin().label.toLowerCase()} · ${st.psort==='recent'?'most recent first':'hottest first'} · 🔵 = new since your last visit`,
@@ -1689,15 +1697,33 @@ function heatPeople(leads){
        l.asked_team?'asked for a call':null,t>1?`asked ${t}×`:null,soon?`check-in in ${dd} day${dd===1?'':'s'}`:null].forEach(x=>{if(x&&!why.includes(x))why.push(x)})});
     const age=diff(lastAct(rs[0]).slice(0,10)||TODAY,TODAY),status=rs[0].status||'New';
     if(!host){best+=age<=1?15:age<=3?8:age>14?-20:0;best+=Math.min(10,5*(open.length-1))}
-    const RANK=['stopped at payment','holding dates','special request','asked for a call','released','got a price','asked ','check-in'];
+    const RANK=['sounded upset','stopped at payment','holding dates','special request','asked for a call','released','got a price','asked ','check-in'];
     why.sort((a,b)=>{const r=x=>{const i=RANK.findIndex(k=>x.startsWith(k));return i<0?99:i};return r(a)-r(b)});
     if(open.length>1)why.push(`${open.length} open enquiries`);
+    const upset=(S.data.requests||[]).some(r=>/upset/i.test(r.addon||'')&&String(r.phone||'').replace(/\D/g,'').slice(-10)===key&&diff(String(r.created_at||'').slice(0,10)||TODAY,TODAY)<=7);
+    if(upset&&!host){why.unshift('sounded upset - reply personally');best+=20}
     let label;
     if(host){label=status==='Won'?'Won':status==='Lost'?'Lost':status==='New'&&age<=7?'Hot':'Warm';if(!why.length)why.push(status==='New'?'new property-owner lead':status.toLowerCase())}
     else if(status==='Lost')label='Lost';else if(status==='Won'||(!open.length&&booked.length))label='Booked';else label=best>=80?'Hot':best>=45?'Warm':'Cool';
     if(!why.length)why.push(label==='Booked'?'booked':'browsing');
-    return{key,rows:rs,latest:rs[0],top:top||rs[0],last:lastAct(rs[0]),score:host?(label==='Hot'?75:40):label==='Booked'?-1:best,label,why,host,open,booked,status}});
+    return{key,rows:rs,latest:rs[0],top:top||rs[0],last:lastAct(rs[0]),score:host?(label==='Hot'?75:40):label==='Booked'?(upset?60:-1):best,label,why,host,open,booked,status,upset}});
 }
+/* who this person is, in a few words, from their enquiries, bookings, requests and issues on this sheet */
+function guestSummary(p){
+  const dig=p.key,same=x=>dig&&String(x.phone||'').replace(/\D/g,'').slice(-10)===dig;
+  const bks=D.B.filter(b=>same(b)&&b.status!=='Cancelled'),reqs=(S.data.requests||[]).filter(same),tix=D.M.filter(same);
+  const done=bks.filter(b=>b.check_out<=TODAY).length,next=bks.find(b=>b.check_out>TODAY),out=[];
+  const up=reqs.filter(r=>/upset/i.test(r.addon||'')).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];
+  if(up)out.push({t:`😟 sounded upset ${agoTxt(actDate(String(up.created_at||TODAY)))}`,k:'upset'});
+  if(done&&next)out.push({t:`${done+1}${['st','nd','rd'][done]||'th'} stay coming up`});else if(done>=2)out.push({t:`returning guest · ${done} stays`});else if(done===1)out.push({t:'stayed once before'});
+  const count=a=>{const m={};a.filter(Boolean).forEach(x=>m[x]=(m[x]||0)+1);return Object.entries(m).sort((a,b)=>b[1]-a[1])[0]};
+  const g=count([...p.rows.map(r=>+r.guests||0),...bks.map(b=>+b.guests||0)].filter(n=>n>0));if(g&&g[1]>=2)out.push({t:`usually ${g[0]} guests`});
+  const fav=count([...p.rows.map(r=>r.pname),...bks.map(b=>b.pname)]);if(fav&&fav[1]>=2)out.push({t:`likes ${short(fav[0])}`});
+  if(p.rows.some(r=>/pet|dog|cat/i.test(String(r.notes||'')+String(r.pets||''))))out.push({t:'travels with a pet'});
+  const asks=[...new Set(reqs.filter(r=>!/upset/i.test(r.addon||'')).map(r=>String(r.addon).replace(/^[^A-Za-z]+/,'').toLowerCase()))].slice(0,2);
+  if(asks.length)out.push({t:'asked for '+asks.join(', ')});
+  if(tix.length)out.push({t:`reported ${tix.length} issue${tix.length>1?'s':''}`});
+  return out}
 /* several sheet updates as one action: shown at once, one message, stops on the first refusal */
 async function saveMany(tab,items,msg){for(const[match,fields]of items){const ok=await save(tab,'update',{match,fields},null);if(!ok)return false}if(items.length)toast(msg+(live()?' ✓':' · demo only'));return true}
 function openPerson(p){
@@ -1715,6 +1741,7 @@ function openPerson(p){
       h('div',{class:'tags'},heatPill(p.label),pillLs(p.status),p.host?h('span',{class:'chip-s'},'🏠 Hosting lead'):h('span',{class:'chip-s'},`🧳 ${p.rows.length} enquir${p.rows.length===1?'y':'ies'}`)),
       h('h2',null,l.name||'Guest'),h('div',{style:{color:'var(--muted)'}},`${phoneTxt(l.phone)} · last active ${agoTxt(actDate(p.last))}`),
       h('div',{class:'why-box'},h('b',null,p.label==='Hot'?'Why this is hot':'Signals'),h('ul',null,p.why.map(w=>h('li',null,w)))),
+      (gs=>gs.length?h('div',{class:'sum-box'+(p.upset?' upset':'')},h('b',null,'Guest summary'),h('div',{class:'sum-chips'},gs.map(x=>h('span',{class:'chip-s'+(x.k==='upset'?' upset':'')},x.t)))):null)(guestSummary(p)),
       l.phone?h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap',margin:'10px 0'}},h('a',{class:'btn sm primary',href:waLink(l.phone),target:'_blank',rel:'noopener'},'Open WhatsApp chat'),h('a',{class:'btn sm',href:'tel:'+phoneTxt(l.phone)},'Call')):null,
       S.admin?h('div',null,h('h3',{style:{margin:'12px 0 6px'}},'Follow-up (applies to all their enquiries)'),h('div',{class:'seg'},LSTAT.map(s=>h('button',{'aria-pressed':p.status===s,onclick:()=>setStatus(s)},s))),
         h('div',{style:{marginTop:'10px'}},notes),h('div',{class:'row',style:{gap:'8px',marginTop:'8px'}},h('button',{class:'btn sm',onclick:()=>{if(!isReal){toast('Demo lead - connect live data to save notes');return}closeLayer();save('leads','update',{match:{lead_id:l.lead_id},fields:{owner_notes:notes.value.trim()}},'Notes saved')}},'Save notes'))):null,
