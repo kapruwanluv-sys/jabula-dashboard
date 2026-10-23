@@ -613,6 +613,15 @@ body:not(.is-admin) .admin{display:none!important}
 .light{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--hair);border:0;font:inherit;color:inherit;cursor:default}
 button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{color:var(--muted);font-size:12.5px}.wa-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-basis:100%}
 @media (prefers-reduced-motion:reduce){.live-badge.live .lb-dot,.light.live i{animation:none}}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:2px 0 4px}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.srank{display:flex;flex-direction:column;gap:12px}.sr{display:flex;flex-direction:column;gap:6px;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;min-width:0}
+.sr-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;min-width:0}
+.sr-n{display:inline-flex;align-items:center;gap:8px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sr-n i{width:8px;height:8px;border-radius:50%;flex:none}
+.sr-v{color:var(--muted);font-size:12.5px;white-space:nowrap;flex:none}.sr-v b{color:var(--ink)}
+.sr-bar{height:8px;border-radius:8px;background:var(--hair);overflow:hidden}.sr-bar>i{display:block;height:100%;border-radius:8px;background:var(--accent);overflow:hidden}.sr-bar>i>i{display:block;height:100%;background:var(--ok)}
+.wa-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.wa-kpis .stat{min-width:0}
+@media (max-width:760px){.wa-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.wa-kpis .stat small{font-size:11.5px}.fstep{grid-template-columns:104px 1fr 30px 38px}}
 /* live data, WhatsApp tab */
 .btn.danger{background:var(--bad,#d93a2b);color:#fff;border-color:transparent}.btn.danger-t{color:var(--bad,#d93a2b)}
 .wa-live{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;font-size:13.5px;flex-wrap:wrap}
@@ -824,6 +833,25 @@ function stacked(w,{cats,series,line,hi,fmt,onClick,hh=250}){
   if(line){let ly=y;if(line.right){const lm=niceMax(Math.max(...line.vals,0.01)*1.1);ly=axisY(s,{l,r,t,b,w,hh,max:lm,fmt:line.fmt,right:true});s.querySelectorAll('line').forEach((n,i)=>{if(i>4)n.remove()})}
     const pts=line.vals.map((v,i)=>[l+i*bw+bw/2,ly(v)]);s.append(sv('path',{d:'M'+pts.map(p=>p.join(' ')).join('L'),fill:'none',stroke:line.color,'stroke-width':2.2,'stroke-linejoin':'round','stroke-linecap':'round','pointer-events':'none'}));
     pts.forEach(p=>s.append(sv('circle',{cx:p[0],cy:p[1],r:3.6,fill:css('--glass-2'),stroke:line.color,'stroke-width':2,'pointer-events':'none'})))}
+  return s;
+}
+/* Count chart built to be read on a phone: whole-number axis, the number on every bar, date labels spaced so they
+   never overlap, tooltips with the breakdown. stack:true = stacked segments (total on top), false = side by side. */
+function countBars(w,{cats,series,stack=true,hh=220}){
+  const l=26,r=6,t=20,b=26,s=svgRoot(w,hh),n=cats.length,ink=css('--ink'),muted=css('--muted'),line=css('--hair-2');
+  const tot=cats.map((_,i)=>stack?sum(series,x=>x.vals[i]):Math.max(...series.map(x=>x.vals[i])));
+  const mxv=Math.max(1,...tot),step=mxv<=5?1:mxv<=10?2:mxv<=25?5:mxv<=50?10:Math.ceil(mxv/50)*10,top=Math.ceil(mxv/step)*step;
+  const y=v=>t+(hh-t-b)*(1-v/top);
+  for(let v=0;v<=top;v+=step){s.append(sv('line',{x1:l,x2:w-r,y1:y(v),y2:y(v),stroke:line,'stroke-dasharray':v?'2 4':null}));s.append(sv('text',{x:l-6,y:y(v)+4,'text-anchor':'end',fill:muted,'font-size':10.5},v))}
+  const bw=(w-l-r)/n,lab=Math.max(...cats.map(c=>String(c.label).length))*6.3+8,every=Math.max(1,Math.ceil(lab/bw));
+  cats.forEach((c,i)=>{const x0=l+i*bw;
+    if(stack){const bar=Math.min(34,bw*.62),x=x0+(bw-bar)/2;let acc=0;
+      series.forEach((se,j)=>{const v=se.vals[i];if(v<=0)return;const isTop=series.slice(j+1).every(z=>z.vals[i]<=0);s.append(sv('path',{d:roundTop(x,y(acc+v),bar,y(acc)-y(acc+v),isTop?5:0),fill:se.color}));acc+=v});
+      if(tot[i]>0)s.append(sv('text',{x:x0+bw/2,y:y(tot[i])-5,'text-anchor':'middle',fill:ink,'font-size':11,'font-weight':700},tot[i]))}
+    else{const gw=Math.min(52,bw*.74),one=gw/series.length;
+      series.forEach((se,j)=>{const v=se.vals[i],x=x0+(bw-gw)/2+j*one;if(v>0){s.append(sv('path',{d:roundTop(x+1,y(v),one-3,y(0)-y(v),4),fill:se.color}));s.append(sv('text',{x:x+one/2,y:y(v)-4,'text-anchor':'middle',fill:ink,'font-size':10.5,'font-weight':700},v))}})}
+    if(i%every===0)s.append(sv('text',{x:x0+bw/2,y:hh-8,'text-anchor':'middle',fill:ink,'font-size':10.5,'font-weight':600},c.label));
+    s.append(sv('rect',{x:x0,y:t,width:bw,height:hh-t-b,fill:'transparent','data-tip':`${c.tip||c.label}\n`+series.map(se=>`${se.name}: ${se.vals[i]}`).join('\n')}))});
   return s;
 }
 function roundTop(x,y,w,hh,r){r=Math.min(r,w/2,hh);return`M${x} ${y+hh}L${x} ${y+r}Q${x} ${y} ${x+r} ${y}L${x+w-r} ${y}Q${x+w} ${y} ${x+w} ${y+r}L${x+w} ${y+hh}Z`}
@@ -1494,7 +1522,7 @@ function whatsapp(v){
   const booked=W.reached('Booked'),asked=W.guests.length,follow=W.guests.filter(l=>['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)&&l.status!=='Lost'&&l.status!=='Won');
   const k=(n,l,sub,fn)=>h('button',{class:'stat glass',onclick:fn||null,style:fn?{cursor:'pointer'}:null},h('b',{class:'num'},n),h('span',null,l),sub?h('small',{style:{color:'var(--muted)'}},sub):null);
   const setL=p=>{Object.assign(st,{type:'All',stage:'All',status:'All',lim:25},p);render();setTimeout(()=>{const el=$('#waLeads');el&&el.scrollIntoView({behavior:calm()?'auto':'smooth'})},60)};
-  v.append(h('div',{class:'s12 stat-row'},
+  v.append(h('div',{class:'s12 stat-row wa-kpis'},
     k(asked,'Guest enquiries',waWin().label,()=>setL({type:'Guests'})),
     k(W.reached('Quoted'),'Got a price',asked?pct(W.reached('Quoted')/asked)+' of enquiries':'',()=>setL({type:'Guests',stage:'Quoted+'})),
     k(booked,'Booked via WhatsApp',asked?pct(booked/asked)+' conversion':'',()=>setL({type:'Guests',stage:'Booked'})),
@@ -1503,27 +1531,32 @@ function whatsapp(v){
     k(W.hosts.length,'Hosting leads',`${W.hosts.filter(l=>l.status==='New').length} new`,()=>setL({type:'Hosting'})),
     k(W.reqs.filter(r=>(r.status||'New')==='New').length,'Open requests','add-ons & cancellations'),
     k(W.issues.filter(m=>m.status!=='Closed').length,'Guest issues open','reported on WhatsApp',()=>go('ops'))));
-  // trend: enquiries per day/week, split by outcome
-  const tf=st.win==='all'?(W.guests.map(l=>l.day).filter(Boolean).sort()[0]||add(TODAY,-29)):f.from;const days=diff(tf,f.to)+1,wk=days>45,keys=[];for(let d=tf;d<=f.to;d=add(d,wk?7:1))keys.push(d);
+  // trend: enquiries per day (or per week on phones / long windows), split by outcome
+  const tf=st.win==='all'?(W.guests.map(l=>l.day).filter(Boolean).sort()[0]||add(TODAY,-29)):f.from;const days=diff(tf,f.to)+1;
+  const wk=days>45||(PHONE()&&days>14),keys=[];for(let d=wk?add(f.to,-7*Math.ceil(days/7)+1):tf;d<=f.to;d=add(d,wk?7:1))keys.push(d);
   const bucket=l=>{let i=keys.length-1;while(i>0&&l.day<keys[i])i--;return i};
-  const ser=[['Booked','--ok',l=>l.stage==='Booked'],['In progress','--accent',l=>['Asked','Quoted','Held','Requested'].includes(l.stage)],['Dropped','--hair-2',l=>ENDED.includes(l.stage)]].map(([name,c,fn])=>{const vals=keys.map(()=>0);W.guests.filter(fn).forEach(l=>vals[bucket(l)]++);return{name,color:css(c),vals}});
-  let th;v.append(card('s8','Enquiries over time',{hint:`per ${wk?'week':'day'} · green = booked · blue = still deciding · grey = dropped`,acts:[btnPNG(()=>th,'WhatsApp enquiries')]},
-    th=chart(w=>stacked(w,{cats:keys.map((d,i)=>({label:wk||days<=10||i%Math.ceil(days/10)===0?fmtD(d):'',tip:i=>`${wk?'Week of ':''}${fmtD(keys[i],{weekday:'short',day:'numeric',month:'short'})}\n`+ser.map(s=>`${s.name}: ${s.vals[i]}`).join('\n')})).map((c,i)=>({...c,tip:()=>c.tip(i)})),series:ser,fmt:x=>Math.round(x),hh:230}))));
+  const ser=[['Booked','--ok',l=>l.stage==='Booked'],['Still deciding','--accent',l=>['Asked','Quoted','Held','Requested'].includes(l.stage)],['Dropped','--hair-2',l=>ENDED.includes(l.stage)]].map(([name,c,fn])=>{const vals=keys.map(()=>0);W.guests.filter(l=>l.day>=keys[0]).filter(fn).forEach(l=>vals[bucket(l)]++);return{name,color:css(c),vals}});
+  const legend=h('div',{class:'legend'},ser.map(s=>h('span',null,h('i',{style:{background:s.color}}),`${s.name} ${sum(s.vals,x=>x)}`)));
+  let th;v.append(card('s8','Enquiries over time',{hint:`per ${wk?'week':'day'} · number on each bar = enquiries`,acts:[btnPNG(()=>th,'WhatsApp enquiries')]},legend,
+    th=chart(w=>countBars(w,{cats:keys.map(d=>({label:wk?fmtD(d):fmtD(d),tip:`${wk?'Week from ':''}${fmtD(d,{weekday:'short',day:'numeric',month:'short'})}`})),series:ser,stack:true,hh:PHONE()?200:230}))));
   // funnel
   const fun=['Asked','Quoted','Held','Booked'].map(s=>({s,n:W.reached(s)}));const top=Math.max(1,fun[0].n);
   v.append(card('s4','Enquiry funnel',{hint:'how far people got · tap a step'},
     h('div',{class:'funnel'},fun.map((x,i)=>h('button',{class:'fstep',onclick:()=>setL({type:'Guests',stage:x.s==='Asked'?'All':x.s+'+'})},h('span',{class:'fl'},x.s==='Asked'?'Asked about dates':x.s==='Quoted'?'Got a price':x.s==='Held'?'Held dates':'Booked'),
       h('span',{class:'fb'},h('i',{style:{width:Math.max(4,x.n/top*100)+'%',background:i===3?'var(--ok)':'var(--accent)',opacity:1-i*.12}})),h('b',{class:'num'},x.n),h('small',null,i?pct(x.n/top):'')))),
     h('div',{class:'row',style:{gap:'6px',flexWrap:'wrap',marginTop:'10px'}},[['Requested','special requests'],['Expired','hold ran out'],['Cancelled','released']].map(([s,t])=>h('button',{class:'chip-s',onclick:()=>setL({type:'Guests',stage:s})},`${W.guests.filter(l=>l.stage===s).length} ${t}`)))));
-  // demand by stay
+  // demand by stay: one clear row per stay - name + "3 asked · 1 booked", bar underneath
   const byP={};W.guests.filter(l=>l.property_id).forEach(l=>{const r=byP[l.property_id]||(byP[l.property_id]={pid:l.property_id,name:l.pname,city:l.city,n:0,b:0});r.n++;if(l.stage==='Booked')r.b++});
-  const rank=Object.values(byP).sort((a,b)=>b.n-a.n).slice(0,8),mx=Math.max(1,...rank.map(r=>r.n));
-  v.append(card('s6','Most asked-about stays',{hint:'bar = enquiries · green part = booked · tap to focus'},rank.length?h('div',{class:'mini-cities'},rank.map(r=>h('button',{class:'hb',onclick:()=>setF({props:[r.pid]}),'data-tip':`${r.name} (${r.city})\n${r.n} enquiries · ${r.b} booked`},h('span',{class:'chd'},h('i',{style:{background:cityColor(r.city)}}),r.name),h('span',{class:'t'},h('i',{style:{width:r.n/mx*100+'%',background:'var(--accent)',display:'block',overflow:'hidden'}},h('i',{style:{width:(r.n?r.b/r.n*100:0)+'%',background:'var(--ok)',display:'block',height:'100%'}}))),h('span',{class:'v num'},`${r.b}/${r.n}`)))):h('div',{class:'empty'},'No stay enquiries in this period.')));
+  const rank=Object.values(byP).sort((a,b)=>b.n-a.n||b.b-a.b).slice(0,8),mx=Math.max(1,...rank.map(r=>r.n));
+  v.append(card('s6','Most asked-about stays',{hint:'blue = asked · green = booked · tap a stay to focus'},rank.length?h('div',{class:'srank'},rank.map(r=>h('button',{class:'sr',onclick:()=>setF({props:[r.pid]}),'data-tip':`${r.name} (${r.city})\n${r.n} enquiries · ${r.b} booked`},
+    h('div',{class:'sr-top'},h('span',{class:'sr-n'},h('i',{style:{background:cityColor(r.city)}}),r.name),h('span',{class:'sr-v'},h('b',null,r.n),' asked · ',h('b',{style:{color:'var(--ok)'}},r.b),' booked')),
+    h('div',{class:'sr-bar'},h('i',{style:{width:r.n/mx*100+'%'}},h('i',{style:{width:(r.n?r.b/r.n*100:0)+'%'}})))))):h('div',{class:'empty'},'No stay enquiries in this window.')));
   // when people want to come (check-in week of enquiries)
-  const wks=[];for(let i=0;i<8;i++)wks.push(add(TODAY,i*7));const wb=d=>{for(let i=wks.length-1;i>=0;i--)if(d>=wks[i])return i;return-1};
-  const askV=wks.map(()=>0),bkV=wks.map(()=>0);W.guests.filter(l=>l.check_in).forEach(l=>{const i=wb(l.check_in);if(i>=0&&l.check_in<add(TODAY,56)){askV[i]++;if(l.stage==='Booked')bkV[i]++}});
-  let dh;v.append(card('s6','When guests want to come',{hint:'check-in week of enquiries · next 8 weeks',acts:[btnPNG(()=>dh,'WhatsApp demand')]},
-    dh=chart(w=>grouped(w,{cats:wks.map(d=>fmtD(d)),series:[{name:'Asked',color:css('--accent'),vals:askV,tipFmt:x=>x+' enquiries'},{name:'Booked',color:css('--ok'),vals:bkV,tipFmt:x=>x+' booked'}],fmt:x=>Math.round(x),hh:210}))));
+  const nW=PHONE()?6:8,wks=[];for(let i=0;i<nW;i++)wks.push(add(TODAY,i*7));const wb=d=>{for(let i=wks.length-1;i>=0;i--)if(d>=wks[i])return i;return-1};
+  const askV=wks.map(()=>0),bkV=wks.map(()=>0);W.guests.filter(l=>l.check_in).forEach(l=>{const i=wb(l.check_in);if(i>=0&&l.check_in<add(TODAY,nW*7)){askV[i]++;if(l.stage==='Booked')bkV[i]++}});
+  let dh;v.append(card('s6','When guests want to come',{hint:`check-in week · next ${nW} weeks`,acts:[btnPNG(()=>dh,'WhatsApp demand')]},
+    h('div',{class:'legend'},h('span',null,h('i',{style:{background:css('--accent')}}),`Asked ${sum(askV,x=>x)}`),h('span',null,h('i',{style:{background:css('--ok')}}),`Booked ${sum(bkV,x=>x)}`)),
+    dh=chart(w=>countBars(w,{cats:wks.map(d=>({label:fmtD(d),tip:`Week from ${fmtD(d,{weekday:'short',day:'numeric',month:'short'})}`})),series:[{name:'Asked',color:css('--accent'),vals:askV},{name:'Booked',color:css('--ok'),vals:bkV}],stack:false,hh:PHONE()?200:220}))));
   // leads list with filters
   const ql=st.q.toLowerCase();
   const stageOk=l=>st.stage==='All'||(st.stage==='Follow-up'?['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)&&!['Won','Lost'].includes(l.status):st.stage.endsWith('+')?(STAGES.slice(STAGES.indexOf(st.stage.slice(0,-1))).includes(l.stage)):l.stage===st.stage);
