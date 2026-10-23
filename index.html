@@ -659,6 +659,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .tl-top{display:flex;align-items:center;gap:8px;min-width:0}.tl-top b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tl-time{color:var(--muted);font-size:12px}
 .tl-meta{color:var(--muted);font-size:12.5px}
 @media (max-width:760px){.people{grid-template-columns:1fr}.person{padding:12px}}
+.data-note{padding:10px 14px;border-radius:14px;border:1px dashed var(--hair-2);color:var(--muted)}.dn-h{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin-bottom:4px}.data-note .rules{font-size:11.5px;line-height:1.5;margin:0;padding-left:16px}.data-note .rules li{margin:1px 0}
 /* live data, WhatsApp tab */
 .btn.danger{background:var(--bad,#d93a2b);color:#fff;border-color:transparent}.btn.danger-t{color:var(--bad,#d93a2b)}
 .wa-live{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;font-size:13.5px;flex-wrap:wrap}
@@ -1653,12 +1654,13 @@ function whatsapp(v){
   const bk=sortBy(W.waB,['submitted_at',-1]).slice(0,6);
   v.append(card('s4','Booked on WhatsApp',{hint:'direct · no platform fee'},bk.length?h('div',{class:'mlist'},bk.map(b=>h('button',{class:'mcard',onclick:()=>openBooking(b)},bookCard(b)))):h('div',{class:'empty'},'No WhatsApp bookings in this period yet.')));
   // responsible use (WhatsApp Business policy + DPDP)
-  v.append(card('s12','Using this data responsibly',{hint:'WhatsApp Business policy & India’s DPDP Act'},h('ul',{class:'rules'},
+  v.append(h('div',{class:'s12 data-note'},h('div',{class:'dn-h'},'🔒 Using this data responsibly'),h('ul',{class:'rules'},
     h('li',null,'This page shows only what the bot saves to the sheet (enquiry details, stage, contact). Chat messages are never shown here.'),
     h('li',null,'Follow up personally, about the enquiry the person made. While their chat is open (24 h after their last message) you can reply freely; after that, WhatsApp only allows approved templates.'),
     h('li',null,'Don’t send promotions or broadcasts to these numbers unless the person agreed to receive them.'),
     h('li',null,'If someone asks you to delete their data, open their lead and use “Delete lead”. Bookings stay (tax records). The bot also does this when they type DELETE MY DATA.'),
-    h('li',null,'Keep this dashboard private: only enter the access key on your own devices; use Disconnect on any device you stop using.'))));
+    h('li',null,'Keep this dashboard private: only enter the access key on your own devices; use Disconnect on any device you stop using.'),
+    h('li',null,'Rules: WhatsApp Business Messaging Policy and India’s Digital Personal Data Protection Act, 2023.'))));
 }
 /* ============ people: enquiries grouped per person, ranked by how hot they are ============
    Same scoring as the bot's #leads: stopping at payment (held / hold expired) ranks highest, then special requests,
