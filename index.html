@@ -495,9 +495,10 @@ body:not(.is-admin) .admin{display:none!important}
   .topbar{justify-content:space-between}
   .tabbar{display:flex;position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:45;border-radius:26px;padding:7px;gap:2px;overflow-x:auto;scrollbar-width:none;background:var(--surface);border:1px solid var(--glass-line);box-shadow:var(--shadow-lg);max-width:640px;margin:0 auto}
   .tabbar::-webkit-scrollbar{display:none}
-  .tabbar{overflow:visible}
-  .tabbar button{flex:1 1 0;min-width:0;border:0;background:none;border-radius:18px;padding:7px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:650;color:var(--muted);white-space:nowrap}
-  .tabbar button[aria-current="page"]{color:var(--accent-ink);background:var(--accent-soft)}
+  .tabbar{overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;gap:4px;padding:7px 8px;--fl:0px;--fr:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%)}
+  .tabbar button{flex:0 0 auto;min-width:74px;scroll-snap-align:center;border:0;background:none;border-radius:19px;padding:8px 12px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;font-weight:650;letter-spacing:.01em;color:var(--muted);white-space:nowrap}
+  .tabbar button[aria-current="page"]{color:var(--accent-ink);background:var(--accent-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 18%,transparent)}
+  .tabbar button[aria-current="page"] svg{stroke-width:2.1}
   .tabbar svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   body{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
   .hero{min-height:400px}
@@ -980,13 +981,16 @@ function go(v,extra){S.view=v;if(extra)Object.assign(S,extra);S.pop=null;try{his
   const swap=()=>{render();window.scrollTo({top:0})};if(document.startViewTransition&&!calm()){const t=document.startViewTransition(swap);t.ready.catch(()=>{});t.finished.catch(()=>{})}else swap()}
 function countUp(root){if(calm())return;root.querySelectorAll('[data-count]').forEach(el=>{const t=el.textContent,m=t.match(/^([^\d−-]*)([\d.,]+)(.*)$/);if(!m)return;const target=parseFloat(m[2].replace(/,/g,'')),dec=(m[2].split('.')[1]||'').length,t0=performance.now();
   const step=now=>{const k=Math.min(1,(now-t0)/750),e=1-Math.pow(1-k,3);el.textContent=m[1]+(target*e).toFixed(dec)+m[3];if(k<1)requestAnimationFrame(step);else el.textContent=t};requestAnimationFrame(step)})}
+/* phone tab bar slides sideways: fade the edge that has more tabs behind it */
+function tabEdges(){const tb=$('#tabbar');if(!tb)return;const max=tb.scrollWidth-tb.clientWidth;tb.style.setProperty('--fl',tb.scrollLeft>4?'28px':'0px');tb.style.setProperty('--fr',tb.scrollLeft<max-4?'34px':'0px')}
 function navIcon(d){const s=sv('svg',{viewBox:'0 0 24 24'});s.append(sv('path',{d}));return s}
 function renderChrome(){
   const openIss=D.M.filter(m=>m.status!=='Closed'&&fP(D.P[m.property_id])).length,urgent=D.M.filter(m=>m.status!=='Closed'&&m.priority==='High'&&fP(D.P[m.property_id])).length;
   const arrT=D.B.filter(b=>fB(b)&&b.check_in===TODAY).length,depT=D.B.filter(b=>fB(b)&&b.check_out===TODAY).length;
   const cur=S.view==='property'?'properties':S.view;
   $('#nav').replaceChildren(...VIEWS.map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),l,k==='desk'?h('span',{class:'badge'},arrT+depT):k==='ops'&&openIss?h('span',{class:'badge'+(urgent?' hot':''),'data-tip':`${openIss} open issues, ${urgent} urgent`},urgent||openIss):null)));
-  $('#tabbar').replaceChildren(...VIEWS.map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),{overview:'Home',desk:'Desk',properties:'Stays',ops:'Ops',whatsapp:'Bot'}[k]||l)));
+  {const tb=$('#tabbar'),keep=tb.scrollLeft;tb.replaceChildren(...VIEWS.map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),{overview:'Home',desk:'Desk',properties:'Stays',ops:'Ops',whatsapp:'Bot'}[k]||l)));
+   tb.scrollLeft=keep;const on=tb.querySelector('[aria-current=page]');if(on){const r=on.offsetLeft+on.offsetWidth/2-tb.clientWidth/2;if(on.offsetLeft<tb.scrollLeft+8||on.offsetLeft+on.offsetWidth>tb.scrollLeft+tb.clientWidth-8)tb.scrollTo({left:r,behavior:calm()?'auto':'smooth'})}tabEdges()}
   document.body.classList.toggle('is-admin',S.admin);
   document.querySelectorAll('.role-btn').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.role==='admin')===S.admin));
   const mp=$('#modePill');mp.hidden=S.admin&&S.source!=='Demo data';mp.className='status-pill'+(S.admin?'':' view');mp.textContent=S.admin?'Demo data':'View only';
@@ -1653,6 +1657,7 @@ const menu=$('#menu'),menuBtn=$('#menuBtn');const setMenu=o=>{menu.hidden=!o;men
 menuBtn.addEventListener('click',e=>{e.stopPropagation();setMenu(menu.hidden)});menu.addEventListener('click',e=>e.stopPropagation());
 document.addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'){setMenu(false);if(S.pop){S.pop=null;renderFilters()}}});
 $('#brandBtn').addEventListener('click',()=>go('overview'));
+$('#tabbar').addEventListener('scroll',tabEdges,{passive:true});addEventListener('resize',tabEdges);
 document.querySelectorAll('[data-new]').forEach(b=>b.addEventListener('click',()=>openForm(b.dataset.new)));
 
 /* ============ render ============ */
