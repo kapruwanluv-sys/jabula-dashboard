@@ -563,6 +563,13 @@ button.sstat:hover{background:var(--surface-2)}
 .pf-sq{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
 .pf-save .seg{background:color-mix(in srgb,var(--ink) 6%,transparent)}.pf-save .seg button[aria-pressed="true"]{background:var(--surface,#fff);color:var(--accent)}
 .pf-save p{margin:0;font-size:13.5px}.pf-save p b{font-size:17px;color:var(--ok)}.pf-save small{color:var(--muted);font-size:11.5px}
+/* missing details + uploads */
+.gap-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
+.gap-banner>div{display:grid;gap:2px}.gap-banner b{font-size:14px}.gap-banner span{font-size:12px;color:var(--muted)}
+.gap-chip{border:0;cursor:pointer;font:inherit}
+.gap-q{margin:0;font-size:16px;font-weight:650}
+.gap-ph,.pe-up{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}
+.pe-chips.ro .pe-chip{cursor:default}
 /* extend stay */
 .ext-q{display:flex;gap:6px;flex-wrap:wrap}
 .ext-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -1726,7 +1733,7 @@ function propDetails(p){
   if(am.length)body.push(h('div',{class:'pd-sec'},h('span',null,'Amenities'),h('div',{class:'tags'},am.map(a=>h('span',{class:'pill p-mute'},a)))));
   const pics=th.length?th:ph;
   if(pics.length)body.push(h('div',{class:'pd-sec'},h('span',null,`Photos (${pics.length})`),h('div',{class:'pd-photos'},pics.map((t,i)=>h('a',{href:ph[i]||t,target:'_blank',rel:'noopener','aria-label':`Photo ${i+1}`},photoFit(ph[i]||t,''))))));
-  return card('s12','Property details',{acts:p.website_url?[h('a',{class:'btn sm',href:p.website_url,target:'_blank',rel:'noopener'},'Website listing')]:null},...body);
+  return card('s12','Property details',{acts:[p.website_url?h('a',{class:'btn sm',href:p.website_url,target:'_blank',rel:'noopener'},'Website'):null,...LINKS.filter(([k])=>/^https:\/\//.test(p[k]||'')).map(([k,l])=>h('a',{class:'btn sm',href:p[k],target:'_blank',rel:'noopener'},l+' ↗'))].filter(Boolean).length?[p.website_url?h('a',{class:'btn sm',href:p.website_url,target:'_blank',rel:'noopener'},'Website'):null,...LINKS.filter(([k])=>/^https:\/\//.test(p[k]||'')).map(([k,l])=>h('a',{class:'btn sm',href:p[k],target:'_blank',rel:'noopener'},l+' ↗'))].filter(Boolean):null},...body);
 }
 function property(v){
   const p=D.P[S.propId];if(!p){go('properties');return}const f=S.f,st=stats(f.from,f.to,p.property_id),[pa,pz]=prevRange(),pv=stats(pa,pz,p.property_id);
@@ -2485,15 +2492,60 @@ async function purgeTrash(){if(MG.purged||!live())return;MG.purged=true;
 /* Manage › Properties: every guest-facing detail, status, combo parts and photos; staged like bookings. The bot
    rebuilds the property's brochure by itself after a change (engine auto_brochures). */
 const PSTAGE={};  // property_id -> fields waiting to be saved ({__new:true} for a property being added)
+/* list fields arrive as arrays, JSON or "a, b" text */
+const arrOf=v=>{if(Array.isArray(v))return v;const t=String(v||'').trim();if(t[0]==='['){try{const j=JSON.parse(t);if(Array.isArray(j))return j}catch(e){}}return t.split(',').map(x=>x.trim()).filter(Boolean)};
 const rawP=id=>(S.data.props||[]).find(p=>p.property_id===id);
 const pstg=p=>PSTAGE[p.property_id]?{...p,...PSTAGE[p.property_id]}:p;
 const sameV=(a,b)=>{const n=v=>v==null||v===''?'':typeof v==='object'?JSON.stringify(v):String(v);return n(a)===n(b)};
+/* listing links per property (owner's own listings on each platform) */
+const LINKS=[['airbnb_url','Airbnb'],['booking_url','Booking.com'],['mmt_url','MakeMyTrip']];
+/* a combo listing's amenities are its parts' amenities together (no repeats) */
+const partsOf=p=>arrOf(p.includes);
+function comboAmenities(p){const seen=new Map();partsOf(p).forEach(id=>{const q=PSTAGE[id]?pstg(rawP(id)||{property_id:id}):rawP(id);arrOf(q&&q.amenities).forEach(a=>{const k=String(a).trim().toLowerCase();if(k&&!seen.has(k))seen.set(k,String(a).trim())})});return[...seen.values()].sort()}
+/* what an active property still needs before guests and the bot get good answers */
+const NEED=[['description','About (2-3 lines guests read first)','text'],['photos','Photos (at least 3)','photos'],['max_guests','Max guests','num'],['bedrooms','Bedrooms','num'],
+  ['bathrooms','Bathrooms','num'],['base_rate','Base price / night (₹)','num'],['check_in_time','Check-in from','time'],['check_out_time','Check-out by','time'],['rules','House rules','text'],['amenities','Amenities','amen'],['area','Area','line']];
+function missingOf(p){if(isStopped(p))return[];const combo=partsOf(p).length>0;return NEED.filter(([k])=>{if(combo&&(k==='amenities'||k==='bedrooms'||k==='bathrooms'))return false;
+  if(k==='photos')return arrOf(p.photos).length<3;if(k==='amenities')return!arrOf(p.amenities).length;const v=p[k];return v==null||String(v).trim()===''||(['max_guests','bedrooms','bathrooms','base_rate'].includes(k)&&!(+v>0))}).map(x=>x[0])}
+/* photos from the phone: shrink in the browser (long side 1600 px, JPEG), send to the Register, which keeps them in Drive */
+function shrinkPhoto(file,max=1600){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),cv=document.createElement('canvas');
+  cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);ok(cv.toDataURL('image/jpeg',.85).split(',')[1])};
+  im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('not an image'))};im.src=u})}
+async function uploadPhotos(files,name,onEach){if(!live()){toast('Connect live data to upload photos.');return[]}const out=[];
+  for(let i=0;i<files.length;i++){onEach&&onEach(i+1,files.length);try{const data=await shrinkPhoto(files[i]);const r=await apiPost({action:'upload',name:`${name} ${Date.now().toString(36)}`,mime:'image/jpeg',data});
+      if(r&&r.url)out.push(r);else throw new Error((r&&r.error)||'no link back')}catch(e){toast(`Couldn’t upload ${files[i].name||'a photo'}: ${e.message}`)}}
+  return out}
+const pickPhotos=(label,onFiles)=>{const fi=h('input',{type:'file',accept:'image/*',multiple:true,hidden:true,onchange:()=>{const fs=[...fi.files];fi.value='';if(fs.length)onFiles(fs)}});
+  return[fi,h('button',{type:'button',class:'btn sm primary',onclick:()=>fi.click()},icon('img'),label)]};
+/* step through what is missing, one question at a time: answer, or skip for later */
+function fillGaps(ids){const queue=[];ids.forEach(id=>{const q=pstg(rawP(id));missingOf(q).forEach(k=>queue.push([id,k]))});if(!queue.length){toast('Nothing missing.');return}
+  let i=0;const step=()=>{if(i>=queue.length){closeLayer();toast('All done. Review & save when ready.');return}
+    const[id,k]=queue[i],p=pstg(rawP(id)),def=NEED.find(x=>x[0]===k),err=h('div',{class:'err',hidden:true});let get=()=>null,body;
+    if(def[2]==='text'){const t=h('textarea',{rows:4},p[k]||'');get=()=>t.value.trim()||null;body=t}
+    else if(def[2]==='line'){const t=h('input',{value:p[k]||'',autocomplete:'off'});get=()=>t.value.trim()||null;body=t}
+    else if(def[2]==='num'){const t=h('input',{type:'number',inputmode:'decimal',min:0,value:p[k]||''});get=()=>t.value===''?null:+t.value;body=t}
+    else if(def[2]==='time'){const t=h('input',{type:'time',value:p[k]||(k==='check_in_time'?'13:00':'11:00')});get=()=>t.value||null;body=t}
+    else if(def[2]==='amen'){const all=[...new Set(D.props.flatMap(x=>arrOf(x.amenities)))].sort(),sel=new Set(arrOf(p.amenities));const box=h('div',{class:'pe-chips'});
+      const draw=()=>box.replaceChildren(...all.map(a=>h('label',{class:'pe-chip'+(sel.has(a)?' on':'')},h('input',{type:'checkbox',checked:sel.has(a)||null,onchange:e=>{e.target.checked?sel.add(a):sel.delete(a);draw()}}),a)));draw();
+      get=()=>sel.size?[...sel]:null;body=box}
+    else{let photos=arrOf(p.photos).slice(),thumbs=arrOf(p.photo_thumbs).slice();const st=h('span',{class:'pe-hint'},`${photos.length} photo${photos.length===1?'':'s'} now`);
+      const[fi,btn]=pickPhotos('Upload from phone',async fs=>{btn.disabled=true;const got=await uploadPhotos(fs,short(p.property),(a,b)=>st.textContent=`Uploading ${a} of ${b}…`);
+        got.forEach(r=>{photos.push(r.url);thumbs.push(r.thumb)});st.textContent=`${photos.length} photo${photos.length===1?'':'s'} now`;btn.disabled=false});
+      get=()=>photos.length?{photos,photo_thumbs:thumbs,photo:p.photo||photos[0]}:null;body=h('div',{class:'gap-ph'},fi,btn,st)}
+    modal(`${short(p.property)} · ${i+1} of ${queue.length}`,h('div',{class:'form gap'},h('p',{class:'full gap-q'},def[1]),h('div',{class:'full'},body),err),
+      [h('button',{class:'btn',onclick:()=>{i++;step()}},'Skip for later'),h('button',{class:'btn primary',onclick:()=>{const v=get();if(v==null){err.hidden=false;err.textContent='Add it, or tap Skip for later.';return}
+        pstage(id,k==='photos'?v:{[k]:v});i++;step()}},i+1<queue.length?'Save & next':'Save')])};
+  step()}
+/* after a part changes, its combo listings take the parts' amenities together */
+function syncCombos(){(S.data.props||[]).filter(c=>partsOf(c).length&&!isStopped(c)).forEach(c=>{const want=comboAmenities(c),cur=pstg(c);
+  if(want.length&&!sameV(want,arrOf(cur.amenities))){const raw=rawP(c.property_id),next={...(PSTAGE[c.property_id]||{}),amenities:want};if(raw&&sameV(want,arrOf(raw.amenities)))delete next.amenities;
+    if(Object.keys(next).filter(k=>k!=='__new').length)PSTAGE[c.property_id]=next;else delete PSTAGE[c.property_id]}})}
 function pstage(id,fields){const raw=rawP(id),next={...(PSTAGE[id]||{}),...fields};
   if(raw)for(const k of Object.keys(next))if(k!=="__new"&&sameV(next[k],raw[k]))delete next[k];
-  if(Object.keys(next).filter(k=>k!=='__new').length)PSTAGE[id]=next;else delete PSTAGE[id];render()}
+  if(Object.keys(next).filter(k=>k!=='__new').length)PSTAGE[id]=next;else delete PSTAGE[id];syncCombos();render()}
 const P_L={property:'Name',city:'City',area:'Area',type:'Type',status:'Status',includes:'Made of',bedrooms:'Bedrooms',bathrooms:'Bathrooms',
   base_guests:'Guests included',max_guests:'Max guests',base_rate:'Base price / night',extra_guest_fee:'Extra guest / night',pet_fee:'Pet fee / stay',
-  check_in_time:'Check-in from',check_out_time:'Check-out by',description:'About',rules:'House rules',amenities:'Amenities',website_url:'Website link',
+  check_in_time:'Check-in from',check_out_time:'Check-out by',description:'About',rules:'House rules',amenities:'Amenities',website_url:'Website link',airbnb_url:'Airbnb listing',booking_url:'Booking.com listing',mmt_url:'MakeMyTrip listing',
   photos:'Photos',photo:'Cover photo',photo_thumbs:'Photo thumbnails'};
 function pVal(k,v){if(v==null||v==='')return'—';if(['base_rate','extra_guest_fee','pet_fee'].includes(k))return inr(+v);
   if(k==='includes')return arrOf(v).map(i=>short((D.P[i]||{}).property||i)).join(' + ')||'—';if(k==='photos')return arrOf(v).length+' photos';
@@ -2503,6 +2555,7 @@ const PTYPES=['Apartment','Villa','House','Cottage','Room','Bed & Breakfast'];
 
 function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),status:'Active',city:CITIES[0]};
   const inp=(v,o={})=>h('input',{value:v??'',autocomplete:'off',...o}),num=(v,o)=>inp(v,{type:'number',inputmode:'decimal',min:0,step:'1',...o});
+  const lk=Object.fromEntries(LINKS.map(([k,l])=>[k,inp(p[k],{type:'url',placeholder:`https://… your ${l} listing`})]));
   const nm=inp(p.property,{placeholder:'e.g. Blue Petals (D 401)'}),ar=inp(p.area,{placeholder:'e.g. Tapovan'}),ws=inp(p.website_url,{type:'url',placeholder:'https://…'});
   const ct=h('select',null,[...new Set([...CITIES,p.city].filter(Boolean))].map(c=>h('option',{selected:c===p.city||null},c)));
   const ty=h('select',null,p.type?null:h('option',{value:''},'—'),[...new Set([...PTYPES,p.type].filter(Boolean))].map(c=>h('option',{selected:c===p.type||null},c)));
@@ -2511,7 +2564,7 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
   const tIn=inp(p.check_in_time,{type:'time'}),tOut=inp(p.check_out_time,{type:'time'});
   const ds=h('textarea',{rows:4,placeholder:'2-3 lines guests read first'},p.description||''),rl=h('textarea',{rows:2,placeholder:'e.g. Smoking: no; Pets: yes; Party: no; Children: yes'},p.rules||'');
   const others=D.props.filter(x=>x.property_id!==p.property_id&&!arrOf(x.includes).length).sort((a,b)=>short(a.property).localeCompare(short(b.property)));
-  const inc=new Set(arrOf(p.includes)),incBox=h('div',{class:'pe-chips'},others.map(x=>h('label',{class:'pe-chip'},h('input',{type:'checkbox',checked:inc.has(x.property_id)||null,onchange:e=>e.target.checked?inc.add(x.property_id):inc.delete(x.property_id)}),short(x.property))));
+  const inc=new Set(arrOf(p.includes)),incBox=h('div',{class:'pe-chips'},others.map(x=>h('label',{class:'pe-chip'},h('input',{type:'checkbox','data-part':x.property_id,checked:inc.has(x.property_id)||null,onchange:e=>{e.target.checked?inc.add(x.property_id):inc.delete(x.property_id);peComboToggle()}}),short(x.property))));
   const allAm=[...new Set(D.props.flatMap(x=>arrOf(x.amenities)))].sort(),am=new Set(arrOf(p.amenities));
   const amBox=h('div',{class:'pe-chips'}),drawAm=()=>amBox.replaceChildren(...[...new Set([...allAm,...am])].sort().map(a=>h('label',{class:'pe-chip'+(am.has(a)?' on':'')},h('input',{type:'checkbox',checked:am.has(a)||null,onchange:e=>{e.target.checked?am.add(a):am.delete(a);drawAm()}}),a)));drawAm();
   const amNew=inp('',{placeholder:'Add another amenity, then Enter'});amNew.addEventListener('keydown',e=>{if(e.key==='Enter'&&amNew.value.trim()){e.preventDefault();am.add(amNew.value.trim().replace(/,/g,' &'));amNew.value='';drawAm()}});
@@ -2520,6 +2573,8 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
       (u===cover||(!cover&&i===0))?h('span',{class:'pill p-acc'},'Cover'):h('button',{class:'btn sm',onclick:()=>{photos.unshift(...photos.splice(i,1));thumbs.unshift(...thumbs.splice(i,1));cover=photos[0];drawPh()}},'Make cover'),
       h('button',{class:'btn sm danger-t','aria-label':'Remove photo',onclick:()=>{const was=photos[i]===cover;photos.splice(i,1);thumbs.splice(i,1);if(was)cover=photos[0]||'';drawPh()}},'Remove'))),
     photos.length?null:h('div',{class:'empty'},'No photos yet.'));drawPh();
+  const upSt=h('span',{class:'pe-hint'}),[upIn,upBtn]=pickPhotos('Upload from phone',async fs=>{upBtn.disabled=true;const got=await uploadPhotos(fs,short(p.property||'property'),(a,b)=>upSt.textContent=`Uploading ${a} of ${b}…`);
+    got.forEach(r=>{photos.push(r.url);thumbs.push(r.thumb);if(!cover)cover=r.url});upSt.textContent=got.length?`${got.length} added`:'';upBtn.disabled=false;drawPh()});
   const phNew=inp('',{type:'url',placeholder:'Paste a photo link (https://…), then Enter'});phNew.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const u=phNew.value.trim();if(!/^https:\/\//.test(u)){toast('Photo links must start with https://');return}photos.push(u);thumbs.push(u);if(!cover)cover=u;phNew.value='';drawPh()}});
   const err=h('div',{class:'err',hidden:true}),fail=t=>{err.hidden=false;err.textContent=t};
   const sec=t=>h('h3',{class:'full pe-h'},t);
@@ -2529,18 +2584,25 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
     sec('Size & price'),fld('Bedrooms',bd),fld('Bathrooms',ba),fld('Guests included in price',bg),fld('Max guests',mg),fld('Base price / night (₹)',br),fld('Extra guest / night (₹)',eg),fld('Pet fee / stay (₹)',pf),
     sec('Check-in'),fld('Check-in from',tIn),fld('Check-out by',tOut),
     sec('Combo listing'),h('p',{class:'full pe-hint'},'Tick the properties this listing is made of (e.g. a 4BHK let as two 2BHKs together). Booking one blocks the others.'),h('div',{class:'full'},incBox),
-    sec('For guests'),fld('About',ds,1),fld('House rules',rl,1),h('div',{class:'full'},h('span',{class:'pe-lab'},'Amenities'),amBox,amNew),fld('Website listing link',ws,1),
-    sec('Photos'),h('p',{class:'full pe-hint'},'The cover shows on cards, WhatsApp and the brochure. The bot remakes the brochure by itself after you save.'),h('div',{class:'full'},phBox,phNew),err),
+    sec('For guests'),fld('About',ds,1),fld('House rules',rl,1),h('div',{class:'full pe-am'},h('span',{class:'pe-lab'},'Amenities'),amBox,amNew),h('div',{class:'full pe-am-combo'},h('span',{class:'pe-lab'},'Amenities (from its parts)'),h('div',{class:'pe-chips ro'})),fld('Website listing link',ws,1),
+    sec('Listing links'),h('p',{class:'full pe-hint'},'Your own listing on each platform (kept for reference and quick checks).'),LINKS.map(([k,l])=>fld(l,lk[k],1)),
+    sec('Photos'),h('p',{class:'full pe-hint'},'The cover shows on cards, WhatsApp and the brochure. The bot remakes the brochure by itself after you save.'),h('div',{class:'full'},phBox,h('div',{class:'pe-up'},upIn,upBtn,upSt),phNew),err),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{
       const v=x=>x.value===''?null:+x.value;
       if(!nm.value.trim())return fail('Add a name.');if(stt.value==='Active'&&!(+br.value>0))return fail('An active property needs a base price (the bot never quotes ₹0).');
       if(bg.value&&mg.value&&+bg.value>+mg.value)return fail('Guests included can’t be more than max guests.');
       const f={property:nm.value.trim(),city:ct.value,area:ar.value.trim()||null,type:ty.value||null,status:p0&&!p0.status&&stt.value==='Active'?null:stt.value,bedrooms:v(bd),bathrooms:v(ba),base_guests:v(bg),max_guests:v(mg),
         base_rate:v(br),extra_guest_fee:v(eg),pet_fee:v(pf),check_in_time:tIn.value||null,check_out_time:tOut.value||null,includes:inc.size?[...inc]:null,
-        description:ds.value.trim()||null,rules:rl.value.trim()||null,amenities:am.size?[...am]:null,website_url:ws.value.trim()||null,
+        description:ds.value.trim()||null,rules:rl.value.trim()||null,amenities:inc.size?(comboAmenities({includes:[...inc]}).length?comboAmenities({includes:[...inc]}):null):am.size?[...am]:null,website_url:ws.value.trim()||null,
+        ...Object.fromEntries(LINKS.map(([k])=>[k,lk[k].value.trim()||null])),
         photos:photos.length?photos:null,photo_thumbs:thumbs.length?thumbs:null,photo:cover||null};
+      const bad=LINKS.find(([k])=>f[k]&&!/^https:\/\//.test(f[k]));if(bad)return fail(`The ${bad[1]} link must start with https://`);
       closeLayer();pstage(p.property_id,isNew?{__new:true,property_id:p.property_id,...f}:f)}},isNew?'Add':'Done')]);
+  peComboToggle();
 }
+function peComboToggle(){const box=document.querySelector('.pe'),am=box&&box.querySelector('.pe-am'),cm=box&&box.querySelector('.pe-am-combo');if(!am||!cm)return;
+  const ids=[...box.querySelectorAll('.pe-chips:not(.ro) input[type=checkbox][data-part]:checked')].map(i=>i.dataset.part);am.hidden=ids.length>0;cm.hidden=!ids.length;
+  const list=comboAmenities({includes:ids});cm.querySelector('.ro').replaceChildren(...(list.length?list.map(a=>h('span',{class:'pe-chip on'},a)):[h('span',{class:'pe-hint'},'Its parts have no amenities yet.')]))}
 function nextPid(){const ids=[...(S.data.props||[]).map(p=>p.property_id),...Object.keys(PSTAGE)];let n=ids.reduce((m,x)=>Math.max(m,+(String(x).match(/\d+/)||[0])[0]),0)+1;return'P'+String(n).padStart(2,'0')}
 
 function manageProps(v,tabs){
@@ -2555,10 +2617,12 @@ function manageProps(v,tabs){
     return h('div',{class:'mg-row'+(ed?' mg-edit':'')},h('span',{class:'mthumb'},raw?scene(p,96,96):h('span')),
       h('div',{class:'mg-main'},h('b',null,short(p.property)),h('span',null,`${p.property_id} · ${[p.area,p.city].filter(Boolean).join(', ')} · ${p.type||''}${p.max_guests?' · up to '+p.max_guests+' guests':''}${p.base_rate?' · '+inr(+p.base_rate)+'/night':''}`),
         h('div',{class:'mg-tags'},h('span',{class:'pill '+(isStopped(p)?'p-mute':'p-ok')},isStopped(p)?'Stopped':'Active'),arrOf(p.includes).length?h('span',{class:'chip-s'},'Combo: '+pVal('includes',p.includes)):null,
-          ed?h('span',{class:'pill p-warn'},ed.__new?'New · not saved':'Changed · not saved'):null,!arrOf(p.photos).length&&!p.photo?h('span',{class:'chip-s'},'No photos'):null)),
+          ed?h('span',{class:'pill p-warn'},ed.__new?'New · not saved':'Changed · not saved'):null,(()=>{const m=missingOf(p);return m.length?h('button',{class:'pill p-warn gap-chip',onclick:()=>fillGaps([p.property_id]),'data-tip':'Missing: '+m.map(k=>NEED.find(x=>x[0]===k)[1].split(' (')[0]).join(', ')},`${m.length} missing · fill`):null})())),
       h('div',{class:'mg-acts'},h('button',{class:'btn sm',onclick:()=>propEditor(raw||null)},'Edit')))};
   v.append(card('s12','Manage properties',{hint:`${list.length} propert${list.length===1?'y':'ies'} · changes are saved only after you review them`,acts:[tabs]},
     h('div',{class:'mg-filters'},search,fst,h('button',{class:'btn sm primary',onclick:()=>propEditor(null)},icon('plus'),'Add property')),
+    (()=>{const gaps=(S.data.props||[]).map(pstg).filter(x=>missingOf(x).length),n=sum(gaps,x=>missingOf(x).length);return gaps.length?h('div',{class:'gap-banner'},h('div',null,h('b',null,`${gaps.length} active stay${gaps.length>1?'s':''} missing ${n} detail${n>1?'s':''}`),h('span',null,'One question at a time · answer or skip for later · saved only after Review & save')),
+      h('button',{class:'btn primary sm',onclick:()=>fillGaps(gaps.map(x=>x.property_id))},'Fill them in')):null})(),
     list.length?h('div',{class:'mg-list'},list.map(p=>row(p))):h('div',{class:'empty'},'No properties match.')));
   pendingBar(v)}
 
