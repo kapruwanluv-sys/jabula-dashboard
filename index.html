@@ -515,8 +515,8 @@ button.sstat:hover{background:var(--surface-2)}
   .top-r{flex:0 0 auto;gap:8px}.top-r .btn.primary{width:40px;height:40px}
   .live-badge{width:34px;height:34px;padding:0;justify-content:center}.live-badge .lb-t{display:none}  /* dot only: green = live */
 }
-#popLayer .pop-scrim{position:fixed;inset:0;z-index:88;background:rgba(10,20,45,.28)}
-#popLayer .pop{position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);width:auto;max-width:560px;margin:0 auto;max-height:70vh;z-index:89;background:var(--surface)}
+#popLayer .pop-scrim{position:fixed;inset:0;z-index:88;background:transparent}
+#popLayer .pop.drop{position:fixed;left:12px;right:12px;bottom:auto;width:auto;max-width:560px;margin:0 auto;overflow:auto;z-index:89;background:#fff;background:var(--surface);opacity:1;animation:none;transform:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--hair-2);border-radius:18px;box-shadow:0 18px 50px rgba(12,26,61,.22)}
 .cd-row{cursor:pointer;min-height:0;height:auto;align-content:center}.cd-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pd-kv{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .pd-sec{margin-top:16px}.pd-sec>span{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}.pd-sec p{margin:0;font-size:13.5px}
@@ -1201,7 +1201,12 @@ const fIcon=k=>{const s=sv('svg',{viewBox:'0 0 24 24','aria-hidden':'true'});s.a
 /* Phones: the open filter popup lives at page level (a sheet over a dim backdrop), so no bar, scroller or
    Safari quirk can clip it. Desktop keeps it under its button. */
 function popHost(el){let L=document.getElementById('popLayer');if(!L){L=h('div',{id:'popLayer'});document.body.append(L)}
-  L.replaceChildren(...(el?[h('div',{class:'pop-scrim','aria-hidden':'true'}),el]:[]))}
+  if(!el){L.replaceChildren();return}
+  /* a dropdown right under the filter bar, as tall as the room above the tab bar allows */
+  const bar=document.querySelector('#filters .fbar'),top=Math.max(8,Math.round(bar?bar.getBoundingClientRect().bottom+6:80));
+  el.classList.add('drop');el.style.top=top+'px';el.style.maxHeight=Math.max(180,innerHeight-top-96)+'px';
+  L.replaceChildren(h('div',{class:'pop-scrim','aria-hidden':'true'}),el)}
+addEventListener('scroll',()=>{if(S.pop&&PHONE()){S.pop=null;renderFilters()}},{passive:true});  // a dropdown never floats away from its bar
 function renderFilters(){
   if(!S.pop||!PHONE())popHost(null);
   if(S.view==='manage'){$('#filters').replaceChildren();return}
