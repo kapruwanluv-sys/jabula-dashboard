@@ -515,6 +515,9 @@ button.sstat:hover{background:var(--surface-2)}
   .top-r{flex:0 0 auto;gap:8px}.top-r .btn.primary{width:40px;height:40px}
   .live-badge{width:34px;height:34px;padding:0;justify-content:center}.live-badge .lb-t{display:none}  /* dot only: green = live */
 }
+#popLayer .pop-scrim{position:fixed;inset:0;z-index:88;background:rgba(10,20,45,.28)}
+#popLayer .pop{position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);width:auto;max-width:560px;margin:0 auto;max-height:70vh;z-index:89;background:var(--surface)}
+.cd-row{cursor:pointer;min-height:0;height:auto;align-content:center}.cd-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pd-kv{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .pd-sec{margin-top:16px}.pd-sec>span{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}.pd-sec p{margin:0;font-size:13.5px}
 .pd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -1195,7 +1198,12 @@ function setF(p){Object.assign(S.f,p);saveF();render()}
 function toggleIn(key,v){const a=new Set(S.f[key]);a.has(v)?a.delete(v):a.add(v);setF({[key]:[...a]})}
 const FIC={period:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4',city:'M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 100-5 2.5 2.5 0 000 5z',prop:'M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6',chan:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',own:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0',sync:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7'};
 const fIcon=k=>{const s=sv('svg',{viewBox:'0 0 24 24','aria-hidden':'true'});s.append(sv('path',{d:FIC[k]}));return s};
+/* Phones: the open filter popup lives at page level (a sheet over a dim backdrop), so no bar, scroller or
+   Safari quirk can clip it. Desktop keeps it under its button. */
+function popHost(el){let L=document.getElementById('popLayer');if(!L){L=h('div',{id:'popLayer'});document.body.append(L)}
+  L.replaceChildren(...(el?[h('div',{class:'pop-scrim','aria-hidden':'true'}),el]:[]))}
 function renderFilters(){
+  if(!S.pop||!PHONE())popHost(null);
   if(S.view==='manage'){$('#filters').replaceChildren();return}
   const wrap=$('#filters');const f=S.f;const keep=wrap.querySelector('.fbar')?.scrollLeft||0;
   const bar=h('div',{class:'fbar'});
@@ -1204,7 +1212,7 @@ function renderFilters(){
   const seg=(key,ic,label,value,body)=>{const open=S.pop===key;return h('div',{class:'fseg'},
     h('button',{class:'fbtn','aria-expanded':open,'aria-haspopup':'dialog',onclick:e=>{e.stopPropagation();S.pop=open?null:key;S.popQ='';renderFilters()}},
       h('span',{class:'ic'},fIcon(ic)),h('span',{class:'tx'},h('b',null,label),h('span',null,value)),h('span',{class:'chev','aria-hidden':'true'},'⌄')),
-    open?body():null)};
+    open?(PHONE()?(popHost(body()),null):body()):null)};
   const cb=(checked,label,on,sw)=>h('label',null,h('input',{type:'checkbox',checked:checked||null,onchange:on}),sw?h('span',{class:'sw',style:{background:sw}}):null,label);
   const rb=(name,checked,label,on)=>h('label',null,h('input',{type:'radio',name,checked:checked||null,onchange:on}),label);
   if(!['desk','calendar','whatsapp'].includes(S.view))bar.append(seg('period','period','Period',rangeLabel(),()=>{
@@ -1262,12 +1270,13 @@ function overview(v){
       h('div',{class:'mix-l'},chs.map(x=>h('button',{class:'hb',style:{gridTemplateColumns:'1fr auto'},onclick:()=>toggleIn('channels',x.key)},h('span',{class:'chd'},h('i',{style:{background:chColor(x.key)}}),x.key),h('span',{class:'v num'},pct(x.value/tot)))))),
     h('div',{class:'foot-note'},`Platforms took ${inrK(sum(chs,x=>x.fees))} in fees this period. Moving 10% of bookings to direct saves about ${inrK(sum(chs,x=>x.fees)*.1)}.`)));
   // check dates: tap a stay for its month calendar (free and booked nights)
-  const cdProps=D.props.filter(p=>fP(p)&&active(p)).sort((x,y)=>String(x.city).localeCompare(String(y.city))||short(x.property).localeCompare(short(y.property)));
+  const props=D.props.filter(p=>fP(p)&&active(p));  // also used by the sections below
+  const cdProps=[...props].sort((x,y)=>String(x.city).localeCompare(String(y.city))||short(x.property).localeCompare(short(y.property)));
   const in30=add(TODAY,30);
   const cdShow=S.cdAll?cdProps:cdProps.slice(0,6);
   v.append(card('s12','Check dates',{hint:'free nights in the next 30 days · tap a stay for its calendar'},cdProps.length?[h('div',{class:'cd-list'},cdShow.map(p=>{
     const fr=freeRanges(p.property_id,TODAY,in30),freeN=sum(fr,r=>r.n);
-    return h('button',{class:'cd-row',onclick:()=>openAvail(p.property_id)},thumb(p),h('div',{class:'cd-main'},h('b',null,short(p.property)),h('span',null,[p.area,p.city].filter(Boolean).join(', '))),
+    return h('div',{class:'cd-row',role:'button',tabindex:0,onclick:()=>openAvail(p.property_id),onkeydown:e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openAvail(p.property_id)}}},thumb(p),h('div',{class:'cd-main'},h('b',null,short(p.property)),h('span',null,[p.area,p.city].filter(Boolean).join(', '))),
       h('div',{class:'cd-free'+(freeN?'':' full')},h('b',null,freeN?`${freeN} free`:'Full'),h('span',null,fr[0]?(fr[0].a===TODAY?'free tonight':'from '+fmtD(fr[0].a)):'30 days')),icon('chev'))})),
       cdProps.length>6?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.cdAll=!S.cdAll;render()}},S.cdAll?'Show fewer':`Show all ${cdProps.length}`):null]:
     h('div',{class:'empty'},'No properties match these filters.')));
