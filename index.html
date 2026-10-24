@@ -507,6 +507,14 @@ button.sstat:hover{background:var(--surface-2)}
 .avl-h{margin:6px 0 0;font-size:15px}.avl-ranges{display:flex;flex-direction:column;gap:8px}
 .avl-r{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--hair);border-radius:14px}.avl-r b{display:block;font-size:14px}.avl-r span{font-size:12px;color:var(--muted)}
 .avl-ri{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:0 0 auto}.avl-ri svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.cd-row{grid-template-columns:auto minmax(0,1fr) auto auto;padding:6px 8px 6px 6px;gap:10px}.cd-row .mthumb{width:40px;height:40px;border-radius:10px}
+.cd-main b{font-size:13.5px}.cd-main span{font-size:11.5px}.cd-free b{font-size:12.5px}.cd-free span{font-size:11px}.cd-list{gap:6px}
+@media (max-width:480px){
+  .brand{flex:1 1 auto;min-width:0}.brand b{font-size:17px;overflow:hidden;text-overflow:ellipsis}.brand>span,.brand>div{min-width:0}
+  .top-r{flex:0 0 auto;gap:8px}.top-r .btn.primary{width:40px;height:40px}
+  .live-badge{width:34px;height:34px;padding:0;justify-content:center}.live-badge .lb-t{display:none}  /* dot only: green = live */
+}
 .pd-kv{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .pd-sec{margin-top:16px}.pd-sec>span{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}.pd-sec p{margin:0;font-size:13.5px}
 .pd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -1256,10 +1264,12 @@ function overview(v){
   // check dates: tap a stay for its month calendar (free and booked nights)
   const cdProps=D.props.filter(p=>fP(p)&&active(p)).sort((x,y)=>String(x.city).localeCompare(String(y.city))||short(x.property).localeCompare(short(y.property)));
   const in30=add(TODAY,30);
-  v.append(card('s12','Check dates',{hint:'free nights in the next 30 days · tap a stay for its calendar'},cdProps.length?h('div',{class:'cd-list'},cdProps.map(p=>{
+  const cdShow=S.cdAll?cdProps:cdProps.slice(0,6);
+  v.append(card('s12','Check dates',{hint:'free nights in the next 30 days · tap a stay for its calendar'},cdProps.length?[h('div',{class:'cd-list'},cdShow.map(p=>{
     const fr=freeRanges(p.property_id,TODAY,in30),freeN=sum(fr,r=>r.n);
     return h('button',{class:'cd-row',onclick:()=>openAvail(p.property_id)},thumb(p),h('div',{class:'cd-main'},h('b',null,short(p.property)),h('span',null,[p.area,p.city].filter(Boolean).join(', '))),
-      h('div',{class:'cd-free'+(freeN?'':' full')},h('b',null,freeN?`${freeN} free`:'Fully booked'),h('span',null,fr[0]?(fr[0].a===TODAY?'free tonight':'next free '+fmtD(fr[0].a)):'next 30 days')),icon('chev'))})):
+      h('div',{class:'cd-free'+(freeN?'':' full')},h('b',null,freeN?`${freeN} free`:'Full'),h('span',null,fr[0]?(fr[0].a===TODAY?'free tonight':'from '+fmtD(fr[0].a)):'30 days')),icon('chev'))})),
+      cdProps.length>6?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.cdAll=!S.cdAll;render()}},S.cdAll?'Show fewer':`Show all ${cdProps.length}`):null]:
     h('div',{class:'empty'},'No properties match these filters.')));
   // city comparison
   const cityStats=CITIES.filter(c=>!f.cities.length||f.cities.includes(c)).map(c=>{const sv_={...S.f};const save=S.f.cities;S.f.cities=[c];const st=stats(f.from,f.to);S.f.cities=save;return{c,...st,perL:st.listings?st.profit/st.listings:0}});
@@ -1555,7 +1565,7 @@ function openBooking(b){
       bookingActions(b),
       h('button',{class:'btn',onclick:()=>{closeLayer();go('property',{propId:p.property_id})}},'Open property',icon('chev'))))));
 }
-function modal(title,body,actions){$('#layer').replaceChildren(h('div',{class:'scrim',onclick:closeLayer}),h('div',{class:'modal-wrap',onclick:e=>{if(e.target.classList.contains('modal-wrap'))closeLayer()}},h('div',{class:'modal',role:'dialog','aria-modal':'true','aria-label':title},h('div',{class:'modal-h'},h('h2',null,title),h('button',{class:'x','aria-label':'Close',onclick:closeLayer},'✕')),body,h('div',{class:'modal-f'},actions))));const f=$('#layer input:not([type=checkbox]),#layer select');if(f)f.focus()}
+function modal(title,body,actions){$('#layer').replaceChildren(h('div',{class:'scrim',onclick:closeLayer}),h('div',{class:'modal-wrap',onclick:e=>{if(e.target.classList.contains('modal-wrap'))closeLayer()}},h('div',{class:'modal',role:'dialog','aria-modal':'true','aria-label':title},h('div',{class:'modal-h'},h('h2',null,title),h('button',{class:'x','aria-label':'Close',onclick:closeLayer},'✕')),body,h('div',{class:'modal-f'},actions))));if(!matchMedia('(pointer:coarse)').matches){const f=$('#layer input:not([type=checkbox]):not([type=date]):not([type=time]),#layer textarea');if(f)f.focus()}}
 const fld=(l,i,full)=>h('label',{class:full?'full':null},l,i);
 /* Drop-downs for the booking form: the owner's Lists tab in the Sheet wins; client.json booking_lists are the
    defaults. Lists rows: channel (+commission_pct), payment_term, account - each column is its own list. */
@@ -2079,7 +2089,7 @@ function mgRestore(ids){let skipped=[];
 function mgNote(ids){const nt=h('textarea',{rows:3,placeholder:'e.g. Guest asked for early check-in; paid ₹2,000 extra in cash'});
   modal(ids.length===1?`Note on ${ids[0]}`:`Note on ${ids.length} bookings`,h('div',{class:'form'},fld('Note',nt,1),h('p',{class:'full',style:{margin:0,fontSize:'12.5px',color:'var(--muted)'}},'Added below earlier notes with today’s date and your name.')),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{const t=nt.value.trim();if(!t){nt.focus();return}closeLayer();
-      for(const id of ids)stage(id,{notes:addNote(stg(rawB(id)).notes,t)});MG.sel.clear();render()}},'Add note')]);setTimeout(()=>nt.focus(),50)}
+      for(const id of ids)stage(id,{notes:addNote(stg(rawB(id)).notes,t)});MG.sel.clear();render()}},'Add note')]);if(!matchMedia('(pointer:coarse)').matches)setTimeout(()=>nt.focus(),50)}
 function mgSet(ids,k,v){for(const id of ids)stage(id,{[k]:v});MG.sel.clear();render()}
 function mgTrash(ids){confirmBox(ids.length===1?`Move ${ids[0]} to Trash?`:`Move ${ids.length} bookings to Trash?`,
   'Trash hides a booking everywhere (calendar, money, the bot) and frees its dates. Restore it within 30 days; after that it is removed for good. Use Cancel instead if the guest cancelled.',
