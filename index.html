@@ -489,6 +489,24 @@ button.sstat:hover{background:var(--surface-2)}
 .cs-m .cs-cell{margin:0;border-radius:0;border-width:0 0 0 1px;border-style:solid;border-color:var(--hair-2)}.cs-m .cs-bar{margin:0;border-radius:3px}
 .hm2 .hm-c{border-left:1px solid var(--hair);border-bottom:1px solid var(--hair)}.hm2 .hm-c.we{background:color-mix(in srgb,var(--accent) 5%,transparent)}
 .hm2 .hm-c.td{background:var(--accent-soft)}.hm2 .hm-d{border-left:1px solid var(--hair)}.hm2 .hm-rowname{border-top:1px solid var(--hair-2);margin-top:4px}
+.cd-list{display:flex;flex-direction:column;gap:8px}
+.cd-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:12px;align-items:center;width:100%;text-align:left;padding:8px 10px 8px 8px;border:1px solid var(--hair);border-radius:16px;background:var(--surface);color:inherit}
+.cd-row:hover{border-color:var(--accent)}.cd-row .mthumb{width:48px;height:48px}
+.cd-main{display:flex;flex-direction:column;gap:2px;min-width:0}.cd-main b{font-size:14px;line-height:1.25}.cd-main span{font-size:12px;color:var(--muted)}
+.cd-free{display:flex;flex-direction:column;align-items:flex-end;gap:1px;white-space:nowrap}.cd-free b{font-size:13px;color:var(--ok)}.cd-free.full b{color:var(--muted)}.cd-free span{font-size:11.5px;color:var(--muted)}
+.avl{display:flex;flex-direction:column;gap:12px;padding:6px 24px 14px}@media (max-width:480px){.avl{padding:6px 16px 12px}.avl-c{border-radius:10px;font-size:14px}.avl-grid{gap:5px}}
+.avl-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.avl-head b{display:block;font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.1}.avl-head span{font-size:13px;color:var(--muted)}
+.avl-ph{width:110px;height:82px;border-radius:16px;overflow:hidden;flex:0 0 auto}.avl-ph img,.avl-ph svg{width:100%;height:100%;object-fit:cover;display:block}
+.avl-nav{display:flex;gap:8px;align-items:center}
+.avl-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.avl-wk div{text-align:center;font-size:11.5px;font-weight:650;color:var(--muted)}
+.avl-c{aspect-ratio:1;display:grid;place-items:center;border-radius:12px;font-size:15px;font-weight:650;border:0;padding:0}
+.avl-x{background:none}.avl-f{background:var(--surface-2);color:var(--ink);border:1px solid var(--hair)}
+.avl-b{color:#fff;cursor:pointer;box-shadow:0 4px 10px rgba(12,26,61,.12)}.avl-c.past{opacity:.45}.avl-c.td{outline:2px solid var(--accent);outline-offset:2px}
+.avl-key{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:12px;color:var(--muted)}.avl-key i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-2px}
+.avl-kf{background:var(--surface-2);border:1px solid var(--hair-2)}
+.avl-h{margin:6px 0 0;font-size:15px}.avl-ranges{display:flex;flex-direction:column;gap:8px}
+.avl-r{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--hair);border-radius:14px}.avl-r b{display:block;font-size:14px}.avl-r span{font-size:12px;color:var(--muted)}
+.avl-ri{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:0 0 auto}.avl-ri svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .pd-kv{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .pd-sec{margin-top:16px}.pd-sec>span{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}.pd-sec p{margin:0;font-size:13.5px}
 .pd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -1016,23 +1034,6 @@ function spark(vals,color,w=120,hh=36){
   s.append(sv('path',{d:`M${pts[0][0]} ${hh}L`+pts.map(p=>p.join(' ')).join('L')+`L${pts[pts.length-1][0]} ${hh}Z`,fill:`url(#${id})`}),sv('path',{d:'M'+pts.map(p=>p.join(' ')).join('L'),fill:'none',stroke:color,'stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round'}));
   const e=pts[pts.length-1];s.append(sv('circle',{cx:e[0],cy:e[1],r:3,fill:color}));return s;
 }
-function heat(w,{rows,cols,val,tip,onRow}){
-  const lw=Math.min(170,w*.3),ch=20,gap=2,top=22;const cw=(w-lw-4)/cols.length;const hh=top+rows.length*(ch+gap)+4;const s=svgRoot(w,hh);
-  const acc=css('--accent'),hair=css('--hair-2'),ink=css('--ink'),muted=css('--muted');const every=Math.ceil(cols.length/(w<600?6:14));
-  cols.forEach((c,j)=>{if(j%every===0)s.append(sv('text',{x:lw+j*cw+cw/2,y:13,'text-anchor':'middle',fill:c.today?acc:muted,'font-weight':c.today?700:500,'font-size':10},c.label))});
-  rows.forEach((r,i)=>{const y=top+i*(ch+gap);const lab=sv('text',{x:0,y:y+ch/2+4,fill:ink,'font-weight':600,style:'cursor:pointer','data-tip':r.sub},r.label.length>22?r.label.slice(0,21)+'…':r.label);lab.addEventListener('click',()=>onRow(r.id));s.append(lab);
-    cols.forEach((c,j)=>{const v=val(i,j);const rect=sv('rect',{x:lw+j*cw+1,y,width:Math.max(1,cw-2),height:ch,rx:Math.min(5,cw/3),fill:v>0?acc:hair,'fill-opacity':v>0?.18+.82*v:.55,'data-tip':tip(i,j),style:'cursor:pointer'});rect.addEventListener('click',()=>onRow(r.id));s.append(rect)})});
-  return s;
-}
-function heatPhone(rows,cols){
-  const tIdx=cols.findIndex(c=>c.today);const acc=css('--accent');
-  const grid=h('div',{class:'hm hm2',style:{gridTemplateColumns:`repeat(${cols.length},26px)`}},
-    cols.map((c,j)=>h('div',{class:'hm-mon'},j===0||j===tIdx||pd(c.a).getDate()===1?fmtD(c.a,{month:'short'}):'')),
-    cols.map((c,j)=>{const d=pd(c.a),we=[0,6].includes(d.getDay());return h('div',{class:'hm-h hm-d'+(c.today?' td':'')+(we?' we':'')},h('small',null,'SMTWTFS'[d.getDay()]),h('span',null,d.getDate()))}),
-    rows.flatMap(r=>[h('div',{class:'hm-rowname'},h('button',{class:'hm-n2',onclick:()=>go('property',{propId:r.id})},r.label)),
-      ...cols.map((c,j)=>h('div',{class:'hm-c'+(c.today?' td':'')+([0,6].includes(pd(c.a).getDay())?' we':''),'aria-label':`${r.label} ${fmtD(c.a)} ${r.vals[j]?'booked':'free'}`},h('i',{style:r.vals[j]?{background:acc,opacity:.25+.75*r.vals[j]}:null})))]));
-  const wrap=h('div',{class:'hm-wrap'},grid);pending.push(()=>{if(tIdx>2)wrap.scrollLeft=(tIdx-2)*26});
-  return h('div',null,wrap,h('div',{class:'hm-key'},h('span',null,h('i',{style:{background:acc}}),'Booked'),h('span',null,h('i',null),'Free'),h('span',{class:'grow'}),'Swipe for more dates'))}
 function scatter(w,{pts,xFmt,yFmt,xLab,yLab,onClick,hh=320}){
   const l=58,r=16,t=16,b=40,s=svgRoot(w,hh);const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
   const xmax=Math.min(1,niceMax(Math.max(...xs,.1)*1.08)),ymax=niceMax(Math.max(...ys,1)*1.08);const muted=css('--muted'),line=css('--hair-2');
@@ -1080,7 +1081,7 @@ function exportChart(holder,name){
     x.drawImage(img,pad,pad+34,w,hh);cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - ${name} - ${TODAY}.png`,b),'image/png')};
   img.onerror=()=>toast('Could not render this chart to an image.');img.src=src;
 }
-const ico={dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14'};
+const ico={dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
 const icon=k=>{const s=sv('svg',{viewBox:'0 0 24 24'});s.append(sv('path',{d:ico[k]}));return s};
 const btnExport=(fn,label='Excel')=>h('button',{class:'btn sm',onclick:fn,'aria-label':'Export '+label},icon('dl'),label);
 const btnPNG=(holderFn,name)=>h('button',{class:'btn sm',onclick:()=>exportChart(holderFn(),name),'aria-label':'Save chart as image'},icon('img'),'PNG');
@@ -1249,15 +1250,14 @@ function overview(v){
     h('div',{class:'mix'},dh=h('div',{class:'chart'},donut(150,{parts:chs.map(x=>({...x,color:chColor(x.key),dim:f.channels.length&&!f.channels.includes(x.key),tip:`${x.key}\n${inr(x.value)} gross · ${x.n} bookings\nFees ${inr(x.fees)}`})),center:pct(chs[3].value/tot),sub:'direct',onClick:p=>toggleIn('channels',p.key)})),
       h('div',{class:'mix-l'},chs.map(x=>h('button',{class:'hb',style:{gridTemplateColumns:'1fr auto'},onclick:()=>toggleIn('channels',x.key)},h('span',{class:'chd'},h('i',{style:{background:chColor(x.key)}}),x.key),h('span',{class:'v num'},pct(x.value/tot)))))),
     h('div',{class:'foot-note'},`Platforms took ${inrK(sum(chs,x=>x.fees))} in fees this period. Moving 10% of bookings to direct saves about ${inrK(sum(chs,x=>x.fees)*.1)}.`)));
-  // heatmap
-  const props=D.props.filter(p=>fP(p)&&active(p));const nd=diff(f.from,f.to)+1;const byDay=nd<=62;
-  const cols=[];if(byDay){for(let i=0;i<nd;i++){const d=add(f.from,i);cols.push({a:d,z:d,label:pd(d).getDate()+(pd(d).getDate()===1||i===0?' '+mLabel(d.slice(0,7)):''),today:d===TODAY})}}else{for(let d=f.from;d<=f.to;d=add(d,7)){const z=add(d,6)>f.to?f.to:add(d,6);cols.push({a:d,z,label:fmtD(d),today:d<=TODAY&&TODAY<=z})}}
-  const occ=props.map(p=>{const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id&&(!f.channels.length||f.channels.includes(b.channel))&&b.check_in<=f.to&&b.check_out>f.from);return cols.map(c=>{const n=diff(c.a,c.z)+1;return sum(bs,b=>overlap(b,c.a,c.z))/n})});
-  const rowsH=props.map((p,i)=>({id:p.property_id,label:short(p.property),sub:`${p.area}, ${p.city}\n${pct(sum(occ[i],x=>x)/cols.length)} occupied in this period`,o:sum(occ[i],x=>x)})).map((r,i)=>({...r,i})).sort((a,b)=>b.o-a.o);
-  let hh;const cut=innerWidth<760&&!S.heatAll&&rowsH.length>10;const rowsV=cut?rowsH.slice(0,10):rowsH;
-  v.append(card('s12','Occupancy by property',{hint:(byDay?'each square is a night':'each square is a week')+' · busiest first · tap a row to open',acts:[btnPNG(()=>hh,'Occupancy by property')]},
-    props.length&&PHONE()&&byDay?heatPhone(rowsV.map(r=>({...r,vals:occ[r.i]})),cols):props.length?(hh=chart(w=>heat(w,{rows:rowsV,cols,val:(i,j)=>occ[rowsH[i].i][j],tip:(i,j)=>`${rowsH[i].label} · ${byDay?fmtD(cols[j].a,{weekday:'short',day:'numeric',month:'short'}):'week of '+fmtD(cols[j].a)}\n${byDay?(occ[rowsH[i].i][j]?'Booked':'Empty'):pct(occ[rowsH[i].i][j])+' occupied'}`,onRow:id=>go('property',{propId:id})}))):h('div',{class:'empty'},'No properties match these filters.'),
-    rowsH.length>10&&innerWidth<760?h('button',{class:'btn sm',style:{alignSelf:'flex-start'},onclick:()=>{S.heatAll=!S.heatAll;render()}},S.heatAll?'Show busiest 10':`Show all ${rowsH.length}`):null));
+  // check dates: tap a stay for its month calendar (free and booked nights)
+  const cdProps=D.props.filter(p=>fP(p)&&active(p)).sort((x,y)=>String(x.city).localeCompare(String(y.city))||short(x.property).localeCompare(short(y.property)));
+  const in30=add(TODAY,30);
+  v.append(card('s12','Check dates',{hint:'free nights in the next 30 days · tap a stay for its calendar'},cdProps.length?h('div',{class:'cd-list'},cdProps.map(p=>{
+    const fr=freeRanges(p.property_id,TODAY,in30),freeN=sum(fr,r=>r.n);
+    return h('button',{class:'cd-row',onclick:()=>openAvail(p.property_id)},thumb(p),h('div',{class:'cd-main'},h('b',null,short(p.property)),h('span',null,[p.area,p.city].filter(Boolean).join(', '))),
+      h('div',{class:'cd-free'+(freeN?'':' full')},h('b',null,freeN?`${freeN} free`:'Fully booked'),h('span',null,fr[0]?(fr[0].a===TODAY?'free tonight':'next free '+fmtD(fr[0].a)):'next 30 days')),icon('chev'))})):
+    h('div',{class:'empty'},'No properties match these filters.')));
   // city comparison
   const cityStats=CITIES.filter(c=>!f.cities.length||f.cities.includes(c)).map(c=>{const sv_={...S.f};const save=S.f.cities;S.f.cities=[c];const st=stats(f.from,f.to);S.f.cities=save;return{c,...st,perL:st.listings?st.profit/st.listings:0}});
   const cmpBlock=(title,key,fmt)=>{const mx=Math.max(...cityStats.map(x=>x[key]),1e-9);return h('div',null,h('h3',null,title),cityStats.map(x=>h('button',{class:'cmp-row',onclick:()=>toggleIn('cities',x.c),'data-tip':`${x.c}: ${fmt(x[key])}\n${x.listings} listings`},h('span',null,x.c),h('b',{class:'num'},fmt(x[key])),h('span',{class:'t'},h('i',{style:{width:Math.max(2,x[key]/mx*100)+'%',background:cityColor(x.c)}})))))};
@@ -1357,23 +1357,29 @@ function deskImage(rows,d){
 }
 
 /* ============ CALENDAR ============ */
-/* Phone calendar: each stay's full name on its own line, a strip of nights below it (free nights tinted, bookings
-   in their platform colour), month names over the dates, the date header stays in view while scrolling. */
-function calStrip(props,days,start,end,n){
-  const cols=`repeat(${n},minmax(0,1fr))`,grid=(cls,kids)=>h('div',{class:'cs-grid '+cls,style:{gridTemplateColumns:cols}},kids);
-  const mon=grid('cs-mon',days.map((ds,i)=>h('div',null,i===0||ds.slice(8)==='01'?fmtD(ds,{month:'short'}):'')));
-  const head=grid('cs-head',days.map((ds,i)=>{const dw=pd(ds).getDay(),show=n<=14||i===0||+ds.slice(8)%5===1||ds===TODAY;
-    return h('div',{class:'cs-d'+(dw===0||dw===6?' we':'')+(ds===TODAY?' td':'')},show?[h('small',null,'SMTWTFS'[dw]),h('span',null,+ds.slice(8))]:null)}));
-  let tot=0;
-  const blocks=props.map(p=>{const bs=D.B.filter(b=>fB(b)&&b.property_id===p.property_id&&b.check_in<=end&&b.check_out>start);
-    const nights=sum(bs,b=>overlap(b,start,end));tot+=nights;const free=n-nights;
-    const strip=grid('cs-strip',[...days.map((ds,i)=>h('div',{class:'cs-cell'+(ds<TODAY?' past':'')+(ds===TODAY?' td':'')+([0,6].includes(pd(ds).getDay())?' we':''),style:{gridColumn:i+1}})),
-      ...bs.map(b=>{const s0=Math.max(0,diff(start,b.check_in)),e0=Math.min(n,diff(start,b.check_out)),w=e0-s0;
-        return h('button',{class:'cs-bar'+(b.check_in<start?' ol':'')+(b.check_out>add(end,1)?' or':''),style:{gridColumn:`${s0+1}/${e0+1}`,background:chColor(b.channel)},onclick:()=>openBooking(b),
-          'aria-label':`${b.guest}, ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`},n<=7&&w>=2?b.guest.split(' ')[0]:n<=14&&w>=2?ini(b.guest):'')})]);
-    return h('div',{class:'cs-prop'},h('button',{class:'cs-name',onclick:()=>go('property',{propId:p.property_id})},h('b',null,short(p.property)),
-      h('span',null,free?`${free} free night${free>1?'s':''}`:'Fully booked',' · ',p.city)),strip)});
-  return{el:h('div',{class:'cs'+(n>14?' cs-m':''),style:{'--n':n}},h('div',{class:'cs-top'},mon,head),blocks),tot}}
+/* Night-level availability for one stay (combo listings count their halves and the other way round). */
+function nightBooking(pid,d){return D.B.find(b=>b.ok&&samePlace(b.property_id,pid)&&b.check_in<=d&&b.check_out>d)}
+function freeRanges(pid,from,to){const out=[];let cur=null;
+  for(let d=from;d<to;d=add(d,1)){if(nightBooking(pid,d))cur=null;else{if(!cur){cur={a:d,n:0};out.push(cur)}cur.n++}}
+  return out.map(r=>({...r,z:add(r.a,r.n)}))}
+function openAvail(pid,m){m=m||TODAY.slice(0,7);const p=D.P[pid];if(!p)return;
+  const first=mStart(m),last=mEnd(m),lead=(pd(first).getDay()+6)%7,cells=[...Array(lead)].map(()=>h('div',{class:'avl-c avl-x'}));const used=new Set();
+  for(let d=first;d<=last;d=add(d,1)){const b=nightBooking(pid,d),cls=(d<TODAY?' past':'')+(d===TODAY?' td':'');
+    if(b){used.add(b.channel);cells.push(h('button',{class:'avl-c avl-b'+cls,style:{background:chColor(b.channel)},'aria-label':`${fmtD(d)}: booked, ${b.guest}`,onclick:()=>openBooking(b)},+d.slice(8)))}
+    else cells.push(h('div',{class:'avl-c avl-f'+cls,'aria-label':`${fmtD(d)}: free`},+d.slice(8)))}
+  const from=first<TODAY?TODAY:first,fr=from>last?[]:freeRanges(pid,from,add(last,1));
+  const months=[...Array(19)].map((_,i)=>{let x=TODAY.slice(0,7);for(let j=6;j>i;j--)x=prevM(x);for(let j=6;j<i;j++)x=nextM(x);return x});
+  const sel=h('select',{class:'cal-mon','aria-label':'Month',onchange:e=>openAvail(pid,e.target.value)},months.map(x=>h('option',{value:x,selected:x===m||null},fmtD(x+'-01',{month:'long',year:'numeric'}))));
+  const body=h('div',{class:'avl'},
+    h('div',{class:'avl-head'},h('div',null,h('b',null,short(p.property)),h('span',null,[p.area,p.city].filter(Boolean).join(', '))),h('span',{class:'avl-ph'},scene(p,160,120))),
+    h('div',{class:'avl-nav'},sel,h('span',{class:'grow'}),h('button',{class:'btn icon','aria-label':'Previous month',onclick:()=>openAvail(pid,prevM(m))},icon('back')),h('button',{class:'btn icon','aria-label':'Next month',onclick:()=>openAvail(pid,nextM(m))},icon('chev'))),
+    h('div',{class:'avl-grid avl-wk'},['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x=>h('div',null,x))),h('div',{class:'avl-grid'},cells),
+    h('div',{class:'avl-key'},h('span',null,h('i',{class:'avl-kf'}),'Free'),[...used].map(c=>h('span',null,h('i',{style:{background:chColor(c)}}),c)),h('span',{class:'grow'}),'Tap a booked night for the booking'),
+    h('h3',{class:'avl-h'},`Free date ranges${first<TODAY&&last>=TODAY?' from today':''}`),
+    fr.length?h('div',{class:'avl-ranges'},fr.map(r=>h('div',{class:'avl-r'},h('span',{class:'avl-ri'},icon('cal')),h('div',null,h('b',null,`${fmtD(r.a)} – ${fmtD(r.z,{day:'numeric',month:'short',year:'numeric'})}`),
+      h('span',null,`${r.n} night${r.n>1?'s':''} · check-in ${fmtD(r.a,{weekday:'short',day:'numeric'})}, check-out ${fmtD(r.z,{weekday:'short',day:'numeric'})}`))))):
+      h('div',{class:'empty'},last<TODAY?'This month is over.':'No free nights left this month.'));
+  modal('Availability',body,[h('button',{class:'btn',onclick:closeLayer},'Close')])}
 function calendar(v){
   const narrow=innerWidth<760,k=S.calM,zm=narrow?(S.calZoom||'w'):'m',span=zm==='w'?7:zm==='2w'?14:0,two=span>0;
   const start=two?(S.calFrom||(TODAY.slice(0,7)===k?add(TODAY,-1):mStart(k))):mStart(k),end=two?add(start,span-1):mEnd(k),n=diff(start,end)+1;
@@ -1396,10 +1402,10 @@ function calendar(v){
     bs.forEach(b=>{const s0=Math.max(0,diff(start,b.check_in)),e0=Math.min(n,diff(start,b.check_out));
       row.append(h('button',{class:'cal-bar'+(b.check_in<start?' ol':'')+(b.check_out>add(end,1)?' or':''),style:{gridColumn:`${s0+2}/${e0+2}`,background:chColor(b.channel)},onclick:()=>openBooking(b),'aria-label':`${b.guest}, ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`,'data-tip':`${b.guest} · ${b.guests} guests\n${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.nights} nights\n${b.channel} · ${inr(b.gross)}`},(narrow&&!two)?'':e0-s0>=2?b.guest.split(' ')[0]:zm==='w'?ini(b.guest):''))});
     if(!narrow)row.append(h('div',{class:'cal-occ num',style:{gridColumn:n+2,color:oc}},pct(o)));wrap.append(row)});
-  let body=wrap;if(narrow){const cs=calStrip(props,days,start,end,n);body=cs.el;tot=cs.tot}
+  const body=wrap;
   const title=two?`${fmtD(start,{day:'numeric',month:'short'})} – ${fmtD(end,{day:'numeric',month:'short',year:'numeric'})}`:mLong(k);
   v.append(card('s12',title,{hint:`${pct(tot/((props.length||1)*n))} occupied · tap a stay for details`,acts:[zoom,monSel,nav,h('button',{class:'btn sm admin',onclick:()=>openForm('booking')},icon('plus'),'Booking'),btnExport(()=>exportRows(D.B.filter(b=>fB(b)&&b.check_in<=end&&b.check_out>start).map(bookRow),`Calendar ${start}`))]},
-    h('div',{class:'legend'},CHN.map(c=>h('button',{'aria-pressed':!S.f.channels.length||S.f.channels.includes(c),onclick:()=>toggleIn('channels',c)},h('span',{class:'sw',style:{background:chColor(c)}}),c)),h('span',{class:'lg-free'},h('i'),'Free night')),props.length?body:h('div',{class:'empty'},'No properties match these filters. Clear a filter above to see stays.')));
+    h('div',{class:'legend'},CHN.map(c=>h('button',{'aria-pressed':!S.f.channels.length||S.f.channels.includes(c),onclick:()=>toggleIn('channels',c)},h('span',{class:'sw',style:{background:chColor(c)}}),c))),props.length?body:h('div',{class:'empty'},'No properties match these filters. Clear a filter above to see stays.')));
 }
 const bookRow=b=>({Booking:b.booking_id,Guest:b.guest,Guests:b.guests,Property:short(b.pname),Area:b.area,City:b.city,Channel:b.channel,'Check-in':b.check_in,'Arrival time':b.arrival_time||'','Check-out':b.check_out,Nights:b.nights,'Nightly rate ₹':b.nightly_rate,'Gross ₹':b.gross,'Platform fee ₹':b.fee,'Payout ₹':b.net,Stay:b.status,'Payout status':b.pay,Rating:b.rating||''});
 
