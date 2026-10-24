@@ -561,7 +561,7 @@ button.sstat:hover{background:var(--surface-2)}
 .pf-save .seg{background:color-mix(in srgb,var(--ink) 6%,transparent)}.pf-save .seg button[aria-pressed="true"]{background:var(--surface,#fff);color:var(--accent)}
 .pf-save p{margin:0;font-size:13.5px}.pf-save p b{font-size:17px;color:var(--ok)}.pf-save small{color:var(--muted);font-size:11.5px}
 /* Manage: premium tabs, rows, property cards, photo grid */
-.mg-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,1000px)}
+.mg-tabs{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,1000px)}
 .mg-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;padding:9px 8px;border-radius:12px;font-family:inherit;font-weight:600;font-size:13px;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .mg-tabs button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .mg-tabs button b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted)}
@@ -910,10 +910,10 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .form{padding:14px 24px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .form label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:650;color:var(--muted);min-width:0}
 .form .full{grid-column:1/-1}
-.form textarea,.mg-filters input,.mg-filters select,.mg-pick,.form input,.form select{background:var(--surface-2);border:1px solid var(--hair-2);border-radius:14px;padding:12px 14px;font-size:16px;width:100%;max-width:100%;min-width:0;color:var(--ink);min-height:48px}
+.form textarea,.mg-filters input,.hi-filters input,.mg-filters select,.mg-pick,.form input,.form select{background:var(--surface-2);border:1px solid var(--hair-2);border-radius:14px;padding:12px 14px;font-size:16px;width:100%;max-width:100%;min-width:0;color:var(--ink);min-height:48px}
 .form input[type=date],.form input[type=time]{-webkit-appearance:none;appearance:none;text-align:left;display:block}
 .form input::-webkit-date-and-time-value{text-align:left}
-.form textarea:focus,.mg-filters input:focus,.mg-filters select:focus,.form input:focus,.form select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);background:var(--surface)}
+.form textarea:focus,.mg-filters input:focus,.hi-filters input:focus,.mg-filters select:focus,.form input:focus,.form select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);background:var(--surface)}
 .sum{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:var(--accent-soft);border-radius:18px;padding:14px 16px}
 .sum span{font-size:11.5px;color:var(--muted);display:block}
 .sum b{font-size:17px;font-weight:800;letter-spacing:-.02em}
@@ -954,12 +954,6 @@ body:not(.is-admin) .admin{display:none!important}
 @media (max-width:1480px){
   .top-r .status-pill,.top-r>.seg{display:none}
 }
-@media (max-width:1100px){
-  .nav button{padding:9px 7px 13px;font-size:12.5px}
-  .brand small{display:none}
-  .top-r .btn.primary{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}
-  .top-r .btn.primary .lbl{display:none}
-}
 @media (max-width:1240px){
   .s2{grid-column:span 4}.s3{grid-column:span 6}.s4,.s5{grid-column:span 6}.s7,.s8{grid-column:span 12}
   .nav button{padding:10px 9px 14px;font-size:13px}
@@ -967,6 +961,14 @@ body:not(.is-admin) .admin{display:none!important}
   .sstat:nth-child(4)::before{display:none}
   .sstat .sp{display:none}
   .fbtn{gap:9px;padding:8px 10px}.fbtn .ic{width:34px;height:34px}
+}
+/* after the 1240px block: narrower screens must win the cascade */
+@media (min-width:981px) and (max-width:1340px){.brand>span:not(.mark){display:none}}  /* the brand mark alone, so all sections fit */
+@media (max-width:1100px){
+  .nav button{padding:9px 7px 13px;font-size:12.5px}
+  .brand small{display:none}
+  .top-r .btn.primary{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}
+  .top-r .btn.primary .lbl{display:none}
 }
 @media (max-width:980px){
   .nav,.brand small{display:none}
@@ -1160,6 +1162,52 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .sum-box b{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
 .sum-box.upset{background:var(--bad-soft);border-color:rgba(214,52,44,.25)}
 .sum-chips{display:flex;flex-wrap:wrap;gap:6px}.chip-s.upset{background:var(--bad-soft);color:var(--bad);font-weight:700}
+
+/* Manage › History */
+.hi-top{display:grid;gap:12px;margin-bottom:16px}
+.hi-lvls{display:flex;gap:6px;flex-wrap:wrap}
+.hi-lvls button{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border-radius:99px;border:1px solid var(--hair);background:var(--surface);font-family:inherit;font-weight:600;font-size:13px;line-height:1;color:var(--ink);cursor:pointer;white-space:nowrap}
+.hi-lvls button i{width:8px;height:8px;border-radius:50%;background:var(--lc)}
+.hi-lvls button b{font-size:11px;font-weight:700;padding:3px 7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--muted)}
+.hi-lvls .lv-all{--lc:var(--accent)}
+.hi-lvls button[aria-checked=true]{background:var(--lc);border-color:var(--lc);color:#fff;box-shadow:0 2px 10px color-mix(in srgb,var(--lc) 30%,transparent)}
+.hi-lvls button[aria-checked=true] i{background:#fff}.hi-lvls button[aria-checked=true] b{background:rgba(255,255,255,.24);color:#fff}
+.hi-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.hi-filters input[type=search]{flex:1 1 240px;min-width:0}
+.lv-critical{--lc:var(--bad)}.lv-important{--lc:var(--warn)}.lv-routine{--lc:#a3adbd}
+.hi-list{display:grid;border:1px solid var(--hair);border-radius:18px;overflow:hidden;background:var(--surface)}
+.hi-row{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px 12px 18px;border-top:1px solid var(--hair);cursor:pointer}
+.hi-row:first-child{border-top:0}.hi-row:hover{background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.hi-row::before{content:'';position:absolute;left:0;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--lc)}
+.hi-row.lv-critical{background:color-mix(in srgb,var(--bad) 4%,transparent)}.hi-row.lv-critical:hover{background:color-mix(in srgb,var(--bad) 7%,transparent)}
+.hi-row.lv-routine::before{opacity:.55}.hi-row.undone{opacity:.62}
+.hi-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;line-height:1;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);flex:none}
+.hi-tx{display:grid;gap:3px;min-width:0}.hi-tx>b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hi-subj{font-weight:500;color:var(--muted)}
+.hi-tx small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hi-ds{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:12.5px;min-width:0}
+.hi-d{display:inline-flex;gap:5px;align-items:baseline;min-width:0;max-width:100%}.hi-d em{font-style:normal;color:var(--muted);white-space:nowrap}
+.hi-d s{color:var(--muted);text-decoration-color:color-mix(in srgb,var(--bad) 50%,transparent)}.hi-d i{font-style:normal;color:var(--muted)}.hi-d b{font-weight:650}
+.hi-d s,.hi-d b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:18ch}
+.hi-tags{display:flex;gap:6px;align-items:center;justify-content:flex-end}
+.hi-lv{font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;line-height:1;color:var(--lc);background:color-mix(in srgb,var(--lc) 13%,transparent);white-space:nowrap}
+.lv-routine .hi-lv{color:var(--muted);background:var(--hair)}
+.hi-sheet{display:grid;gap:14px;padding:6px 24px 18px}.modal-f>.hint{align-self:center;margin:0 auto 0 0;font-size:13px}
+.hi-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.hi-lv-pill{font-size:12px;font-weight:700;padding:5px 11px;border-radius:99px;line-height:1;color:#fff;background:var(--lc)}
+.hi-lv-pill.lv-routine{color:var(--muted);background:var(--hair)}
+.hi-who{display:flex;gap:10px;align-items:center}.hi-who>span{display:grid;gap:2px;min-width:0}.hi-who small{color:var(--muted);font-size:12px}
+.hi-subj2{margin:0;font-weight:650;font-size:15px}
+.hi-tbl{display:grid;border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.hi-th,.hi-tr{display:grid;grid-template-columns:minmax(92px,.8fr) 1fr 1fr;gap:12px;padding:10px 12px;font-size:13px;align-items:start}
+.hi-th{background:color-mix(in srgb,var(--ink) 4%,transparent);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.hi-tr{border-top:1px solid var(--hair)}.hi-tr span{overflow-wrap:anywhere;min-width:0}.hi-tr span:first-child{color:var(--muted)}
+.hi-old{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--bad) 55%,transparent)}
+.hi-new{font-weight:650}
+.hi-undo{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+.hi-warn{margin:0;padding:10px 12px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:13px;font-weight:600}
+.hi-id{font-size:11px;margin:0}
+@media (max-width:640px){.hi-row{grid-template-columns:32px minmax(0,1fr);padding:12px 12px 12px 16px;gap:10px}.hi-av{width:32px;height:32px;font-size:12px}
+  .hi-tags{grid-column:2;justify-content:flex-start}.hi-tags:empty{display:none}.hi-filters input[type=search]{flex-basis:100%}.hi-filters .mg-pick{flex:1 1 40%}
+  .hi-th,.hi-tr{grid-template-columns:minmax(76px,.7fr) 1fr 1fr;gap:8px;padding:9px 10px;font-size:12.5px}.hi-sheet{padding:4px 18px 16px}}
 </style>
 </head>
 <body>
@@ -1200,8 +1248,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 </div>
 <div class="tabwrap" id="tabwrap"><nav class="tabbar" id="tabbar" aria-label="Sections"></nav><button class="tb-arrow l" id="tbL" type="button" aria-label="Show previous sections" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="tb-arrow r" id="tbR" type="button" aria-label="Show more sections" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button><span class="tb-track" aria-hidden="true"><i id="tbThumb"></i></span></div>
 <div id="tip" class="tip" hidden></div>
-<div id="layer"></div>
-<script>
+<div id="layer"></div><script>
 /* CONFIG — for the hosted version, set DATA_URL to the live workbook / API endpoint. Empty = embedded dummy data. */
 /* CLIENT = this client's settings (client.json), injected by scripts/build.py. The foundation itself holds no client context. */
 const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Jabula Getaways","short_name":"Jabula","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#686762"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]},"google_client_id":"278276381564-fgcobg34n9c0ksfu3vkh7jm8jaadmrda.apps.googleusercontent.com","guest_info_caretaker":false,"pricing_defaults":{"weekend_markup_pct":10,"weekend_nights":["fri","sat","sun"],"weekend_stacks_with_overrides":false,"holiday_markup_pct":10,"direct_discount_pct":5,"addons":[{"id":"cook","title":"🍳 Home cook","price":600,"per":"per meal","desc":"Local home-style meals in the stay"},{"id":"bonfire","title":"🔥 Bonfire evening","price":800,"per":"per evening","desc":"Barbecue & bonfire on prior request","stays":["P01","P02","P03","P04"]},{"id":"pickup","title":"🚕 Station pickup","price":1500,"per":"one way","desc":"Dehradun station / Jolly Grant"},{"id":"housekeeping","title":"🧹 Extra housekeeping","price":400,"per":"per visit","desc":"Fresh towels, cleaning"},{"id":"early_checkin","title":"⏰ Early check-in","price":1000,"per":"if available","desc":"From 10 AM"},{"id":"late_checkout","title":"🌙 Late check-out","price":1000,"per":"if available","desc":"Until 2 PM"},{"id":"decor","title":"🎉 Celebration decor","price":2500,"per":"setup","desc":"Birthdays, anniversaries"}]},"logo":{"dark":"brand/wordmark-dark-web.png","light":"brand/wordmark-light-web.png"}};
@@ -1484,6 +1531,7 @@ function waterfall(w,{steps,hh=250}){
 /* ============ export ============ */
 let dlP=null;
 async function saveFile(filename,data){
+  hiExport(filename);
   if(!dlP)dlP=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads').catch(()=>null):Promise.resolve(null);
   const dl=await dlP;
   if(dl){try{await dl.save({filename,data});toast('Saved '+filename)}catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('A save is already waiting for your OK.');return}toast('Couldn\'t save here ('+((e&&e.code)||'unavailable')+').')}return}
@@ -1520,7 +1568,7 @@ function exportChart(holder,name){
     cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - ${name} - ${TODAY}.png`,b),'image/png')};
   img.onerror=()=>toast('Could not render this chart to an image.');img.src=src;
 }
-const ico={wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
+const ico={clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
 const driveLogo=()=>{const s=sv('svg',{viewBox:'0 0 87.3 78',width:20,height:18,'aria-hidden':'true'});
   [['M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z','#0066da'],['M43.65 25L29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z','#00ac47'],
    ['M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 11.5z','#ea4335'],['M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z','#00832d'],
@@ -2238,7 +2286,10 @@ const SIGNIN=!!(CLIENT.google_client_id&&CONFIG.API_URL),KEYNAME=SIGNIN?'jg_sess
 const LIVE={key:store.get(KEYNAME)||'',busy:0,prompted:false,ok:null,okAt:0,err:null,me:store.get('jg_me')||null};
 const live=()=>!!(CONFIG.API_URL&&LIVE.key);
 async function apiGet(params){const r=SIGNIN?await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,action:'read',...params}),cache:'no-store'}):await fetch(CONFIG.API_URL+'?'+new URLSearchParams({key:LIVE.key,...params}),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(j.error)throw new Error(j.error);return j}
-async function apiPost(body){LIVE.busy++;syncBusy();try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,...body})});const j=await r.json();if(j.error)throw new Error(j.error);return j}finally{LIVE.busy--;syncBusy()}}
+/* the device a change came from, for the Change history ("iPhone · Safari") */
+const DEVICE=(()=>{const u=navigator.userAgent||'';const os=/iPhone/.test(u)?'iPhone':/iPad/.test(u)?'iPad':/Android/.test(u)?'Android':/Macintosh/.test(u)?'Mac':/Windows/.test(u)?'Windows':'Device';
+  const br=/Edg\//.test(u)?'Edge':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox/.test(u)?'Firefox':/Safari\//.test(u)?'Safari':'';return br?os+' · '+br:os})();
+async function apiPost(body){LIVE.busy++;syncBusy();try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,device:DEVICE,...body})});const j=await r.json();if(j.error)throw new Error(j.error);return j}finally{LIVE.busy--;syncBusy()}}
 function syncBusy(){const el=$('#syncText');if(el&&LIVE.busy)el.textContent='Saving to the sheet…'}
 async function liveLoad(){const[d,b]=await Promise.all([apiGet({format:'dashboard'}),apiGet({tabs:'blocks'}).catch(()=>({tabs:{blocks:[]}}))]);d.blocks=(b.tabs||{}).blocks||[];return normLive(d)}
 function normLive(d){const n=v=>v==null||v===''?0:+v||0;
@@ -2259,8 +2310,8 @@ function applyLocal(tab,op,a){const k=TABKEY[tab],arr=S.data[k]||(S.data[k]=[]);
 /* Every change: shown at once, written to the sheet, rolled back with a message if the sheet refuses. */
 async function save(tab,op,a,msg){
   const k=TABKEY[tab],before=JSON.stringify(S.data[k]||[]);applyLocal(tab,op,a);refresh();
-  if(!live()){toast((msg||'Saved')+' · demo only - connect live data to save to the sheet');return true}
-  try{const r=await apiPost({action:op,tab,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
+  if(!live()){hiLocal(tab,op,a,JSON.parse(before));toast((msg||'Saved')+' · demo only - connect live data to save to the sheet');return true}
+  try{const r=await apiPost({action:op,tab,undo_of:HI.undoing||undefined,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
     if(op!=='append'&&!(r.updated||r.deleted))throw new Error('that row is no longer in the sheet');toast((msg||'Saved')+' ✓');return true}
   catch(e){S.data[k]=JSON.parse(before);refresh();toast('Couldn’t save: '+e.message+'. Nothing was changed.');return false}}
 function signInScreen(){
@@ -3283,12 +3334,182 @@ function manageProps(v,tabs){
     list.length?mpGroups(list,row):h('div',{class:'empty'},'No properties match.')));
   pendingBar(v)}
 
+/* ---- Manage › History: every saved change, from the Register's Audit tab - who, when, from which device, each
+   field before → after, and how much it matters (critical / important / routine), with Undo. Older entries (before
+   the history kept old values) show the new values only. Demo mode keeps a history of this visit's saves. */
+const HI={rows:null,busy:false,err:null,lim:400,more:false,lvl:'all',who:'',area:'',q:'',show:60,local:[],undoing:''};
+const LV={critical:['Critical','p-bad'],important:['Important','p-warn'],routine:['Routine','p-mute']};
+/* same rules as the Register script (Code.gs level_), for older entries and demo saves */
+const AUD_LV={bookings:{critical:['tariff','platform_fee','gst','received','balance_due','account','payment_terms','nightly_rate','cleaning_fee','amount_received'],
+    important:['check_in','check_out','property_id','unit_id','guests','guest','phone','booking_status','channel','collected_on']},
+  properties:{critical:['base_rate','extra_guest_fee','pet_fee','cleaning_fee','owner_share','status'],
+    important:['amenities','check_in_time','check_out_time','rules','photos','photo_thumbs','max_guests','base_guests','includes','bedrooms','bathrooms','property','city','area','type']},
+  lists:{important:['value','fee_pct']}};
+function audLevel(tab,action,ch,row){const f=Object.keys(ch||{}),L=AUD_LV[tab]||{},any=l=>f.some(k=>(l||[]).includes(k));row=row||{};ch=ch||{};
+  if(action==='replace'||['users','payouts','rates','seasons'].includes(tab))return'critical';
+  if(['login','logout','export','upload'].includes(action))return'routine';
+  if(tab==='settings')return String(row.key)==='pricing.addons'?'important':'critical';
+  if(tab==='overrides')return String(row.unit_id)==='*'?'important':'critical';
+  if(tab==='bookings'){if(action==='delete')return'critical';if(ch.deleted_at)return ch.deleted_at[1]?'critical':'important';
+    if(ch.booking_status&&/cancel/i.test(String(ch.booking_status[1])))return'critical'}
+  if(any(L.critical))return'critical';if(action==='delete'&&tab==='properties')return'critical';
+  if(['guest_info','expenses','units','blocks'].includes(tab)||any(L.important))return'important';
+  if(action==='append'&&(tab==='bookings'||tab==='properties'))return'important';
+  if(action==='delete'&&tab!=='lists')return'important';if(ch.deleted_at)return'important';return'routine'}
+const audSame=(a,b)=>{const t=v=>v==null?'':Array.isArray(v)?v.join(', '):typeof v==='object'?JSON.stringify(v):String(v);return t(a)===t(b)};
+function audNorm(r){const js=v=>{if(v&&typeof v==='object')return v;try{return v?JSON.parse(v):null}catch(e){return null}};
+  let ch=js(r.changes),old=!r.audit_id;const match=js(r.match);
+  if(!ch&&old){const f=js(r.fields);ch={};if(f)for(const k in f)ch[k]=[undefined,f[k]]}
+  ch=ch||{};const target=r.target!=null&&r.target!==''?(typeof r.target==='object'?String(Object.values(r.target)[0]??''):String(r.target)):match?String(Object.values(match)[0]??''):'';
+  const at=r.at instanceof Date?r.at:new Date(String(r.at||'').length===16?r.at+':00':r.at);
+  const by=String(r.by||'');
+  if(r.action==='log')r={...r,action:'export',target:r.target||'a file'};  // a download logged by a script older than the history
+  return {...r,by,changes:ch,match,target,old,at,rows:+r.rows||0,result:r.result||'ok',level:r.level||audLevel(r.tab,r.action,ch,match||{}),
+    name:r.name||(by==='dashboard key'?'Dashboard key':by==='bot'?'WhatsApp bot':by.split('@')[0])}}
+async function hiLoad(force){if(HI.busy||(HI.rows&&!force))return;HI.busy=true;HI.err=null;
+  await null;  // never re-render inside the render that asked (demo history loads instantly)
+  try{if(live()){const r=await apiGet({tabs:'audit',audit_limit:HI.lim}),a=(r.tabs||{}).audit||[];HI.rows=a.map(audNorm).reverse();HI.more=a.length>=HI.lim}
+    else{HI.rows=HI.local.map(audNorm).reverse();HI.more=false}}catch(e){HI.err=e.message;HI.rows=[]}
+  HI.busy=false;if(S.view==='manage'&&MG.sec==='history')render()}
+function hiLocal(tab,op,a,beforeArr){const me=LIVE.me||{};let ch={},row={},target='',match=a.match||null;
+  if(op==='append'){row=a.row;for(const k in a.row)if(!audSame(a.row[k],null))ch[k]=[null,a.row[k]];const mk=Object.keys(a.row)[0];match={[mk]:a.row[mk]};target=a.row[mk]}
+  else{const[f,v]=Object.entries(a.match)[0];target=v;row=(beforeArr||[]).find(r=>String(r[f])===String(v))||{};
+    if(op==='delete'){for(const k in row)if(!k.startsWith('_')&&!audSame(row[k],null))ch[k]=[row[k],null]}
+    else for(const k in a.fields)if(!audSame(row[k],a.fields[k]))ch[k]=[row[k]??null,a.fields[k]];
+    if(!Object.keys(ch).length)return}
+  HI.local.push({audit_id:'L'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),at:new Date(),by:me.email||'demo',name:me.name||'You (demo)',device:DEVICE,
+    level:audLevel(tab,op,ch,row),action:op,tab,target:String(target??''),changes:ch,result:'ok',match,undo_of:HI.undoing||''});HI.rows=null}
+function hiExport(what){
+  if(live()){if(S.admin)apiPost({action:'log',kind:'export',what}).then(()=>{HI.rows=null}).catch(()=>{});return}
+  HI.local.push({audit_id:'L'+Date.now().toString(36),at:new Date(),by:'demo',name:(LIVE.me||{}).name||'You (demo)',device:DEVICE,level:'routine',action:'export',tab:'',target:what,changes:{},result:'ok'});HI.rows=null}
+const AUD_TAB={bookings:'Bookings',properties:'Properties',units:'Properties',guest_info:'Guest info',overrides:'Pricing',settings:'Pricing',rates:'Pricing',seasons:'Pricing',
+  expenses:'Expenses',lists:'Lists',users:'People',payouts:'Payouts',sessions:'Sign-ins',maintenance:'Issues',blocks:'Blocks'};
+const audArea=e=>e.action==='export'?'Downloads':AUD_TAB[e.tab]||(e.tab?e.tab[0].toUpperCase()+e.tab.slice(1):'Other');
+function audField(tab,k,e){
+  if(tab==='settings'&&k==='value')return PR_L[String((e&&e.target)||'').replace('pricing.','')]||'Value';
+  if(tab==='overrides')return({rate:'Price / night',pct:'Markup %',from:'From',to:'To',note:'Name',unit_id:'Stay',ov_id:'Id'})[k]||k;
+  if(tab==='lists')return({value:'Option',fee_pct:'Usual fee %',active:'In use',list:'List',row_id:'Id'})[k]||k;
+  const m={bookings:MG_L,properties:P_L,expenses:EXP_L,guest_info:GI_L}[tab]||{};return m[k]||k.replace(/_/g,' ').replace(/^./,x=>x.toUpperCase())}
+const AUD_MONEY=['tariff','platform_fee','gst','received','balance_due','amount','rate','base_rate','extra_guest_fee','cleaning_fee','nightly_rate','amount_received','pet_fee'];
+function audVal(e,k,v){if(v===undefined)return'not recorded';if(v===null||v==='')return'—';if(k==='wifi_password')return'••••••';
+  if(Array.isArray(v))return v.length?v.join(', '):'—';if(typeof v==='object')return JSON.stringify(v);
+  if(AUD_MONEY.includes(k)&&v!==''&&!isNaN(+v))return inr(+v);if(k==='owner_share'&&!isNaN(+v))return Math.round(+v*100)+'%';
+  if(/_pct$/.test(k)||(e.tab==='settings'&&/_pct$/.test(e.target)))if(!isNaN(+v))return v+'%';
+  if(/^\d{4}-\d{2}-\d{2}$/.test(String(v)))return fmtD(String(v),{day:'numeric',month:'short',year:'numeric'});
+  if((k==='property_id'||k==='unit_id')&&D.P[String(v).replace(/-E$/,'')])return short(D.P[String(v).replace(/-E$/,'')].property);
+  const t=String(v);return t.length>160?t.slice(0,160)+'…':t}
+/* [what happened, about what] in plain words */
+function audWhat(e){const ch=e.changes,f=Object.keys(ch),t=e.target,now=k=>ch[k]?(ch[k][1]??ch[k][0]):undefined;
+  const stay=id=>{id=String(id||'').replace(/-E$/,'');return D.P[id]?short(D.P[id].property):id};
+  let subj=t;
+  if(e.tab==='bookings'){const b=(S.data.bookings||[]).find(x=>String(x.booking_id)===t)||{};subj=[t,b.guest||now('guest')].filter(Boolean).join(' · ')}
+  else if(e.tab==='properties'||e.tab==='guest_info')subj=stay(t);
+  else if(e.tab==='overrides'){const o=(PROV||[]).find(x=>String(x.ov_id)===t)||{},g=k=>now(k)??o[k];
+    subj=(String(g('unit_id'))==='*'?(g('note')||'Holiday'):'Custom price · '+stay(g('unit_id')))+(g('from')?' · '+fmtD(String(g('from')).slice(0,10))+(g('to')&&g('to')!==g('from')?' – '+fmtD(String(g('to')).slice(0,10)):''):'')}
+  else if(e.tab==='settings')subj=e.action==='update'&&ch.value?'':PR_L[String(t).replace('pricing.','')]||t;  // "Changed weekend %" already says which
+  else if(e.tab==='expenses'){const x=(S.data.expenses||[]).find(x=>String(x.expense_id)===t)||{},g=k=>now(k)??x[k];subj=[g('vendor')||g('category'),g('amount')?inr(+g('amount')):''].filter(Boolean).join(' · ')||t}
+  else if(e.tab==='lists')subj=now('value')||((S.data.lists||[]).find(x=>String(x.row_id)===t)||{}).value||t;
+  if(e.result==='blocked')return['Tried to change '+audArea(e).toLowerCase()+' · blocked',/^["{]/.test(subj)?'':subj];
+  if(e.result==='failed')return['A save failed',t];
+  if(e.action==='login')return['Signed in',''];
+  if(e.action==='logout')return['Signed out',''];
+  if(e.action==='export')return['Downloaded',t];
+  if(e.action==='upload')return['Uploaded a photo',t];
+  if(e.action==='replace')return['Replaced the whole '+audArea(e)+' tab',e.rows?e.rows+' rows (bulk import)':''];
+  const noun={bookings:'booking',properties:'stay',expenses:'expense',lists:'list option',guest_info:'guest info',settings:'pricing setting',blocks:'block',payouts:'payout',
+    overrides:/^Custom/.test(subj)?'custom price':'holiday'}[e.tab]||'row';
+  if(e.action==='append')return['New '+noun,subj];
+  if(e.action==='delete')return['Deleted '+noun,subj];
+  if(ch.deleted_at)return[ch.deleted_at[1]?'Moved to Trash':'Restored from Trash',subj];
+  if(ch.booking_status&&/cancel/i.test(String(ch.booking_status[1])))return['Cancelled booking',subj];
+  const names=f.filter(k=>k!=='deleted_by').map(k=>audField(e.tab,k,e).toLowerCase());
+  return['Changed '+(names.length>2?names.slice(0,2).join(', ')+' +'+(names.length-2):names.join(' & ')||noun),subj+(e.rows>1?` · ${e.rows} rows`:'')]}
+function hiAv(e){const n=e.by==='bot'?'WA':e.by==='dashboard key'?'K':String(e.name||e.by||'?').split(/[^\p{L}\d]+/u).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('');
+  let x=0;for(const ch of e.by)x=(x*31+ch.charCodeAt(0))>>>0;
+  return h('span',{class:'hi-av','aria-hidden':'true',style:{'--c':e.by==='bot'?'#16a34a':['#2563eb','#7c3aed','#0d9488','#c2410c','#db2777','#4f46e5'][x%6]}},n)}
+const hiTime=d=>isNaN(d)?'':d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
+const hiDay=d=>isNaN(d)?'':iso(d);
+const hiDayLabel=k=>!k?'Date not recorded':k===TODAY?'Today':diff(k,TODAY)===1?'Yesterday':fmtD(k,{weekday:'short',day:'numeric',month:'short',year:k.slice(0,4)===TODAY.slice(0,4)?undefined:'numeric'});
+function hiRow(e){const[title,subj]=audWhat(e),f=e.action==='update'&&!e.old&&!e.changes.deleted_at?Object.keys(e.changes).filter(k=>k!=='deleted_by'):[];
+  const ds=f.slice(0,2).map(k=>h('span',{class:'hi-d'},h('em',null,audField(e.tab,k,e)),h('s',null,audVal(e,k,e.changes[k][0])),h('i',{'aria-hidden':'true'},'→'),h('b',null,audVal(e,k,e.changes[k][1]))));
+  return h('div',{class:'hi-row lv-'+e.level+(e.undone?' undone':''),role:'button',tabindex:0,onclick:()=>hiOpen(e),onkeydown:ev=>{if(ev.key==='Enter')hiOpen(e)}},
+    hiAv(e),h('div',{class:'hi-tx'},h('b',null,title,subj?h('span',{class:'hi-subj'},' · '+subj):null),ds.length?h('div',{class:'hi-ds'},ds):null,
+      h('small',null,[e.name,hiTime(e.at),e.device].filter(Boolean).join(' · '))),
+    h('div',{class:'hi-tags'},e.undone?h('span',{class:'pill p-mute'},'Undone'):null,e.undo_of?h('span',{class:'pill p-acc'},'Undo'):null,
+      e.result==='blocked'?h('span',{class:'pill p-bad'},'Blocked'):e.result==='failed'?h('span',{class:'pill p-bad'},'Failed'):null,h('span',{class:'hi-lv'},LV[e.level][0])))}
+function hiCanUndo(e){if(e.undone)return'Already undone';if(e.old||e.result!=='ok'||!e.match||!Object.keys(e.match).length)return false;
+  if(!['update','append','delete'].includes(e.action)||['users','sessions','payouts'].includes(e.tab))return false;
+  if(e.action==='append'&&!['bookings','expenses','overrides','lists'].includes(e.tab))return false;
+  if(e.action==='delete'&&!['overrides','lists','expenses','blocks'].includes(e.tab))return false;
+  if(e.action==='update'&&e.rows>1&&!Object.keys(e.match).some(k=>e.changes[k]))return'Changed several rows - undo it where it was made';
+  return true}
+function hiOpen(e){const[title,subj]=audWhat(e),f=Object.keys(e.changes),can=hiCanUndo(e);
+  const when=isNaN(e.at)?'':e.at.toLocaleString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'});
+  const body=h('div',{class:'hi-sheet'},
+    h('div',{class:'hi-meta'},h('span',{class:'hi-lv-pill lv-'+e.level},LV[e.level][0]),h('span',{class:'pill p-mute'},audArea(e)),
+      e.result==='blocked'?h('span',{class:'pill p-bad'},'Blocked · nothing changed'):e.result==='failed'?h('span',{class:'pill p-bad'},'Failed · nothing changed'):null,
+      e.undone?h('span',{class:'pill p-mute'},'Undone'):null,e.undo_of?h('span',{class:'pill p-acc'},'This was an undo'):null),
+    h('div',{class:'hi-who'},hiAv(e),h('span',null,h('b',null,e.name||e.by),h('small',null,[e.by!==e.name&&e.by.includes('@')?e.by:null,when,e.device].filter(Boolean).join(' · ')))),
+    subj?h('p',{class:'hi-subj2'},subj):null,
+    f.length?h('div',{class:'hi-tbl',role:'table'},h('div',{class:'hi-th',role:'row'},h('span',null,'Field'),h('span',null,'Before'),h('span',null,'After')),
+      f.map(k=>h('div',{class:'hi-tr',role:'row'},h('span',null,audField(e.tab,k,e)),h('span',{class:'hi-old'},audVal(e,k,e.changes[k][0])),h('span',{class:'hi-new'},audVal(e,k,e.changes[k][1]))))):null,
+    e.old?h('p',{class:'hint'},'Older entry: saved before the history kept the old values, so only the new values are shown.'):null,
+    h('p',{class:'hint hi-id'},'Entry '+(e.audit_id||'(older format)')));
+  modal(title,body,[h('button',{class:'btn',onclick:closeLayer},'Close'),can===true?h('button',{class:'btn primary',onclick:()=>hiUndo(e)},'Undo this change'):typeof can==='string'?h('span',{class:'hint'},can):null])}
+function hiUndo(e){const ch=e.changes,tab=e.tab,[mk,mv]=Object.entries(e.match)[0];let op,a,lines;
+  if(e.action==='update'){const fields={};for(const k in ch)fields[k]=ch[k][0]??null;op='update';a={match:{[mk]:ch[mk]?ch[mk][1]:mv},fields};
+    lines=Object.keys(ch).filter(k=>k!=='deleted_by').map(k=>k==='deleted_at'?(ch[k][1]?'Takes it out of Trash':'Moves it back to Trash'):`${audField(tab,k,e)}: ${audVal(e,k,ch[k][1])} → ${audVal(e,k,ch[k][0])}`)}
+  else if(e.action==='delete'){const row={};for(const k in ch)row[k]=ch[k][0];op='append';a={row};lines=['Puts the deleted row back as it was']}
+  else if(tab==='bookings'||tab==='expenses'){op='update';a={match:{[mk]:mv},fields:{deleted_at:TODAY,deleted_by:(LIVE.me||{}).email||'admin'}};lines=['Moves it to Trash (restore within 30 days)']}
+  else{op='delete';a={match:{[mk]:mv}};lines=['Removes it']}
+  const k=TABKEY[tab],cur=k&&e.action==='update'?(S.data[k]||[]).find(r=>String(r[mk])===String(a.match[mk])):null;
+  const drift=cur?Object.keys(ch).filter(f=>f!=='deleted_by'&&!audSame(cur[f]??null,ch[f][1])):[];
+  modal('Undo this change?',h('div',{class:'hi-sheet'},h('ul',{class:'hi-undo'},lines.map(l=>h('li',null,l))),
+      drift.length?h('p',{class:'hi-warn'},`Changed again since: ${drift.map(f=>audField(tab,f,e)).join(', ')}. Undo will replace the newer value.`):null,
+      h('p',{class:'hint'},'Saved to the sheet straight away and shown in History as an undo.')),
+    [h('button',{class:'btn',onclick:()=>hiOpen(e)},'Back'),h('button',{class:'btn primary',onclick:async ev=>{ev.currentTarget.disabled=true;const b=ev.currentTarget;
+      if(await hiApply(tab,op,a,e.audit_id)){closeLayer();HI.rows=null;hiLoad(true);render()}else b.disabled=false}},'Undo')])}
+async function hiApply(tab,op,a,id){
+  if(TABKEY[tab]){HI.undoing=id;try{return await save(tab,op,a,'Undone')}finally{HI.undoing=''}}
+  if(!live()){HI.undoing=id;hiLocal(tab,op,a,[]);HI.undoing='';toast('Undone · demo only');return true}
+  try{const r=await apiPost({action:op,tab,undo_of:id,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
+    if(op!=='append'&&!(r.updated||r.deleted))throw new Error('that row is no longer in the sheet');
+    if(tab==='guest_info')GI=null;if(tab==='overrides'||tab==='settings'){PRS=null;PROV=null}toast('Undone ✓');return true}
+  catch(x){toast('Couldn’t undo: '+x.message);return false}}
+function hiDownload(rows){exportRows(rows.map(e=>{const[w,s_]=audWhat(e);return{When:isNaN(e.at)?'':e.at.toLocaleString('en-IN'),Who:e.name,Email:e.by,Device:e.device||'',Level:LV[e.level][0],
+  Area:audArea(e),What:w,About:s_,Changes:Object.keys(e.changes).map(k=>`${audField(e.tab,k,e)}: ${audVal(e,k,e.changes[k][0])} → ${audVal(e,k,e.changes[k][1])}`).join('; '),
+  Result:e.result,Entry:e.audit_id||''}}),'Change history')}
+function manageHistory(v,tabs){hiLoad();
+  const all=HI.rows||[],undone=new Set(all.filter(e=>e.undo_of).map(e=>e.undo_of));all.forEach(e=>{e.undone=undone.has(e.audit_id)});
+  const q=HI.q.trim().toLowerCase();
+  const base=all.filter(e=>(!HI.who||e.by===HI.who)&&(!HI.area||audArea(e)===HI.area)&&(!q||[...audWhat(e),e.target,e.name,e.by,JSON.stringify(e.changes)].join(' ').toLowerCase().includes(q)));
+  const cnt={all:base.length,critical:0,important:0,routine:0};base.forEach(e=>cnt[e.level]++);
+  const rows=HI.lvl==='all'?base:base.filter(e=>e.level===HI.lvl);
+  const people=[...new Map(all.filter(e=>e.by).map(e=>[e.by,e.name])).entries()],areas=[...new Set(all.map(audArea))].sort();
+  const seg=h('div',{class:'hi-lvls',role:'radiogroup','aria-label':'How much it matters'},[['all','All'],['critical','Critical'],['important','Important'],['routine','Routine']].map(([k,l])=>
+    h('button',{role:'radio','aria-checked':String(HI.lvl===k),class:'lv-'+k,onclick:()=>{HI.lvl=k;HI.show=60;render()}},k==='all'?null:h('i',{'aria-hidden':'true'}),h('span',null,l),h('b',{class:'num'},cnt[k]))));
+  const who=h('select',{class:'mg-pick','aria-label':'Person',onchange:e=>{HI.who=e.target.value;HI.show=60;render()}},h('option',{value:''},'Everyone'),people.map(([b,n])=>h('option',{value:b,selected:HI.who===b||null},n||b)));
+  const area=h('select',{class:'mg-pick','aria-label':'Area',onchange:e=>{HI.area=e.target.value;HI.show=60;render()}},h('option',{value:''},'All areas'),areas.map(x=>h('option',{value:x,selected:HI.area===x||null},x)));
+  const search=h('input',{type:'search',id:'hiSearch',placeholder:'Search booking ID, guest, stay or amount',value:HI.q,'aria-label':'Search history',
+    oninput:e=>{HI.q=e.target.value;HI.show=60;clearTimeout(HI.t);HI.t=setTimeout(()=>{render();const s_=$('#hiSearch');if(s_){s_.focus();s_.setSelectionRange(s_.value.length,s_.value.length)}},250)}});
+  const shown=rows.slice(0,HI.show),byDay=new Map();shown.forEach(e=>{const k=hiDay(e.at);if(!byDay.has(k))byDay.set(k,[]);byDay.get(k).push(e)});
+  const body=HI.rows==null?h('div',{class:'empty'},'Loading the change history…'):HI.err?h('div',{class:'empty'},'Couldn’t load the history ('+HI.err+'). ',h('button',{class:'btn sm',onclick:()=>{HI.rows=null;hiLoad(true);render()}},'Try again')):
+    !rows.length?h('div',{class:'empty'},all.length?'No changes match these filters.':live()?'No changes yet. Every save from now on shows here.':'Changes you save in this demo show here.'):
+    h('div',{class:'ex-days'},[...byDay].map(([d,es])=>h('div',{class:'ex-day'},h('span',{class:'pr-lab'},hiDayLabel(d)),h('div',{class:'hi-list'},es.map(hiRow)))),
+      rows.length>HI.show?h('button',{class:'btn sm',style:{justifySelf:'start'},onclick:()=>{HI.show+=60;render()}},`Show ${Math.min(60,rows.length-HI.show)} more of ${rows.length}`):
+      HI.more?h('button',{class:'btn sm',style:{justifySelf:'start'},onclick:()=>{HI.lim+=400;HI.rows=null;hiLoad(true);render()}},'Load older changes'):null);
+  v.append(card('s12','History',{hint:'every saved change · who, when, before → after',acts:[tabs]},
+    h('div',{class:'hi-top'},seg,h('div',{class:'hi-filters'},search,who,area,
+      h('button',{class:'btn sm',disabled:!rows.length||null,onclick:()=>hiDownload(rows)},icon('dl'),'Download'),
+      h('button',{class:'btn icon sm','aria-label':'Refresh history',onclick:()=>{HI.rows=null;hiLoad(true);render()}},icon('repeat')))),
+    body));
+  return pendingBar(v)}
 function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
   purgeTrash();
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['history','History',null,'clock'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();render()}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
@@ -3296,6 +3517,7 @@ function manage(v){
   if(MG.sec==='lists')return manageLists(v,tabs);
   if(MG.sec==='pricing')return managePricing(v,tabs);
   if(MG.sec==='expenses')return manageExpenses(v,tabs);
+  if(MG.sec==='history')return manageHistory(v,tabs);
   if(MG.sec==='trash'){
     const list=sortBy(trash,['deleted_at',-1]);
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);
