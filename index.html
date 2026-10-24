@@ -561,7 +561,7 @@ button.sstat:hover{background:var(--surface-2)}
 .pf-save .seg{background:color-mix(in srgb,var(--ink) 6%,transparent)}.pf-save .seg button[aria-pressed="true"]{background:var(--surface,#fff);color:var(--accent)}
 .pf-save p{margin:0;font-size:13.5px}.pf-save p b{font-size:17px;color:var(--ok)}.pf-save small{color:var(--muted);font-size:11.5px}
 /* Manage: premium tabs, rows, property cards, photo grid */
-.mg-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,760px)}
+.mg-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,880px)}
 .mg-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;padding:9px 8px;border-radius:12px;font-family:inherit;font-weight:600;font-size:13px;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .mg-tabs button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .mg-tabs button b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted)}
@@ -676,6 +676,43 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .ls-acts{display:flex;gap:4px;flex:none}.ls-acts .btn.icon{width:30px;height:30px}.ls-acts .btn.icon svg{width:15px;height:15px;stroke-width:2;fill:none;stroke:currentColor}
 .ls-add{align-self:flex-start}.ls-add svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4}
 @media (max-width:900px){.ls-grid{grid-template-columns:1fr}}
+/* Manage › Pricing */
+.pr-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:14px;align-items:start}
+.pr-side{display:grid;gap:14px}
+.pr-box{display:grid;gap:12px;padding:16px;border:1px solid var(--hair);border-radius:20px;background:var(--surface)}
+.pr-box h3{margin:0;font-size:15px}
+.pr-top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.pr-pick{flex:1 1 220px;min-width:0;max-width:340px!important;width:100%!important}
+.pr-nav{display:flex;align-items:center;gap:8px}.pr-nav b{min-width:120px;text-align:center;font-size:14px}.pr-nav .btn{width:34px;height:34px;font-size:18px}
+.pr-leg{display:flex;flex-wrap:wrap;gap:6px;font-size:11.5px}
+.pr-leg span{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-weight:600}
+.pr-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;touch-action:none;user-select:none;-webkit-user-select:none}
+.pr-w{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0}
+.pr-c{position:relative;aspect-ratio:1/0.92;border-radius:12px;display:flex;flex-direction:column;justify-content:space-between;padding:6px 7px;cursor:pointer;border:1.5px solid transparent;transition:transform .08s}
+.pr-c.pr-x{background:none;cursor:default}
+.pr-d{font-size:11.5px;font-weight:600;color:var(--muted)}.pr-c b{font-size:13px;align-self:flex-end;letter-spacing:-.01em}
+.k-base{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.k-weekend{background:color-mix(in srgb,var(--accent) 10%,transparent)}.pr-c.k-weekend b{color:var(--accent)}
+.k-holiday{background:color-mix(in srgb,var(--warn,#d97706) 13%,transparent)}.pr-c.k-holiday b{color:var(--warn,#b45309)}
+.k-custom{background:var(--accent);color:#fff}.pr-c.k-custom b,.pr-c.k-custom .pr-d{color:#fff}
+.pr-leg .k-custom{color:#fff}
+.pr-c.past{opacity:.4;cursor:default}
+.pr-c.sel{border-color:var(--ink);box-shadow:0 0 0 2px color-mix(in srgb,var(--ink) 14%,transparent);transform:scale(.97)}
+.pr-bk,.pr-hd{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%}
+.pr-bk{background:var(--ink);opacity:.55}.pr-c.k-custom .pr-bk{background:#fff}.pr-hd{background:var(--warn,#d97706)}
+.pr-leg .bk::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.55}
+.pr-panel{display:grid;gap:10px;padding:14px;border-radius:16px;background:color-mix(in srgb,var(--accent) 6%,transparent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent)}
+.pr-ph{display:grid;gap:2px}.pr-ph b{font-size:14.5px}.pr-ph span{font-size:12.5px;color:var(--muted)}
+.pr-set{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pr-set input{width:130px;min-width:0}.pr-set>span{font-size:13px;color:var(--muted)}.pr-cur{font-weight:700;color:var(--ink)!important}
+.pr-hint{margin:0;font-size:12px;color:var(--muted)}
+.pr-custom{display:grid;gap:6px}.pr-cu{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--accent) 7%,transparent);font-size:13px}.pr-cu b{margin-left:auto}
+.pr-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.pr-row>div:first-child{display:grid;gap:1px}.pr-row b{font-size:13.5px}.pr-row span{font-size:11.5px;color:var(--muted)}
+.pr-num{display:flex;align-items:center;gap:6px;flex:none}.pr-num input{width:72px;text-align:right}.pr-num span{font-weight:600;color:var(--muted)}
+.pr-days{display:flex;gap:4px;flex-wrap:wrap}.pr-days button{border:1px solid var(--hair-2);background:transparent;border-radius:99px;padding:5px 10px;font-family:inherit;font-weight:600;font-size:12px;color:var(--muted);cursor:pointer}
+.pr-days button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.pr-ex{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted);padding:9px 11px;border-radius:12px;background:color-mix(in srgb,var(--ink) 4%,transparent)}.pr-ex span:first-child{font-weight:650;color:var(--ink)}
+@media (max-width:980px){.pr-layout{grid-template-columns:1fr}}
+@media (max-width:640px){.pr-c{padding:4px 5px;border-radius:9px}.pr-c b{font-size:11px}.pr-d{font-size:10px}.pr-grid{gap:3px}}
 /* missing details + uploads */
 .gap-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
 .gap-banner>div{display:grid;gap:2px}.gap-banner b{font-size:14px}.gap-banner span{font-size:12px;color:var(--muted)}
@@ -1079,7 +1116,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 <script>
 /* CONFIG — for the hosted version, set DATA_URL to the live workbook / API endpoint. Empty = embedded dummy data. */
 /* CLIENT = this client's settings (client.json), injected by scripts/build.py. The foundation itself holds no client context. */
-const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Jabula Getaways","short_name":"Jabula","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#686762"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]},"google_client_id":"278276381564-fgcobg34n9c0ksfu3vkh7jm8jaadmrda.apps.googleusercontent.com","guest_info_caretaker":false,"logo":{"dark":"brand/wordmark-dark-web.png","light":"brand/wordmark-light-web.png"}};
+const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Jabula Getaways","short_name":"Jabula","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#686762"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]},"google_client_id":"278276381564-fgcobg34n9c0ksfu3vkh7jm8jaadmrda.apps.googleusercontent.com","guest_info_caretaker":false,"pricing_defaults":{"weekend_markup_pct":10,"weekend_nights":["fri","sat","sun"],"weekend_stacks_with_overrides":false,"holiday_markup_pct":10,"direct_discount_pct":5,"addons":[{"id":"cook","title":"🍳 Home cook","price":600,"per":"per meal","desc":"Local home-style meals in the stay"},{"id":"bonfire","title":"🔥 Bonfire evening","price":800,"per":"per evening","desc":"Wood, setup & clean-up"},{"id":"pickup","title":"🚕 Station pickup","price":1500,"per":"one way","desc":"Dehradun station / Jolly Grant"},{"id":"housekeeping","title":"🧹 Extra housekeeping","price":400,"per":"per visit","desc":"Fresh towels, cleaning"},{"id":"early_checkin","title":"⏰ Early check-in","price":1000,"per":"if available","desc":"From 10 AM"},{"id":"late_checkout","title":"🌙 Late check-out","price":1000,"per":"if available","desc":"Until 2 PM"},{"id":"decor","title":"🎉 Celebration decor","price":2500,"per":"setup","desc":"Birthdays, anniversaries"}]},"logo":{"dark":"brand/wordmark-dark-web.png","light":"brand/wordmark-light-web.png"}};
 const CONFIG={DATA_URL:"",API_URL:CLIENT.api_url||"",BOT_URL:CLIENT.bot_url||"",REFRESH_MINUTES:CLIENT.refresh_minutes||5,BRAND:CLIENT.brand,PHOTO_BASE:""/*__PHOTO_BASE__*/};
 const SEED={"props":[],"bookings":[],"payouts":[],"turnovers":[],"expenses":[],"maint":[],"fee_pct":{}};
 </script>
@@ -1380,7 +1417,7 @@ function exportChart(holder,name){
     cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - ${name} - ${TODAY}.png`,b),'image/png')};
   img.onerror=()=>toast('Could not render this chart to an image.');img.src=src;
 }
-const ico={wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
+const ico={tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
 const driveLogo=()=>{const s=sv('svg',{viewBox:'0 0 87.3 78',width:20,height:18,'aria-hidden':'true'});
   [['M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z','#0066da'],['M43.65 25L29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z','#00ac47'],
    ['M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 11.5z','#ea4335'],['M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z','#00832d'],
@@ -2519,8 +2556,10 @@ function stage(id,fields){id=String(id);const raw=rawB(id)||{},next={...(STAGE[i
   for(const k of Object.keys(next))if(String(next[k]??'')===String(raw[k]??''))delete next[k];
   if(Object.keys(next).length)STAGE[id]=next;else delete STAGE[id];render()}
 const GSTAGE={};  // property_id -> private guest-info fields waiting to be saved (memory only)
-const LSTAGE={};  // list row_id (or new:<n>) -> {list, value, active, fee_pct, __new, __from}
-const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length+Object.keys(LSTAGE).length;
+const LSTAGE={};
+const PRSTAGE={};  // pricing.<name> -> new value (Settings rows)
+const OVOPS=[];   // date rules: {op:'add',row,label} | {op:'del',ov_id,label}  // list row_id (or new:<n>) -> {list, value, active, fee_pct, __new, __from}
+const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length+Object.keys(LSTAGE).length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0);
 window.jgStaged=stagedCount;window.jgToast=(...a)=>toast(...a);  // for the self-update check (a separate script)
 function clashFor(b){return D.B.find(x=>x.ok&&x.booking_id!==String(b.booking_id)&&samePlace(x.property_id,b.property_id)&&x.check_in<b.check_out&&x.check_out>b.check_in)}
 
@@ -2596,7 +2635,7 @@ function mgUntrash(id){const b=stg(rawB(id));const c=b.booking_status!=='Cancell
   if(c){toast(`Can’t restore ${id}: it clashes with ${c.booking_id}. Cancel one of them first.`);return}
   stage(id,{deleted_at:null,deleted_by:null,notes:addNote(b.notes,'Restored from Trash')})}
 
-function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE),grows=Object.entries(GSTAGE),lrows=Object.entries(LSTAGE),total=rows.length+prows.length+grows.length+lrows.length;
+function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE),grows=Object.entries(GSTAGE),lrows=Object.entries(LSTAGE),total=rows.length+prows.length+grows.length+lrows.length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0);
   const body=rows.map(([id,f])=>{const raw=rawB(id)||{};return h('div',{class:'mg-rev'},h('b',null,`${id} · ${raw.guest||''}`),h('span',{class:'mg-revp'},short((D.P[raw.property_id]||{}).property||'')+' · '+fmtD(raw.check_in)+' → '+fmtD(raw.check_out)),
     Object.entries(f).filter(([k])=>k!=='deleted_by').map(([k,v])=>k==='notes'?h('div',{class:'mg-chg'},h('span',null,'Note added'),h('em',null,String(v||'').slice(String(raw.notes||'').length).trim()||'(notes edited)')):
       h('div',{class:'mg-chg'},h('span',null,MG_L[k]||k),h('s',null,mgVal(k,raw[k])),h('i',null,'→'),h('b',null,mgVal(k,v)))))});
@@ -2610,7 +2649,9 @@ function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE
     [f.__from&&f.__from!==f.value?h('div',{class:'mg-chg'},h('span',null,'Rename'),h('s',null,f.__from),h('i',null,'→'),h('b',null,f.value),h('em',null,` (${listUse(f.list,f.__from)} bookings follow)`)):null,
      'active' in f?h('div',{class:'mg-chg'},h('span',null,'Status'),h('b',null,/^(no|false)$/i.test(String(f.active))?'Retired (hidden from the form)':'Active')):null,
      'fee_pct' in f?h('div',{class:'mg-chg'},h('span',null,'Usual fee'),h('b',null,f.fee_pct==null||f.fee_pct===''?'—':f.fee_pct+'%')):null]));
-  modal(`Review ${total} change${total>1?'s':''}`,h('div',{class:'mg-revlist'},body,pbody,gbody,lbody),
+  const prbody=Object.entries(PRSTAGE).map(([k,v])=>h('div',{class:'mg-rev'},h('b',null,'Pricing · '+(PR_L[k]||k)),h('div',{class:'mg-chg'},h('span',null,'Now'),h('s',null,prShow(k,prRaw(k))),h('i',null,'→'),h('b',null,prShow(k,v)))));
+  const ovbody=OVOPS.length?h('div',{class:'mg-rev'},h('b',null,`Prices on dates · ${OVOPS.length} change${OVOPS.length>1?'s':''}`),[...new Set(OVOPS.map(o=>o.label))].map(l=>h('div',{class:'mg-chg'},h('em',null,l)))):null;
+  modal(`Review ${total} change${total>1?'s':''}`,h('div',{class:'mg-revlist'},body,pbody,gbody,lbody,prbody,ovbody),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:async e=>{e.target.disabled=true;e.target.textContent='Saving…';closeLayer();await mgSave()}},`Save ${total} change${total>1?'s':''}`)])}
 async function mgSave(){let ok=0,fail=null;
   for(const[id,f]of Object.entries(STAGE)){const done=await save('bookings','update',{match:{booking_id:id},fields:f},null);if(done){delete STAGE[id];ok++}else{fail=id;break}}
@@ -2618,13 +2659,15 @@ async function mgSave(){let ok=0,fail=null;
     const done=__new?await save('properties','append',{row:{property_id:id,...fields}},null):await save('properties','update',{match:{property_id:id},fields},null);
     if(done){delete PSTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(GSTAGE)){const done=await giSave(id,f);if(done){delete GSTAGE[id];ok++}else{fail=id;break}}
+  if(!fail)for(const[k,v]of Object.entries(PRSTAGE)){const done=await prSave(k,v);if(done){delete PRSTAGE[k];ok++}else{fail=k;break}}
+  if(!fail&&OVOPS.length){const done=await ovSave();if(done)ok++;else fail='date prices'}
   if(!fail)for(const[id,f]of Object.entries(LSTAGE)){const{__new,__from,...fields}=f;let done;
     if(__new)done=await save('lists','append',{row:{row_id:nextListId(),active:'Yes',...fields}},null);
     else{done=await save('lists','update',{match:{row_id:id},fields},null);
       if(done&&__from&&fields.value&&__from!==fields.value){const col=BK_COL[f.list];if(col&&listUse(f.list,__from))done=await save('bookings','update',{match:{[col]:__from},fields:{[col]:fields.value}},null)}}
     if(done){delete LSTAGE[id];ok++}else{fail=id;break}}
   render();toast(fail?`Saved ${ok}; stopped at ${fail} - nothing else changed. Try again.`:`${ok} change${ok>1?'s':''} saved${live()?' ✓':' · demo only'}`)}
-function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];for(const k of Object.keys(LSTAGE))delete LSTAGE[k];render()})}
+function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];for(const k of Object.keys(LSTAGE))delete LSTAGE[k];for(const k of Object.keys(PRSTAGE))delete PRSTAGE[k];OVOPS.length=0;render()})}
 async function purgeTrash(){if(MG.purged||!live())return;MG.purged=true;
   const old=(S.data.bookings||[]).filter(b=>b.deleted_at&&diff(String(b.deleted_at).slice(0,10),TODAY)>30);
   for(const b of old)await save('bookings','delete',{match:{booking_id:String(b.booking_id)}},null);
@@ -2869,6 +2912,139 @@ function manageLists(v,tabs){const rows=S.data.lists||[],legacy=rows.length&&!is
     legacy?h('div',{class:'gap-banner'},h('div',null,h('b',null,'Lists are still in the old sheet layout'),h('span',null,'They show in the form as before. Ask to upgrade the Lists tab to edit them here.'))):
     h('div',{class:'ls-grid'},['platform','payment_term','account'].map(col))));
   pendingBar(v)}
+/* Manage › Pricing, like Airbnb: a base price per stay (Properties), a weekend % and holiday % on top, and a price
+   calendar per stay where a picked day or a dragged range gets its own price. That custom price is the night's price
+   (no weekend / holiday % on top) and the bot quotes it; every other day keeps the pattern. Stored in the Register:
+   Settings rows "pricing.*" and Overrides rows (unit_id = property id + rate for custom prices, "*" + pct for
+   holidays). The bot reads both. */
+let PRS=null,PROV=null,PRerr=null,PRbusy=false;
+const PR_L={weekend_markup_pct:'Weekend %',weekend_nights:'Weekend nights',weekend_stacks_with_overrides:'Holiday on a weekend',holiday_markup_pct:'Holiday % (new holidays)',direct_discount_pct:'Direct booking discount',addons:'Add-ons'};
+const PR_DEF=()=>({weekend_markup_pct:15,weekend_nights:['fri','sat'],weekend_stacks_with_overrides:true,holiday_markup_pct:10,direct_discount_pct:5,addons:[],...(CLIENT.pricing_defaults||{})});
+const DOW=['mon','tue','wed','thu','fri','sat','sun'];
+function prRaw(k){const r=(PRS||[]).find(x=>x.key==='pricing.'+k);if(!r||r.value==null||r.value==='')return PR_DEF()[k];const v=r.value;
+  if(k==='weekend_nights')return String(v).split(',').map(x=>x.trim().toLowerCase().slice(0,3)).filter(Boolean);
+  if(k==='weekend_stacks_with_overrides')return/^(yes|true|1|on)$/i.test(String(v));if(k==='addons'){try{return typeof v==='string'?JSON.parse(v):v}catch(e){return PR_DEF().addons}}return +v}
+const prVal=k=>k in PRSTAGE?PRSTAGE[k]:prRaw(k);
+const prShow=(k,v)=>k==='weekend_nights'?(v||[]).map(x=>x[0].toUpperCase()+x.slice(1)).join(', '):k==='weekend_stacks_with_overrides'?(v?'add both %':'higher % only'):k==='addons'?`${(v||[]).filter(a=>a.active!=='No').length} on offer`:v==null?'—':v+'%';
+function prStage(k,v){if(JSON.stringify(v)===JSON.stringify(prRaw(k)))delete PRSTAGE[k];else PRSTAGE[k]=v;render()}
+async function prLoad(force){if(PRbusy||(PRS&&PROV&&!force))return;PRbusy=true;PRerr=null;
+  try{if(live()){const r=await apiGet({tabs:'settings,overrides'});PRS=(r.tabs||{}).settings||[];PROV=((r.tabs||{}).overrides||[]).map(o=>({...o,from:String(o.from).slice(0,10),to:String(o.to).slice(0,10)}))}else{PRS=PRS||[];PROV=PROV||[]}}catch(e){PRerr=e.message;PRS=PRS||[];PROV=PROV||[]}
+  PRbusy=false;if(S.view==='manage'&&MG.sec==='pricing')render()}
+async function prSave(k,v){const val=k==='weekend_nights'?v.join(','):k==='weekend_stacks_with_overrides'?(v?'Yes':'No'):k==='addons'?JSON.stringify(v):v;
+  if(!live()){const r=(PRS||[]).find(x=>x.key==='pricing.'+k);if(r)r.value=val;else(PRS=PRS||[]).push({key:'pricing.'+k,value:val});return true}
+  try{let r=await apiPost({action:'update',tab:'settings',match:{key:'pricing.'+k},fields:{value:val}});if(!r.updated)r=await apiPost({action:'append',tab:'settings',row:{key:'pricing.'+k,value:val}});
+    const row=(PRS||[]).find(x=>x.key==='pricing.'+k);if(row)row.value=val;else PRS.push({key:'pricing.'+k,value:val});return true}catch(e){toast('Couldn’t save pricing: '+e.message);return false}}
+async function ovSave(){const ops=OVOPS.splice(0);
+  for(const o of ops){try{if(live()){let m=null;if(o.op!=='add'){const row=o.row||{};if(row.ov_id)m={ov_id:row.ov_id};else if((PROV||[]).filter(x=>x.from===row.from).length===1)m={from:row.from};else throw new Error('that rule has no id - ask to add ids to the date rules')}
+        const r=await apiPost(o.op==='add'?{action:'append',tab:'overrides',row:o.row}:{action:'delete',tab:'overrides',match:m});if(r.error)throw new Error(r.error)}
+      if(o.op!=='add')PROV=PROV.filter(x=>x!==o.row)}catch(e){toast('Couldn’t save date prices: '+e.message);OVOPS.unshift(...ops.slice(ops.indexOf(o)));return false}}
+  PROV=prRules();return true}
+/* the date rules as they will be after the staged operations */
+function prRules(){let rows=(PROV||[]).slice();OVOPS.forEach(o=>{if(o.op==='add')rows.push(o.row);else rows=rows.filter(x=>x!==o.row)});return rows}
+const ovId=()=>'OV'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+/* one night's price for a stay, the same rule the bot uses */
+function nightPrice(p,day){const base=+p.base_rate||0,w=prVal('weekend_nights'),dow=DOW[(pd(day).getDay()+6)%7],isW=w.includes(dow),wk=isW?1+prVal('weekend_markup_pct')/100:1;
+  const hits=prRules().filter(o=>(o.unit_id==='*'||o.unit_id===p.property_id||o.unit_id===p.property_id+'-E')&&o.from<=day&&day<=o.to);
+  const fixed=hits.filter(o=>o.rate!=null&&o.rate!==''&&o.unit_id!=='*');if(fixed.length)return{price:Math.round(+fixed[fixed.length-1].rate/10)*10,kind:'custom',rule:fixed[fixed.length-1]};
+  const pcts=hits.filter(o=>o.unit_id==='*'||o.rate==null||o.rate==='').map(o=>+o.pct||0),hol=hits.find(o=>o.unit_id==='*'&&(o.rate==null||o.rate===''));
+  let rate=base*wk,kind=isW?'weekend':'base';if(pcts.length){const pct=1+Math.max(...pcts)/100;rate=prVal('weekend_stacks_with_overrides')?rate*pct:base*Math.max(wk,pct);kind='holiday'}
+  return{price:Math.round(rate/10)*10,kind,holiday:hol&&hol.note}}
+/* stage new custom prices for days of one stay: existing custom rules for the stay are rebuilt around the change */
+function setCustom(p,days,price){const pid=p.property_id,mine=prRules().filter(o=>o.unit_id===pid&&o.rate!=null&&o.rate!==''),map={};
+  mine.forEach(o=>{for(let d=o.from;d<=o.to;d=add(d,1))map[d]=+o.rate});days.forEach(d=>{if(price==null)delete map[d];else map[d]=price});
+  const segs=[];Object.keys(map).sort().forEach(d=>{const last=segs[segs.length-1];if(last&&add(last.to,1)===d&&last.rate===map[d])last.to=d;else segs.push({from:d,to:d,rate:map[d]})});
+  const keep=new Set(),same=(o,s)=>o.from===s.from&&o.to===s.to&&+o.rate===+s.rate;
+  segs.forEach(sg=>{const ex=mine.find(o=>same(o,sg));if(ex)keep.add(ex)});
+  const label=`${short(p.property)} · ${fmtD(days[0])}${days.length>1?' → '+fmtD(days[days.length-1]):''}: ${price==null?'back to the usual pattern':inr(price)+' per night'}`;
+  mine.filter(o=>!keep.has(o)).forEach(o=>{const i=OVOPS.findIndex(x=>x.op==='add'&&x.row===o);if(i>=0)OVOPS.splice(i,1);else OVOPS.push({op:'del',row:o,label})});
+  segs.filter(sg=>!mine.some(o=>keep.has(o)&&same(o,sg))).forEach(sg=>OVOPS.push({op:'add',row:{ov_id:ovId(),unit_id:pid,from:sg.from,to:sg.to,rate:sg.rate,note:'Custom price'},label}));
+  render()}
+const PRC={pid:null,m:null,a:null,b:null,drag:false};
+function prCalendar(){const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
+  if(!props.length)return h('div',{class:'empty'},'No active stays.');
+  if(!PRC.pid||!props.some(p=>p.property_id===PRC.pid))PRC.pid=props[0].property_id;PRC.m=PRC.m||TODAY.slice(0,7);
+  const p=D.P[PRC.pid],k=PRC.m,first=mStart(k),last=mEnd(k),lead=(pd(first).getDay()+6)%7;
+  const sel=PRC.a?[PRC.a<=PRC.b?PRC.a:PRC.b,PRC.a<=PRC.b?PRC.b:PRC.a]:null,inSel=d=>sel&&d>=sel[0]&&d<=sel[1];
+  const pick=h('select',{class:'mg-pick pr-pick','aria-label':'Stay',onchange:e=>{PRC.pid=e.target.value;PRC.a=PRC.b=null;render()}},
+    CITIES.filter(c=>props.some(x=>x.city===c)).map(c=>h('optgroup',{label:c},props.filter(x=>x.city===c).map(x=>h('option',{value:x.property_id,selected:x.property_id===PRC.pid||null},`${short(x.property)} · ${inrK(+x.base_rate||0)} base`)))));
+  const nav=h('div',{class:'pr-nav'},h('button',{class:'btn icon sm','aria-label':'Previous month',onclick:()=>{PRC.m=prevM(k);render()}},'‹'),h('b',null,mLong(k)),h('button',{class:'btn icon sm','aria-label':'Next month',onclick:()=>{PRC.m=nextM(k);render()}},'›'));
+  const cells=[...Array(lead)].map(()=>h('div',{class:'pr-c pr-x'}));
+  for(let d=first;d<=last;d=add(d,1)){const np=nightPrice(p,d),bk=nightBooking(p.property_id,d),past=d<TODAY;
+    cells.push(h('div',{class:`pr-c k-${np.kind}`+(inSel(d)?' sel':'')+(past?' past':'')+(bk?' bk':''),'data-d':d,role:'button',tabindex:past?-1:0,
+      'data-tip':`${fmtD(d,{weekday:'long',day:'numeric',month:'short'})}\n${inr(np.price)} · ${{custom:'custom price',holiday:'holiday'+(np.holiday?' ('+np.holiday+')':''),weekend:'weekend',base:'base price'}[np.kind]}${bk?'\nBooked: '+bk.guest:''}`},
+      h('span',{class:'pr-d'},+d.slice(8)),h('b',{class:'num'},np.price.toLocaleString('en-IN')),bk?h('i',{class:'pr-bk'}):np.kind==='holiday'?h('i',{class:'pr-hd'}):null))}
+  const grid=h('div',{class:'pr-grid'},...['M','T','W','T','F','S','S'].map(x=>h('div',{class:'pr-w'},x)),...cells);
+  /* pick: tap a day, tap another for a range, or drag across days */
+  const dayAt=e=>{const el=(e.target.closest&&e.target.closest('.pr-c[data-d]'))||document.elementFromPoint(e.clientX,e.clientY)?.closest?.('.pr-c[data-d]');return el&&!el.classList.contains('past')?el.dataset.d:null};
+  const paint=()=>{const s2=PRC.a?[PRC.a<=PRC.b?PRC.a:PRC.b,PRC.a<=PRC.b?PRC.b:PRC.a]:null;grid.querySelectorAll('.pr-c[data-d]').forEach(c=>c.classList.toggle('sel',!!s2&&c.dataset.d>=s2[0]&&c.dataset.d<=s2[1]))};
+  grid.addEventListener('pointerdown',e=>{const d=dayAt(e);if(!d)return;e.preventDefault();if(PRC.a&&PRC.a===PRC.b&&!PRC.drag&&e.pointerType!=='mouse'&&d!==PRC.a){PRC.b=d;render();return}
+    PRC.a=PRC.b=d;PRC.drag=true;grid.setPointerCapture&&grid.setPointerCapture(e.pointerId);paint()});
+  grid.addEventListener('pointermove',e=>{if(!PRC.drag)return;const d=dayAt(e);if(d&&d!==PRC.b){PRC.b=d;paint()}});
+  const end=()=>{if(!PRC.drag)return;PRC.drag=false;render()};grid.addEventListener('pointerup',end);grid.addEventListener('pointercancel',end);
+  let panel=null;
+  if(sel){const days=[];for(let d=sel[0];d<=sel[1];d=add(d,1))days.push(d);const prices=days.map(d=>nightPrice(p,d)),lo=Math.min(...prices.map(x=>x.price)),hi=Math.max(...prices.map(x=>x.price));
+    const hasCustom=prices.some(x=>x.kind==='custom'),inp=h('input',{type:'number',inputmode:'numeric',min:0,step:'50',placeholder:String(lo),value:lo===hi?lo:''});
+    const booked=days.filter(d=>nightBooking(p.property_id,d)).length;
+    panel=h('div',{class:'pr-panel'},h('div',{class:'pr-ph'},h('b',null,`${fmtD(sel[0],{weekday:'short',day:'numeric',month:'short'})}${days.length>1?' → '+fmtD(sel[1],{weekday:'short',day:'numeric',month:'short'}):''}`),
+        h('span',null,`${days.length} night${days.length>1?'s':''} · now ${lo===hi?inr(lo):inr(lo)+' – '+inr(hi)}${booked?` · ${booked} already booked (their price doesn’t change)`:''}`)),
+      h('div',{class:'pr-set'},h('span',{class:'pr-cur'},'₹'),inp,h('span',null,'per night'),
+        h('button',{class:'btn primary sm',onclick:()=>{const v=+inp.value;if(!(v>0)){inp.focus();return}setCustom(p,days,Math.round(v));PRC.a=PRC.b=null;render()}},'Set price'),
+        hasCustom?h('button',{class:'btn sm',onclick:()=>{setCustom(p,days,null);PRC.a=PRC.b=null;render()}},'Back to usual'):null,
+        h('button',{class:'btn sm ghost',onclick:()=>{PRC.a=PRC.b=null;render()}},'Cancel')),
+      h('small',{class:'pr-hint'},'This price is final for these nights: no weekend or holiday % on top. The bot quotes it for new bookings.'));
+    setTimeout(()=>inp.focus&&inp.focus(),0)}
+  const customs=prRules().filter(o=>o.unit_id===p.property_id&&o.rate!=null&&o.rate!==''&&o.to>=TODAY).sort((a,b)=>a.from.localeCompare(b.from));
+  return h('div',{class:'pr-cal'},h('div',{class:'pr-top'},pick,nav),
+    h('div',{class:'pr-leg'},h('span',{class:'k-base'},'Base '+inrK(+p.base_rate||0)),h('span',{class:'k-weekend'},`Weekend +${prVal('weekend_markup_pct')}%`),h('span',{class:'k-holiday'},'Holiday'),h('span',{class:'k-custom'},'Custom price'),h('span',{class:'bk'},'Booked')),
+    grid,panel||h('p',{class:'pr-hint'},'Tap a day, or drag across days (tap two days on a phone), to set a special price.'),
+    customs.length?h('div',{class:'pr-custom'},h('span',{class:'pe-lab'},'Custom prices ahead'),customs.map(o=>h('div',{class:'pr-cu'},h('span',null,`${fmtD(o.from)}${o.to!==o.from?' → '+fmtD(o.to):''}`),h('b',{class:'num'},inr(+o.rate)+'/night'),
+      h('button',{class:'btn sm',onclick:()=>{const ds=[];for(let d=o.from;d<=o.to;d=add(d,1))ds.push(d);setCustom(p,ds,null)}},'Remove')))):null)}
+function holidayEdit(o){const isNew=!o,nm=h('input',{value:o?o.note||'':'',placeholder:'e.g. Diwali'}),fr=h('input',{type:'date',value:o?o.from:TODAY}),to=h('input',{type:'date',value:o?o.to:TODAY}),
+    pc=h('input',{type:'number',inputmode:'decimal',min:0,max:200,step:'1',value:o?(o.pct??''):prVal('holiday_markup_pct')}),err=h('div',{class:'err',hidden:true});
+  modal(isNew?'Add holiday':'Edit '+(o.note||'holiday'),h('div',{class:'form'},fld('Name',nm,1),fld('From (first night)',fr),fld('To (last night)',to),fld('Price increase %',pc,1),
+      h('p',{class:'full pe-hint'},'Applies to every stay. On a weekend night only the higher of the weekend and holiday % counts'+(prVal('weekend_stacks_with_overrides')?' (now set to add both).':'.')),err),
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),!isNew?h('button',{class:'btn danger-t',onclick:()=>{closeLayer();OVOPS.push({op:'del',row:o,label:`Holiday removed: ${o.note||''} ${fmtD(o.from)}`});render()}},'Remove'):null,
+     h('button',{class:'btn primary',onclick:()=>{if(!nm.value.trim()||!fr.value||!to.value||to.value<fr.value||!(+pc.value>=0)){err.hidden=false;err.textContent='Add a name, dates (to on or after from) and a %.';return}
+       const row={ov_id:ovId(),unit_id:'*',from:fr.value,to:to.value,pct:+pc.value,note:nm.value.trim()};closeLayer();
+       if(!isNew)OVOPS.push({op:'del',row:o,label:`Holiday changed: ${row.note}`});OVOPS.push({op:'add',row,label:`${isNew?'Holiday added':'Holiday changed'}: ${row.note} ${fmtD(row.from)} → ${fmtD(row.to)} +${row.pct}%`});render()}},isNew?'Add':'Done')])}
+function addonEdit(i){const list=JSON.parse(JSON.stringify(prVal('addons')||[])),a=i==null?{id:'',title:'',price:'',per:'',desc:'',active:'Yes'}:list[i];
+  const t=h('input',{value:a.title||'',placeholder:'e.g. 🔥 Bonfire evening'}),pr=h('input',{type:'number',inputmode:'numeric',min:0,value:a.price??''}),per=h('input',{value:a.per||'',placeholder:'e.g. per evening'}),ds=h('input',{value:a.desc||'',placeholder:'e.g. Wood, setup & clean-up'}),err=h('div',{class:'err',hidden:true});
+  modal(i==null?'Add an add-on':'Edit '+(a.title||'add-on'),h('div',{class:'form'},fld('Name (as guests see it)',t,1),fld('Price (₹)',pr),fld('Per',per),fld('Short description',ds,1),err),
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{if(!t.value.trim()||!(+pr.value>=0)){err.hidden=false;err.textContent='Add a name and a price.';return}
+      const n={...a,title:t.value.trim(),price:+pr.value,per:per.value.trim(),desc:ds.value.trim(),id:a.id||t.value.replace(/[^a-z0-9]+/gi,'_').toLowerCase().replace(/^_|_$/g,'').slice(0,24)||('addon'+Date.now())};
+      if(i==null)list.push(n);else list[i]=n;closeLayer();prStage('addons',list)}},i==null?'Add':'Done')])}
+function managePricing(v,tabs){prLoad();
+  if(PRS==null||PROV==null||PRbusy){v.append(card('s12','Pricing',{acts:[tabs]},h('div',{class:'empty'},'Loading prices…')));return}
+  const w=prVal('weekend_nights'),ex=D.props.find(p=>!isStopped(p)&&+p.base_rate>0),num=(k,unit='%')=>{const i=h('input',{type:'number',inputmode:'decimal',min:0,max:100,step:'1',value:prVal(k),onchange:e=>prStage(k,e.target.value===''?null:+e.target.value)});return h('div',{class:'pr-num'},i,h('span',null,unit))};
+  const hol=prRules().filter(o=>o.unit_id==='*').sort((a,b)=>a.from.localeCompare(b.from)),up=hol.filter(o=>o.to>=TODAY),past=hol.filter(o=>o.to<TODAY);
+  const addons=prVal('addons')||[];
+  v.append(card('s12','Pricing',{hint:'base price per stay + weekend and holiday % · custom prices on the calendar win · the bot quotes these',acts:[tabs]},
+    PRerr?h('div',{class:'gap-banner'},h('div',null,h('b',null,'Couldn’t load prices'),h('span',null,PRerr)),h('button',{class:'btn sm',onclick:()=>prLoad(true)},'Try again')):null,
+    !live()?h('p',{class:'gi-priv'},icon('tag'),'Demo: connect live data to save prices to the sheet.'):null,
+    h('div',{class:'pr-layout'},
+      h('section',{class:'pr-box pr-main'},h('h3',null,'Price calendar'),prCalendar()),
+      h('div',{class:'pr-side'},
+        h('section',{class:'pr-box'},h('h3',null,'Defaults'),
+          h('div',{class:'pr-row'},h('div',null,h('b',null,'Weekend price'),h('span',null,'added to the base price on these nights')),num('weekend_markup_pct')),
+          h('div',{class:'pr-days'},DOW.map(d=>h('button',{type:'button','aria-pressed':String(w.includes(d)),onclick:()=>prStage('weekend_nights',DOW.filter(x=>x===d?!w.includes(d):w.includes(x)))},d[0].toUpperCase()+d.slice(1,3)))),
+          h('div',{class:'pr-row'},h('div',null,h('b',null,'Holiday price'),h('span',null,'% for new holidays (each can differ)')),num('holiday_markup_pct')),
+          h('div',{class:'pr-row'},h('div',null,h('b',null,'Holiday on a weekend'),h('span',null,'never double-counted by default')),
+            h('div',{class:'seg sm'},[[false,'Higher % only'],[true,'Add both']].map(([x,l])=>h('button',{'aria-pressed':prVal('weekend_stacks_with_overrides')===x,onclick:()=>prStage('weekend_stacks_with_overrides',x)},l)))),
+          h('div',{class:'pr-row'},h('div',null,h('b',null,'Direct booking discount'),h('span',null,'off the price when guests book with you')),num('direct_discount_pct')),
+          ex?h('div',{class:'pr-ex'},(()=>{const b=+ex.base_rate,wk=Math.round(b*(1+prVal('weekend_markup_pct')/100)/10)*10,hd=Math.round(b*(1+prVal('holiday_markup_pct')/100)/10)*10;
+            return[h('span',null,`${short(ex.property)}:`),h('span',null,`weekday ${inr(b)}`),h('span',null,`weekend ${inr(wk)}`),h('span',null,`holiday ${inr(hd)}`),h('span',null,`direct ${inr(Math.round(b*(1-prVal('direct_discount_pct')/100)/10)*10)}`)]})()):null),
+        h('section',{class:'pr-box'},h('div',{class:'ls-h'},h('h3',null,'Holidays'),h('button',{class:'btn sm',onclick:()=>holidayEdit(null)},icon('plus'),'Add')),
+          up.length?h('div',{class:'ls-list'},(S.holAll?up:up.slice(0,5)).map(o=>{const yr=x=>fmtD(x,{day:'numeric',month:'short',...(x.slice(0,4)!==TODAY.slice(0,4)?{year:'numeric'}:{})});
+            return h('div',{class:'ls-row',role:'button',tabindex:0,onclick:()=>holidayEdit(o)},h('i',{class:'ls-dot',style:{background:'var(--warn,#d97706)'}}),
+            h('div',{class:'ls-tx'},h('b',null,o.note||'Holiday'),h('span',null,`${yr(o.from)}${o.to!==o.from?' → '+yr(o.to):''} · +${o.pct||0}%`)),h('span',{class:'mg-chev'},icon('chev')))})):h('div',{class:'empty'},'No holidays ahead.'),
+          up.length>5?h('button',{class:'btn sm',style:{justifySelf:'start'},onclick:()=>{S.holAll=!S.holAll;render()}},S.holAll?'Show fewer':`Show all ${up.length}`):null,
+          past.length?h('small',{class:'pr-hint'},`${past.length} past holiday${past.length>1?'s':''} kept for history`):null),
+        h('section',{class:'pr-box'},h('div',{class:'ls-h'},h('h3',null,'Add-ons'),h('button',{class:'btn sm',onclick:()=>addonEdit(null)},icon('plus'),'Add')),
+          addons.length?h('div',{class:'ls-list'},addons.map((a,i)=>{const on=a.active!=='No';return h('div',{class:'ls-row'+(on?'':' off')},
+            h('div',{class:'ls-tx'},h('b',null,a.title||a.id),h('span',null,`${inr(+a.price||0)}${a.per?' '+a.per:''}`)),
+            h('div',{class:'ls-acts'},h('button',{class:'btn icon sm','aria-label':'Edit','data-tip':'Edit',onclick:()=>addonEdit(i)},icon('edit')),
+              h('button',{class:'btn sm',onclick:()=>{const l=JSON.parse(JSON.stringify(addons));l[i].active=on?'No':'Yes';prStage('addons',l)}},on?'Hide':'Offer')))})):h('div',{class:'empty'},'No add-ons yet.'))))));
+  pendingBar(v)}
 function manageProps(v,tabs){
   MG.pq=MG.pq||'';MG.pstatus=MG.pstatus||'All';
   const q=MG.pq.toLowerCase(),list=[...(S.data.props||[]).map(pstg),...Object.entries(PSTAGE).filter(([,f])=>f.__new).map(([,f])=>f)]
@@ -2899,12 +3075,13 @@ function manage(v){
   purgeTrash();
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['lists','Lists',null,'list'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['lists','Lists',null,'list'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();render()}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
   if(MG.sec==='guest')return manageGuest(v,tabs);
   if(MG.sec==='lists')return manageLists(v,tabs);
+  if(MG.sec==='pricing')return managePricing(v,tabs);
   if(MG.sec==='trash'){
     const list=sortBy(trash,['deleted_at',-1]);
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);
