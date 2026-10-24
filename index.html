@@ -1344,6 +1344,7 @@ function propDetails(p){
     kv('Base price',p.base_rate?inr(p.base_rate)+' / night':null),kv('Extra guest',p.extra_guest_fee?inr(p.extra_guest_fee)+' / guest / night':null),
     kv('Pet fee',p.pet_fee?inr(p.pet_fee)+' / stay':null),kv('Check-in',p.check_in_time?'from '+clock12(p.check_in_time):null),
     kv('Check-out',p.check_out_time?'by '+clock12(p.check_out_time):null),kv('Made of',parts.length?parts.join(' + '):null))];
+  if(p.description)body.unshift(h('div',{class:'pd-sec',style:{marginTop:0,marginBottom:16}},h('span',null,'About'),h('p',null,p.description)));
   if(p.rules)body.push(h('div',{class:'pd-sec'},h('span',null,'House rules'),h('p',null,p.rules)));
   if(am.length)body.push(h('div',{class:'pd-sec'},h('span',null,'Amenities'),h('div',{class:'tags'},am.map(a=>h('span',{class:'pill p-mute'},a)))));
   const pics=th.length?th:ph;
