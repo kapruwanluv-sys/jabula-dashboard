@@ -1513,7 +1513,9 @@ function openForm(kind,pid,edit,opt){
       at=h('input',{id:'fAt',type:'time',value:'14:00',step:900}),bs=h('select',{id:'fBs'},['Confirmed','Cancelled'].map(c=>h('option',null,c))),nt=h('textarea',{id:'fNt',rows:2,placeholder:'e.g. 2k paid in advance, balance on arrival'});
     if(edit){bd.value=edit.booking_date||String(edit.submitted_at||'').slice(0,10)||TODAY;g.value=edit.guest||'';loc.value=edit.location||'';ph.value=String(edit.phone||'').replace(/[^\d ]/g,'').trim();
       n.value=edit.guests||1;ci.value=edit.check_in;co.value=edit.check_out;if(L.channels.includes(edit.channel))ch.value=edit.channel;src.value=edit.source&&!['Dashboard','WhatsApp','Import'].includes(edit.source)?edit.source:'';
-      tf.value=edit.bucket?edit.tariff:edit.gross||'';pf.value=edit.bucket?(edit.platform_fee??''):(edit.fee||'');gst.value=edit.gst||'';rc.value=edit.bucket?(edit.received??''):(edit.net||'');
+      /* the stored buckets when the row has them (plain Sheet rows from Manage, or derived rows), else the derived legacy amounts */
+      const bk=edit.tariff!=null&&edit.tariff!=='',dv=D.B.find(x=>x.booking_id===String(edit.booking_id))||edit,fx=v=>v==null||v===''?'':v;
+      tf.value=bk?fx(edit.tariff):fx(dv.gross);pf.value=bk?fx(edit.platform_fee):fx(dv.fee);gst.value=fx(edit.gst);rc.value=bk?fx(edit.received):fx(dv.net);
       if(edit.payment_terms){if(!L.payment_terms.includes(edit.payment_terms))pt.append(h('option',null,edit.payment_terms));pt.value=edit.payment_terms}
       if(edit.account){if(!L.accounts.includes(edit.account))ac.append(h('option',null,edit.account));ac.value=edit.account}
       at.value=edit.arrival_time||'';bs.value=edit.booking_status||'Confirmed';nt.value=edit.notes||''}
