@@ -563,16 +563,17 @@ button.sstat:hover{background:var(--surface-2)}
 .en-row{display:flex;justify-content:space-between;gap:8px;padding:8px 2px;border:0;border-top:1px solid var(--hair-2);background:none;color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer;text-align:left}
 .en-row span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.en-row .num{color:var(--muted);flex:none}
 /* direct-booking payment block in the booking form */
-.pay-box{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--accent) 5%,transparent)}
-.pay-box[hidden]{display:none}
-.pay-full{display:flex !important;flex-direction:row !important;align-items:center;gap:10px;cursor:pointer}
-.pay-full input{width:22px;height:22px;flex:none;accent-color:var(--ok);margin:0}
-.pay-full span{display:grid;gap:1px}.pay-full small{color:var(--muted);font-weight:400}
-.pay-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
-.pay-row input:disabled{opacity:.55}
-.pay-hint{color:var(--muted);font-size:12px}
-.chip-s.date.late{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
-@media (max-width:520px){.pay-row{grid-template-columns:1fr 1fr}.pay-row>.btn{grid-column:1/-1}}
+.form [hidden],.pay-box[hidden]{display:none !important}  /* .form label sets display, which beat the hidden attribute */
+.pay-box{display:grid;gap:12px;padding:14px;border:1px solid var(--hair-2);border-radius:16px;background:color-mix(in srgb,var(--accent) 4%,transparent)}
+.pay-q{font-size:12px;font-weight:650;color:var(--muted)}
+.pay-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:12px;background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.pay-seg button{border:0;background:transparent;color:var(--ink);font:600 13px/1.2 inherit;font-family:inherit;padding:10px 4px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.pay-seg button[aria-checked=true]{background:var(--glass-2,#fff);box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--accent)}
+.pay-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pay-tiles>div{display:grid;gap:2px;padding:10px 12px;border-radius:12px;background:var(--glass-2,#fff);border:1px solid var(--hair-2)}
+.pay-tiles span{font-size:11.5px;color:var(--muted);font-weight:600}.pay-tiles b{font-size:18px;letter-spacing:-.01em;color:var(--ok)}
+.pay-tiles .left b{color:var(--muted)}.pay-tiles .left.due b{color:var(--bad)}
+.pay-hint{color:var(--muted);font-size:12px;line-height:1.4}
 .cd-row>svg{width:18px;height:18px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}  /* an unsized svg grows to its natural size in Safari */.cd-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pv-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:14px 18px}
 .pv-kpis{display:flex;flex-wrap:wrap;gap:8px 26px}.pv-k{display:flex;flex-direction:column;gap:2px}.pv-k span{font-size:11.5px;color:var(--muted)}.pv-k b{font-size:19px}
@@ -1023,6 +1024,11 @@ function stats(from,to,pid){
   return s;
 }
 const mStats=(k,pid)=>stats(mStart(k),mEnd(k),pid);
+/* a theme colour at low alpha as a plain rgba() (SVG exported to PNG can't resolve var()/color-mix) */
+const rgb_=c=>{c=String(c).trim();if(c[0]==='#'){const x=c.length===4?c.slice(1).split('').map(d=>d+d).join(''):c.slice(1,7);return[0,2,4].map(i=>parseInt(x.slice(i,i+2),16))}return(c.match(/[\d.]+/g)||[0,0,0]).slice(0,3).map(Number)};
+const tint_=(c,a)=>`rgba(${rgb_(c).join(',')},${a})`;
+/* solid blend of a colour toward the page background (a faded bar that stays opaque over what is behind it) */
+const fade_=(c,t)=>{const a=rgb_(c),b=rgb_(css('--bg')||'#fff');return`rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')})`};
 function prevRange(){const f=F(),n=diff(f.from,f.to)+1;if(f.preset==='month'||f.preset==='last'||(f.from.endsWith('-01')&&f.to===mEnd(f.from.slice(0,7)))){const k=prevM(f.from.slice(0,7));return[mStart(k),mEnd(k)]}return[add(f.from,-n),add(f.from,-1)]}
 const PRESETS=[['month','This month'],['last','Last month'],['next30','Next 30 days'],['last90','Last 90 days'],['season','Whole season'],['custom','Custom']];
 function applyPreset(p){
@@ -1084,18 +1090,19 @@ function svgRoot(w,hh){return sv('svg',{viewBox:`0 0 ${w} ${hh}`,width:w,height:
 function niceMax(v){if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v))),f=v/e;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e}
 function axisY(s,{l,r,t,b,w,hh,max,min=0,fmt,right}){const muted=css('--muted'),line=css('--hair-2');const y=v=>t+(hh-t-b)*(1-(v-min)/(max-min));
   for(let i=0;i<=4;i++){const v=min+(max-min)*i/4;s.append(sv('line',{x1:l,x2:w-r,y1:y(v),y2:y(v),stroke:line,'stroke-width':1,'stroke-dasharray':i===0&&min===0?null:'2 4'}));s.append(sv('text',{x:right?w-r+6:l-8,y:y(v)+4,'text-anchor':right?'start':'end',fill:muted},fmt(v)))}return y}
-function stacked(w,{cats,series,line,hi,fmt,onClick,hh=250}){
+function stacked(w,{cats,series,line,hi,fmt,onClick,hh=250,ghost,future,totals:showTot}){
   const l=56,r=line&&line.right?52:14,t=14,b=30;const s=svgRoot(w,hh);const totals=cats.map((_,i)=>sum(series,x=>x.vals[i]));
-  const mx=niceMax(Math.max(...totals,...(line&&!line.right?line.vals:[0]))*1.05);const y=axisY(s,{l,r,t,b,w,hh,max:mx,fmt});
+  const mx=niceMax(Math.max(...totals,...(line&&!line.right?line.vals:[0]),...(ghost?ghost.vals:[0]))*(showTot?1.12:1.05));const y=axisY(s,{l,r,t,b,w,hh,max:mx,fmt});
   const bw=(w-l-r)/cats.length,bar=Math.min(46,bw*.56);const muted=css('--muted'),ink=css('--ink');
-  cats.forEach((c,i)=>{let acc=0;const x=l+i*bw+(bw-bar)/2,on=!hi||hi.has(i);
+  cats.forEach((c,i)=>{let acc=0;const x=l+i*bw+(bw-bar)/2,on=!hi||hi.has(i),fut=future&&future.has(i);
+    /* last year: a soft rounded "ghost" bar behind this year's bar */
+    if(ghost&&ghost.vals[i]>0){const gy=y(ghost.vals[i]),pad=Math.min(6,bar*.18);s.append(sv('path',{d:roundTop(x-pad,gy,bar+pad*2,y(0)-gy,8),fill:ghost.color,'pointer-events':'none'}))}
     series.forEach((se,j)=>{const v=se.vals[i];if(v<=0)return;const y0=y(acc),y1=y(acc+v);acc+=v;const top=j===series.length-1||series.slice(j+1).every(z=>z.vals[i]<=0);
-      s.append(sv('path',{d:roundTop(x,y1,bar,y0-y1,top?6:0),fill:se.color,opacity:on?1:.3}))});
+      const fd=1-(on?1:.55)*(fut?.6:1);s.append(sv('path',{d:roundTop(x,y1,bar,y0-y1,top?6:0),fill:fd>0?fade_(se.color,fd):se.color}))});
+    if(showTot&&totals[i]>0&&bw>=30)s.append(sv('text',{x:l+i*bw+bw/2,y:y(totals[i])-6,'text-anchor':'middle',fill:on?ink:muted,'font-size':10.5,'font-weight':on?700:550,'pointer-events':'none'},fmt(totals[i]).replace('₹','')));
     s.append(sv('text',{x:l+i*bw+bw/2,y:hh-10,'text-anchor':'middle',fill:on?ink:muted,'font-weight':on?650:500},c.label));
     const hit=sv('rect',{x:l+i*bw,y:t,width:bw,height:hh-t-b,fill:'transparent','data-tip':c.tip(i),style:onClick?'cursor:pointer':null});if(onClick)hit.addEventListener('click',()=>onClick(i));s.append(hit)});
-  if(line&&line.marks){line.vals.forEach((v,i)=>{if(!(v>0))return;const cx=l+i*bw+bw/2,yy=y(v);
-      s.append(sv('line',{x1:cx-bar/2-5,x2:cx+bar/2+5,y1:yy,y2:yy,stroke:line.color,'stroke-width':2.5,'stroke-linecap':'round','pointer-events':'none'}))})}
-  else if(line){let ly=y;if(line.right){const lm=niceMax(Math.max(...line.vals,0.01)*1.1);ly=axisY(s,{l,r,t,b,w,hh,max:lm,fmt:line.fmt,right:true});s.querySelectorAll('line').forEach((n,i)=>{if(i>4)n.remove()})}
+  if(line){let ly=y;if(line.right){const lm=niceMax(Math.max(...line.vals,0.01)*1.1);ly=axisY(s,{l,r,t,b,w,hh,max:lm,fmt:line.fmt,right:true});s.querySelectorAll('line').forEach((n,i)=>{if(i>4)n.remove()})}
     const pts=line.vals.map((v,i)=>[l+i*bw+bw/2,ly(v)]);s.append(sv('path',{d:'M'+pts.map(p=>p.join(' ')).join('L'),fill:'none',stroke:line.color,'stroke-width':2.2,'stroke-linejoin':'round','stroke-linecap':'round','pointer-events':'none'}));
     pts.forEach(p=>s.append(sv('circle',{cx:p[0],cy:p[1],r:3.6,fill:css('--glass-2'),stroke:line.color,'stroke-width':2,'pointer-events':'none'})))}
   return s;
@@ -1397,7 +1404,7 @@ function overview(v){
   const wChips=h('div',{class:'rev-fy'},h('button',{'aria-pressed':S.revFY==null&&!S.revEnd,onclick:()=>{S.revFY=null;S.revEnd=null;render()}},'Latest'),
     wFys.map(y=>h('button',{'aria-pressed':S.revFY===y,onclick:()=>{S.revFY=y;S.revEnd=null;render()}},fyL(y))));
   trendHolder=chart(w=>stacked(w,{cats:wk.map((k,i)=>({label:(wShort1?mLabel(k).slice(0,1):mLabel(k))+(k>nowK?'*':''),tip:()=>`${mLong(k)}${k>nowK?' (booked so far)':''}\n`+byCity.map(c=>`${c.name}: ${inr(c.vals[i])}`).join('\n')+(lyOn?`\nSame month last year: ${inr(wLy[i])}`:'')+(profitOn?`\nProfit: ${inr(mstats[i].profit)}`:'')+'\nTap for details'})),
-    series:byCity,line:profitOn?{vals:mstats.map(m=>m.profit),color:css('--ink')}:lyOn?{vals:wLy,color:css('--ink'),marks:true}:null,hi,fmt:inrK,onClick:i=>openMonth(wk[i],cities)}));
+    series:byCity,line:profitOn?{vals:mstats.map(m=>m.profit),color:css('--ink')}:null,ghost:lyOn?{vals:wLy,color:tint_(css('--ink'),.09)}:null,future:new Set(wk.map((k,i)=>k>nowK?i:-1).filter(i=>i>=0)),totals:!profitOn,hi,fmt:inrK,onClick:i=>openMonth(wk[i],cities)}));
   /* swipe sideways on the chart to move through months */
   let wTx=null,wTy=null;trendHolder.addEventListener('touchstart',e=>{wTx=e.touches[0].clientX;wTy=e.touches[0].clientY},{passive:true});
   trendHolder.addEventListener('touchend',e=>{if(wTx==null)return;const dx=e.changedTouches[0].clientX-wTx,dy=e.changedTouches[0].clientY-wTy;wTx=null;
@@ -1406,7 +1413,7 @@ function overview(v){
     wHead,
     h('div',{class:'legend'},liveCities().map(c=>h('button',{'aria-pressed':!f.cities.length||f.cities.includes(c),onclick:()=>toggleIn('cities',c)},h('span',{class:'sw',style:{background:cityColor(c)}}),c)),
       profitOn?h('span',{style:{display:'inline-flex',alignItems:'center',gap:'6px'}},h('span',{class:'sw',style:{background:css('--ink'),height:'3px',borderRadius:'2px'}}),'Profit'):
-      lyOn?h('span',{style:{display:'inline-flex',alignItems:'center',gap:'6px'}},h('span',{class:'sw',style:{background:css('--ink'),height:'3px',borderRadius:'2px'}}),'Same month last year'):null),
+      null,lyOn?h('span',{style:{display:'inline-flex',alignItems:'center',gap:'6px'}},h('span',{class:'sw',style:{background:'color-mix(in srgb, var(--ink) 12%, transparent)',borderRadius:'3px'}}),'Last year'):null),
     trendHolder,wNav,wChips,
     h('div',{class:'foot-note'},'* future months show what is booked so far.')));
   // channel donut
@@ -1561,7 +1568,7 @@ function openMonth(k,cities){
     h('div',{class:'mo-kpis'},kpi('Net payout',inr(tot),dl(tot,lyTot)),kpi('Nights sold',String(st.nights),lySt?dl(st.nights,lySt.nights):null),kpi('Occupancy',pct(st.occ),lySt?`${pct(lySt.occ)} last year`:null),kpi('Avg nightly rate',inrK(st.adr),lySt&&lySt.adr?`${inrK(lySt.adr)} last year`:null)),
     h('h3',null,'By city'),h('div',{class:'mo-cities'},rows.map(r=>h('div',{class:'mo-c'},h('span',null,h('i',{style:{background:cityColor(r.c)}}),r.c),h('b',{class:'num'},inr(r.v)),h('span',{class:'t'},h('i',{style:{width:Math.max(2,r.v/mx*100)+'%',background:cityColor(r.c)}}))))),
     lyTot>0?h('p',{class:'mo-ly'},`Same month last year: ${inr(lyTot)} net${lySt?` · ${lySt.nights} nights · ${pct(lySt.occ)} occupied`:''}.`):h('p',{class:'mo-ly'},'No data for the same month last year.')),
-    [h('button',{class:'btn',onclick:closeLayer},'Close'),h('button',{class:'btn primary',onclick:()=>{closeLayer();setF({preset:k===TODAY.slice(0,7)?'month':'custom',from:mStart(k),to:mEnd(k)})}},'Show this month everywhere')])}
+    [h('button',{class:'btn primary',onclick:closeLayer},'Close')])}
 function openAvail(pid,m){m=m||TODAY.slice(0,7);const p=D.P[pid];if(!p)return;
   const first=mStart(m),last=mEnd(m),lead=(pd(first).getDay()+6)%7,cells=[...Array(lead)].map(()=>h('div',{class:'avl-c avl-x'}));const used=new Set();
   for(let d=first;d<=last;d=add(d,1)){const b=nightBooking(pid,d),cls=(d<TODAY?' past':'')+(d===TODAY?' td':'');
@@ -1803,7 +1810,7 @@ function openForm(kind,pid,edit,opt){
       ch=h('select',{id:'fCh'},L.channels.map(c=>h('option',null,c))),src=h('input',{id:'fSrc',placeholder:'e.g. Instagram, referral',autocomplete:'off'}),
       tf=num({id:'fTf',placeholder:'e.g. 9641.61'}),pf=num({id:'fPf',placeholder:'e.g. 1432.48'}),gst=num({id:'fGst',placeholder:'e.g. 459.12'}),rc=num({id:'fRc',placeholder:'e.g. 8209.19'}),
       pt=h('select',{id:'fPt'},h('option',{value:''},'Choose…'),L.payment_terms.map(c=>h('option',null,c))),ac=h('select',{id:'fAc'},h('option',{value:''},'Choose…'),L.accounts.map(c=>h('option',null,c))),
-      paidI=num({id:'fPaid',placeholder:'e.g. 5000'}),leftI=num({id:'fLeft',placeholder:'0'}),fullC=h('input',{id:'fFull',type:'checkbox'}),
+      paidI=num({id:'fPaid',placeholder:'e.g. 5000'}),leftI=num({id:'fLeft',placeholder:'0'}),
       at=h('input',{id:'fAt',type:'time',value:'14:00',step:900}),bs=h('select',{id:'fBs'},['Confirmed','Cancelled'].map(c=>h('option',null,c))),nt=h('textarea',{id:'fNt',rows:2,placeholder:'e.g. 2k paid in advance, balance at check-in'});
     if(edit){bd.value=edit.booking_date||String(edit.submitted_at||'').slice(0,10)||TODAY;g.value=edit.guest||'';loc.value=edit.location||'';ph.value=String(edit.phone||'').replace(/[^\d ]/g,'').trim();
       n.value=edit.guests||1;ci.value=edit.check_in;co.value=edit.check_out;if(L.channels.includes(edit.channel))ch.value=edit.channel;src.value=edit.source&&!['Dashboard','WhatsApp','Import'].includes(edit.source)?edit.source:'';
@@ -1817,20 +1824,24 @@ function openForm(kind,pid,edit,opt){
        Stored as received = the full amount due to you, balance_due = what is left; the left part shows under
        Payments to collect and every change is written into the notes. */
     const oldLeft=edit?+edit.balance_due||0:0;
-    if(edit&&edit.channel==='Direct'){const tot=+rc.value||+tf.value||0;paidI.value=tot?Math.max(0,tot-oldLeft):'';leftI.value=oldLeft||'';fullC.checked=!oldLeft&&!!tot}
-    const half=h('button',{type:'button',class:'btn sm',onclick:()=>{fullC.checked=false;paidTouched=false;payCalc();calc()}},'Half paid');
-    /* a new direct booking starts as half received, half to collect (the usual practice) until someone types the advance */
-    let paidTouched=!!edit&&edit.channel==='Direct';paidI.addEventListener('input',()=>paidTouched=true);
-    const payCalc=e=>{const t=+tf.value||0;paidI.disabled=leftI.disabled=fullC.checked;
-      if(!fullC.checked&&!paidTouched&&t)paidI.value=Math.round(t/2);
-      if(fullC.checked){paidI.value=t||'';leftI.value=''}else if(!e||e.target!==leftI)leftI.value=t&&paidI.value!==''?Math.max(0,Math.round((t-(+paidI.value||0))*100)/100)||'':''};
-    const payBox=h('div',{class:'full pay-box'},h('label',{class:'pay-full'},fullC,h('span',null,h('b',null,'Full payment received'),h('small',null,'Starts as half paid · tick if the guest paid everything'))),
-      h('div',{class:'pay-row'},fld('Received so far (₹)',paidI),fld('Left to collect (₹)',leftI),half),
-      h('small',{class:'pay-hint'},'What is left shows under Payments to collect until it is paid. Both amounts are noted on the booking.'));
-    fullC.addEventListener('change',()=>{if(!fullC.checked)paidTouched=false;payCalc();calc()});[tf,paidI,leftI].forEach(i=>i.addEventListener('input',e=>{payCalc(e);calc()}));payCalc();
-    const direct=()=>ch.value==='Direct';const fPf=fld('Platform fee (₹)',pf),fGst=fld('GST (₹, inside the amount received)',gst),fSrc=fld('Source (optional)',src),fRc=fld(`Amount received by ${CLIENT.receiver||'you'} (₹)`,rc);
+    /* three choices: half paid (the usual practice, the default), paid in full, or another amount typed in */
+    let pm='half';
+    if(edit&&edit.channel==='Direct'){const tot=+rc.value||+tf.value||0;paidI.value=tot?Math.max(0,tot-oldLeft):'';pm=!oldLeft?'full':Math.abs(oldLeft-tot/2)<1?'half':'other'}
+    const fullC={get checked(){return pm==='full'}};
+    const fOther=fld('Received so far (₹)',paidI),tR=h('b',{class:'num'}),tL=h('b',{class:'num'});
+    const seg=h('div',{class:'pay-seg',role:'radiogroup','aria-label':'Payment from the guest'});
+    const setPm=m=>{pm=m;if(m==='other'&&paidI.value==='')paidI.value=Math.round((+tf.value||0)/2)||'';payCalc();calc();if(m==='other')setTimeout(()=>paidI.focus(),0)};
+    const payCalc=()=>{const t=+tf.value||0;if(pm==='half')paidI.value=t?Math.round(t/2):'';if(pm==='full')paidI.value=t||'';
+      const paid=+paidI.value||0,left=t?Math.max(0,Math.round((t-paid)*100)/100):0;leftI.value=left||'';
+      fOther.hidden=pm!=='other';tR.textContent=t?inr(paid):'–';tL.textContent=t?(left?inr(left):'Nothing'):'–';tL.parentNode&&tL.parentNode.classList.toggle('due',left>0);
+      seg.replaceChildren(...[['half','Half paid'],['full','Paid in full'],['other','Other amount']].map(([k,l])=>h('button',{type:'button',role:'radio','aria-checked':String(pm===k),onclick:()=>setPm(k)},l)))};
+    const payBox=h('div',{class:'full pay-box'},h('span',{class:'pay-q'},'Payment from the guest'),seg,fOther,
+      h('div',{class:'pay-tiles'},h('div',null,h('span',null,'Received'),tR),h('div',{class:'left'},h('span',null,'Left to collect'),tL)),
+      h('small',{class:'pay-hint'},'What is left shows under Payments to collect until it is paid. Both amounts go in the notes.'));
+    [tf,paidI].forEach(i=>i.addEventListener('input',()=>{payCalc();calc()}));payCalc();
+    const direct=()=>ch.value==='Direct';const fPf=fld('Platform fee (₹)',pf),fGst=fld('GST (₹, inside the amount received)',gst),fSrc=fld('Source (optional)',src),fRc=fld(`Amount received by ${CLIENT.receiver||'you'} (₹)`,rc),fTf=fld('Tariff charged from guest (₹)',tf);
     const sm=h('div',{class:'sum'});let ok=false;
-    const calc=()=>{fPf.hidden=direct();fGst.hidden=direct();fSrc.hidden=!direct();fRc.hidden=direct();payBox.hidden=!direct();
+    const calc=()=>{fPf.hidden=direct();fGst.hidden=direct();fSrc.hidden=!direct();fRc.hidden=direct();payBox.hidden=!direct();fTf.classList.toggle('full',direct());
       const nn=diff(ci.value,co.value),r=direct()?(+paidI.value||0)+(+leftI.value||0):+rc.value||0;
       const split=nn>0&&r?monthSplit(ci.value,co.value,r):[];
       sm.replaceChildren(...[['Nights',nn>0?nn:'–'],direct()?['To collect',+leftI.value?inr(+leftI.value):'Nothing']:['Received',r?inr(r):'–'],['By month',bs.value==='Cancelled'?(r?mLabel(ci.value.slice(0,7))+' '+inr(r):'–'):split.length?split.map(([k,v])=>mLabel(k)+' '+inr(v)).join(' · '):'–']].map(([l,x])=>h('div',null,h('span',null,l),h('b',{class:'num'},String(x)))));
@@ -1839,11 +1850,12 @@ function openForm(kind,pid,edit,opt){
     [sel,ch,ci,co,rc,bs].forEach(i=>i.addEventListener('input',calc));sel.addEventListener('change',calc);calc();
     const need=()=>[[g,'the guest’s name'],[ph,'the guest’s mobile number'],[tf,'the tariff charged from the guest'],direct()?null:[rc,'the amount received'],[pt,'the payment terms'],[ac,'the account']].filter(Boolean);
     modal(edit?'Edit '+edit.booking_id:'New booking',h('div',{class:'form'},fld('Date of booking',bd),fld('Property',sel,1),fld('Customer',g),fld('Mobile No.',ph),fld('Location (optional)',loc),locL,fld('No. of guests',n),
-      fld('Check-in',ci),fld('Check-out',co),fld('Platform',ch),fSrc,fld('Tariff charged from guest (₹)',tf),fPf,fGst,fRc,payBox,fld('Payment terms',pt),fld('Account details',ac),
+      fld('Check-in',ci),fld('Check-out',co),fld('Platform',ch),fSrc,fTf,fPf,fGst,fRc,payBox,fld('Payment terms',pt),fld('Account details',ac),
       fld('Expected check-in time',at),edit?fld('Status',bs):null,fld('Notes (optional)',nt,1),sm,err),
       [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{
         for(const[el,what]of need()){if(!String(el.value).trim()){fail('Add '+what+'.');el.focus();return}}
-        if(direct()&&!fullC.checked&&paidI.value===''){fail('Tick Full payment received, or add how much the guest has paid so far (0 if nothing yet).');paidI.focus();return}
+        if(direct()&&pm==='other'&&paidI.value===''){fail('Add how much the guest has paid so far (0 if nothing yet).');paidI.focus();return}
+        if(direct()&&(+paidI.value||0)>(+tf.value||0)){fail('Received so far is more than the tariff.');paidI.focus();return}
         if(!(+n.value>=1)){fail('Add the number of guests.');n.focus();return}
         const pn=ph.value.replace(/\D/g,'');if(pn.length<10){fail('That mobile number looks too short.');ph.focus();return}
         calc();if(!ok)return;const v=x=>x.value===''?null:+x.value;
@@ -2298,7 +2310,7 @@ function stage(id,fields){id=String(id);const raw=rawB(id)||{},next={...(STAGE[i
   for(const k of Object.keys(next))if(String(next[k]??'')===String(raw[k]??''))delete next[k];
   if(Object.keys(next).length)STAGE[id]=next;else delete STAGE[id];render()}
 const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length;
-window.jgStaged=stagedCount;  // for the self-update check (a separate script)
+window.jgStaged=stagedCount;window.jgToast=(...a)=>toast(...a);  // for the self-update check (a separate script)
 function clashFor(b){return D.B.find(x=>x.ok&&x.booking_id!==String(b.booking_id)&&samePlace(x.property_id,b.property_id)&&x.check_in<b.check_out&&x.check_out>b.check_in)}
 
 function mgCancel(ids){
@@ -2492,7 +2504,7 @@ function mgPhoneRow(b,id,can,ed){
       h('div',{class:'mg-pl1'},h('b',null,b.guest||'Guest'),h('span',{class:'num'},mgAmount(b,id))),
       h('div',{class:'mg-pl2'},`${short((D.P[b.property_id]||{}).property||b.property_id)} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)}`),
       h('div',{class:'mg-pl3'},h('i',{class:'dot',style:{background:chColor(b.channel)}}),`${b.channel||''} · ${id}`,
-        can?h('span',{class:'pill p-bad'},'Cancelled'):null,ed?h('span',{class:'pill p-warn'},'Not saved'):null,+b.balance_due>0&&!can?h('span',{class:'pill p-warn'},inrK(+b.balance_due)+' to collect'):null,b.notes?h('span',{class:'mg-pn','aria-label':'Has notes'},'📝'):null)),
+        can?h('span',{class:'pill p-bad'},'Cancelled'):null,ed?h('span',{class:'pill p-warn'},'Not saved'):null,b.notes?h('span',{class:'mg-pn','aria-label':'Has notes'},'📝'):null)),
     h('button',{class:'btn icon mg-pmore','aria-label':'Actions for '+id,onclick:()=>mgMore(b,id,can)},'⋯'))}
 function mgMore(b,id,can){const go_=fn=>()=>{closeLayer();fn()};
   modal(`${b.guest||'Guest'} · ${id}`,h('div',{class:'mg-sheet'},
@@ -2571,7 +2583,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now(
   const checkUpdate=async()=>{if(!myBuild||document.hidden)return;const b=await verNow();if(!b||b===myBuild)return;
     try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update()}catch(e){}
     const lay=document.getElementById('layer'),busy=(typeof window.jgStaged==='function'&&window.jgStaged())||(lay&&lay.children.length);  // this script can't see the app's own helpers
-    if(busy){toast('A new version of the dashboard is ready',()=>location.reload(),'Refresh')}else location.reload()};
+    if(busy&&typeof window.jgToast==='function'){window.jgToast('A new version of the dashboard is ready',()=>location.reload(),'Refresh')}else if(!busy)location.reload()};
   document.addEventListener('visibilitychange',checkUpdate);addEventListener('focus',checkUpdate);addEventListener('pageshow',e=>{if(e.persisted)checkUpdate()});
   if(standalone||!box)return;
   let ask=null;
