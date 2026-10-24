@@ -561,7 +561,7 @@ button.sstat:hover{background:var(--surface-2)}
 .pf-save .seg{background:color-mix(in srgb,var(--ink) 6%,transparent)}.pf-save .seg button[aria-pressed="true"]{background:var(--surface,#fff);color:var(--accent)}
 .pf-save p{margin:0;font-size:13.5px}.pf-save p b{font-size:17px;color:var(--ok)}.pf-save small{color:var(--muted);font-size:11.5px}
 /* Manage: premium tabs, rows, property cards, photo grid */
-.mg-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,520px)}
+.mg-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,640px)}
 .mg-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;padding:9px 8px;border-radius:12px;font-family:inherit;font-weight:600;font-size:13px;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .mg-tabs button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .mg-tabs button b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted)}
@@ -652,6 +652,12 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .gi-chips{display:flex;flex-wrap:wrap;gap:4px}
 .gi-c{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 5%,transparent);color:var(--muted)}
 .gi-c.ok{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.gi-c.miss{background:color-mix(in srgb,var(--warn,#d97706) 10%,transparent);color:var(--warn,#b45309)}
+.gi-row.ok{grid-template-columns:44px minmax(0,1fr) auto;padding:10px 14px 10px 10px}
+.gi-row.ok .mp-kimg{width:44px;height:44px}
+.gi-ok{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.gi-all{color:var(--ok);font-weight:650}
+.gi-list{gap:8px}
 .gi-ring{--p:0;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ok) calc(var(--p)*360deg),color-mix(in srgb,var(--ink) 8%,transparent) 0)}
 .gi-ring b{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-size:11px}
 .gi-priv{display:flex;align-items:center;gap:8px;margin:0;font-size:12.5px;color:var(--muted);padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
@@ -2777,14 +2783,16 @@ function giEditor(pid){const p=D.P[pid]||{},cur=giCur(pid),el={},err=h('div',{cl
 function manageGuest(v,tabs){giLoad();
   const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
   const done=p=>GI_KEY.filter(k=>giCur(p.property_id)[k]).length,noWifi=props.filter(p=>!giCur(p.property_id).wifi_name);
-  const row=p=>{const c=giCur(p.property_id),n=done(p),ed=GSTAGE[p.property_id],ph=p.photo||arrOf(p.photos)[0];
-    const chip=(ok,l)=>h('span',{class:'gi-c'+(ok?' ok':'')},ok?'✓ ':'',l);
-    return h('div',{class:'gi-row'+(ed?' mg-edit':''),role:'button',tabindex:0,onclick:()=>giEditor(p.property_id),onkeydown:e=>{if(e.key==='Enter')giEditor(p.property_id)}},
+  const GI_SHOW=[['wifi_name','Wi-Fi'],['pin_steps','PIN steps'],['checkin_steps','Check-in'],['parking','Parking'],['checkout_note','Check-out'],...(GI_CARE?[['caretaker_phone','Caretaker']]:[])];
+  const row=p=>{const c=giCur(p.property_id),n=done(p),ed=GSTAGE[p.property_id],ph=p.photo||arrOf(p.photos)[0],miss=GI_SHOW.filter(([k])=>!c[k]),ok=!miss.length;
+    return h('div',{class:'gi-row'+(ed?' mg-edit':'')+(ok?' ok':''),role:'button',tabindex:0,onclick:()=>giEditor(p.property_id),onkeydown:e=>{if(e.key==='Enter')giEditor(p.property_id)},
+        'data-tip':GI_SHOW.map(([k,l])=>(c[k]?'✓ ':'✗ ')+l).join('\n')},
       h('span',{class:'mp-kimg'},ph?photoFit(ph,''):scene(p,96,96)),
       h('div',{class:'gi-tx'},h('div',{class:'mg-l1'},h('b',null,short(p.property)),h('span',{class:'mg-id'},p.property_id)),
         h('div',{class:'gi-wifi'},icon('wifi'),c.wifi_name?h('span',null,c.wifi_name):h('span',{class:'miss'},'No Wi-Fi yet')),
-        h('div',{class:'gi-chips'},chip(c.pin_steps,'PIN steps'),chip(c.checkin_steps,'Check-in'),chip(c.parking,'Parking'),GI_CARE?chip(c.caretaker_phone,'Caretaker'):chip(c.checkout_note,'Check-out'),ed?h('span',{class:'pill p-warn'},'Not saved'):null)),
-      h('div',{class:'gi-ring',style:{'--p':n/GI_KEY.length},'data-tip':`${n} of ${GI_KEY.length} essentials filled`},h('b',null,`${n}/${GI_KEY.length}`)))};
+        miss.length&&c.wifi_name||miss.length>1?h('div',{class:'gi-chips'},miss.filter(([k])=>k!=='wifi_name').map(([,l])=>h('span',{class:'gi-c miss'},'+ '+l))):null,
+        ed?h('span',{class:'pill p-warn',style:{justifySelf:'start'}},'Not saved'):null),
+      ok?h('span',{class:'gi-ok','aria-label':'Ready'},'✓'):h('div',{class:'gi-ring',style:{'--p':n/GI_KEY.length},'data-tip':`${n} of ${GI_KEY.length} essentials filled`},h('b',null,`${n}/${GI_KEY.length}`)))};
   const cities=[...new Set(props.map(p=>p.city))];
   v.append(card('s12','Guest info & Wi-Fi',{hint:'private · admins only · sent by the bot on check-in day',acts:[tabs]},
     GI==null||GIbusy?h('div',{class:'empty'},'Loading private guest info…'):GIerr?h('div',{class:'empty'},'Couldn’t load guest info: '+GIerr,h('button',{class:'btn sm',onclick:()=>giLoad(true)},'Try again')):
@@ -2792,7 +2800,7 @@ function manageGuest(v,tabs){giLoad();
      noWifi.length?h('div',{class:'gap-banner'},h('div',null,h('b',null,`${noWifi.length} stay${noWifi.length>1?'s':''} without Wi-Fi details`),h('span',null,'Guests ask for it first. Tap a stay to add it.')),
        h('button',{class:'btn primary sm',onclick:()=>giEditor(noWifi[0].property_id)},'Add the first')):null,
      h('div',{class:'mp-groups'},cities.map(c=>{const ps=props.filter(p=>p.city===c);return h('section',{class:'mp-city'},h('div',{class:'mp-city-h'},h('h3',null,h('i',{style:{background:cityColor(c)}}),c),
-       h('span',null,`${ps.filter(p=>done(p)===GI_KEY.length).length} of ${ps.length} complete`)),h('div',{class:'gi-list'},ps.map(row)))}))]));
+       (()=>{const k=ps.filter(p=>done(p)===GI_KEY.length).length;return k===ps.length?h('span',{class:'gi-all'},'✓ All ready'):h('span',null,`${k} of ${ps.length} ready`)})()),h('div',{class:'gi-list'},ps.map(row)))}))]));
   pendingBar(v)}
 function manageProps(v,tabs){
   MG.pq=MG.pq||'';MG.pstatus=MG.pstatus||'All';
