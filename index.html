@@ -715,8 +715,14 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .pr-rules .bk{background:color-mix(in srgb,var(--ink) 4%,transparent);color:var(--muted)}.pr-rules .bk::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.55}
 .pr-c.past{opacity:.38;cursor:default}
 .pr-c.sel{border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 12%,transparent);transform:scale(.96)}
+/* booked nights: diagonal stripes over the price colour, so free and booked never look alike */
+.pr-c.bk{background-image:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ink) 13%,transparent) 0 3px,transparent 3px 8px);border-color:color-mix(in srgb,var(--ink) 16%,transparent)}
+.pr-c.bk b{opacity:.75}
+.pr-c.k-custom.bk{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.22) 0 3px,transparent 3px 8px),linear-gradient(160deg,var(--accent),color-mix(in srgb,var(--accent) 75%,#000))}
+.pr-rules .bk{background-image:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ink) 16%,transparent) 0 3px,transparent 3px 7px);border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);color:var(--ink)}
+.pr-rules .bk::before{display:none}
 .pr-bk,.pr-hd{position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%}
-.pr-bk{background:var(--ink);opacity:.55}.pr-c.k-custom .pr-bk{background:#fff}.pr-hd{background:var(--warn,#d97706)}
+.pr-bk{display:none}.pr-c.k-custom .pr-bk{background:#fff}.pr-hd{background:var(--warn,#d97706)}
 .pr-panel{position:relative;display:grid;gap:10px;padding:16px;border-radius:18px;background:var(--surface);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);box-shadow:0 12px 32px rgba(12,26,61,.12)}
 .pr-ph{display:grid;gap:2px}.pr-ph b{font-size:15px}.pr-ph span{font-size:12.5px;color:var(--muted)}
 .pr-set{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pr-set input{width:140px;min-width:0;font-weight:700}.pr-set>span{font-size:13px;color:var(--muted)}.pr-cur{font-weight:700;color:var(--ink)!important}
