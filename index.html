@@ -544,16 +544,36 @@ button.sstat:hover{background:var(--surface-2)}
 .mo-c span:first-child{display:inline-flex;align-items:center;gap:7px}.mo-c span:first-child i{width:9px;height:9px;border-radius:50%}
 .mo-c .t{grid-column:1/-1;height:6px;border-radius:3px;background:var(--hair-2);overflow:hidden}.mo-c .t i{display:block;height:100%;border-radius:3px}
 .mo-ly{margin:0;color:var(--muted);font-size:13px}
+/* cities head to head */
+.h2h{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.h2h-row{display:grid;gap:7px}
+.h2h-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;font-weight:650;color:var(--muted)}
+.h2h-lead{font-size:11.5px;font-weight:650}
+.h2h-bar{display:flex;gap:3px;height:10px}
+.h2h-bar i{display:block;flex-basis:0;min-width:6px;border-radius:99px}
+.h2h-v{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.h2h-c{display:inline-flex;align-items:center;gap:6px;border:0;background:none;padding:2px 0;font:inherit;font-size:12.5px;color:var(--ink-2,var(--ink));cursor:pointer}
+.h2h-c i{width:8px;height:8px;border-radius:50%;flex:none}.h2h-c b{font-size:14px;color:var(--ink)}
+.h2h-v.two{display:grid;grid-template-columns:1fr 1fr;flex-wrap:nowrap}
+.h2h-v.two .h2h-c{min-width:0;white-space:nowrap}
+.h2h-v.two .h2h-c:last-child{justify-self:end;flex-direction:row-reverse}
+@media (max-width:420px){.h2h-c{font-size:11.5px;gap:4px}.h2h-c b{font-size:13px}.h2h-d{font-size:10px}}
+.h2h-d{font-size:10.5px;font-weight:700}.h2h-d.up{color:var(--ok)}.h2h-d.down{color:var(--bad)}.h2h-d.flat{color:var(--muted)}
 /* booking pace */
-.pace-v{margin:0;font-size:14px;font-weight:600;line-height:1.35}.pace-v.bad{color:var(--bad)}.pace-v.ok{color:var(--ok)}
-.pace{display:grid;gap:14px}
+.pace-v{margin:0;display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--ink-2,var(--ink));padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.pace-v b.bad{color:var(--bad)}.pace-v b.ok{color:var(--ok)}
+.pace-dot{width:8px;height:8px;border-radius:50%;flex:none;margin-top:6px;background:var(--muted)}.pace-dot.bad{background:var(--bad)}.pace-dot.ok{background:var(--ok)}
+.pace{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
 .pace-h{display:flex;align-items:center;gap:8px}.pace-h b{font-size:15px;min-width:40px}.pace-h .num{color:var(--muted);font-size:12.5px;flex:1}
-.pace-bar{position:relative;height:12px;border-radius:6px;background:var(--hair-2);margin:7px 0 5px}
-.pace-bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--accent)}
-.pace-bar .fill.ok{background:var(--ok)}.pace-bar .fill.bad{background:var(--bad)}
+.pace-bar{position:relative;height:10px;border-radius:99px;background:var(--hair-2);margin:8px 0 6px}
 .pace-bar .fill,.pace-bar .mark{display:block;padding:0;min-height:0}
-.pace-bar .mark{position:absolute;top:-4px;height:20px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--ink)}
+.pace-bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 70%,#fff),var(--accent))}
+.pace-bar .mark{position:absolute;left:70%;top:-5px;height:20px;width:2px;margin-left:-1px;border-radius:2px;background:color-mix(in srgb,var(--ink) 45%,transparent)}
+.pace-bar .mark::before{content:"";position:absolute;top:-5px;left:50%;margin-left:-4px;border:4px solid transparent;border-top-color:color-mix(in srgb,var(--ink) 55%,transparent)}
 .pace-f{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.pace-f b{color:var(--ink)}
+.pace-lg span{display:inline-flex;gap:6px;align-items:center}
+.pace-lg .lg-fill{width:16px;height:8px;border-radius:99px;background:var(--accent)}
+.pace-lg .lg-mark{width:2px;height:12px;border-radius:2px;background:color-mix(in srgb,var(--ink) 45%,transparent)}
 /* empty nights */
 .en-k{display:grid;gap:10px}
 .en-k>div{display:grid;gap:1px;padding:11px 13px;border-radius:14px}
@@ -1435,26 +1455,42 @@ function overview(v){
       h('div',{class:'cd-free'+(freeN?'':' full')},h('b',null,freeN?`${freeN} free`:'Full'),h('span',null,fr[0]?(fr[0].a===TODAY?'free tonight':'from '+fmtD(fr[0].a)):'30 days')),icon('chev'))})),
       cdProps.length>6?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.cdAll=!S.cdAll;render()}},S.cdAll?'Show fewer':`Show all ${cdProps.length}`):null]:
     h('div',{class:'empty'},'No properties match these filters.')));
-  // city comparison
-  const cityStats=liveCities().filter(c=>!f.cities.length||f.cities.includes(c)).map(c=>{const sv_={...S.f};const save=S.f.cities;S.f.cities=[c];const st=stats(f.from,f.to);S.f.cities=save;return{c,...st,perL:st.listings?st.profit/st.listings:0}});
-  const cmpBlock=(title,key,fmt)=>{const mx=Math.max(...cityStats.map(x=>x[key]),1e-9);return h('div',null,h('h3',null,title),cityStats.map(x=>h('button',{class:'cmp-row',onclick:()=>toggleIn('cities',x.c),'data-tip':`${x.c}: ${fmt(x[key])}\n${x.listings} listings`},h('span',null,x.c),h('b',{class:'num'},fmt(x[key])),h('span',{class:'t'},h('i',{style:{width:Math.max(2,x[key]/mx*100)+'%',background:cityColor(x.c)}})))))};
-  v.append(card('s5','Cities side by side',{hint:'tap a city to focus'},h('div',{class:'cmp'},cmpBlock('Occupancy','occ',pct),cmpBlock('Avg nightly rate','adr',inrK),cmpBlock('Net payout','net',inrK),cmpBlock('Profit per listing','perL',inrK))));
+  // cities head to head: one split bar per metric (each city's share), who leads, and the change vs the last period
+  const cstat=(c,a,z)=>{const save=S.f.cities;S.f.cities=[c];const st=stats(a,z);S.f.cities=save;st.perL=st.listings?(profitOn?st.profit:st.net)/st.listings:0;return st};
+  const cityStats=liveCities().filter(c=>!f.cities.length||f.cities.includes(c)).map(c=>({c,now:cstat(c,f.from,f.to),prev:cstat(c,pa,pz)}));
+  const mets=[['Occupancy','occ',x=>pct(x),'pts'],['Avg nightly rate','adr',inrK],['Net payout','net',inrK],[profitOn?'Profit per listing':'Net per listing','perL',inrK]];
+  const chg=(n,o,pts)=>{if(!(o>0)&&!pts)return null;const d=pts?(n-o)*100:(n-o)/o*100;if(!isFinite(d)||Math.abs(d)<.5)return h('span',{class:'h2h-d flat'},'·');return h('span',{class:'h2h-d '+(d>0?'up':'down'),'data-tip':pts?'points vs last period':'vs last period'},pts?`${d>0?'▲':'▼'}${Math.abs(d).toFixed(0)}`:d>=100?`▲${(1+d/100).toFixed(1)}×`:`${d>0?'▲':'▼'}${Math.abs(d).toFixed(0)}%`)};
+  const h2hRow=([label,key,fmt,pts])=>{const vals=cityStats.map(x=>Math.max(0,x.now[key]||0)),tot=sum(vals,x=>x)||1,sorted=[...cityStats].sort((x,y)=>(y.now[key]||0)-(x.now[key]||0));
+    const lead=sorted[0],second=sorted[1];let lt=null;
+    if(second&&(lead.now[key]||0)>0){const gap=pts?((lead.now[key]-second.now[key])*100):second.now[key]>0?(lead.now[key]/second.now[key]-1)*100:null;
+      lt=gap==null||gap<.5?'level':`${lead.c} leads by ${pts?gap.toFixed(0)+' pts':gap.toFixed(0)+'%'}`}
+    return h('div',{class:'h2h-row'},
+      h('div',{class:'h2h-h'},h('span',null,label),lt?h('span',{class:'h2h-lead',style:lt==='level'?null:{color:cityColor(lead.c)}},lt==='level'?'Level':lt):null),
+      cityStats.length>1?h('div',{class:'h2h-bar'},cityStats.map((x,i)=>h('i',{style:{flexGrow:String(Math.max(vals[i]/tot,.04)),background:cityColor(x.c)}}))):null,
+      h('div',{class:'h2h-v'+(cityStats.length===2?' two':'')},cityStats.map(x=>h('button',{class:'h2h-c',onclick:()=>toggleIn('cities',x.c),'data-tip':`${x.c} · ${label}\nThis period: ${fmt(x.now[key]||0)}\nLast period: ${fmt(x.prev[key]||0)}\n${x.now.listings} listings · tap to focus`},
+        h('i',{style:{background:cityColor(x.c)}}),h('span',null,x.c),h('b',{class:'num'},fmt(x.now[key]||0)),chg(x.now[key]||0,x.prev[key]||0,pts)))))};
+  v.append(card('s4','Cities head to head',{hint:'▲▼ vs last period · tap a city to focus'},
+    cityStats.length?h('div',{class:'h2h'},mets.map(h2hRow)):h('div',{class:'empty'},'No cities match these filters.')));
   // pace: nights booked so far for this month and the next two, against what was usually booked by this date
-  const curK=nowK,fut=[curK,nextM(curK),nextM(nextM(curK))],listings=props.length;
+  const curK=nowK,fut=[nextM(curK),nextM(nextM(curK)),nextM(nextM(nextM(curK)))],listings=props.length;  // months still ahead: pace means nothing for one that is mostly over
   const bookedOn=b=>String(b.booking_date||b.submitted_at||'').slice(0,10);
   const bookedBy=(k,cut)=>sum(D.B.filter(b=>fB(b)&&active(D.P[b.property_id])&&bookedOn(b)&&bookedOn(b)<=cut&&b.check_in<=mEnd(k)&&b.check_out>mStart(k)),b=>overlap(b,mStart(k),mEnd(k)));
   const pace=fut.map(k=>{const lead=diff(TODAY,mStart(k)),prior=[lyK(k),prevM(k),prevM(prevM(k))].filter(q=>q>=all[0]&&q<curK);
     const vals=prior.map(q=>bookedBy(q,add(mStart(q),-lead))),typ=vals.length?sum(vals,x=>x)/vals.length:0,now=bookedBy(k,TODAY),cap=listings*(diff(mStart(k),mEnd(k))+1)||1;
     const d=typ>=1?(now-typ)/typ:null,verdict=d==null?'New':d>=.1?'Ahead':d<=-.1?'Behind':'On pace';return{k,now,typ,cap,d,verdict}});
-  const behind=pace.find(x=>x.verdict==='Behind'),ahead=pace.filter(x=>x.verdict==='Ahead').length;
-  const vline=behind?`${mLong(behind.k).split(' ')[0]} is ${pct(-behind.d)} behind the usual pace. Worth an offer on the free nights.`:ahead?`${ahead===3?'All three months are':ahead===1?mLong(pace.find(x=>x.verdict==='Ahead').k).split(' ')[0]+' is':'Two of the three months are'} ahead of the usual pace.`:'Bookings are on the usual pace.';
-  v.append(card('s4','Booking pace',{hint:'nights booked so far vs. usual by this date'},
-    h('p',{class:'pace-v '+(behind?'bad':ahead?'ok':'')},vline),
-    h('div',{class:'pace'},pace.map(x=>h('div',{class:'pace-row','data-tip':`${mLong(x.k)}\nBooked so far: ${Math.round(x.now)} of ${x.cap} nights (${pct(x.now/x.cap)})\nUsual by today: ${Math.round(x.typ)} nights (avg of last year and the 2 months before)`},
+  const behind=pace.find(x=>x.verdict==='Behind'),aheadL=pace.filter(x=>x.verdict==='Ahead'),mon=k=>mLong(k).split(' ')[0];
+  const vline=behind?h('p',{class:'pace-v'},h('i',{class:'pace-dot bad'}),h('span',null,h('b',{class:'bad'},`${mon(behind.k)} is ${behind.d>-.25?'a little':'well'} behind`),` · ${Math.round(behind.now)} nights booked vs ${Math.round(behind.typ)} usual by now. An offer on its free nights could help.`)):
+    aheadL.length?h('p',{class:'pace-v'},h('i',{class:'pace-dot ok'}),h('span',null,h('b',{class:'ok'},`${aheadL.map(x=>mon(x.k)).join(aheadL.length===2?' and ':', ')} ${aheadL.length>1?'are':'is'} ahead`),' of the usual pace.')):
+    h('p',{class:'pace-v'},h('i',{class:'pace-dot'}),h('span',null,'Bookings are on the usual pace.'));
+  const pbar=x=>{const max=x.typ>=1?x.typ/.7:x.cap,fw=Math.min(100,x.now/max*100);  // usual sits at 70% of the bar
+    return h('div',{class:'pace-bar'},h('i',{class:'fill',style:{width:Math.max(fw,x.now>0?2:0)+'%'}}),x.typ>=1?h('i',{class:'mark'}):null)};
+  v.append(card('s4','Booking pace',{hint:'next 3 months · nights booked so far vs. usual by this date'},
+    vline,
+    h('div',{class:'pace'},pace.map(x=>h('div',{class:'pace-row','data-tip':`${mLong(x.k)}\nBooked so far: ${Math.round(x.now)} of ${x.cap} nights (${pct(x.now/x.cap)} full)\nUsual by today: ${Math.round(x.typ)} nights (avg of last year and the 2 months before, by booking date)`},
       h('div',{class:'pace-h'},h('b',null,mLabel(x.k)),h('span',{class:'num'},`${pct(x.now/x.cap)} full`),h('span',{class:'pill '+({Ahead:'p-ok',Behind:'p-bad','On pace':'p-mute',New:'p-mute'}[x.verdict])},x.verdict+(x.d!=null&&x.verdict!=='On pace'?` ${x.d>0?'+':'−'}${pct(Math.abs(x.d))}`:''))),
-      h('div',{class:'pace-bar'},h('i',{class:'fill '+(x.verdict==='Behind'?'bad':x.verdict==='Ahead'?'ok':''),style:{width:Math.min(100,x.now/x.cap*100)+'%'}}),x.typ>=1?h('i',{class:'mark',style:{left:Math.min(100,x.typ/x.cap*100)+'%'}}):null),
-      h('div',{class:'pace-f'},h('span',null,`${Math.round(x.now)} of ${x.cap} nights`),x.typ>=1?h('span',null,'usual by now ',h('b',null,String(Math.round(x.typ)))):h('span',null,'no history yet'))))),
-    h('div',{class:'legend'},h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:css('--accent')}}),'Booked so far'),h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:css('--ink'),width:'3px',height:'12px',borderRadius:'2px'}}),'Usual by this date'))));
+      pbar(x),
+      h('div',{class:'pace-f'},h('span',null,h('b',null,String(Math.round(x.now))),` of ${x.cap} nights`),x.typ>=1?h('span',null,'usual by now ',h('b',null,String(Math.round(x.typ)))):h('span',null,'no history yet'))))),
+    h('div',{class:'legend pace-lg'},h('span',null,h('i',{class:'lg-fill'}),'Booked so far'),h('span',null,h('i',{class:'lg-mark'}),'Usual by this date'))));
   // empty nights: money missed this month so far, and still to sell in the next 30 days (nights × each stay's usual rate)
   const blocks=S.data.blocks||[],blockedOn=(pid,d)=>blocks.some(k=>k.property_id===pid&&k.from<=d&&k.to>d);
   const emptyN=(pid,a,z)=>{let n=0;for(let d=a;d<z;d=add(d,1))if(!nightBooking(pid,d)&&!blockedOn(pid,d))n++;return n};
@@ -1462,7 +1498,7 @@ function overview(v){
   const isCombo=p=>(Array.isArray(p.includes)?p.includes:String(p.includes||'').split(',').map(t=>t.trim()).filter(Boolean)).length>0;
   const en=props.filter(p=>!isCombo(p)).map(p=>{const r=stats(add(TODAY,-90),add(TODAY,-1),p.property_id).adr||+p.base_rate||0,miss=emptyN(p.property_id,mStart(nowK),TODAY),next=emptyN(p.property_id,TODAY,add(TODAY,30));return{p,r,miss,next,missV:miss*r,nextV:next*r}});
   const enTop=sortBy(en.filter(x=>x.nextV>0),['nextV',-1]).slice(0,PHONE()?3:4),missV=sum(en,x=>x.missV),missN=sum(en,x=>x.miss),nextV=sum(en,x=>x.nextV),nextN=sum(en,x=>x.next);
-  v.append(card('s3','Empty nights',{hint:'value at each stay’s usual rate'},
+  v.append(card('s4','Empty nights',{hint:'value at each stay’s usual rate'},
     h('div',{class:'en-k'},h('div',{class:'en-miss'},h('span',null,'Missed this month'),h('b',{class:'num'},TODAY.slice(8)==='01'?'–':inrK(missV)),h('small',null,`${missN} night${missN===1?'':'s'} since 1 ${mLabel(nowK)}`)),
       h('div',{class:'en-next'},h('span',null,'Still to sell · next 30 days'),h('b',{class:'num'},inrK(nextV)),h('small',null,`${nextN} night${nextN===1?'':'s'} free`))),
     enTop.length?h('div',{class:'en-list'},h('span',{class:'en-lh'},'Most to gain'),enTop.map(x=>h('button',{class:'en-row',onclick:()=>openAvail(x.p.property_id)},h('span',null,short(x.p.property)),h('span',{class:'num'},`${x.next} n · ${inrK(x.nextV)}`)))):h('div',{class:'empty'},'Fully booked for the next 30 days.'),
