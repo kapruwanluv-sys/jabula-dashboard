@@ -2347,13 +2347,17 @@ function pendingBar(v){const n=stagedCount();if(!n)return;
     h('button',{class:'btn sm',onclick:mgDiscard},'Discard'),h('button',{class:'btn primary sm',onclick:mgReview},'Review & save')))}
 
 function render(){
-  if(!D)return;pending.length=0;renderChrome();renderLead();renderFilters();
-  const v=$('#view');v.replaceChildren();
+  if(!D)return;pending.length=0;
+  /* a filter, sort or toggle redraws the page: keep the reader where they were (a new page starts at the top) */
+  const sc=document.scrollingElement||document.documentElement,keepY=S._rv===S.view?sc.scrollTop:0;S._rv=S.view;
+  renderChrome();renderLead();renderFilters();
+  const v=$('#view');v.style.minHeight=keepY?v.offsetHeight+'px':'';v.replaceChildren();
   if(S.view==='manage'&&!S.admin)S.view='overview';
   ({overview,desk,calendar,properties,property,money,ops,bookings,whatsapp,manage})[S.view](v);
   fillRows(v);
   if(!S.counted&&S.view==='overview'){S.counted=true;countUp(v)}
-  requestAnimationFrame(()=>{pending.splice(0).forEach(fn=>fn());fitHeights(v)});
+  if(keepY)sc.scrollTop=keepY;
+  requestAnimationFrame(()=>{pending.splice(0).forEach(fn=>fn());fitHeights(v);v.style.minHeight='';if(keepY)sc.scrollTop=keepY});
 }
 /* No grey holes: when a row of cards doesn't reach the right edge, the last card in it widens to fill. Runs before charts draw, so they draw at the final width. */
 function fillRows(g){
