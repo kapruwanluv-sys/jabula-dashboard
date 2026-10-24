@@ -443,6 +443,12 @@ button.sstat:hover{background:var(--surface-2)}
 .mg-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}.mg-note{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mg-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
 .mg-pending{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));z-index:40;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:99px;box-shadow:var(--shadow-lg);max-width:calc(100% - 32px);flex-wrap:wrap}
+@media (max-width:640px){
+  .mg-pending{left:12px;right:12px;transform:none;max-width:none;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);border-radius:18px;flex-wrap:nowrap;justify-content:space-between;gap:8px;padding:8px 8px 8px 14px;background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--hair-2)}
+  .mg-pending>span{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+  .mg-pending .btn{flex:0 0 auto;white-space:nowrap}
+  .mg-list{padding-bottom:70px}  /* room so the bar never covers the last booking */
+}
 .mg-revlist{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow:auto}.mg-rev{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--hair);border-radius:14px}
 .mg-revp{font-size:12px;color:var(--muted)}.mg-chg{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;font-size:13px}.mg-chg>span{color:var(--muted);min-width:120px}
 .mg-chg s{color:var(--muted)}.mg-chg em{font-style:normal;white-space:pre-wrap}
@@ -519,6 +525,33 @@ button.sstat:hover{background:var(--surface-2)}
 #popLayer .pop.drop{position:fixed;left:12px;right:12px;bottom:auto;width:auto;max-width:560px;margin:0 auto;overflow:auto;z-index:89;background:#fff;background:var(--surface);opacity:1;animation:none;transform:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--hair-2);border-radius:18px;box-shadow:0 18px 50px rgba(12,26,61,.22)}
 .cd-row{cursor:pointer;min-height:0;height:auto;align-content:center}
 .cd-row>svg{width:18px;height:18px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}  /* an unsized svg grows to its natural size in Safari */.cd-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pv-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:14px 18px}
+.pv-kpis{display:flex;flex-wrap:wrap;gap:8px 26px}.pv-k{display:flex;flex-direction:column;gap:2px}.pv-k span{font-size:11.5px;color:var(--muted)}.pv-k b{font-size:19px}
+.ps-city .card-h h2{display:flex;align-items:center;gap:9px}.ps-dot{width:10px;height:10px;border-radius:99px;display:inline-block}
+.ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.ps-tile{display:flex;flex-direction:column;border:1px solid var(--hair);border-radius:20px;overflow:hidden;background:var(--surface);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s}
+.ps-tile:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(12,26,61,.12);border-color:var(--hair-2)}.ps-tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ps-img{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--surface-2)}.ps-img img,.ps-img svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ps-st{position:absolute;z-index:1;white-space:nowrap;left:10px;top:10px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.88);color:var(--ink-2);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ps-st.on{background:var(--ok);color:#fff}
+.ps-body{display:flex;flex-direction:column;gap:4px;padding:12px 14px 14px}.ps-name{font-size:15px;line-height:1.25}.ps-sub{font-size:12.5px;color:var(--muted)}
+.ps-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0 4px;padding:8px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.ps-stats div{display:flex;flex-direction:column;gap:1px}.ps-stats span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.ps-stats b{font-size:14px}
+.ps-next{font-size:12px;color:var(--accent-ink);font-weight:650}.ps-next.mute{color:var(--muted);font-weight:500}
+@media (max-width:640px){
+  .pv-head{padding:12px 14px}.pv-kpis{gap:6px 18px;width:100%}.pv-k b{font-size:16px}.pv-head .seg{width:100%;overflow-x:auto}
+  .ps-grid{grid-template-columns:1fr;gap:8px}
+  .ps-tile{display:grid;grid-template-columns:88px minmax(0,1fr);border-radius:16px}
+  .ps-img{aspect-ratio:auto;height:100%;min-height:96px}.ps-st{left:6px;top:6px;font-size:9.5px;padding:2px 7px}
+  .ps-body{padding:9px 12px;gap:2px}.ps-name{font-size:14px}.ps-sub{font-size:11.5px}
+  .ps-stats{margin:5px 0 2px;padding:5px 0;border-bottom:0}.ps-stats b{font-size:13px}.ps-stats span{font-size:9.5px}.ps-next{font-size:11px}
+}
+.phf{position:relative;display:block;width:100%;height:100%;overflow:hidden;background:var(--surface-2)}
+.phf>.bg{position:absolute;inset:-12%;width:124%;height:124%;object-fit:cover;filter:blur(18px) saturate(1.1);opacity:.75;transform:scale(1.05)}
+.phf>.fg{position:relative;display:block;width:100%;height:100%;object-fit:contain}
+.pcard>.phf{position:absolute;inset:0;z-index:-2}.ps-img>.phf{position:absolute;inset:0}
+.pe-img{display:block;width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden}
+.bk-note{display:inline-block;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--ink-2);vertical-align:middle}.bk-note.m{display:block;max-width:100%;font-size:12px;color:var(--muted)}
 .pd-kv{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .pd-sec{margin-top:16px}.pd-sec>span{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}.pd-sec p{margin:0;font-size:13.5px}
 .pd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -962,8 +995,14 @@ function photoImg(id,w,hh,alt,eager,sizes){
     return h('img',{src:f(''),srcset:kind==='hero'?`${f('')} 1280w, ${f('@2')} 2400w`:null,sizes:kind==='hero'?sizes:null,alt,loading:eager?'eager':'lazy',decoding:'async',fetchpriority:eager?'high':null})}
   const r=hh?hh/w:0,set=sizes?[640,960,1280,1600,2000,2400].map(x=>`${unsp(id,x,r&&x*r)} ${x}w`).join(', '):`${unsp(id,w,hh)} 1x, ${unsp(id,Math.min(w*2,2400),hh&&Math.min(w*2,2400)*r)} 2x`;
   return h('img',{src:unsp(id,w,hh),srcset:set,sizes:sizes||null,alt,loading:eager?'eager':'lazy',decoding:'async',fetchpriority:eager?'high':null,width:Math.round(w),height:hh?Math.round(hh):null})}
+/* A real property photo is shown whole (never cropped or zoomed): the photo fits inside its frame and a soft
+   blurred copy of it fills the edges. Stock scenery for stays without photos keeps filling the frame. */
+function photoFit(src,alt,onFail){
+  const fg=h('img',{class:'fg',src,alt:alt||'',loading:'lazy',decoding:'async'}),wrap=h('span',{class:'phf'},h('img',{class:'bg',src,alt:'','aria-hidden':'true',loading:'lazy',decoding:'async'}),fg);
+  fg.addEventListener('error',()=>onFail?wrap.replaceWith(onFail()):wrap.remove(),{once:true});return wrap}
 function scene(p,w=640,hgt=400){
-  const img=p.photo?h('img',{src:p.photo,alt:p.property,loading:'lazy',decoding:'async'}):photoImg(stockId(p),w,hgt,p.property);
+  if(p.photo)return photoFit(p.photo,p.property,()=>sceneSvg(p,w,hgt));
+  const img=photoImg(stockId(p),w,hgt,p.property);
   img.addEventListener('error',()=>img.replaceWith(sceneSvg(p,w,hgt)),{once:true});return img;
 }
 function pcard(x){const{pp,rating,inH}=x;return h('button',{class:'pcard',onclick:()=>go('property',{propId:pp.property_id}),'aria-label':`Open ${short(pp.property)}`},scene(pp,320,400),h('span',{class:'st'+(inH?' on':'')},inH?'Occupied':'Vacant tonight'),
@@ -1123,17 +1162,17 @@ const mTop=(lead,title,sub,right)=>h('div',{class:'mtop'},lead,h('div',{class:'m
 const thumb=p=>h('span',{class:'mthumb'},scene(p,120,120));
 function propCard(r){const p=D.P[r.id];return[mTop(thumb(p),short(p.property),`${p.area}, ${p.city} · ${p.type} · ${p.bedrooms} BR`,r.inHouse!=null?h('span',{class:'pill '+(r.inHouse?'p-ok':'p-mute')},r.inHouse?'Occupied':'Vacant'):null),
   h('div',{class:'mstats'},mStat('Occupancy',pct(r.occ),r.occ,r.occ>=.7?'var(--ok)':r.occ<.4?'var(--warn)':'var(--accent)'),mStat('Avg rate',inrK(r.adr)),mStat('Profit',inrK(r.profit))),
-  h('div',{class:'mfoot'},r.rating?h('span',{class:'chip-s'},'★ '+r.rating.toFixed(1)+(r.reviews?` (${r.reviews})`:'')):null,r.next?h('span',{class:'chip-s'},'Next arrival '+fmtD(r.next)):null,r.issues?h('span',{class:'pill p-warn'},`${r.issues} open issue${r.issues>1?'s':''}`):null)]}
+  h('div',{class:'mfoot'},r.rating?h('span',{class:'chip-s'},'★ '+r.rating.toFixed(1)+(r.reviews?` (${r.reviews})`:'')):null,r.next?h('span',{class:'chip-s'},'Next check-in '+fmtD(r.next)):null,r.issues?h('span',{class:'pill p-warn'},`${r.issues} open issue${r.issues>1?'s':''}`):null)]}
 function bookCard(b,{showProp=true,amount='gross'}={}){return[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${b.guests} guest${b.guests>1?'s':''}`,[h('b',{class:'num'},inr(amount==='net'?b.net:b.gross)),h('small',null,`${b.nights} night${b.nights>1?'s':''}`)]),
   showProp?h('div',{class:'mline'},h('b',null,short(b.pname)),h('span',null,` · ${b.area}, ${b.city}`)):null,
   h('div',{class:'mfoot'},h('span',{class:'chip-s date'},`${fmtD(b.check_in)}${b.arrival_time?' '+b.arrival_time:''} → ${fmtD(b.check_out)}`),chd(b.channel),h('span',{class:'grow'}),pillStatus(b.status),b.pay!=='n/a'&&b.pay!=='Not due'?pillPay(b.pay):null)]}
 function sortBy(arr,[k,dir]){return[...arr].sort((a,b)=>{const x=a[k],y=b[k];return(typeof x==='string'?x.localeCompare(y):(x||0)-(y||0))*dir})}
-let toastT;function toast(m,undo){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=h('div',{class:'toast',role:'status'},m,undo?h('button',{class:'undo',onclick:()=>{t.remove();undo()}},'Undo'):null);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),undo?5000:3000)}
+let toastT;function toast(m,undo,label){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=h('div',{class:'toast',role:'status'},m,undo?h('button',{class:'undo',onclick:()=>{t.remove();undo()}},label||'Undo'):null);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),undo?5000:3000)}
 
 /* ============ navigation ============ */
 const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Money','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3'],['whatsapp','WhatsApp','M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z'],['manage','Manage','M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6']];
 const navViews=()=>VIEWS.filter(([k])=>k!=='manage'||S.admin);
-const SUB={overview:'How the business is doing for the period you pick',desk:'Who arrives and leaves — select rows to share with staff',calendar:'Every stay, night by night',properties:'Compare listings and open any one for detail',property:'Everything about one listing',money:'Profit, platform fees, expenses and payouts',ops:'Cleaning turnovers and maintenance',bookings:'Every booking from the form',manage:'Change bookings: cancel, notes, batch edits, Trash - reviewed before saving',whatsapp:'Enquiries, leads, requests and issues from the bot - see the status lights below for whether this is live'};
+const SUB={overview:'How the business is doing for the period you pick',desk:'Who checks in and out — select rows to share with staff',calendar:'Every stay, night by night',properties:'Compare listings and open any one for detail',property:'Everything about one listing',money:'Profit, platform fees, expenses and payouts',ops:'Cleaning turnovers and maintenance',bookings:'Every booking from the form',manage:'Change bookings: cancel, notes, batch edits, Trash - reviewed before saving',whatsapp:'Enquiries, leads, requests and issues from the bot - see the status lights below for whether this is live'};
 const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 function go(v,extra){S.view=v;if(extra)Object.assign(S,extra);S.pop=null;try{history.replaceState(null,'','#'+(v==='property'?'properties':v))}catch(e){}
   const swap=()=>{render();window.scrollTo({top:0})};if(document.startViewTransition&&!calm()){const t=document.startViewTransition(swap);t.ready.catch(()=>{});t.finished.catch(()=>{})}else swap()}
@@ -1164,7 +1203,7 @@ function renderChrome(){
   paintStatus();
 }
 /* ---- lead: hero on Overview, editorial page head elsewhere ---- */
-const HEAD={desk:['Arrivals &','departures'],calendar:['Every night,','at a glance'],properties:['Your','stays'],money:['Where the money','goes'],ops:['Cleaning &','repairs'],bookings:['Every','booking'],whatsapp:['Your','WhatsApp bot']};
+const HEAD={desk:['Check-ins &','check-outs'],calendar:['Every night,','at a glance'],properties:['Your','stays'],money:['Where the money','goes'],ops:['Cleaning &','repairs'],bookings:['Every','booking'],whatsapp:['Your','WhatsApp bot']};
 const mtn=()=>{const s=sv('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'currentColor','aria-hidden':'true'});s.append(sv('path',{d:'M2.5 18.5l6-9 3.6 5.2 2.6-3.6 6.8 7.4z'}));return s};
 const swoosh=()=>{const s=sv('svg',{width:64,height:14,viewBox:'0 0 64 14',fill:'none','aria-hidden':'true'});s.append(sv('path',{d:'M1 12C14 2 34 1 52 6',stroke:'currentColor','stroke-width':1.5,'stroke-dasharray':'3 4','stroke-linecap':'round',opacity:.7}),sv('circle',{cx:58,cy:7,r:3,fill:'currentColor'}));return s};
 let heroImg=null;
@@ -1185,12 +1224,12 @@ function hero(){
     h('div',{class:'hero-copy'},
       h('div',{class:'eyebrow'},mtn(),(D?liveCities().join(' · '):CLIENT.region||CITIES.join(' · ')),swoosh()),
       h('h1',null,hello,h('em',null,`${pct(s.occ)} booked.`)),
-      h('p',null,h('b',{class:'num'},inrK(s.net)),` net payout from ${s.count} bookings in ${rangeLabel()}, with ${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights filled. Today: ${arr.length} arrival${arr.length===1?'':'s'}, ${dep.length} check-out${dep.length===1?'':'s'}${tc?`, ${tc} same-day turn${tc>1?'s':''}`:''}.`),
+      h('p',null,h('b',{class:'num'},inrK(s.net)),` net payout from ${s.count} bookings in ${rangeLabel()}, with ${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights filled. Today: ${arr.length} check-in${arr.length===1?'':'s'}, ${dep.length} check-out${dep.length===1?'':'s'}${tc?`, ${tc} same day check-in & check-out${tc>1?'s':''}`:''}.`),
       h('div',{class:'hero-acts'},h('button',{class:'btn primary cta',onclick:()=>{S.desk.mode='today';go('desk')}},'Open check-in desk',h('span',{class:'arr'},icon('chev'))),h('button',{class:'btn ghost admin',onclick:()=>openForm('booking')},icon('plus'),'New booking'))),
     h('div',{class:'hero-media'},h('div',{class:'hero-photo'},heroImg),
-      h('button',{class:'float-card',onclick:()=>{S.desk.mode='today';go('desk')},'aria-label':`${arr.length} arriving today. Open the check-in desk.`},
+      h('button',{class:'float-card',onclick:()=>{S.desk.mode='today';go('desk')},'aria-label':`${arr.length} checking in today. Open the check-in desk.`},
         h('div',{class:'top'},h('div',{class:'avs'},arr.length?arr.slice(0,3).map(b=>h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest))):h('span',{class:'av',style:{background:'#9aa4ba'}},'–')),h('span',{class:'n num'},arr.length)),
-        h('div',null,h('b',null,'Arriving today'),h('small',null,arr.length?`First at ${arr[0].arrival_time||'—'} · ${short(arr[0].pname)}`:'No arrivals today')),
+        h('div',null,h('b',null,'Checking in today'),h('small',null,arr.length?`First at ${arr[0].arrival_time||'—'} · ${short(arr[0].pname)}`:'No check-ins today')),
         h('div',{class:'line'},`${dep.length} check-outs by 11:00`))));
   return el;
 }
@@ -1333,18 +1372,18 @@ function desk(v){
   v.append(h('div',{class:'s12',style:{display:'flex',gap:'10px',flexWrap:'wrap',alignItems:'center'}},
     h('div',{class:'seg'},[['today','Today'],['tomorrow','Tomorrow'],['date','Pick a date']].map(([k,l])=>h('button',{'aria-pressed':ds.mode===k,onclick:()=>{ds.mode=k;ds.sel.clear();render()}},l))),ds.mode==='date'?dateIn:null,
     h('span',{class:'range-label',style:{fontSize:'15px'}},fmtD(d,{weekday:'long',day:'numeric',month:'long'}))));
-  v.append(h('div',{class:'s12 stat-row'},[[arr.length,'Arrivals'],[sum(arr,b=>b.guests),'Guests arriving'],[dep.length,'Departures'],[dep.filter(turn).length,'Same-day turnovers'],[D.B.filter(b=>fB(b)&&b.check_in<d&&b.check_out>d).length,'Staying over']].map(([n,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,l)))));
+  v.append(h('div',{class:'s12 stat-row'},[[arr.length,'Check-ins'],[sum(arr,b=>b.guests),'Guests checking in'],[dep.length,'Check-outs'],[dep.filter(turn).length,'Same Day Check-In & Check-Out'],[D.B.filter(b=>fB(b)&&b.check_in<d&&b.check_out>d).length,'Staying over']].map(([n,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,l)))));
   const row=(b,kind)=>{const key=kind+':'+b.booking_id,on=ds.sel.has(key),p=D.P[b.property_id],t=D.T[b.booking_id];
     const cbx=h('input',{type:'checkbox',checked:on||null,'aria-label':'Select '+b.guest,onchange:()=>{on?ds.sel.delete(key):ds.sel.add(key);render()}});
     return h('div',{class:'drow'+(on?' on':'')},cbx,h('div',{class:'time num'},kind==='in'?b.arrival_time||'—':'11:00'),
       h('div',{style:{minWidth:0,cursor:'pointer'},onclick:()=>openBooking(b)},who(b.guest,`${b.guests} guest${b.guests>1?'s':''} · ${b.nights} night${b.nights>1?'s':''} · ${b.channel}`)),
       h('div',{class:'prop-l',style:{minWidth:0}},h('b',null,short(b.pname)),h('span',null,`${p.area}, ${p.city}${kind==='out'?' · '+p.cleaner:''}`)),
-      h('div',{class:'flags'},kind==='out'&&turn(b)?h('span',{class:'pill p-bad','data-tip':'Next guest arrives today. Clean first.'},'Same-day turn'):null,kind==='out'&&t&&t.status==='Done'?h('span',{class:'pill p-ok'},'Cleaned'):null,kind==='in'&&b.pay==='Pending'?h('span',{class:'pill p-warn'},'Unpaid'):null,kind==='in'&&b.guests>=p.bedrooms*2?h('span',{class:'pill p-acc','data-tip':'At full capacity'},'Full house'):null));
+      h('div',{class:'flags'},kind==='out'&&turn(b)?h('span',{class:'pill p-bad','data-tip':'Next guest checks in today. Clean first.'},'Same Day Check-In & Check-Out'):null,kind==='out'&&t&&t.status==='Done'?h('span',{class:'pill p-ok'},'Cleaned'):null,kind==='in'&&b.pay==='Pending'?h('span',{class:'pill p-warn'},'Unpaid'):null,kind==='in'&&b.guests>=p.bedrooms*2?h('span',{class:'pill p-acc','data-tip':'At full capacity'},'Full house'):null));
   };
   const panel=(title,list,kind)=>{const keys=list.map(b=>kind+':'+b.booking_id),all=keys.length&&keys.every(k=>ds.sel.has(k));
     return card('s6 deskp',title,{hint:list.length?`${list.length}`:'',acts:list.length?[h('button',{class:'btn sm',onclick:()=>{keys.forEach(k=>all?ds.sel.delete(k):ds.sel.add(k));render()}},all?'Clear':'Select all')]:null},
-      list.length?h('div',{class:'desk-list'},list.map(b=>row(b,kind))):h('div',{class:'empty'},kind==='in'?'No arrivals on this day.':'No departures on this day.'))};
-  v.append(panel('Arrivals',arr,'in'),panel('Departures',dep,'out'));
+      list.length?h('div',{class:'desk-list'},list.map(b=>row(b,kind))):h('div',{class:'empty'},kind==='in'?'No check-ins on this day.':'No check-outs on this day.'))};
+  v.append(panel('Check-ins',arr,'in'),panel('Check-outs',dep,'out'));
   const sel=[...arr.map(b=>['in',b]),...dep.map(b=>['out',b])].filter(([k,b])=>ds.sel.has(k+':'+b.booking_id));
   const allRows=sel.length?sel:[...arr.map(b=>['in',b]),...dep.map(b=>['out',b])];
   const amt=h('input',{type:'checkbox',checked:ds.amounts||null,id:'amtT',onchange:e=>{ds.amounts=e.target.checked;render()}});
@@ -1355,10 +1394,10 @@ function desk(v){
     h('button',{class:'btn','aria-label':'Copy as text',onclick:()=>copyDesk(allRows,d)},icon('copy'),h('span',{class:'lbl'},'Copy text')),
     sel.length?h('button',{class:'btn',onclick:()=>{ds.sel.clear();render()}},'Clear'):null));
 }
-function deskRow(k,b){const p=D.P[b.property_id];const r={Type:k==='in'?'Arrival':'Departure',Date:k==='in'?b.check_in:b.check_out,Time:k==='in'?(b.arrival_time||''):'11:00',Property:short(b.pname),Area:p.area,City:p.city,Guest:b.guest,Guests:b.guests,Nights:b.nights,Channel:b.channel,Housekeeping:p.cleaner,'Same-day turn':k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?'Yes':''};if(S.desk.amounts){r['Gross ₹']=b.gross;r['Payout ₹']=b.net;r['Payout status']=b.pay}r['Booking']=b.booking_id;return r}
+function deskRow(k,b){const p=D.P[b.property_id];const r={Type:k==='in'?'Check-in':'Check-out',Date:k==='in'?b.check_in:b.check_out,Time:k==='in'?(b.arrival_time||''):'11:00',Property:short(b.pname),Area:p.area,City:p.city,Guest:b.guest,Guests:b.guests,Nights:b.nights,Channel:b.channel,Housekeeping:p.cleaner,'Same Day Check-In & Check-Out':k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?'Yes':''};if(S.desk.amounts){r['Gross ₹']=b.gross;r['Payout ₹']=b.net;r['Payout status']=b.pay}r['Booking']=b.booking_id;return r}
 async function copyDesk(rows,d){const L=[`${CONFIG.BRAND} — ${fmtD(d,{weekday:'long',day:'numeric',month:'long'})}`];
-  const part=(k,t)=>{const rs=rows.filter(x=>x[0]===k);if(!rs.length)return;L.push('',t);rs.forEach(([_,b])=>{const p=D.P[b.property_id];L.push(`• ${k==='in'?(b.arrival_time||'—'):'11:00'}  ${short(b.pname)} (${p.area}) — ${b.guest}, ${b.guests} pax${k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?' — SAME-DAY TURN':''}${k==='out'?' — '+p.cleaner:''}${S.desk.amounts?' — '+inr(b.net):''}`)})};
-  part('in','ARRIVALS');part('out','DEPARTURES');const txt=L.join('\n');
+  const part=(k,t)=>{const rs=rows.filter(x=>x[0]===k);if(!rs.length)return;L.push('',t);rs.forEach(([_,b])=>{const p=D.P[b.property_id];L.push(`• ${k==='in'?(b.arrival_time||'—'):'11:00'}  ${short(b.pname)} (${p.area}) — ${b.guest}, ${b.guests} pax${k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?' — SAME DAY CHECK-IN & CHECK-OUT':''}${k==='out'?' — '+p.cleaner:''}${S.desk.amounts?' — '+inr(b.net):''}`)})};
+  part('in','CHECK-INS');part('out','CHECK-OUTS');const txt=L.join('\n');
   try{await navigator.clipboard.writeText(txt);toast('Copied — paste it into WhatsApp')}catch(e){openText(txt)}}
 function openText(txt){const ta=h('textarea',{style:{width:'100%',height:'260px',borderRadius:'12px',padding:'10px',border:'1px solid var(--hair-2)',background:'var(--glass)'}});ta.value=txt;modal('Copy this text',h('div',{class:'form'},h('div',{class:'full'},ta)),[h('button',{class:'btn primary',onclick:closeLayer},'Done')]);setTimeout(()=>{ta.focus();ta.select()},50)}
 function deskImage(rows,d){
@@ -1380,10 +1419,10 @@ function deskImage(rows,d){
       x.fillStyle='#1d1d1f';x.font=F(700,26);x.fillText(k==='in'?(b.arrival_time||'—'):'11:00',pad+22,y+50);
       x.font=F(650,20);x.fillText(fit(short(b.pname),360),pad+130,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(fit(`${p.area}, ${p.city}${k==='out'?' · '+p.cleaner:''}`,360),pad+130,y+62);
       x.fillStyle='#1d1d1f';x.font=F(600,19);x.fillText(fit(b.guest,250),pad+520,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(`${b.guests} guest${b.guests>1?'s':''} · ${b.nights} night${b.nights>1?'s':''} · ${b.channel}`,pad+520,y+62);
-      let tag=null;if(k==='out'&&D.starts.has(b.property_id+'|'+b.check_out))tag=['SAME-DAY TURN','#d70015','rgba(255,59,48,.12)'];else if(S.desk.amounts)tag=[inr(b.net),'#1a8a3a','rgba(52,199,89,.15)'];
+      let tag=null;if(k==='out'&&D.starts.has(b.property_id+'|'+b.check_out))tag=['SAME DAY CHECK-IN & CHECK-OUT','#d70015','rgba(255,59,48,.12)'];else if(S.desk.amounts)tag=[inr(b.net),'#1a8a3a','rgba(52,199,89,.15)'];
       if(tag){x.font=F(700,14);const tw=x.measureText(tag[0]).width+24;rr(W-pad-22-tw,y+28,tw,30,15,tag[2]);x.fillStyle=tag[1];x.fillText(tag[0],W-pad-22-tw+12,y+48)}
       y+=rowH});};
-  section('ARRIVALS',ins,'in','#5e5ce6');section('DEPARTURES',outs,'out','#ff9f0a');
+  section('CHECK-INS',ins,'in','#5e5ce6');section('CHECK-OUTS',outs,'out','#ff9f0a');
   x.fillStyle='#a1a1a6';x.font=F(500,14);x.fillText(`Generated ${new Date().toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})} · check-out by 11:00`,pad,H-pad+10);
   cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - Desk ${d}.png`,b),'image/png');
 }
@@ -1439,30 +1478,42 @@ function calendar(v){
   v.append(card('s12',title,{hint:`${pct(tot/((props.length||1)*n))} occupied · tap a stay for details`,acts:[zoom,monSel,nav,h('button',{class:'btn sm admin',onclick:()=>openForm('booking')},icon('plus'),'Booking'),btnExport(()=>exportRows(D.B.filter(b=>fB(b)&&b.check_in<=end&&b.check_out>start).map(bookRow),`Calendar ${start}`))]},
     h('div',{class:'legend'},CHN.map(c=>h('button',{'aria-pressed':!S.f.channels.length||S.f.channels.includes(c),onclick:()=>toggleIn('channels',c)},h('span',{class:'sw',style:{background:chColor(c)}}),c))),props.length?body:h('div',{class:'empty'},'No properties match these filters. Clear a filter above to see stays.')));
 }
-const bookRow=b=>({Booking:b.booking_id,Guest:b.guest,Guests:b.guests,Property:short(b.pname),Area:b.area,City:b.city,Channel:b.channel,'Check-in':b.check_in,'Arrival time':b.arrival_time||'','Check-out':b.check_out,Nights:b.nights,'Nightly rate ₹':b.nightly_rate,'Gross ₹':b.gross,'Platform fee ₹':b.fee,'Payout ₹':b.net,Stay:b.status,'Payout status':b.pay,Rating:b.rating||''});
+const bookRow=b=>({Notes:b.notes||'',Booking:b.booking_id,Guest:b.guest,Guests:b.guests,Property:short(b.pname),Area:b.area,City:b.city,Channel:b.channel,'Check-in':b.check_in,'Check-in time':b.arrival_time||'','Check-out':b.check_out,Nights:b.nights,'Nightly rate ₹':b.nightly_rate,'Gross ₹':b.gross,'Platform fee ₹':b.fee,'Payout ₹':b.net,Stay:b.status,'Payout status':b.pay,Rating:b.rating||''});
 
 /* ============ PROPERTIES ============ */
 function propRows(){const f=S.f;return D.props.filter(p=>fP(p)&&active(p)).map(p=>{const st=stats(f.from,f.to,p.property_id);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);const nx=bs.filter(b=>b.check_in>=TODAY).sort((a,b)=>a.check_in.localeCompare(b.check_in))[0];
   return{p,id:p.property_id,name:short(p.property),area:p.area,city:p.city,type:p.type,beds:p.bedrooms,own:p.ownership,occ:st.occ,adr:st.adr,revpar:st.revpar,net:st.net,profit:st.profit,count:st.count,rating:rated.length?sum(rated,b=>b.rating)/rated.length:0,reviews:rated.length,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length,next:nx?nx.check_in:'',inHouse:bs.some(b=>b.status==='In-house')}})}
+/* Properties: one view at a time (Stays by city · Compare table · Price vs occupancy) under a short summary,
+   so nothing stacks into a long scroll. Stays are tiles grouped by city; on phones each tile is one slim row. */
 function properties(v){
-  const rows=propRows();let sh;const mxNet=Math.max(...rows.map(r=>r.net),1);
-  const rail=h('div',{class:'rail wide'},sortBy(rows,['profit',-1]).map(r=>pcard({pp:r.p,rating:r.rating,inH:r.inHouse})));
-  v.append(h('section',{class:'stays s12','aria-label':'All stays'},h('div',{class:'stays-h'},h('h2',null,`${rows.length} stays, best first`),h('div',{class:'acts'},h('button',{class:'circle','aria-label':'Scroll left',onclick:()=>rail.scrollBy({left:-rail.clientWidth*.8,behavior:'smooth'})},icon('back')),h('button',{class:'circle','aria-label':'Scroll right',onclick:()=>rail.scrollBy({left:rail.clientWidth*.8,behavior:'smooth'})},icon('chev')))),rows.length?rail:h('div',{class:'empty'},'No properties match these filters.')));
-  v.append(card('s8','Price vs occupancy',{hint:'bubble size = net payout · tap a bubble to open',acts:[btnPNG(()=>sh,'Price vs occupancy')]},sh=chart(w=>scatter(w,{pts:rows.map(r=>({id:r.id,x:r.occ,y:r.adr,r:5+Math.sqrt(Math.max(0,r.net)/mxNet)*16,color:cityColor(r.city),tip:`${r.name} (${r.area})\nOccupancy ${pct(r.occ)} · ADR ${inr(r.adr)}\nNet ${inr(r.net)}`})),xFmt:x=>pct(x),yFmt:inrK,xLab:'Occupancy',yLab:'Avg nightly rate',onClick:id=>go('property',{propId:id})})),
-    h('div',{class:'legend'},liveCities().map(c=>h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:cityColor(c)}}),c)))));
-  const own=rows.filter(r=>r.own==='Owned').length,rated=rows.filter(r=>r.reviews);
-  const best=[...rows].sort((a,b)=>b.occ-a.occ)[0],worst=[...rows].sort((a,b)=>a.occ-b.occ)[0];
-  v.append(card('s4','Portfolio',{},h('div',{class:'mini-cities'},liveCities().map(c=>{const n=rows.filter(r=>r.city===c).length;return h('button',{class:'hb',onclick:()=>toggleIn('cities',c)},h('span',{class:'chd'},h('i',{style:{background:cityColor(c)}}),c),h('span',{class:'t'},h('i',{style:{width:(rows.length?n/rows.length*100:0)+'%',background:cityColor(c)}})),h('span',{class:'v num'},n))})),h('div',{class:'stat-row'},[[rows.length,'Listings'],[own,'Owned'],[rows.length-own,'Managed'],[rated.length?'★ '+(sum(rated,r=>r.rating*r.reviews)/sum(rated,r=>r.reviews)).toFixed(2):'–','Avg rating']].map(([n,l])=>h('div',{class:'stat',style:{background:'var(--hair)',minWidth:'90px'}},h('b',{class:'num'},n),h('span',null,l)))),
-    best?h('div',{class:'hb',style:{gridTemplateColumns:'1fr auto',cursor:'pointer'},onclick:()=>go('property',{propId:best.id})},h('div',{class:'who'},h('div',null,h('span',null,'Busiest'),h('b',null,`${best.name} · ${best.area}`))),h('span',{class:'pill p-ok'},pct(best.occ))):null,
-    worst?h('div',{class:'hb',style:{gridTemplateColumns:'1fr auto',cursor:'pointer'},onclick:()=>go('property',{propId:worst.id})},h('div',{class:'who'},h('div',null,h('span',null,'Quietest'),h('b',null,`${worst.name} · ${worst.area}`))),h('span',{class:'pill p-warn'},pct(worst.occ))):null));
-  const cols=[{t:'Property',k:'name',f:r=>h('div',{class:'who'},h('div',{style:{width:'44px',height:'32px',borderRadius:'8px',overflow:'hidden',flex:'none'}},scene(r.p,88,64)),h('div',null,h('b',null,r.name),h('span',null,`${r.area}, ${r.city} · ${r.type} · ${r.beds} BR`)))},{t:'',f:r=>r.inHouse?h('span',{class:'pill p-ok'},'Occupied'):h('span',{class:'pill p-mute'},'Vacant')},{t:'Own',k:'own',f:r=>r.own},{t:'Occupancy',k:'occ',r:1,f:r=>pct(r.occ)},{t:'Avg rate',k:'adr',r:1,f:r=>inr(r.adr)},{t:'RevPAR',k:'revpar',r:1,f:r=>inr(r.revpar)},{t:'Net payout',k:'net',r:1,f:r=>inr(r.net)},{t:'Profit',k:'profit',r:1,f:r=>h('b',null,inr(r.profit))},{t:'Rating',k:'rating',r:1,f:r=>r.reviews?`★ ${r.rating.toFixed(1)} (${r.reviews})`:'–'},{t:'Issues',k:'issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'},{t:'Next arrival',k:'next',f:r=>r.next?fmtD(r.next):'–'}];
-  v.append(card('s12','All properties',{hint:'tap a column to sort · tap a row to open',acts:[btnExport(()=>exportRows(sortBy(rows,S.lb.sort).map(r=>({Property:r.name,Area:r.area,City:r.city,Type:r.type,Bedrooms:r.beds,Ownership:r.own,'Occupancy %':+(r.occ*100).toFixed(1),'Avg rate ₹':Math.round(r.adr),'RevPAR ₹':Math.round(r.revpar),'Net payout ₹':r.net,'Profit ₹':r.profit,Rating:r.reviews?+r.rating.toFixed(2):'',Reviews:r.reviews,'Open issues':r.issues,'Next arrival':r.next})),'Properties'))]},
-    table(cols,sortBy(rows,S.lb.sort).slice(0,innerWidth<760&&!S.propAll?10:999),{card:r=>propCard({...r,inHouse:r.inHouse}),sort:S.lb.sort,onSort:k=>{S.lb.sort=[k,S.lb.sort[0]===k?-S.lb.sort[1]:-1];render()},onRow:r=>go('property',{propId:r.id})}),
-    innerWidth<760&&rows.length>10?h('button',{class:'btn sm',style:{alignSelf:'flex-start'},onclick:()=>{S.propAll=!S.propAll;render()}},S.propAll?'Show top 10':`Show all ${rows.length}`):null));
+  const rows=propRows(),f=S.f,mode=S.propView||'stays',mxNet=Math.max(...rows.map(r=>r.net),1),st=stats(f.from,f.to);
+  const views=h('div',{class:'seg',role:'group','aria-label':'View'},[['stays','Stays'],['table','Compare'],['chart','Price vs occupancy']].map(([k,l])=>
+    h('button',{'aria-pressed':mode===k,onclick:()=>{S.propView=k;render()}},l)));
+  const kpi=(l,val)=>h('div',{class:'pv-k'},h('span',null,l),h('b',{class:'num'},val));
+  v.append(h('section',{class:'card glass s12 pv-head'},h('div',{class:'pv-kpis'},kpi('Listings',String(rows.length)),kpi('Occupancy',pct(st.occ)),kpi('Avg nightly rate',inrK(st.adr)),kpi('Net payout',inrK(st.net))),views));
+  if(!rows.length){v.append(card('s12','Stays',{},h('div',{class:'empty'},'No properties match these filters.')));return}
+  if(mode==='stays'){
+    const stat=(l,val)=>h('div',null,h('span',null,l),h('b',{class:'num'},val));
+    const tile=r=>{const p=r.p,open=()=>go('property',{propId:r.id});
+      return h('div',{class:'ps-tile',role:'button',tabindex:0,'aria-label':'Open '+r.name,onclick:open,onkeydown:e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}},
+        h('div',{class:'ps-img'},scene(p,480,300),h('span',{class:'ps-st'+(r.inHouse?' on':'')},r.inHouse?'Occupied':(PHONE()?'Vacant':'Vacant tonight'))),
+        h('div',{class:'ps-body'},h('b',{class:'ps-name'},r.name),
+          h('span',{class:'ps-sub'},[r.area,r.beds?r.beds+' BR':null,p.max_guests?'up to '+p.max_guests+' guests':null].filter(Boolean).join(' · ')),
+          h('div',{class:'ps-stats'},stat(PHONE()?'Booked':'Occupancy',pct(r.occ)),stat(PHONE()?'Rate':'Avg rate',r.adr?inrK(r.adr):'–'),stat('Profit',inrK(r.profit))),
+          h('span',{class:'ps-next'+(r.next?'':' mute')},r.next?'Next check-in '+fmtD(r.next,{weekday:'short',day:'numeric',month:'short'}):'No check-in booked')))};
+    liveCities().forEach(c=>{const rs=sortBy(rows.filter(r=>r.city===c),['occ',-1]);if(!rs.length)return;
+      const occ=sum(rs,r=>r.occ)/rs.length;
+      v.append(h('section',{class:'card glass s12 ps-city'},h('div',{class:'card-h'},h('h2',null,h('i',{class:'ps-dot',style:{background:cityColor(c)}}),c),
+        h('span',{class:'hint'},`${rs.length} stay${rs.length>1?'s':''} · ${pct(occ)} occupied · busiest first`)),h('div',{class:'ps-grid'},rs.map(tile))))});
+    return}
+  if(mode==='chart'){let sh;
+    v.append(card('s12','Price vs occupancy',{hint:'bubble size = net payout · tap a bubble to open',acts:[btnPNG(()=>sh,'Price vs occupancy')]},sh=chart(w=>scatter(w,{pts:rows.map(r=>({id:r.id,x:r.occ,y:r.adr,r:5+Math.sqrt(Math.max(0,r.net)/mxNet)*16,color:cityColor(r.city),tip:`${r.name} (${r.area})\nOccupancy ${pct(r.occ)} · ADR ${inr(r.adr)}\nNet ${inr(r.net)}`})),xFmt:x=>pct(x),yFmt:inrK,xLab:'Occupancy',yLab:'Avg nightly rate',onClick:id=>go('property',{propId:id})})),
+      h('div',{class:'legend'},liveCities().map(c=>h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:cityColor(c)}}),c)))));
+    return}
+  const cols=[{t:'Property',k:'name',f:r=>h('div',{class:'who'},h('div',{style:{width:'44px',height:'32px',borderRadius:'8px',overflow:'hidden',flex:'none'}},scene(r.p,88,64)),h('div',null,h('b',null,r.name),h('span',null,`${r.area}, ${r.city}${r.type?' · '+r.type:''}${r.beds?' · '+r.beds+' BR':''}`)))},{t:'',f:r=>r.inHouse?h('span',{class:'pill p-ok'},'Occupied'):h('span',{class:'pill p-mute'},'Vacant')},{t:'Occupancy',k:'occ',r:1,f:r=>pct(r.occ)},{t:'Avg rate',k:'adr',r:1,f:r=>inr(r.adr)},{t:'RevPAR',k:'revpar',r:1,f:r=>inr(r.revpar)},{t:'Net payout',k:'net',r:1,f:r=>inr(r.net)},{t:'Profit',k:'profit',r:1,f:r=>h('b',null,inr(r.profit))},{t:'Issues',k:'issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'},{t:'Next check-in',k:'next',f:r=>r.next?fmtD(r.next):'–'}];
+  v.append(card('s12','Compare stays',{hint:'tap a column to sort · tap a row to open',acts:[btnExport(()=>exportRows(sortBy(rows,S.lb.sort).map(r=>({Property:r.name,Area:r.area,City:r.city,Type:r.type,Bedrooms:r.beds,'Occupancy %':+(r.occ*100).toFixed(1),'Avg rate ₹':Math.round(r.adr),'RevPAR ₹':Math.round(r.revpar),'Net payout ₹':r.net,'Profit ₹':r.profit,'Open issues':r.issues,'Next check-in':r.next})),'Properties'))]},
+    table(cols,sortBy(rows,S.lb.sort),{card:r=>propCard({...r,inHouse:r.inHouse}),sort:S.lb.sort,onSort:k=>{S.lb.sort=[k,S.lb.sort[0]===k?-S.lb.sort[1]:-1];render()},onRow:r=>go('property',{propId:r.id})})));
 }
-/* Guest-facing details from the Properties tab (photos, guests, fees, times, rules, amenities). */
-const clock12=v=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(v).trim());if(!m)return v;const hh=+m[1];return `${hh%12||12}${m[2]==='00'?'':':'+m[2]} ${hh<12?'AM':'PM'}`};
-const arrOf=v=>Array.isArray(v)?v:String(v||'').split(',').map(x=>x.trim()).filter(Boolean);
 function propDetails(p){
   const kv=(l,val)=>val==null||val===''?null:h('div',null,h('span',null,l),h('b',null,String(val)));
   const guests=p.max_guests?(p.base_guests&&+p.base_guests!==+p.max_guests?`${p.base_guests} included · up to ${p.max_guests}`:`Up to ${p.max_guests}`):null;
@@ -1475,7 +1526,7 @@ function propDetails(p){
   if(p.rules)body.push(h('div',{class:'pd-sec'},h('span',null,'House rules'),h('p',null,p.rules)));
   if(am.length)body.push(h('div',{class:'pd-sec'},h('span',null,'Amenities'),h('div',{class:'tags'},am.map(a=>h('span',{class:'pill p-mute'},a)))));
   const pics=th.length?th:ph;
-  if(pics.length)body.push(h('div',{class:'pd-sec'},h('span',null,`Photos (${pics.length})`),h('div',{class:'pd-photos'},pics.map((t,i)=>h('a',{href:ph[i]||t,target:'_blank',rel:'noopener','aria-label':`Photo ${i+1}`},h('img',{src:t,alt:'',loading:'lazy',decoding:'async'}))))));
+  if(pics.length)body.push(h('div',{class:'pd-sec'},h('span',null,`Photos (${pics.length})`),h('div',{class:'pd-photos'},pics.map((t,i)=>h('a',{href:ph[i]||t,target:'_blank',rel:'noopener','aria-label':`Photo ${i+1}`},photoFit(ph[i]||t,''))))));
   return card('s12','Property details',{acts:p.website_url?[h('a',{class:'btn sm',href:p.website_url,target:'_blank',rel:'noopener'},'Website listing')]:null},...body);
 }
 function property(v){
@@ -1485,7 +1536,7 @@ function property(v){
   v.append(h('section',{class:'card glass s12'},h('div',{class:'phero'},h('div',{class:'img'},scene(p,960,600)),
     h('div',{style:{display:'flex',flexDirection:'column',gap:'12px'}},h('div',{class:'tags'},h('span',{class:'pill p-acc'},p.city),p.type?h('span',{class:'pill p-mute'},p.type):null,p.bedrooms?h('span',{class:'pill p-mute'},p.bedrooms+' BR'):null,p.ownership?h('span',{class:'pill '+(p.ownership==='Managed'?'p-warn':'p-ok')},p.ownership+(p.owner_share?` · owner ${Math.round(p.owner_share*100)}%`:'')):null,isStopped(p)?h('span',{class:'pill p-bad'},'Stopped'):null,cur?h('span',{class:'pill p-ok'},'Occupied now'):h('span',{class:'pill p-mute'},'Vacant tonight')),
       h('h2',null,short(p.property)),h('div',{style:{color:'var(--muted)'}},`${p.area}, ${p.city}${p.base_rate?' · base '+inr(p.base_rate)+'/night':''}${p.cleaning_fee?' · cleaning '+inr(p.cleaning_fee):''}${p.cleaner?' · housekeeping: '+p.cleaner:''}`),
-      h('div',{class:'kv'},h('div',null,h('span',null,cur?'Staying now':'Last guest'),h('b',null,cur?`${cur.guest} · leaves ${fmtD(cur.check_out)}`:'—')),h('div',null,h('span',null,'Next arrival'),h('b',null,nx?`${nx.guest} · ${fmtD(nx.check_in)} ${nx.arrival_time||''}`:'None booked')),h('div',null,h('span',null,'Guest rating'),h('b',null,rated.length?`★ ${(sum(rated,b=>b.rating)/rated.length).toFixed(2)} from ${rated.length} stays`:'No ratings yet')),h('div',null,h('span',null,'Open issues'),h('b',null,String(D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length)))),
+      h('div',{class:'kv'},h('div',null,h('span',null,cur?'Staying now':'Last guest'),h('b',null,cur?`${cur.guest} · checks out ${fmtD(cur.check_out)}`:'—')),h('div',null,h('span',null,'Next check-in'),h('b',null,nx?`${nx.guest} · ${fmtD(nx.check_in)} ${nx.arrival_time||''}`:'None booked')),h('div',null,h('span',null,'Guest rating'),h('b',null,rated.length?`★ ${(sum(rated,b=>b.rating)/rated.length).toFixed(2)} from ${rated.length} stays`:'No ratings yet')),h('div',null,h('span',null,'Open issues'),h('b',null,String(D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length)))),
       h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap'}},h('button',{class:'btn primary admin',onclick:()=>openForm('booking',p.property_id)},icon('plus'),'Booking'),h('button',{class:'btn admin',onclick:()=>openForm('expense',p.property_id)},icon('plus'),'Expense'),h('button',{class:'btn admin',onclick:()=>openForm('issue',p.property_id)},icon('plus'),'Issue'),h('button',{class:'btn',onclick:()=>{S.calM=TODAY.slice(0,7);setF({props:[p.property_id]});go('calendar')}},'Open in calendar'),S.admin?h('button',{class:'btn admin',onclick:()=>openPropInManage(p.property_id)},'Edit in Manage'):null)))));
   const t=(l,val,d)=>h('div',{class:'kpi glass s2'},h('div',{class:'l'},l),h('div',{class:'v num'},val),h('div',{class:'foot'},d));
   v.append(t('Net payout',inrK(st.net),delta(st.net,pv.net)),t('Profit',inrK(st.profit),delta(st.profit,pv.profit)),t('Occupancy',pct(st.occ),delta(st.occ,pv.occ)),t('Avg nightly rate',inrK(st.adr),delta(st.adr,pv.adr)),t('Stays',String(st.count),delta(st.count,pv.count)),t('Expenses',inrK(st.exp),delta(st.exp,pv.exp,true)));
@@ -1542,14 +1593,14 @@ function money(v){
 function ops(v){
   const d1=TOMORROW,d7=add(TODAY,7);const outs=sortBy(D.B.filter(b=>fB(b)&&b.check_out>=TODAY&&b.check_out<d7),['check_out',1]);
   const open=D.M.filter(m=>fP(D.P[m.property_id])&&m.status!=='Closed');const closed=D.M.filter(m=>fP(D.P[m.property_id])&&m.status==='Closed'&&m.closed_on);
-  v.append(h('div',{class:'s12 stat-row'},[[outs.filter(b=>b.check_out===TODAY).length,'Cleanings today'],[outs.filter(b=>D.starts.has(b.property_id+'|'+b.check_out)).length,'Same-day turns this week'],[open.length,'Open issues'],[open.filter(m=>m.priority==='High').length,'Urgent'],[closed.length?(sum(closed,m=>diff(m.reported_on,m.closed_on))/closed.length).toFixed(1)+' d':'–','Avg time to fix']].map(([n,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,l)))));
+  v.append(h('div',{class:'s12 stat-row'},[[outs.filter(b=>b.check_out===TODAY).length,'Cleanings today'],[outs.filter(b=>D.starts.has(b.property_id+'|'+b.check_out)).length,'Same Day Check-In & Check-Out this week'],[open.length,'Open issues'],[open.filter(m=>m.priority==='High').length,'Urgent'],[closed.length?(sum(closed,m=>diff(m.reported_on,m.closed_on))/closed.length).toFixed(1)+' d':'–','Avg time to fix']].map(([n,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,l)))));
   const col=(title,list,tile)=>{const all=(S.colAll||{})[title],cut=!all&&list.length>6;return h('div',{class:'col'},h('div',{class:'col-h'},title,h('span',null,list.length)),list.length?(cut?list.slice(0,6):list).map(tile):h('div',{class:'empty'},'Nothing here.'),
     list.length>6?h('button',{class:'btn sm',style:{alignSelf:'center'},onclick:()=>{S.colAll={...S.colAll,[title]:!all};render()}},all?'Show fewer':`Show ${list.length-6} more`):null)};
   const board=(key,cols)=>{if(innerWidth>=760)return h('div',{class:'board'},cols.map(([t,l,tile])=>col(t,l,tile)));const on=Math.min(S.boardTab?.[key]??0,cols.length-1);
     return h('div',{class:'board-m'},h('div',{class:'seg',role:'group'},cols.map(([t,l],i)=>h('button',{'aria-pressed':i===on,onclick:()=>{S.boardTab={...S.boardTab,[key]:i};render()}},`${t} ${l.length}`))),col(cols[on][0],cols[on][1],cols[on][2]))};
   const tTile=b=>{const p=D.P[b.property_id],t=D.T[b.booking_id],done=t&&t.status==='Done',turn=D.starts.has(b.property_id+'|'+b.check_out);
-    return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,short(p.property)),turn?h('span',{class:'pill p-bad'},'Same-day'):null,h('span',{class:'end'},done?h('span',{class:'pill p-ok'},'✓ Cleaned'):h('span',{class:'pill p-warn'},'To clean'))),h('div',{class:'m'},`${p.area} · ${fmtD(b.check_out,{weekday:'short',day:'numeric'})} 11:00 · ${p.bedrooms} BR · ${p.bedrooms*2} linen sets`),h('div',{class:'row'},who(p.cleaner),done?null:h('button',{class:'btn sm admin end',onclick:()=>(S.data.turnovers||[]).some(x=>String(x.booking_id)===b.booking_id)?save('turnovers','update',{match:{booking_id:b.booking_id},fields:{status:'Done'}},short(p.property)+' marked as cleaned'):save('turnovers','append',{row:{booking_id:b.booking_id,cleaner:p.cleaner,status:'Done'}},short(p.property)+' marked as cleaned')},'Mark cleaned')))};
-  v.append(card('s12','Cleaning turnovers',{hint:'from check-outs · red = next guest arrives the same day',acts:[btnExport(()=>exportRows(outs.map(b=>{const p=D.P[b.property_id];return{Date:b.check_out,Property:short(p.property),Area:p.area,City:p.city,Housekeeping:p.cleaner,Bedrooms:p.bedrooms,'Linen sets':p.bedrooms*2,'Same-day turn':D.starts.has(b.property_id+'|'+b.check_out)?'Yes':'',Status:(D.T[b.booking_id]||{}).status==='Done'?'Cleaned':'To clean'}}),'Cleaning schedule'))]},
+    return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,short(p.property)),turn?h('span',{class:'pill p-bad'},'Same Day Check-In & Check-Out'):null,h('span',{class:'end'},done?h('span',{class:'pill p-ok'},'✓ Cleaned'):h('span',{class:'pill p-warn'},'To clean'))),h('div',{class:'m'},`${p.area} · ${fmtD(b.check_out,{weekday:'short',day:'numeric'})} 11:00 · ${p.bedrooms} BR · ${p.bedrooms*2} linen sets`),h('div',{class:'row'},who(p.cleaner),done?null:h('button',{class:'btn sm admin end',onclick:()=>(S.data.turnovers||[]).some(x=>String(x.booking_id)===b.booking_id)?save('turnovers','update',{match:{booking_id:b.booking_id},fields:{status:'Done'}},short(p.property)+' marked as cleaned'):save('turnovers','append',{row:{booking_id:b.booking_id,cleaner:p.cleaner,status:'Done'}},short(p.property)+' marked as cleaned')},'Mark cleaned')))};
+  v.append(card('s12','Cleaning turnovers',{hint:'from check-outs · red = next guest checks in the same day',acts:[btnExport(()=>exportRows(outs.map(b=>{const p=D.P[b.property_id];return{Date:b.check_out,Property:short(p.property),Area:p.area,City:p.city,Housekeeping:p.cleaner,Bedrooms:p.bedrooms,'Linen sets':p.bedrooms*2,'Same Day Check-In & Check-Out':D.starts.has(b.property_id+'|'+b.check_out)?'Yes':'',Status:(D.T[b.booking_id]||{}).status==='Done'?'Cleaned':'To clean'}}),'Cleaning schedule'))]},
     board('clean',[['Today',outs.filter(b=>b.check_out===TODAY),tTile],['Tomorrow',outs.filter(b=>b.check_out===d1),tTile],['Later',outs.filter(b=>b.check_out>d1),tTile]])));
   const mTile=m=>{const next=m.status==='Open'?'In progress':m.status==='In progress'?'Closed':null;return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,m.issue),h('span',{class:'end'},m.status==='Closed'?h('span',{class:'pill p-mute'},m.cost?inr(m.cost):'Closed'):pillPrio(m.priority))),h('div',{class:'m'},`${short(m.pname)} · ${m.ticket_id} · ${m.status==='Closed'?'fixed in '+diff(m.reported_on,m.closed_on||TODAY)+' d':diff(m.reported_on,TODAY)+' days open'}`),h('div',{class:'row'},who(m.assigned_to),next?h('button',{class:'btn sm admin end',onclick:()=>save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{status:next,closed_on:next==='Closed'?TODAY:null}},`${m.ticket_id} moved to ${next}`)},next==='Closed'?'Close':'Start'):null))};
   const pr=m=>({High:0,Medium:1,Low:2}[m.priority]);
@@ -1567,11 +1618,11 @@ function bookings(v){
   const pool=D.B.filter(b=>fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))&&(recent||(b.check_in>=f.from&&b.check_in<=f.to))&&(st.status==='All'||b.status===st.status)&&(!ql||(b.guest+' '+b.booking_id+' '+b.pname).toLowerCase().includes(ql)));
   const rows=recent?[...pool].sort((a,b)=>(idn(b)-idn(a))*(st.sort[1]<0?1:-1)):sortBy(pool,st.sort);
   const q=h('input',{class:'search',type:'search',placeholder:'Search guest, booking ID, property…',value:st.q,id:'bkQ',style:{flex:'1 1 220px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;st.lim=60;render();const n=$('#bkQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
-  const cols=[{t:'Booking',k:'booking_id',m:1,f:b=>b.booking_id},{t:'Guest',k:'guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''}`)},{t:'Property',k:'pname',f:b=>h('div',{class:'who'},h('div',null,h('b',null,short(b.pname)),h('span',null,b.area+', '+b.city)))},{t:'Channel',k:'channel',f:b=>chd(b.channel)},{t:'Check-in',k:'check_in',f:b=>fmtD(b.check_in)+(b.arrival_time?' · '+b.arrival_time:'')},{t:'Nights',k:'nights',r:1,f:b=>b.nights},{t:'Gross',k:'gross',r:1,f:b=>inr(b.gross)},{t:'Payout',k:'net',r:1,f:b=>inr(b.net)},{t:'Stay',k:'status',f:b=>pillStatus(b.status)},{t:'Payout status',k:'pay',f:b=>pillPay(b.pay)}];
+  const cols=[{t:'Booking',k:'booking_id',m:1,f:b=>b.booking_id},{t:'Guest',k:'guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''}`)},{t:'Property',k:'pname',f:b=>h('div',{class:'who'},h('div',null,h('b',null,short(b.pname)),h('span',null,b.area+', '+b.city)))},{t:'Channel',k:'channel',f:b=>chd(b.channel)},{t:'Check-in',k:'check_in',f:b=>fmtD(b.check_in)+(b.arrival_time?' · '+b.arrival_time:'')},{t:'Nights',k:'nights',r:1,f:b=>b.nights},{t:'Gross',k:'gross',r:1,f:b=>inr(b.gross)},{t:'Payout',k:'net',r:1,f:b=>inr(b.net)},{t:'Stay',k:'status',f:b=>pillStatus(b.status)},{t:'Payout status',k:'pay',f:b=>pillPay(b.pay)},{t:'Notes',k:'notes',f:b=>b.notes?h('span',{class:'bk-note',title:b.notes},String(b.notes).split('\n').pop()):'–'}];
   const order=h('div',{class:'seg',role:'group','aria-label':'Order'},[['added','Recently added'],['check_in','By check-in']].map(([k,l])=>h('button',{'aria-pressed':st.sort[0]===k||(k==='check_in'&&!recent),onclick:()=>{st.sort=[k,-1];st.lim=per;render()}},l)));
   v.append(card('s12','Bookings',{hint:recent?`${rows.length} bookings · newest added first · all dates`:`${rows.length} checking in ${rangeLabel()}`,acts:[order,btnExport(()=>exportRows(rows.map(bookRow),'Bookings'))]},
     h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}},q,h('div',{class:'seg'},['All','Upcoming','In-house','Completed','Cancelled'].map(x=>h('button',{'aria-pressed':st.status===x,onclick:()=>{st.status=x;st.lim=per;render()}},x))),h('button',{class:'btn primary admin',onclick:()=>openForm('booking')},icon('plus'),'New booking')),
-    rows.length?table(cols,rows.slice(0,st.lim),{card:b=>bookCard(b),sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openBooking}):h('div',{class:'empty'},'No bookings match. Try a wider period or clear filters.'),
+    rows.length?table(cols,rows.slice(0,st.lim),{card:b=>[...bookCard(b),b.notes?h('div',{class:'bk-note m'},'📝 '+String(b.notes).split('\n').pop()):null],sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openBooking}):h('div',{class:'empty'},'No bookings match. Try a wider period or clear filters.'),
     rows.length>st.lim?h('button',{class:'btn',style:{alignSelf:'center'},onclick:()=>{st.lim+=per;render()}},`Show ${Math.min(per,rows.length-st.lim)} more of ${rows.length}`):null));
 }
 
@@ -1618,7 +1669,7 @@ function openForm(kind,pid,edit,opt){
       ch=h('select',{id:'fCh'},L.channels.map(c=>h('option',null,c))),src=h('input',{id:'fSrc',placeholder:'e.g. Instagram, referral',autocomplete:'off'}),
       tf=num({id:'fTf',placeholder:'e.g. 9641.61'}),pf=num({id:'fPf',placeholder:'e.g. 1432.48'}),gst=num({id:'fGst',placeholder:'e.g. 459.12'}),rc=num({id:'fRc',placeholder:'e.g. 8209.19'}),
       pt=h('select',{id:'fPt'},h('option',{value:''},'Choose…'),L.payment_terms.map(c=>h('option',null,c))),ac=h('select',{id:'fAc'},h('option',{value:''},'Choose…'),L.accounts.map(c=>h('option',null,c))),
-      at=h('input',{id:'fAt',type:'time',value:'14:00',step:900}),bs=h('select',{id:'fBs'},['Confirmed','Cancelled'].map(c=>h('option',null,c))),nt=h('textarea',{id:'fNt',rows:2,placeholder:'e.g. 2k paid in advance, balance on arrival'});
+      at=h('input',{id:'fAt',type:'time',value:'14:00',step:900}),bs=h('select',{id:'fBs'},['Confirmed','Cancelled'].map(c=>h('option',null,c))),nt=h('textarea',{id:'fNt',rows:2,placeholder:'e.g. 2k paid in advance, balance at check-in'});
     if(edit){bd.value=edit.booking_date||String(edit.submitted_at||'').slice(0,10)||TODAY;g.value=edit.guest||'';loc.value=edit.location||'';ph.value=String(edit.phone||'').replace(/[^\d ]/g,'').trim();
       n.value=edit.guests||1;ci.value=edit.check_in;co.value=edit.check_out;if(L.channels.includes(edit.channel))ch.value=edit.channel;src.value=edit.source&&!['Dashboard','WhatsApp','Import'].includes(edit.source)?edit.source:'';
       /* the stored buckets when the row has them (plain Sheet rows from Manage, or derived rows), else the derived legacy amounts */
@@ -1638,7 +1689,7 @@ function openForm(kind,pid,edit,opt){
     const need=[[g,'the guest’s name'],[ph,'the guest’s mobile number'],[tf,'the tariff charged from the guest'],[rc,'the amount received'],[pt,'the payment terms'],[ac,'the account']];
     modal(edit?'Edit '+edit.booking_id:'New booking',h('div',{class:'form'},fld('Date of booking',bd),fld('Property',sel,1),fld('Customer',g),fld('Mobile No.',ph),fld('Location (optional)',loc),locL,fld('No. of guests',n),
       fld('Check-in',ci),fld('Check-out',co),fld('Platform',ch),fSrc,fld('Tariff charged from guest (₹)',tf),fPf,fGst,fld(`Amount received by ${CLIENT.receiver||'you'} (₹)`,rc),fld('Payment terms',pt),fld('Account details',ac),
-      fld('Expected arrival',at),edit?fld('Status',bs):null,fld('Notes (optional)',nt,1),sm,err),
+      fld('Expected check-in time',at),edit?fld('Status',bs):null,fld('Notes (optional)',nt,1),sm,err),
       [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{
         for(const[el,what]of need){if(!String(el.value).trim()){fail('Add '+what+'.');el.focus();return}}
         if(!(+n.value>=1)){fail('Add the number of guests.');n.focus();return}
@@ -2030,7 +2081,7 @@ function fromWorkbook(wb){
   const fee={};sheetRows(wb,'Lists','Channel').forEach(r=>{if(r['Commission %']!=null&&r.Channel)fee[r.Channel]=+r['Commission %']});
   return{fee_pct:fee,
     props:sheetRows(wb,'Properties','Property ID').map(r=>({property_id:r['Property ID'],property:r.Property,city:r.City,area:r.Area,type:r.Type,bedrooms:+r.Bedrooms,base_rate:+r['Base rate (₹/night)'],cleaning_fee:+r['Cleaning fee (₹)'],ownership:r.Ownership,owner_share:r['Owner share %']?+r['Owner share %']:null,cleaner:r.Cleaner,photo:r['Photo link']||null})),
-    bookings:sheetRows(wb,'Bookings','Booking ID').map(r=>({booking_id:String(r['Booking ID']),submitted_at:dI(r['Submitted at']),property_id:r['Property ID'],guest:r['Guest name']||'Guest',guests:+r.Guests||1,channel:r.Channel,check_in:dI(r['Check-in']),check_out:dI(r['Check-out']),nightly_rate:+r['Nightly rate (₹)']||0,cleaning_fee:+r['Cleaning fee (₹)']||0,booking_status:r['Booking status']||'Confirmed',arrival_time:tI(r['Expected arrival']),rating:r['Guest rating (1–5)']?+r['Guest rating (1–5)']:null})).filter(b=>b.check_in&&b.check_out),
+    bookings:sheetRows(wb,'Bookings','Booking ID').map(r=>({booking_id:String(r['Booking ID']),submitted_at:dI(r['Submitted at']),property_id:r['Property ID'],guest:r['Guest name']||'Guest',guests:+r.Guests||1,channel:r.Channel,check_in:dI(r['Check-in']),check_out:dI(r['Check-out']),nightly_rate:+r['Nightly rate (₹)']||0,cleaning_fee:+r['Cleaning fee (₹)']||0,booking_status:r['Booking status']||'Confirmed',arrival_time:tI(r['Expected check-in time']),rating:r['Guest rating (1–5)']?+r['Guest rating (1–5)']:null})).filter(b=>b.check_in&&b.check_out),
     payouts:sheetRows(wb,'Payouts','Booking ID').map(r=>({booking_id:String(r['Booking ID']),received_on:dI(r['Received on']),amount_received:+r['Amount received (₹)']||0})),
     expenses:sheetRows(wb,'Expenses','Date').map(r=>({date:dI(r.Date),property_id:r['Property ID'],category:r.Category,amount:+r['Amount (₹)']||0,vendor:r.Vendor,paid_via:r['Paid via'],notes:r.Notes})).filter(e=>e.date),
     turnovers:sheetRows(wb,'Turnovers','Booking ID').map(r=>({booking_id:String(r['Booking ID']),cleaner:r.Cleaner,status:r.Status})),
@@ -2082,7 +2133,7 @@ const addNote=(old,text)=>[old,`${fmtD(TODAY,{day:'numeric',month:'short',year:'
 const MG_L={booking_status:'Status',notes:'Notes',cancel_reason:'Cancel reason',received:'Amount received',platform_fee:'Platform fee',gst:'GST',
   tariff:'Tariff',account:'Account',payment_terms:'Payment terms',channel:'Platform',source:'Source',deleted_at:'Trash',deleted_by:'Moved to Trash by',
   guest:'Customer',phone:'Mobile',guests:'Guests',check_in:'Check-in',check_out:'Check-out',property_id:'Property',location:'Location',
-  booking_date:'Date of booking',arrival_time:'Expected arrival'};
+  booking_date:'Date of booking',arrival_time:'Expected check-in time'};
 const MONEYF=['received','platform_fee','gst','tariff'];
 function mgVal(k,v){if(v==null||v==='')return'—';if(MONEYF.includes(k))return inr(+v);if(k==='property_id')return short((D.P[v]||{}).property||v);
   if(k==='deleted_at')return'in Trash since '+fmtD(v);if(k==='check_in'||k==='check_out'||k==='booking_date')return fmtD(v,{day:'numeric',month:'short',year:'numeric'});return String(v)}
@@ -2177,7 +2228,7 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
   const amBox=h('div',{class:'pe-chips'}),drawAm=()=>amBox.replaceChildren(...[...new Set([...allAm,...am])].sort().map(a=>h('label',{class:'pe-chip'+(am.has(a)?' on':'')},h('input',{type:'checkbox',checked:am.has(a)||null,onchange:e=>{e.target.checked?am.add(a):am.delete(a);drawAm()}}),a)));drawAm();
   const amNew=inp('',{placeholder:'Add another amenity, then Enter'});amNew.addEventListener('keydown',e=>{if(e.key==='Enter'&&amNew.value.trim()){e.preventDefault();am.add(amNew.value.trim().replace(/,/g,' &'));amNew.value='';drawAm()}});
   let photos=arrOf(p.photos).slice(),thumbs=arrOf(p.photo_thumbs).slice(),cover=p.photo||photos[0]||'';
-  const phBox=h('div',{class:'pe-photos'}),drawPh=()=>phBox.replaceChildren(...photos.map((u,i)=>h('div',{class:'pe-ph'+((u===cover||(!cover&&i===0))?' cover':'')},h('img',{src:thumbs[i]||u,alt:'',loading:'lazy'}),
+  const phBox=h('div',{class:'pe-photos'}),drawPh=()=>phBox.replaceChildren(...photos.map((u,i)=>h('div',{class:'pe-ph'+((u===cover||(!cover&&i===0))?' cover':'')},h('span',{class:'pe-img'},photoFit(u,'')),
       (u===cover||(!cover&&i===0))?h('span',{class:'pill p-acc'},'Cover'):h('button',{class:'btn sm',onclick:()=>{photos.unshift(...photos.splice(i,1));thumbs.unshift(...thumbs.splice(i,1));cover=photos[0];drawPh()}},'Make cover'),
       h('button',{class:'btn sm danger-t','aria-label':'Remove photo',onclick:()=>{const was=photos[i]===cover;photos.splice(i,1);thumbs.splice(i,1);if(was)cover=photos[0]||'';drawPh()}},'Remove'))),
     photos.length?null:h('div',{class:'empty'},'No photos yet.'));drawPh();
@@ -2290,7 +2341,7 @@ function mgMore(b,id,can){const go_=fn=>()=>{closeLayer();fn()};
     h('button',{class:'btn',onclick:go_(()=>mgNote([id]))},'Add note'),
     h('button',{class:'btn danger-t',onclick:go_(()=>mgTrash([id]))},'Move to Trash')),[h('button',{class:'btn',onclick:closeLayer},'Close')])}
 function pendingBar(v){const n=stagedCount();if(!n)return;
-  v.append(h('div',{class:'mg-pending glass'},h('span',null,h('b',null,`${n} change${n>1?'s':''}`),' · not saved yet'),
+  v.append(h('div',{class:'mg-pending glass'},h('span',null,h('b',null,`${n} change${n>1?'s':''}`),PHONE()?' · not saved':' · not saved yet'),
     h('button',{class:'btn sm',onclick:mgDiscard},'Discard'),h('button',{class:'btn primary sm',onclick:mgReview},'Review & save')))}
 
 function render(){
@@ -2344,6 +2395,16 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now(
 (()=>{const box=document.getElementById('installBox'),btn=document.getElementById('installBtn'),note=document.getElementById('installNote');
   const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   if('serviceWorker' in navigator&&isSecureContext)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  /* Self-update: an app saved to the home screen often resumes an old copy instead of reloading. On every return to
+     the app it asks for the deployed version and refreshes when it changed - unless edits or a form are open, then
+     it offers the refresh instead. */
+  let myBuild=null;const verNow=()=>fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j&&j.build).catch(()=>null);
+  verNow().then(b=>{myBuild=b});
+  const checkUpdate=async()=>{if(!myBuild||document.hidden)return;const b=await verNow();if(!b||b===myBuild)return;
+    try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update()}catch(e){}
+    const busy=(typeof stagedCount==='function'&&stagedCount())||$('#layer').children.length;
+    if(busy){toast('A new version of the dashboard is ready',()=>location.reload(),'Refresh')}else location.reload()};
+  document.addEventListener('visibilitychange',checkUpdate);addEventListener('focus',checkUpdate);addEventListener('pageshow',e=>{if(e.persisted)checkUpdate()});
   if(standalone||!box)return;
   let ask=null;
   addEventListener('beforeinstallprompt',e=>{e.preventDefault();ask=e;box.hidden=false;btn.hidden=false;note.textContent='Adds an icon to your home screen.'});
