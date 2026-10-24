@@ -616,11 +616,14 @@ body:not(.is-admin) .admin{display:none!important}
   .fbtn .tx span{max-width:120px}
   .phero{grid-template-columns:minmax(0,1fr)}
   .deskp{grid-column:span 12}
-  .pop,.pop.r{position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);width:auto;max-width:560px;margin:0 auto;max-height:70vh;border-radius:26px;padding:14px;z-index:90;box-shadow:0 -10px 60px rgba(7,13,31,.35)}
+  .pop,.pop.r{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 -8px 40px rgba(12,26,61,.22);position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);width:auto;max-width:560px;margin:0 auto;max-height:70vh;border-radius:26px;padding:14px;z-index:90;box-shadow:0 -10px 60px rgba(7,13,31,.35)}
   .pop-h{display:flex;align-items:center;justify-content:space-between;padding:2px 6px 8px;font-weight:700;font-size:15px}
   .pop label{padding:12px 10px;font-size:14px}
   .fwrap{backdrop-filter:none}
-  .fbar{background:color-mix(in srgb,var(--surface) 72%,transparent);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:0 8px 28px rgba(12,26,61,.12)}
+  /* glass on a layer behind the bar: a backdrop-filter on the bar itself would trap its fixed popups inside it */
+  .fbar{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 8px 28px rgba(12,26,61,.12);position:relative;isolation:isolate}
+  .fwrap::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:22px;background:color-mix(in srgb,var(--surface) 72%,transparent);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);pointer-events:none}
+  .fwrap{isolation:isolate}
   .actionbar{bottom:calc(env(safe-area-inset-bottom,0px) + 92px)}
 }
 @media (max-width:760px){
@@ -653,7 +656,7 @@ body:not(.is-admin) .admin{display:none!important}
   .hero h1{font-size:36px}
   .hero p{font-size:14.5px}
   .hero + .fwrap{margin-top:0}
-  .fwrap{margin-bottom:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:30}
+  .fwrap{margin-bottom:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:50}  /* above the tab bar so its popups sit on top */
   .fbar{border-radius:22px;padding:6px}
   .fbtn{padding:6px 10px 6px 6px;gap:8px}
   .fbtn .ic{width:32px;height:32px}
