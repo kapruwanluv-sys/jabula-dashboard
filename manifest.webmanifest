@@ -1,6 +1,6 @@
 {
- "name": "Host Dashboard",
- "short_name": "Dashboard",
+ "name": "Jabula Getaways",
+ "short_name": "Jabula",
  "description": "Bookings, money, check-in desk and WhatsApp leads in one place.",
  "start_url": "./",
  "scope": "./",

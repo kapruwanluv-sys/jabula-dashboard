@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#f6f8fc">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Dashboard">
+<meta name="apple-mobile-web-app-title" content="Jabula">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/favicon-64.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="robots" content="noindex,nofollow">
-<title>Host Dashboard</title>
+<title>Jabula Getaways</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://images.unsplash.com">
@@ -552,6 +552,8 @@ button.sstat:hover{background:var(--surface-2)}
 .pcard>.phf{position:absolute;inset:0;z-index:-2}.ps-img>.phf{position:absolute;inset:0}
 .pe-img{display:block;width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden}
 .bk-note{display:inline-block;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--ink-2);vertical-align:middle}.bk-note.m{display:block;max-width:100%;font-size:12px;color:var(--muted)}
+.brand-logo{display:block;height:44px;width:auto}.signin-logo.wm{width:210px;height:auto;border-radius:0}
+@media (max-width:640px){.brand-logo{height:36px}}
 .pd-kv{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .pd-sec{margin-top:16px}.pd-sec>span{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}.pd-sec p{margin:0;font-size:13.5px}
 .pd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -863,7 +865,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 <script>
 /* CONFIG — for the hosted version, set DATA_URL to the live workbook / API endpoint. Empty = embedded dummy data. */
 /* CLIENT = this client's settings (client.json), injected by scripts/build.py. The foundation itself holds no client context. */
-const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Host Dashboard","short_name":"Dashboard","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#1d5bd8"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]},"google_client_id":"278276381564-fgcobg34n9c0ksfu3vkh7jm8jaadmrda.apps.googleusercontent.com"};
+const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Jabula Getaways","short_name":"Jabula","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#686762"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]},"google_client_id":"278276381564-fgcobg34n9c0ksfu3vkh7jm8jaadmrda.apps.googleusercontent.com","logo":{"dark":"brand/wordmark-dark-web.png","light":"brand/wordmark-light-web.png"}};
 const CONFIG={DATA_URL:"",API_URL:CLIENT.api_url||"",BOT_URL:CLIENT.bot_url||"",REFRESH_MINUTES:CLIENT.refresh_minutes||5,BRAND:CLIENT.brand,PHOTO_BASE:""/*__PHOTO_BASE__*/};
 const SEED={"props":[],"bookings":[],"payouts":[],"turnovers":[],"expenses":[],"maint":[],"fee_pct":{}};
 </script>
@@ -1747,8 +1749,8 @@ async function save(tab,op,a,msg){
   catch(e){S.data[k]=JSON.parse(before);refresh();toast('Couldn’t save: '+e.message+'. Nothing was changed.');return false}}
 function signInScreen(){
   const err=h('div',{class:'err',hidden:true}),btn=h('div',{class:'gsi-btn'}),note=h('p',{class:'signin-note'},'Use the Google account your team added for you.');
-  const card=h('div',{class:'signin-card glass'},h('img',{src:'icons/icon-192.png',alt:'',class:'signin-logo',onerror:e=>e.target.remove()}),
-    h('h2',null,'Sign in to '+(CLIENT.brand||'the dashboard')),note,btn,err);
+  const card=h('div',{class:'signin-card glass'},h('img',{src:CLIENT.logo?CLIENT.logo.dark:'icons/icon-192.png',alt:CLIENT.logo?CLIENT.brand:'',class:'signin-logo'+(CLIENT.logo?' wm':''),onerror:e=>e.target.remove()}),
+    h('h2',null,CLIENT.logo?'Sign in':'Sign in to '+(CLIENT.brand||'the dashboard')),note,btn,err);
   $('#layer').replaceChildren(h('div',{class:'signin-wrap'},card));
   const fail=t=>{err.hidden=false;err.textContent=t};
   const done=async cred=>{err.hidden=true;note.textContent='Checking…';
@@ -2374,6 +2376,7 @@ function fitHeights(g){
 let rz,lastW=innerWidth;addEventListener('resize',()=>{if(Math.abs(innerWidth-lastW)<40)return;lastW=innerWidth;clearTimeout(rz);rz=setTimeout(render,180)});
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>render());
 new MutationObserver(()=>render()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(CLIENT.logo){const bb=$('#brandBtn');if(bb)bb.replaceChildren(h('img',{class:'brand-logo',src:CLIENT.logo.dark,alt:CLIENT.brand,width:132,height:48}))}  // the client's own wordmark
 const hs=location.hash.slice(1);if(VIEWS.some(x=>x[0]===hs))S.view=hs;
 addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(VIEWS.some(x=>x[0]===k)&&k!==S.view&&!(k==='properties'&&S.view==='property'))go(k)});
 load();
