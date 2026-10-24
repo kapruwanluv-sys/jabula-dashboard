@@ -524,6 +524,44 @@ button.sstat:hover{background:var(--surface-2)}
 #popLayer .pop-scrim{position:fixed;inset:0;z-index:88;background:transparent}
 #popLayer .pop.drop{position:fixed;left:12px;right:12px;bottom:auto;width:auto;max-width:560px;margin:0 auto;overflow:auto;z-index:89;background:#fff;background:var(--surface);opacity:1;animation:none;transform:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--hair-2);border-radius:18px;box-shadow:0 18px 50px rgba(12,26,61,.22)}
 .cd-row{cursor:pointer;min-height:0;height:auto;align-content:center}
+/* revenue by month: headline, month window navigation, FY chips */
+.rev-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.rev-head>div{display:grid}.rev-head b{font-size:26px;letter-spacing:-.02em}.rev-head span{color:var(--muted);font-size:12.5px}
+.rev-nav{display:flex;align-items:center;gap:10px;margin-top:2px}
+.rev-nav .btn{width:34px;height:34px;padding:0;font-size:20px;line-height:1;flex:none}.rev-nav .btn:disabled{opacity:.35}
+.rev-track{position:relative;flex:1;height:4px;border-radius:2px;background:var(--hair-2)}
+.rev-track i{position:absolute;top:0;bottom:0;border-radius:2px;background:var(--accent);transition:left .25s,width .25s}
+.rev-fy{display:flex;gap:6px;flex-wrap:wrap}
+.rev-fy button{border:1px solid var(--hair-2);background:transparent;color:var(--muted);border-radius:999px;padding:5px 11px;font:600 12px/1 inherit;font-family:inherit;cursor:pointer}
+.rev-fy button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* month details sheet */
+.mo{display:grid;gap:12px;padding:14px 24px}
+@media (max-width:620px){.mo{padding:12px 16px}}.mo h3{margin:4px 0 0;font-size:13px;color:var(--muted);font-weight:600}
+.mo-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mo-k{display:grid;gap:2px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.mo-k span{font-size:12px;color:var(--muted)}.mo-k b{font-size:19px}.mo-k small{font-size:11.5px;color:var(--muted)}
+.mo-cities{display:grid;gap:8px}.mo-c{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.mo-c span:first-child{display:inline-flex;align-items:center;gap:7px}.mo-c span:first-child i{width:9px;height:9px;border-radius:50%}
+.mo-c .t{grid-column:1/-1;height:6px;border-radius:3px;background:var(--hair-2);overflow:hidden}.mo-c .t i{display:block;height:100%;border-radius:3px}
+.mo-ly{margin:0;color:var(--muted);font-size:13px}
+/* booking pace */
+.pace-v{margin:0;font-size:14px;font-weight:600;line-height:1.35}.pace-v.bad{color:var(--bad)}.pace-v.ok{color:var(--ok)}
+.pace{display:grid;gap:14px}
+.pace-h{display:flex;align-items:center;gap:8px}.pace-h b{font-size:15px;min-width:40px}.pace-h .num{color:var(--muted);font-size:12.5px;flex:1}
+.pace-bar{position:relative;height:12px;border-radius:6px;background:var(--hair-2);margin:7px 0 5px}
+.pace-bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--accent)}
+.pace-bar .fill.ok{background:var(--ok)}.pace-bar .fill.bad{background:var(--bad)}
+.pace-bar .fill,.pace-bar .mark{display:block;padding:0;min-height:0}
+.pace-bar .mark{position:absolute;top:-4px;height:20px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--ink)}
+.pace-f{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.pace-f b{color:var(--ink)}
+/* empty nights */
+.en-k{display:grid;gap:10px}
+.en-k>div{display:grid;gap:1px;padding:11px 13px;border-radius:14px}
+.en-miss{background:color-mix(in srgb,var(--bad) 8%,transparent)}.en-next{background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.en-k span{font-size:12px;color:var(--muted)}.en-k b{font-size:22px;letter-spacing:-.02em}.en-miss b{color:var(--bad)}.en-k small{font-size:11.5px;color:var(--muted)}
+.en-list{display:grid;gap:2px}.en-lh{font-size:12px;color:var(--muted);margin-bottom:2px}
+.en-row{display:flex;justify-content:space-between;gap:8px;padding:8px 2px;border:0;border-top:1px solid var(--hair-2);background:none;color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer;text-align:left}
+.en-row span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.en-row .num{color:var(--muted);flex:none}
 /* direct-booking payment block in the booking form */
 .pay-box{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--accent) 5%,transparent)}
 .pay-box[hidden]{display:none}
@@ -1055,7 +1093,9 @@ function stacked(w,{cats,series,line,hi,fmt,onClick,hh=250}){
       s.append(sv('path',{d:roundTop(x,y1,bar,y0-y1,top?6:0),fill:se.color,opacity:on?1:.3}))});
     s.append(sv('text',{x:l+i*bw+bw/2,y:hh-10,'text-anchor':'middle',fill:on?ink:muted,'font-weight':on?650:500},c.label));
     const hit=sv('rect',{x:l+i*bw,y:t,width:bw,height:hh-t-b,fill:'transparent','data-tip':c.tip(i),style:onClick?'cursor:pointer':null});if(onClick)hit.addEventListener('click',()=>onClick(i));s.append(hit)});
-  if(line){let ly=y;if(line.right){const lm=niceMax(Math.max(...line.vals,0.01)*1.1);ly=axisY(s,{l,r,t,b,w,hh,max:lm,fmt:line.fmt,right:true});s.querySelectorAll('line').forEach((n,i)=>{if(i>4)n.remove()})}
+  if(line&&line.marks){line.vals.forEach((v,i)=>{if(!(v>0))return;const cx=l+i*bw+bw/2,yy=y(v);
+      s.append(sv('line',{x1:cx-bar/2-5,x2:cx+bar/2+5,y1:yy,y2:yy,stroke:line.color,'stroke-width':2.5,'stroke-linecap':'round','pointer-events':'none'}))})}
+  else if(line){let ly=y;if(line.right){const lm=niceMax(Math.max(...line.vals,0.01)*1.1);ly=axisY(s,{l,r,t,b,w,hh,max:lm,fmt:line.fmt,right:true});s.querySelectorAll('line').forEach((n,i)=>{if(i>4)n.remove()})}
     const pts=line.vals.map((v,i)=>[l+i*bw+bw/2,ly(v)]);s.append(sv('path',{d:'M'+pts.map(p=>p.join(' ')).join('L'),fill:'none',stroke:line.color,'stroke-width':2.2,'stroke-linejoin':'round','stroke-linecap':'round','pointer-events':'none'}));
     pts.forEach(p=>s.append(sv('circle',{cx:p[0],cy:p[1],r:3.6,fill:css('--glass-2'),stroke:line.color,'stroke-width':2,'pointer-events':'none'})))}
   return s;
@@ -1330,14 +1370,44 @@ function overview(v){
     st1('occ','Occupancy',pct(s.occ),delta(s.occ,p.occ),ms.map(m=>m.occ),css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
     st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),ms.map(m=>m.adr),css('--city-3'),'ADR: room revenue ÷ nights sold'),
     st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),ms.map(m=>m.revpar),css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
-  // trend
-  const all=D.months;const mstats=all.map(k=>mStats(k));const hi=new Set(all.map((k,i)=>mStart(k)<=f.to&&mEnd(k)>=f.from?i:-1).filter(i=>i>=0));
-  const cities=liveCities().filter(c=>!f.cities.length||f.cities.includes(c));
-  const byCity=cities.map(c=>({name:c,color:cityColor(c),vals:all.map(k=>sum(D.B.filter(b=>fBm(b)&&b.city===c),b=>b.net*share(b,mStart(k),mEnd(k))))}));
-  let trendHolder;
-  v.append(card('s8','Revenue by month',{hint:'net payout by city · line = profit · tap a month to focus',acts:[btnPNG(()=>trendHolder,'Revenue by month')]},
-    h('div',{class:'legend'},liveCities().map(c=>h('button',{'aria-pressed':!f.cities.length||f.cities.includes(c),onclick:()=>toggleIn('cities',c)},h('span',{class:'sw',style:{background:cityColor(c)}}),c)),h('span',{style:{display:'inline-flex',alignItems:'center',gap:'6px'}},h('span',{class:'sw',style:{background:css('--ink'),height:'3px',borderRadius:'2px'}}),'Profit')),
-    trendHolder=chart(w=>stacked(w,{cats:all.map((k,i)=>({label:mLabel(k)+(k>TODAY.slice(0,7)?'*':''),tip:i=>`${mLong(all[i])}${all[i]>TODAY.slice(0,7)?' (booked so far)':''}\n`+byCity.map(c=>`${c.name}: ${inr(c.vals[i])}`).join('\n')+`\nProfit: ${inr(mstats[i].profit)}`})).map((c,i)=>({...c,tip:()=>c.tip(i)})),series:byCity,line:{vals:mstats.map(m=>m.profit),color:css('--ink')},hi,fmt:inrK,onClick:i=>{const k=all[i];setF({preset:k===TODAY.slice(0,7)?'month':'custom',from:mStart(k),to:mEnd(k)})}})),
+  // trend: a window of months you swipe through (phones 6, laptops 15), not every month squeezed in
+  const all=D.months,nowK=TODAY.slice(0,7),cities=liveCities().filter(c=>!f.cities.length||f.cities.includes(c));
+  const netC=(c,k)=>sum(D.B.filter(b=>fBm(b)&&b.city===c),b=>b.net*share(b,mStart(k),mEnd(k)));
+  const lyK=k=>(+k.slice(0,4)-1)+k.slice(4),fyOf=k=>{const y=+k.slice(0,4);return +k.slice(5)>=4?y:y-1},fyL=y=>`FY ${String(y).slice(2)}-${String(y+1).slice(2)}`;
+  const wN=PHONE()?6:15;let wk;
+  if(S.revFY!=null)wk=all.filter(k=>fyOf(k)===S.revFY);
+  if(!wk||!wk.length){let tgt=nowK;for(let i=0;i<(PHONE()?2:3);i++)tgt=nextM(tgt);const endK=S.revEnd||tgt;
+    let e=all.reduce((m,k,i)=>k<=endK?i:m,all.length-1);e=Math.max(Math.min(e,all.length-1),Math.min(wN,all.length)-1);wk=all.slice(Math.max(0,e-wN+1),e+1)}
+  const wI0=all.indexOf(wk[0]),wI1=all.indexOf(wk[wk.length-1]);
+  const wShift=n=>{const e=Math.max(Math.min(all.length,wN)-1,Math.min(all.length-1,wI1+n));S.revFY=null;S.revEnd=all[e];render()};
+  const byCity=cities.map(c=>({name:c,color:cityColor(c),vals:wk.map(k=>netC(c,k))}));
+  const wTot=wk.map((_,i)=>sum(byCity,c=>c.vals[i])),wLy=wk.map(k=>all.includes(lyK(k))||lyK(k)>=all[0]?sum(cities,c=>netC(c,lyK(k))):0);
+  const lyOn=wLy.some(x=>x>0),profitOn=D.E.length>0||D.props.some(p=>+p.owner_share>0);  // no costs recorded: profit = net, so no line
+  const mstats=profitOn?wk.map(k=>mStats(k)):null,hiS=new Set(wk.map((k,i)=>mStart(k)<=f.to&&mEnd(k)>=f.from?i:-1).filter(i=>i>=0)),hi=hiS.size?hiS:null;  // window without the focused period: all bars full
+  const sumNow=sum(wTot,x=>x),sumLy=sum(wLy.filter((_,i)=>wk[i]<=nowK),x=>x),sumNowPast=sum(wTot.filter((_,i)=>wk[i]<=nowK),x=>x);
+  const wRng=`${mLabel(wk[0])} ${wk[0].slice(2,4)!==wk[wk.length-1].slice(2,4)?"'"+wk[0].slice(2,4)+' ':''}– ${mLabel(wk[wk.length-1])} '${wk[wk.length-1].slice(2,4)}`;
+  const wFys=[...new Set(all.map(fyOf))].slice(-3);
+  const wShort1=PHONE()&&wk.length>8;let trendHolder;
+  const wHead=h('div',{class:'rev-head'},h('div',null,h('b',{class:'num'},inrK(sumNow)),h('span',null,`net · ${wRng}`)),
+    sumLy>0?h('span',{class:'delta '+(sumNowPast>=sumLy?'up':'down'),'data-tip':`Months up to ${mLabel(nowK)}: ${inr(sumNowPast)} vs ${inr(sumLy)} the year before`},`${sumNowPast>=sumLy?'+':''}${pct((sumNowPast-sumLy)/sumLy)} vs last year`):null);
+  const wNav=h('div',{class:'rev-nav'},
+    h('button',{class:'btn icon sm','aria-label':'Earlier months',disabled:wI0<=0||null,onclick:()=>wShift(-(PHONE()?1:3))},'‹'),
+    h('div',{class:'rev-track','aria-hidden':'true'},h('i',{style:{left:(wI0/all.length*100)+'%',width:(wk.length/all.length*100)+'%'}})),
+    h('button',{class:'btn icon sm','aria-label':'Later months',disabled:wI1>=all.length-1||null,onclick:()=>wShift(PHONE()?1:3)},'›'));
+  const wChips=h('div',{class:'rev-fy'},h('button',{'aria-pressed':S.revFY==null&&!S.revEnd,onclick:()=>{S.revFY=null;S.revEnd=null;render()}},'Latest'),
+    wFys.map(y=>h('button',{'aria-pressed':S.revFY===y,onclick:()=>{S.revFY=y;S.revEnd=null;render()}},fyL(y))));
+  trendHolder=chart(w=>stacked(w,{cats:wk.map((k,i)=>({label:(wShort1?mLabel(k).slice(0,1):mLabel(k))+(k>nowK?'*':''),tip:()=>`${mLong(k)}${k>nowK?' (booked so far)':''}\n`+byCity.map(c=>`${c.name}: ${inr(c.vals[i])}`).join('\n')+(lyOn?`\nSame month last year: ${inr(wLy[i])}`:'')+(profitOn?`\nProfit: ${inr(mstats[i].profit)}`:'')+'\nTap for details'})),
+    series:byCity,line:profitOn?{vals:mstats.map(m=>m.profit),color:css('--ink')}:lyOn?{vals:wLy,color:css('--ink'),marks:true}:null,hi,fmt:inrK,onClick:i=>openMonth(wk[i],cities)}));
+  /* swipe sideways on the chart to move through months */
+  let wTx=null,wTy=null;trendHolder.addEventListener('touchstart',e=>{wTx=e.touches[0].clientX;wTy=e.touches[0].clientY},{passive:true});
+  trendHolder.addEventListener('touchend',e=>{if(wTx==null)return;const dx=e.changedTouches[0].clientX-wTx,dy=e.changedTouches[0].clientY-wTy;wTx=null;
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.3)wShift((dx<0?1:-1)*Math.max(1,Math.round(Math.abs(dx)/70)))},{passive:true});
+  v.append(card('s8','Revenue by month',{hint:PHONE()?'swipe for more months · tap a month':'net payout by city · tap a month for details',acts:[btnPNG(()=>trendHolder,'Revenue by month')]},
+    wHead,
+    h('div',{class:'legend'},liveCities().map(c=>h('button',{'aria-pressed':!f.cities.length||f.cities.includes(c),onclick:()=>toggleIn('cities',c)},h('span',{class:'sw',style:{background:cityColor(c)}}),c)),
+      profitOn?h('span',{style:{display:'inline-flex',alignItems:'center',gap:'6px'}},h('span',{class:'sw',style:{background:css('--ink'),height:'3px',borderRadius:'2px'}}),'Profit'):
+      lyOn?h('span',{style:{display:'inline-flex',alignItems:'center',gap:'6px'}},h('span',{class:'sw',style:{background:css('--ink'),height:'3px',borderRadius:'2px'}}),'Same month last year'):null),
+    trendHolder,wNav,wChips,
     h('div',{class:'foot-note'},'* future months show what is booked so far.')));
   // channel donut
   const att=D.B.filter(b=>fB(b)&&b.check_in>=f.from&&b.check_in<=f.to);const allCh=D.B.filter(b=>b.money&&fP(D.P[b.property_id])).map(b=>[b,share(b,f.from,f.to)]).filter(x=>x[1]>0);
@@ -1362,19 +1432,34 @@ function overview(v){
   const cityStats=liveCities().filter(c=>!f.cities.length||f.cities.includes(c)).map(c=>{const sv_={...S.f};const save=S.f.cities;S.f.cities=[c];const st=stats(f.from,f.to);S.f.cities=save;return{c,...st,perL:st.listings?st.profit/st.listings:0}});
   const cmpBlock=(title,key,fmt)=>{const mx=Math.max(...cityStats.map(x=>x[key]),1e-9);return h('div',null,h('h3',null,title),cityStats.map(x=>h('button',{class:'cmp-row',onclick:()=>toggleIn('cities',x.c),'data-tip':`${x.c}: ${fmt(x[key])}\n${x.listings} listings`},h('span',null,x.c),h('b',{class:'num'},fmt(x[key])),h('span',{class:'t'},h('i',{style:{width:Math.max(2,x[key]/mx*100)+'%',background:cityColor(x.c)}})))))};
   v.append(card('s5','Cities side by side',{hint:'tap a city to focus'},h('div',{class:'cmp'},cmpBlock('Occupancy','occ',pct),cmpBlock('Avg nightly rate','adr',inrK),cmpBlock('Net payout','net',inrK),cmpBlock('Profit per listing','perL',inrK))));
-  // pace
-  const curK=TODAY.slice(0,7),fut=[curK,nextM(curK),nextM(nextM(curK))];
-  const bookedBy=(k,cut)=>sum(D.B.filter(b=>fB(b)&&(b.submitted_at||'').slice(0,10)<=cut&&b.check_in<=mEnd(k)&&b.check_out>mStart(k)),b=>overlap(b,mStart(k),mEnd(k)));
-  const paceNow=fut.map(k=>bookedBy(k,TODAY));const paceTyp=fut.map(k=>{const lead=diff(TODAY,mStart(k));const prior=[prevM(k),prevM(prevM(k))].filter(q=>D.months.includes(q)||q>=D.months[0]);const vals=prior.map(q=>bookedBy(q,add(mStart(q),-lead)));return vals.length?sum(vals,x=>x)/vals.length:0});
-  const listings=props.length;let ph;
-  v.append(card('s4','Booking pace',{hint:'nights on the books vs. usual at this point',acts:[btnPNG(()=>ph,'Booking pace')]},
-    ph=chart(w=>grouped(w,{cats:fut.map(mLabel),series:[{name:'Booked now',color:css('--accent'),vals:paceNow,tipFmt:x=>`${Math.round(x)} nights (${pct(x/(listings*30||1))} full)`},{name:'Usual by now (avg of 2 prior months)',color:css('--hair-2'),vals:paceTyp,tipFmt:x=>`${Math.round(x)} nights`}],fmt:x=>Math.round(x)})),
-    h('div',{class:'legend'},h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:css('--accent')}}),'Booked now'),h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:css('--hair-2')}}),'Usual by now'))));
-  // lead time
-  const bk=[[0,2,'0–2d'],[3,7,'3–7d'],[8,14,'1–2w'],[15,30,'2–4w'],[31,60,'1–2m'],[61,999,'2m+']];
-  const leads=att.map(b=>diff((b.submitted_at||b.check_in).slice(0,10),b.check_in));let lh;
-  v.append(card('s3','How early guests book',{acts:[btnPNG(()=>lh,'Booking lead time')]},lh=chart(w=>grouped(w,{cats:bk.map(x=>x[2]),series:[{name:'Bookings',color:css('--city-2'),vals:bk.map(([a,z])=>leads.filter(d=>d>=a&&d<=z).length)}],fmt:x=>Math.round(x),hh:200})),
-    h('div',{class:'foot-note'},leads.length?`Median ${[...leads].sort((a,b)=>a-b)[Math.floor(leads.length/2)]} days ahead. Short lead times leave room for last-minute pricing.`:'No bookings in this period.')));
+  // pace: nights booked so far for this month and the next two, against what was usually booked by this date
+  const curK=nowK,fut=[curK,nextM(curK),nextM(nextM(curK))],listings=props.length;
+  const bookedOn=b=>String(b.booking_date||b.submitted_at||'').slice(0,10);
+  const bookedBy=(k,cut)=>sum(D.B.filter(b=>fB(b)&&active(D.P[b.property_id])&&bookedOn(b)&&bookedOn(b)<=cut&&b.check_in<=mEnd(k)&&b.check_out>mStart(k)),b=>overlap(b,mStart(k),mEnd(k)));
+  const pace=fut.map(k=>{const lead=diff(TODAY,mStart(k)),prior=[lyK(k),prevM(k),prevM(prevM(k))].filter(q=>q>=all[0]&&q<curK);
+    const vals=prior.map(q=>bookedBy(q,add(mStart(q),-lead))),typ=vals.length?sum(vals,x=>x)/vals.length:0,now=bookedBy(k,TODAY),cap=listings*(diff(mStart(k),mEnd(k))+1)||1;
+    const d=typ>=1?(now-typ)/typ:null,verdict=d==null?'New':d>=.1?'Ahead':d<=-.1?'Behind':'On pace';return{k,now,typ,cap,d,verdict}});
+  const behind=pace.find(x=>x.verdict==='Behind'),ahead=pace.filter(x=>x.verdict==='Ahead').length;
+  const vline=behind?`${mLong(behind.k).split(' ')[0]} is ${pct(-behind.d)} behind the usual pace. Worth an offer on the free nights.`:ahead?`${ahead===3?'All three months are':ahead===1?mLong(pace.find(x=>x.verdict==='Ahead').k).split(' ')[0]+' is':'Two of the three months are'} ahead of the usual pace.`:'Bookings are on the usual pace.';
+  v.append(card('s4','Booking pace',{hint:'nights booked so far vs. usual by this date'},
+    h('p',{class:'pace-v '+(behind?'bad':ahead?'ok':'')},vline),
+    h('div',{class:'pace'},pace.map(x=>h('div',{class:'pace-row','data-tip':`${mLong(x.k)}\nBooked so far: ${Math.round(x.now)} of ${x.cap} nights (${pct(x.now/x.cap)})\nUsual by today: ${Math.round(x.typ)} nights (avg of last year and the 2 months before)`},
+      h('div',{class:'pace-h'},h('b',null,mLabel(x.k)),h('span',{class:'num'},`${pct(x.now/x.cap)} full`),h('span',{class:'pill '+({Ahead:'p-ok',Behind:'p-bad','On pace':'p-mute',New:'p-mute'}[x.verdict])},x.verdict+(x.d!=null&&x.verdict!=='On pace'?` ${x.d>0?'+':'−'}${pct(Math.abs(x.d))}`:''))),
+      h('div',{class:'pace-bar'},h('i',{class:'fill '+(x.verdict==='Behind'?'bad':x.verdict==='Ahead'?'ok':''),style:{width:Math.min(100,x.now/x.cap*100)+'%'}}),x.typ>=1?h('i',{class:'mark',style:{left:Math.min(100,x.typ/x.cap*100)+'%'}}):null),
+      h('div',{class:'pace-f'},h('span',null,`${Math.round(x.now)} of ${x.cap} nights`),x.typ>=1?h('span',null,'usual by now ',h('b',null,String(Math.round(x.typ)))):h('span',null,'no history yet'))))),
+    h('div',{class:'legend'},h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:css('--accent')}}),'Booked so far'),h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:css('--ink'),width:'3px',height:'12px',borderRadius:'2px'}}),'Usual by this date'))));
+  // empty nights: money missed this month so far, and still to sell in the next 30 days (nights × each stay's usual rate)
+  const blocks=S.data.blocks||[],blockedOn=(pid,d)=>blocks.some(k=>k.property_id===pid&&k.from<=d&&k.to>d);
+  const emptyN=(pid,a,z)=>{let n=0;for(let d=a;d<z;d=add(d,1))if(!nightBooking(pid,d)&&!blockedOn(pid,d))n++;return n};
+  /* a combo listing (e.g. a 4BHK made of two 2BHKs) is the same rooms as its parts: count the parts only */
+  const isCombo=p=>(Array.isArray(p.includes)?p.includes:String(p.includes||'').split(',').map(t=>t.trim()).filter(Boolean)).length>0;
+  const en=props.filter(p=>!isCombo(p)).map(p=>{const r=stats(add(TODAY,-90),add(TODAY,-1),p.property_id).adr||+p.base_rate||0,miss=emptyN(p.property_id,mStart(nowK),TODAY),next=emptyN(p.property_id,TODAY,add(TODAY,30));return{p,r,miss,next,missV:miss*r,nextV:next*r}});
+  const enTop=sortBy(en.filter(x=>x.nextV>0),['nextV',-1]).slice(0,PHONE()?3:4),missV=sum(en,x=>x.missV),missN=sum(en,x=>x.miss),nextV=sum(en,x=>x.nextV),nextN=sum(en,x=>x.next);
+  v.append(card('s3','Empty nights',{hint:'value at each stay’s usual rate'},
+    h('div',{class:'en-k'},h('div',{class:'en-miss'},h('span',null,'Missed this month'),h('b',{class:'num'},TODAY.slice(8)==='01'?'–':inrK(missV)),h('small',null,`${missN} night${missN===1?'':'s'} since 1 ${mLabel(nowK)}`)),
+      h('div',{class:'en-next'},h('span',null,'Still to sell · next 30 days'),h('b',{class:'num'},inrK(nextV)),h('small',null,`${nextN} night${nextN===1?'':'s'} free`))),
+    enTop.length?h('div',{class:'en-list'},h('span',{class:'en-lh'},'Most to gain'),enTop.map(x=>h('button',{class:'en-row',onclick:()=>openAvail(x.p.property_id)},h('span',null,short(x.p.property)),h('span',{class:'num'},`${x.next} n · ${inrK(x.nextV)}`)))):h('div',{class:'empty'},'Fully booked for the next 30 days.'),
+    h('div',{class:'foot-note'},'Usual rate = the stay’s average nightly rate over the last 90 days. Blocked dates and combo listings (counted through their parts) are left out.')));
   // leaders
   const rowsP=props.map(p=>{const st=stats(f.from,f.to,p.property_id);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);return{id:p.property_id,name:short(p.property),city:p.city,area:p.area,occ:st.occ,adr:st.adr,net:st.net,profit:st.profit,rating:rated.length?sum(rated,b=>b.rating)/rated.length:null,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length}});
   const ranked=sortBy(rowsP,['profit',-1]);const nL=PHONE()?3:6,list=S.leaders==='top'?ranked.slice(0,nL):ranked.slice(-nL).reverse();
@@ -1466,6 +1551,17 @@ function nightBooking(pid,d){return D.B.find(b=>b.ok&&samePlace(b.property_id,pi
 function freeRanges(pid,from,to){const out=[];let cur=null;
   for(let d=from;d<to;d=add(d,1)){if(nightBooking(pid,d))cur=null;else{if(!cur){cur={a:d,n:0};out.push(cur)}cur.n++}}
   return out.map(r=>({...r,z:add(r.a,r.n)}))}
+function openMonth(k,cities){
+  const st=mStats(k),ly=(+k.slice(0,4)-1)+k.slice(4),netC=(c,q)=>sum(D.B.filter(b=>fBm(b)&&b.city===c),b=>b.net*share(b,mStart(q),mEnd(q)));
+  const rows=cities.map(c=>({c,v:netC(c,k)})),tot=sum(rows,r=>r.v),lyTot=sum(cities,c=>netC(c,ly)),mx=Math.max(...rows.map(r=>r.v),1);
+  const lySt=lyTot>0?stats(mStart(ly),mEnd(ly)):null,fut=k>TODAY.slice(0,7);
+  const kpi=(l,val,sub)=>h('div',{class:'mo-k'},h('span',null,l),h('b',{class:'num'},val),sub?h('small',null,sub):null);
+  const dl=(a,b)=>b>0?`${a>=b?'+':''}${pct((a-b)/b)} vs ${mLabel(ly)} '${ly.slice(2,4)}`:null;
+  modal(mLong(k)+(fut?' · booked so far':''),h('div',{class:'mo'},
+    h('div',{class:'mo-kpis'},kpi('Net payout',inr(tot),dl(tot,lyTot)),kpi('Nights sold',String(st.nights),lySt?dl(st.nights,lySt.nights):null),kpi('Occupancy',pct(st.occ),lySt?`${pct(lySt.occ)} last year`:null),kpi('Avg nightly rate',inrK(st.adr),lySt&&lySt.adr?`${inrK(lySt.adr)} last year`:null)),
+    h('h3',null,'By city'),h('div',{class:'mo-cities'},rows.map(r=>h('div',{class:'mo-c'},h('span',null,h('i',{style:{background:cityColor(r.c)}}),r.c),h('b',{class:'num'},inr(r.v)),h('span',{class:'t'},h('i',{style:{width:Math.max(2,r.v/mx*100)+'%',background:cityColor(r.c)}}))))),
+    lyTot>0?h('p',{class:'mo-ly'},`Same month last year: ${inr(lyTot)} net${lySt?` · ${lySt.nights} nights · ${pct(lySt.occ)} occupied`:''}.`):h('p',{class:'mo-ly'},'No data for the same month last year.')),
+    [h('button',{class:'btn',onclick:closeLayer},'Close'),h('button',{class:'btn primary',onclick:()=>{closeLayer();setF({preset:k===TODAY.slice(0,7)?'month':'custom',from:mStart(k),to:mEnd(k)})}},'Show this month everywhere')])}
 function openAvail(pid,m){m=m||TODAY.slice(0,7);const p=D.P[pid];if(!p)return;
   const first=mStart(m),last=mEnd(m),lead=(pd(first).getDay()+6)%7,cells=[...Array(lead)].map(()=>h('div',{class:'avl-c avl-x'}));const used=new Set();
   for(let d=first;d<=last;d=add(d,1)){const b=nightBooking(pid,d),cls=(d<TODAY?' past':'')+(d===TODAY?' td':'');
@@ -2202,6 +2298,7 @@ function stage(id,fields){id=String(id);const raw=rawB(id)||{},next={...(STAGE[i
   for(const k of Object.keys(next))if(String(next[k]??'')===String(raw[k]??''))delete next[k];
   if(Object.keys(next).length)STAGE[id]=next;else delete STAGE[id];render()}
 const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length;
+window.jgStaged=stagedCount;  // for the self-update check (a separate script)
 function clashFor(b){return D.B.find(x=>x.ok&&x.booking_id!==String(b.booking_id)&&samePlace(x.property_id,b.property_id)&&x.check_in<b.check_out&&x.check_out>b.check_in)}
 
 function mgCancel(ids){
@@ -2473,7 +2570,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now(
   verNow().then(b=>{myBuild=b});
   const checkUpdate=async()=>{if(!myBuild||document.hidden)return;const b=await verNow();if(!b||b===myBuild)return;
     try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update()}catch(e){}
-    const busy=(typeof stagedCount==='function'&&stagedCount())||$('#layer').children.length;
+    const lay=document.getElementById('layer'),busy=(typeof window.jgStaged==='function'&&window.jgStaged())||(lay&&lay.children.length);  // this script can't see the app's own helpers
     if(busy){toast('A new version of the dashboard is ready',()=>location.reload(),'Refresh')}else location.reload()};
   document.addEventListener('visibilitychange',checkUpdate);addEventListener('focus',checkUpdate);addEventListener('pageshow',e=>{if(e.persisted)checkUpdate()});
   if(standalone||!box)return;
