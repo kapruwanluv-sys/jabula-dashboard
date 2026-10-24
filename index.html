@@ -548,6 +548,21 @@ button.sstat:hover{background:var(--surface-2)}
 .mo-c span:first-child{display:inline-flex;align-items:center;gap:7px}.mo-c span:first-child i{width:9px;height:9px;border-radius:50%}
 .mo-c .t{grid-column:1/-1;height:6px;border-radius:3px;background:var(--hair-2);overflow:hidden}.mo-c .t i{display:block;height:100%;border-radius:3px}
 .mo-ly{margin:0;color:var(--muted);font-size:13px}
+/* platform fees & direct share */
+.pf-head{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pf-head>div{display:grid;gap:2px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--bad) 7%,transparent)}
+.pf-head>div.pf-dir{background:color-mix(in srgb,var(--ok) 9%,transparent)}
+.pf-head span{font-size:12px;color:var(--muted);font-weight:600}.pf-head b{font-size:24px;letter-spacing:-.02em}
+.pf-head>div:first-child b{color:var(--bad)}.pf-dir b{color:var(--ok)}
+.pf-head small{font-size:11.5px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pf-bar{display:flex;gap:3px;height:10px}.pf-bar i{display:block;flex-basis:0;min-width:6px;border-radius:99px}
+.pf-rows{display:grid}
+.pf-row{display:grid;grid-template-columns:1fr auto minmax(110px,auto);gap:12px;align-items:center;padding:9px 2px;border:0;border-top:1px solid var(--hair-2);background:none;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;text-align:left}
+.pf-row .pf-g{font-weight:700}.pf-row .pf-f{color:var(--muted);text-align:right}
+.pf-save{display:grid;gap:8px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.pf-sq{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.pf-save .seg{background:color-mix(in srgb,var(--ink) 6%,transparent)}.pf-save .seg button[aria-pressed="true"]{background:var(--surface,#fff);color:var(--accent)}
+.pf-save p{margin:0;font-size:13.5px}.pf-save p b{font-size:17px;color:var(--ok)}.pf-save small{color:var(--muted);font-size:11.5px}
 /* extend stay */
 .ext-q{display:flex;gap:6px;flex-wrap:wrap}
 .ext-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -1767,7 +1782,20 @@ function money(v){
   const att=D.B.filter(b=>fB(b)&&b.check_in>=f.from&&b.check_in<=f.to);
   const mAll=D.B.filter(fBm).map(b=>[b,share(b,f.from,f.to)]).filter(x=>x[1]>0);
   const ce2=CHN.map(c=>{const bs=att.filter(b=>b.channel===c),xs=mAll.filter(([b])=>b.channel===c);return{c,n:bs.length,gross:sum(xs,([b,w])=>b.gross*w),fee:sum(xs,([b,w])=>b.fee*w),net:sum(xs,([b,w])=>b.net*w),stay:bs.length?sum(bs,b=>b.nights)/bs.length:0,adr:sum(bs,b=>b.nights)?sum(bs,b=>b.room)/sum(bs,b=>b.nights):0}});
-  v.append(card('s6','Channel economics',{hint:rangeLabel()},table([{t:'Channel',f:r=>chd(r.c)},{t:'Bookings',r:1,f:r=>r.n},{t:'Avg stay',r:1,f:r=>r.stay.toFixed(1)+' n'},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Fees',r:1,f:r=>inr(r.fee)},{t:'Fee %',r:1,f:r=>pct(r.gross?r.fee/r.gross:0,1)},{t:'Net',r:1,f:r=>h('b',null,inr(r.net))}],ce2,{card:r=>[mTop(h('span',{class:'mdot',style:{background:chColor(r.c)}}),r.c,`${r.n} bookings · ${r.stay.toFixed(1)} nights avg`,[h('b',{class:'num'},inrK(r.net)),h('small',null,'net')]),h('div',{class:'mstats'},mStat('Avg rate',inrK(r.adr)),mStat('Fees',inrK(r.fee)),mStat('Fee share',pct(r.gross?r.fee/r.gross:0,1),r.gross?r.fee/r.gross/.25:0,'var(--bad)'))]})));
+  /* platform fees & direct share: what the platforms took, how much came direct, and what moving bookings to direct saves */
+  const plat=ce2.filter(r=>r.c!=='Direct'&&(r.gross>0||r.n)),dir=ce2.find(r=>r.c==='Direct')||{gross:0,net:0,fee:0,n:0},totG=sum(ce2,r=>r.gross)||1;
+  const pFee=sum(plat,r=>r.fee),pGross=sum(plat,r=>r.gross),prevFee=sum(D.B.filter(fBm).map(b=>[b,share(b,pa,pz)]).filter(x=>x[1]>0&&x[0].channel!=='Direct'),([b,w])=>b.fee*w);
+  const dd=(+CLIENT.direct_discount_pct||5)/100,mv=S.mvPct||.1,save=pFee*mv-pGross*mv*dd;
+  const segs=[...plat,dir].filter(r=>r.gross>0);
+  v.append(card('s6','Platform fees & direct share',{hint:rangeLabel(),acts:[btnExport(()=>exportRows(ce2.map(r=>({Platform:r.c,Bookings:r.n,'Gross ₹':Math.round(r.gross),'Fees ₹':Math.round(r.fee),'Fee %':r.gross?+(r.fee/r.gross*100).toFixed(1):0,'Net ₹':Math.round(r.net),'Share of gross %':+(r.gross/totG*100).toFixed(1)})),'Platform fees'))]},
+    h('div',{class:'pf-head'},h('div',null,h('span',null,'Paid to platforms'),h('b',{class:'num'},inrK(pFee)),h('small',null,`${pct(pGross?pFee/pGross:0,1)} of their bookings · `,delta(pFee,prevFee,true))),
+      h('div',{class:'pf-dir'},h('span',null,'Came direct'),h('b',{class:'num'},pct(dir.gross/totG)),h('small',null,`${inrK(dir.gross)} · ${dir.n} booking${dir.n===1?'':'s'} · no fees`))),
+    segs.length?h('div',{class:'pf-bar'},segs.map(r=>h('i',{style:{flexGrow:String(Math.max(r.gross/totG,.02)),background:chColor(r.c)},'data-tip':`${r.c}: ${pct(r.gross/totG)} of gross (${inr(r.gross)})`}))):null,
+    h('div',{class:'pf-rows'},[...plat,dir].map(r=>h('button',{class:'pf-row',onclick:()=>toggleIn('channels',r.c)},
+      h('span',{class:'chd'},h('i',{style:{background:chColor(r.c)}}),r.c),h('span',{class:'num pf-g'},pct(r.gross/totG)),
+      h('span',{class:'num pf-f'},r.c==='Direct'?'no fee':`${inrK(r.fee)} · ${pct(r.gross?r.fee/r.gross:0,1)}`)))),
+    pFee>0?h('div',{class:'pf-save'},h('div',{class:'pf-sq'},h('span',null,'If you moved'),h('div',{class:'seg sm'},[.1,.2,.3].map(x=>h('button',{'aria-pressed':mv===x,onclick:()=>{S.mvPct=x;render()}},Math.round(x*100)+'%'))),h('span',null,'of platform bookings to direct')),
+      h('p',null,'you would keep about ',h('b',{class:'num'},inrK(Math.max(0,save))),` more in ${rangeLabel()}`,h('small',null,` (fees saved ${inrK(pFee*mv)}, minus a ${Math.round(dd*100)}% direct discount)`))):null));
   /* Payments to collect: what direct guests still owe (half-upfront bookings), by check-in, so it is collected on arrival */
   const owe=sortBy(D.B.filter(b=>fB(b)&&b.channel==='Direct'&&b.net-b.received>1),['check_in',1]);
   const dueWhen=b=>b.check_in<TODAY?'was due '+fmtD(b.check_in):b.check_in===TODAY?'due today':'due at check-in '+fmtD(b.check_in,{weekday:'short',day:'numeric',month:'short'});
