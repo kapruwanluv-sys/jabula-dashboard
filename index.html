@@ -3350,6 +3350,7 @@ function audLevel(tab,action,ch,row){const f=Object.keys(ch||{}),L=AUD_LV[tab]||
   if(['login','logout','export','upload'].includes(action))return'routine';
   if(tab==='settings')return String(row.key)==='pricing.addons'?'important':'critical';
   if(tab==='overrides')return String(row.unit_id)==='*'?'important':'critical';
+  if(action==='append'&&(tab==='bookings'||tab==='properties'))return'important';
   if(tab==='bookings'){if(action==='delete')return'critical';if(ch.deleted_at)return ch.deleted_at[1]?'critical':'important';
     if(ch.booking_status&&/cancel/i.test(String(ch.booking_status[1])))return'critical'}
   if(any(L.critical))return'critical';if(action==='delete'&&tab==='properties')return'critical';
@@ -3364,11 +3365,12 @@ function audNorm(r){const js=v=>{if(v&&typeof v==='object')return v;try{return v
   const at=r.at instanceof Date?r.at:new Date(String(r.at||'').length===16?r.at+':00':r.at);
   const by=String(r.by||'');
   if(r.action==='log')r={...r,action:'export',target:r.target||'a file'};  // a download logged by a script older than the history
-  return {...r,by,changes:ch,match,target,old,at,rows:+r.rows||0,result:r.result||'ok',level:r.level||audLevel(r.tab,r.action,ch,match||{}),
+  const lv=r.action==='append'&&(r.tab==='bookings'||r.tab==='properties')&&r.result!=='blocked'&&r.result!=='failed'?'important':r.level;  // new, not a change (scripts before v1.21.1 said critical)
+  return {...r,by,changes:ch,match,target,old,at,rows:+r.rows||0,result:r.result||'ok',level:lv||audLevel(r.tab,r.action,ch,match||{}),
     name:r.name||(by==='dashboard key'?'Dashboard key':by==='bot'?'WhatsApp bot':by.split('@')[0])}}
 async function hiLoad(force){if(HI.busy||(HI.rows&&!force))return;HI.busy=true;HI.err=null;
   await null;  // never re-render inside the render that asked (demo history loads instantly)
-  try{if(live()){const r=await apiGet({tabs:'audit',audit_limit:HI.lim}),a=(r.tabs||{}).audit||[];HI.rows=a.map(audNorm).reverse();HI.more=a.length>=HI.lim}
+  try{if(live()){const r=await apiGet({tabs:'audit',audit_limit:HI.lim}),a=(r.tabs||{}).audit||[];HI.rows=a.filter(x=>!/^ZZ(TEST|DBG)/.test(String(x.target||''))).map(audNorm).reverse();HI.more=a.length>=HI.lim}
     else{HI.rows=HI.local.map(audNorm).reverse();HI.more=false}}catch(e){HI.err=e.message;HI.rows=[]}
   HI.busy=false;if(S.view==='manage'&&MG.sec==='history')render()}
 function hiLocal(tab,op,a,beforeArr){const me=LIVE.me||{};let ch={},row={},target='',match=a.match||null;
