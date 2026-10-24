@@ -561,7 +561,7 @@ button.sstat:hover{background:var(--surface-2)}
 .pf-save .seg{background:color-mix(in srgb,var(--ink) 6%,transparent)}.pf-save .seg button[aria-pressed="true"]{background:var(--surface,#fff);color:var(--accent)}
 .pf-save p{margin:0;font-size:13.5px}.pf-save p b{font-size:17px;color:var(--ok)}.pf-save small{color:var(--muted);font-size:11.5px}
 /* Manage: premium tabs, rows, property cards, photo grid */
-.mg-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,640px)}
+.mg-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,760px)}
 .mg-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;padding:9px 8px;border-radius:12px;font-family:inherit;font-weight:600;font-size:13px;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .mg-tabs button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .mg-tabs button b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted)}
@@ -572,7 +572,7 @@ button.sstat:hover{background:var(--surface-2)}
 .mg-selrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 8px}.mg-selrow .mg-all{margin:0}
 .card-h .acts:has(.mg-tabs){flex:1 1 100%;min-width:0;width:100%}
 .mg-chev{color:var(--muted);display:grid;place-items:center;padding-right:6px}.mg-chev svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-@media (max-width:640px){.mg-tabs{width:100%}.mg-tabs button svg{display:none}.mg-tabs button{padding:9px 4px;gap:5px;font-size:12.5px;min-width:0}.mg-tabs button b{padding:2px 5px;font-size:10px}}.mg-ck input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
+@media (max-width:640px){.mg-tabs{width:100%;display:flex;overflow-x:auto;scrollbar-width:none}.mg-tabs::-webkit-scrollbar{display:none}.mg-tabs button{flex:0 0 auto;padding-left:12px!important;padding-right:12px!important}.mg-tabs button svg{display:none}.mg-tabs button{padding:9px 4px;gap:5px;font-size:12.5px;min-width:0}.mg-tabs button b{padding:2px 5px;font-size:10px}}.mg-ck input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
 .mg-row.bk{grid-template-columns:auto auto minmax(0,1fr) auto auto;gap:14px;padding:12px 14px;border-radius:18px;transition:box-shadow .15s,border-color .15s}
 .mg-row.bk:hover{box-shadow:0 6px 20px rgba(12,26,61,.07);border-color:var(--hair-2)}
 .mg-row.bk .av,.mg-prow .av{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-family:inherit;font-weight:700;font-size:13px;line-height:1;flex:none}
@@ -664,6 +664,18 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .gi-priv svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex:none}
 .gi-pw{display:flex;gap:6px;align-items:center}.gi-pw input{flex:1;min-width:0}.gi-eye svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
 @media (max-width:640px){.gi-list{grid-template-columns:1fr}}
+/* Manage › Lists */
+.ls-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ls-col{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--hair);border-radius:18px;background:var(--surface);box-shadow:none}
+.ls-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.ls-h h3{margin:0;font-size:15px}.ls-h span{font-size:12px;color:var(--muted)}
+.ls-list{display:grid;gap:6px}
+.ls-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.ls-row.off{opacity:.55}.ls-row.mg-edit{background:var(--warn-soft);outline:1px solid var(--warn,#d97706)}
+.ls-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.ls-tx{display:grid;gap:1px;min-width:0;flex:1}.ls-tx b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ls-tx span{font-size:11.5px;color:var(--muted)}
+.ls-acts{display:flex;gap:4px;flex:none}.ls-acts .btn.icon{width:30px;height:30px}.ls-acts .btn.icon svg{width:15px;height:15px;stroke-width:2;fill:none;stroke:currentColor}
+.ls-add{align-self:flex-start}.ls-add svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4}
+@media (max-width:900px){.ls-grid{grid-template-columns:1fr}}
 /* missing details + uploads */
 .gap-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
 .gap-banner>div{display:grid;gap:2px}.gap-banner b{font-size:14px}.gap-banner span{font-size:12px;color:var(--muted)}
@@ -1122,8 +1134,9 @@ const saveF=()=>store.set('jg_filters',S.f);
 /* ============ data model ============ */
 let D=null;
 function derive(raw){
-  CHN=[...new Set([...CHN_BASE,...(raw.lists||[]).map(r=>r.channel),...raw.bookings.map(b=>b.channel)].filter(Boolean).map(String))];
-  const fee=raw.fee_pct,P={};raw.props.forEach(p=>P[p.property_id]=p);
+  CHN=[...new Set([...CHN_BASE,...listVals(raw.lists,'platform'),...raw.bookings.map(b=>b.channel)].filter(Boolean).map(String))];
+  const fee={...(raw.fee_pct||{})},P={};raw.props.forEach(p=>P[p.property_id]=p);
+  (raw.lists||[]).filter(r=>r.list==='platform'&&r.fee_pct!=null&&r.fee_pct!==''&&!isNaN(+r.fee_pct)).forEach(r=>fee[String(r.value)]=+r.fee_pct/100);  // usual fee % from Manage › Lists
   const paid={};raw.payouts.forEach(p=>paid[p.booking_id]=(paid[p.booking_id]||0)+(+p.amount_received||0));
   const B=[...raw.bookings,...extra.bookings].filter(b=>P[b.property_id]&&!b.deleted_at).map(b=>{
     const n=diff(b.check_in,b.check_out),p=P[b.property_id],ok=b.booking_status!=='Cancelled';
@@ -1976,8 +1989,13 @@ function modal(title,body,actions){$('#layer').replaceChildren(h('div',{class:'s
 const fld=(l,i,full)=>h('label',{class:full?'full':null},l,i);
 /* Drop-downs for the booking form: the owner's Lists tab in the Sheet wins; client.json booking_lists are the
    defaults. Lists rows: channel (+commission_pct), payment_term, account - each column is its own list. */
-function bookingLists(){const rows=(S.data&&S.data.lists)||[],col=k=>[...new Set(rows.map(r=>r[k]).filter(Boolean).map(String))],d=CLIENT.booking_lists||{};
-  const chans=col('channel');return{channels:chans.length?chans:(d.channels||CHN),payment_terms:col('payment_term').length?col('payment_term'):(d.payment_terms||['Banking','UPI','Cash']),accounts:col('account').length?col('account'):(d.accounts||[])}}
+function isItemLists(rows){return(rows||[]).some(r=>r&&r.list)}
+/* active values of one list, in either layout */
+function listVals(rows,list,all){rows=rows||[];if(isItemLists(rows))return[...new Set(rows.filter(r=>r.list===list&&(all||!/^(no|false|retired)$/i.test(String(r.active||'Yes')))).map(r=>String(r.value)).filter(Boolean))];
+  const c={platform:'channel',payment_term:'payment_term',account:'account'}[list];return[...new Set(rows.map(r=>r[c]).filter(Boolean).map(String))]}
+function bookingLists(){const rows=(S.data&&S.data.lists)||[],d=CLIENT.booking_lists||{};
+  const chans=listVals(rows,'platform'),pt=listVals(rows,'payment_term'),ac=listVals(rows,'account');
+  return{channels:chans.length?chans:(d.channels||CHN),payment_terms:pt.length?pt:(d.payment_terms||['Banking','UPI','Cash']),accounts:ac.length?ac:(d.accounts||[])}}
 /* money split by nights for the form preview (same rule as the reports) */
 function monthSplit(ci,co,amt){const n=diff(ci,co),out=[];let left=Math.round(amt*100),k=ci.slice(0,7);
   while(k<=add(co,-1).slice(0,7)){const a=k===ci.slice(0,7)?ci:mStart(k),z=k===add(co,-1).slice(0,7)?co:add(mEnd(k),1),nn=diff(a,z),last=z===co;const part=last?left:Math.round(amt*100*nn/n);left-=part;out.push([k,part/100]);k=add(mEnd(k),1).slice(0,7)}
@@ -2094,7 +2112,7 @@ function normLive(d){const n=v=>v==null||v===''?0:+v||0;
   d.maint=(d.maint||[]).filter(m=>m.ticket_id).map(m=>({...m,ticket_id:String(m.ticket_id)}));
   d.turnovers=(d.turnovers||[]).map(t=>({...t,booking_id:String(t.booking_id)}));
   d.leads=d.leads||[];d.requests=d.requests||[];d.blocks=d.blocks||[];d.lists=d.lists||[];d.fee_pct=d.fee_pct&&Object.keys(d.fee_pct).length?d.fee_pct:SEED.fee_pct;return d}
-const TABKEY={properties:'props',bookings:'bookings',payouts:'payouts',expenses:'expenses',maintenance:'maint',turnovers:'turnovers',leads:'leads',requests:'requests',blocks:'blocks'};
+const TABKEY={lists:'lists',properties:'props',bookings:'bookings',payouts:'payouts',expenses:'expenses',maintenance:'maint',turnovers:'turnovers',leads:'leads',requests:'requests',blocks:'blocks'};
 function applyLocal(tab,op,a){const k=TABKEY[tab],arr=S.data[k]||(S.data[k]=[]);
   if(op==='append'){arr.push(a.row);return 1}
   const[f,v]=Object.entries(a.match)[0];let n=0;for(let i=arr.length-1;i>=0;i--)if(String(arr[i][f])===String(v)){n++;op==='delete'?arr.splice(i,1):Object.assign(arr[i],a.fields)}return n}
@@ -2501,7 +2519,8 @@ function stage(id,fields){id=String(id);const raw=rawB(id)||{},next={...(STAGE[i
   for(const k of Object.keys(next))if(String(next[k]??'')===String(raw[k]??''))delete next[k];
   if(Object.keys(next).length)STAGE[id]=next;else delete STAGE[id];render()}
 const GSTAGE={};  // property_id -> private guest-info fields waiting to be saved (memory only)
-const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length;
+const LSTAGE={};  // list row_id (or new:<n>) -> {list, value, active, fee_pct, __new, __from}
+const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length+Object.keys(LSTAGE).length;
 window.jgStaged=stagedCount;window.jgToast=(...a)=>toast(...a);  // for the self-update check (a separate script)
 function clashFor(b){return D.B.find(x=>x.ok&&x.booking_id!==String(b.booking_id)&&samePlace(x.property_id,b.property_id)&&x.check_in<b.check_out&&x.check_out>b.check_in)}
 
@@ -2577,7 +2596,7 @@ function mgUntrash(id){const b=stg(rawB(id));const c=b.booking_status!=='Cancell
   if(c){toast(`Can’t restore ${id}: it clashes with ${c.booking_id}. Cancel one of them first.`);return}
   stage(id,{deleted_at:null,deleted_by:null,notes:addNote(b.notes,'Restored from Trash')})}
 
-function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE),grows=Object.entries(GSTAGE),total=rows.length+prows.length+grows.length;
+function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE),grows=Object.entries(GSTAGE),lrows=Object.entries(LSTAGE),total=rows.length+prows.length+grows.length+lrows.length;
   const body=rows.map(([id,f])=>{const raw=rawB(id)||{};return h('div',{class:'mg-rev'},h('b',null,`${id} · ${raw.guest||''}`),h('span',{class:'mg-revp'},short((D.P[raw.property_id]||{}).property||'')+' · '+fmtD(raw.check_in)+' → '+fmtD(raw.check_out)),
     Object.entries(f).filter(([k])=>k!=='deleted_by').map(([k,v])=>k==='notes'?h('div',{class:'mg-chg'},h('span',null,'Note added'),h('em',null,String(v||'').slice(String(raw.notes||'').length).trim()||'(notes edited)')):
       h('div',{class:'mg-chg'},h('span',null,MG_L[k]||k),h('s',null,mgVal(k,raw[k])),h('i',null,'→'),h('b',null,mgVal(k,v)))))});
@@ -2586,7 +2605,12 @@ function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE
     Object.entries(f).filter(([k])=>!['photo_thumbs','__new'].includes(k)).map(([k,v])=>h('div',{class:'mg-chg'},h('span',null,P_L[k]||k),h('s',null,pVal(k,raw[k])),h('i',null,'→'),h('b',null,pVal(k,v)))))});
   const gbody=grows.map(([id,f])=>{const raw=giRow(id);return h('div',{class:'mg-rev'},h('b',null,`${id} · ${short((D.P[id]||{}).property||id)} · guest info`),
     Object.entries(f).map(([k,v])=>h('div',{class:'mg-chg'},h('span',null,GI_L[k]||k),h('s',null,giShow(k,raw[k])),h('i',null,'→'),h('b',null,giShow(k,v)))))});
-  modal(`Review ${total} change${total>1?'s':''}`,h('div',{class:'mg-revlist'},body,pbody,gbody),
+  const lbody=lrows.map(([id,f])=>h('div',{class:'mg-rev'},h('b',null,`${LIST_L[f.list]||f.list} · ${f.__new?'new option':f.__from||((S.data.lists||[]).find(r=>r.row_id===id)||{}).value||f.value}`),
+    f.__new?h('div',{class:'mg-chg'},h('span',null,'Add'),h('b',null,f.value+(f.fee_pct!=null&&f.fee_pct!==''?` · fee ${f.fee_pct}%`:''))):
+    [f.__from&&f.__from!==f.value?h('div',{class:'mg-chg'},h('span',null,'Rename'),h('s',null,f.__from),h('i',null,'→'),h('b',null,f.value),h('em',null,` (${listUse(f.list,f.__from)} bookings follow)`)):null,
+     'active' in f?h('div',{class:'mg-chg'},h('span',null,'Status'),h('b',null,/^(no|false)$/i.test(String(f.active))?'Retired (hidden from the form)':'Active')):null,
+     'fee_pct' in f?h('div',{class:'mg-chg'},h('span',null,'Usual fee'),h('b',null,f.fee_pct==null||f.fee_pct===''?'—':f.fee_pct+'%')):null]));
+  modal(`Review ${total} change${total>1?'s':''}`,h('div',{class:'mg-revlist'},body,pbody,gbody,lbody),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:async e=>{e.target.disabled=true;e.target.textContent='Saving…';closeLayer();await mgSave()}},`Save ${total} change${total>1?'s':''}`)])}
 async function mgSave(){let ok=0,fail=null;
   for(const[id,f]of Object.entries(STAGE)){const done=await save('bookings','update',{match:{booking_id:id},fields:f},null);if(done){delete STAGE[id];ok++}else{fail=id;break}}
@@ -2594,8 +2618,13 @@ async function mgSave(){let ok=0,fail=null;
     const done=__new?await save('properties','append',{row:{property_id:id,...fields}},null):await save('properties','update',{match:{property_id:id},fields},null);
     if(done){delete PSTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(GSTAGE)){const done=await giSave(id,f);if(done){delete GSTAGE[id];ok++}else{fail=id;break}}
+  if(!fail)for(const[id,f]of Object.entries(LSTAGE)){const{__new,__from,...fields}=f;let done;
+    if(__new)done=await save('lists','append',{row:{row_id:nextListId(),active:'Yes',...fields}},null);
+    else{done=await save('lists','update',{match:{row_id:id},fields},null);
+      if(done&&__from&&fields.value&&__from!==fields.value){const col=BK_COL[f.list];if(col&&listUse(f.list,__from))done=await save('bookings','update',{match:{[col]:__from},fields:{[col]:fields.value}},null)}}
+    if(done){delete LSTAGE[id];ok++}else{fail=id;break}}
   render();toast(fail?`Saved ${ok}; stopped at ${fail} - nothing else changed. Try again.`:`${ok} change${ok>1?'s':''} saved${live()?' ✓':' · demo only'}`)}
-function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];render()})}
+function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];for(const k of Object.keys(LSTAGE))delete LSTAGE[k];render()})}
 async function purgeTrash(){if(MG.purged||!live())return;MG.purged=true;
   const old=(S.data.bookings||[]).filter(b=>b.deleted_at&&diff(String(b.deleted_at).slice(0,10),TODAY)>30);
   for(const b of old)await save('bookings','delete',{match:{booking_id:String(b.booking_id)}},null);
@@ -2802,6 +2831,44 @@ function manageGuest(v,tabs){giLoad();
      h('div',{class:'mp-groups'},cities.map(c=>{const ps=props.filter(p=>p.city===c);return h('section',{class:'mp-city'},h('div',{class:'mp-city-h'},h('h3',null,h('i',{style:{background:cityColor(c)}}),c),
        (()=>{const k=ps.filter(p=>done(p)===GI_KEY.length).length;return k===ps.length?h('span',{class:'gi-all'},'✓ All ready'):h('span',null,`${k} of ${ps.length} ready`)})()),h('div',{class:'gi-list'},ps.map(row)))}))]));
   pendingBar(v)}
+/* Manage › Lists: the booking form's drop-downs (platforms with their usual fee %, payment terms, accounts) */
+const LIST_L={platform:'Platforms',payment_term:'Payment terms',account:'Accounts'};
+const BK_COL={platform:'channel',payment_term:'payment_terms',account:'account'};  // booking field per list
+const listUse=(list,v)=>(S.data.bookings||[]).filter(b=>!b.deleted_at&&String(b[BK_COL[list]]||'')===String(v)).length;
+function nextListId(){const ids=[...(S.data.lists||[]).map(r=>r.row_id).filter(Boolean)];let n=ids.reduce((m,x)=>Math.max(m,+(String(x).match(/\d+/)||[0])[0]),0)+1;
+  const taken=new Set(ids);while(taken.has('L'+String(n).padStart(2,'0')))n++;return'L'+String(n).padStart(2,'0')}
+function listItems(list){const rows=S.data.lists||[];let items=isItemLists(rows)?rows.filter(r=>r.list===list).map(r=>({...r,...(LSTAGE[r.row_id]||{})})):[];
+  Object.entries(LSTAGE).filter(([,f])=>f.__new&&f.list===list).forEach(([id,f])=>items.push({row_id:id,...f}));return items}
+function lstage(id,f){const raw=(S.data.lists||[]).find(r=>r.row_id===id)||{},next={...(LSTAGE[id]||{}),...f};
+  if(!next.__new)for(const k of Object.keys(next))if(!k.startsWith('__')&&k!=='list'&&String(next[k]??'')===String(raw[k]??''))delete next[k];
+  const real=Object.keys(next).filter(k=>!['list','__from'].includes(k));if(real.length)LSTAGE[id]={list:raw.list||f.list,...next};else delete LSTAGE[id];render()}
+function listEdit(list,it){const isNew=!it,name=h('input',{value:it?it.value:'',autocomplete:'off',placeholder:list==='account'?'e.g. Katyayani ac':list==='platform'?'e.g. Agoda':'e.g. Card'}),
+    fee=list==='platform'?h('input',{type:'number',inputmode:'decimal',min:0,max:60,step:'0.1',value:it&&it.fee_pct!=null?it.fee_pct:'',placeholder:'e.g. 15'}):null,err=h('div',{class:'err',hidden:true});
+  const n=it?listUse(list,it.__from||it.value):0;
+  modal(isNew?`Add to ${LIST_L[list]}`:`Edit ${it.value}`,h('div',{class:'form'},fld('Name',name,1),fee?fld('Usual fee % (what the platform keeps)',fee,1):null,
+      !isNew&&n?h('p',{class:'full pe-hint'},`${n} booking${n>1?'s':''} use this. Renaming updates them too, so reports stay together.`):null,err),
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{const v=name.value.trim().replace(/\s+/g,' ');if(!v){err.hidden=false;err.textContent='Add a name.';return}
+      const dup=listItems(list).find(x=>x!==it&&String(x.value).toLowerCase()===v.toLowerCase()&&x.row_id!==(it&&it.row_id));if(dup){err.hidden=false;err.textContent=`"${dup.value}" is already in ${LIST_L[list]}.`;return}
+      const f={value:v};if(fee)f.fee_pct=fee.value===''?null:+fee.value;closeLayer();
+      if(isNew){const id='new:'+Date.now();LSTAGE[id]={list,__new:true,...f};render()}else lstage(it.row_id,{...f,list,__from:it.__from||(S.data.lists||[]).find(r=>r.row_id===it.row_id)?.value||it.value})}},isNew?'Add':'Done')])}
+function manageLists(v,tabs){const rows=S.data.lists||[],legacy=rows.length&&!isItemLists(rows);
+  const col=list=>{const items=listItems(list),act=x=>!/^(no|false|retired)$/i.test(String(x.active||'Yes'));
+    const row=it=>{const n=listUse(list,it.__from||it.value),on=act(it),ed=LSTAGE[it.row_id];
+      return h('div',{class:'ls-row'+(on?'':' off')+(ed?' mg-edit':'')},
+        list==='platform'?h('i',{class:'ls-dot',style:{background:chColor(it.value)}}):null,
+        h('div',{class:'ls-tx'},h('b',null,it.value),h('span',null,[n?`${n.toLocaleString('en-IN')} booking${n>1?'s':''}`:'not used yet',list==='platform'&&it.fee_pct!=null&&it.fee_pct!==''?`usual fee ${it.fee_pct}%`:null,on?null:'retired'].filter(Boolean).join(' · '))),
+        ed?h('span',{class:'pill p-warn'},it.__new?'New':'Not saved'):null,
+        h('div',{class:'ls-acts'},h('button',{class:'btn icon sm','aria-label':'Edit '+it.value,onclick:()=>listEdit(list,it)},icon('edit')),
+          it.__new?h('button',{class:'btn icon sm','aria-label':'Remove','data-tip':'Remove',onclick:()=>{delete LSTAGE[it.row_id];render()}},icon('x')):
+          h('button',{class:'btn sm',onclick:()=>lstage(it.row_id,{list,active:on?'No':'Yes'}),'data-tip':on?'Hide from the booking form (old bookings keep it)':'Show in the booking form again'},on?'Retire':'Restore')))};
+    const items_=[...items].sort((a,b)=>act(b)-act(a));
+    return h('section',{class:'ls-col card'},h('div',{class:'ls-h'},h('h3',null,LIST_L[list]),h('span',null,`${items.filter(act).length} in the form`)),
+      h('div',{class:'ls-list'},items_.length?items_.map(row):h('div',{class:'empty'},'Nothing yet.')),
+      h('button',{class:'btn sm ls-add',onclick:()=>listEdit(list,null)},icon('plus'),'Add'))};
+  v.append(card('s12','Booking form lists',{hint:'the drop-downs in the booking form · renames carry past bookings along',acts:[tabs]},
+    legacy?h('div',{class:'gap-banner'},h('div',null,h('b',null,'Lists are still in the old sheet layout'),h('span',null,'They show in the form as before. Ask to upgrade the Lists tab to edit them here.'))):
+    h('div',{class:'ls-grid'},['platform','payment_term','account'].map(col))));
+  pendingBar(v)}
 function manageProps(v,tabs){
   MG.pq=MG.pq||'';MG.pstatus=MG.pstatus||'All';
   const q=MG.pq.toLowerCase(),list=[...(S.data.props||[]).map(pstg),...Object.entries(PSTAGE).filter(([,f])=>f.__new).map(([,f])=>f)]
@@ -2832,10 +2899,12 @@ function manage(v){
   purgeTrash();
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['lists','Lists',null,'list'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();render()}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
+  setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
   if(MG.sec==='guest')return manageGuest(v,tabs);
+  if(MG.sec==='lists')return manageLists(v,tabs);
   if(MG.sec==='trash'){
     const list=sortBy(trash,['deleted_at',-1]);
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);
