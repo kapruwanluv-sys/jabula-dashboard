@@ -561,7 +561,7 @@ button.sstat:hover{background:var(--surface-2)}
 .pf-save .seg{background:color-mix(in srgb,var(--ink) 6%,transparent)}.pf-save .seg button[aria-pressed="true"]{background:var(--surface,#fff);color:var(--accent)}
 .pf-save p{margin:0;font-size:13.5px}.pf-save p b{font-size:17px;color:var(--ok)}.pf-save small{color:var(--muted);font-size:11.5px}
 /* Manage: premium tabs, rows, property cards, photo grid */
-.mg-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,880px)}
+.mg-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;gap:4px;padding:4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--hair);width:min(100%,1000px)}
 .mg-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;padding:9px 8px;border-radius:12px;font-family:inherit;font-weight:600;font-size:13px;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .mg-tabs button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .mg-tabs button b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted)}
@@ -753,6 +753,45 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
   .pr-cal.has-sel{padding-bottom:170px}  /* room to scroll every day above the panel */
   .pr-panel .pr-ph span{font-size:11.5px}.pr-set input{width:110px}
   .pr-exg{grid-template-columns:1fr 1fr}.pr-add{grid-template-columns:minmax(0,1fr) auto}.pr-add .ls-acts{grid-column:1/-1;justify-content:flex-end}}
+/* Manage › Expenses */
+.ex-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ex-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ex-filters .mg-pick{max-width:240px!important}
+.ex-top .btn svg,.ex-empty .btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4}
+.ex-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ex-k{display:grid;gap:3px;padding:14px 16px;border-radius:18px;border:1px solid var(--hair);background:var(--surface)}
+.ex-k span{font-size:12px;color:var(--muted);font-weight:600}.ex-k b{font-size:22px;letter-spacing:-.02em}.ex-k small{font-size:11.5px;color:var(--muted)}
+.ex-k.ok b{color:var(--ok)}.ex-k.bad b{color:var(--bad)}
+.ex-break{display:grid;gap:10px;padding:14px 16px;border-radius:18px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.ex-bar{display:flex;gap:3px;height:12px}.ex-bar i{display:block;flex-basis:0;min-width:6px;border-radius:99px}
+.ex-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px}.ex-leg span{display:inline-flex;align-items:center;gap:6px}.ex-leg i{width:9px;height:9px;border-radius:50%}.ex-leg b{color:var(--muted);font-weight:600}
+.ex-days{display:grid;gap:14px}.ex-day{display:grid;gap:4px}
+.ex-list{display:grid;border:1px solid var(--hair);border-radius:18px;overflow:hidden;background:var(--surface)}
+.ex-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:11px 14px;cursor:pointer;border-top:1px solid var(--hair)}
+.ex-row:first-child{border-top:0}.ex-row:hover{background:color-mix(in srgb,var(--ink) 3%,transparent)}.ex-row.mg-edit{background:var(--warn-soft)}
+.ex-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.ex-tx{display:grid;gap:1px;min-width:0}.ex-tx b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ex-tx span{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex-rep svg{width:15px;height:15px;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ex-amt2{font-size:15px}
+.ex-empty{display:grid;justify-items:center;text-align:center;gap:6px;padding:34px 18px;border:1.5px dashed var(--hair-2);border-radius:20px}
+.ex-eic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}.ex-eic svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2}
+.ex-empty b{font-size:15px}.ex-empty>span{font-size:12.5px;color:var(--muted);max-width:420px}
+.ex-owner{border:1px solid var(--hair);border-radius:18px;background:var(--surface)}
+.ex-owner>summary{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:13px 16px;cursor:pointer;list-style:none}.ex-owner>summary::-webkit-details-marker{display:none}
+.ex-owner>summary span{font-size:12px;color:var(--muted)}
+.ex-olist{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:6px 18px;padding:0 16px 14px}
+.ex-orow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--hair);font-size:13px}
+.ex-form .ex-amtrow{display:flex;align-items:baseline;gap:8px;padding:6px 4px 10px;border-bottom:1px solid var(--hair)}
+.ex-amtrow span{font-size:28px;font-weight:700;color:var(--muted)}
+.ex-form input.ex-amt{font-size:34px!important;font-weight:700;border:0!important;background:transparent!important;padding:0!important;min-height:0!important;box-shadow:none!important;width:100%}
+.ex-cats{display:flex;flex-wrap:wrap;gap:6px}
+.ex-cat{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--hair-2);background:transparent;border-radius:99px;padding:7px 12px;font-family:inherit;font-weight:600;font-size:12.5px;color:var(--ink);cursor:pointer}
+.ex-cat i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.ex-cat.on{background:color-mix(in srgb,var(--c) 14%,transparent);border-color:var(--c);color:var(--ink)}
+.ex-chips{display:flex;flex-wrap:wrap;gap:6px}.ex-chips button{border:1px solid var(--hair-2);background:transparent;border-radius:99px;padding:7px 12px;font-family:inherit;font-weight:600;font-size:12.5px;color:var(--muted);cursor:pointer}
+.ex-chips button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+@media (max-width:900px){.ex-kpis{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.ex-k b{font-size:18px}.ex-row{grid-template-columns:34px minmax(0,1fr) auto;padding:10px 12px}.ex-row .ex-rep,.ex-row .pill{display:none}.ex-ic{width:34px;height:34px}
+  .ex-top .btn.primary{width:100%;justify-content:center}.ex-filters{width:100%}.ex-filters .mg-pick{flex:1;max-width:none!important}}
 /* missing details + uploads */
 .gap-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
 .gap-banner>div{display:grid;gap:2px}.gap-banner b{font-size:14px}.gap-banner span{font-size:12px;color:var(--muted)}
@@ -1210,6 +1249,17 @@ const saveF=()=>store.set('jg_filters',S.f);
 
 /* ============ data model ============ */
 let D=null;
+/* An expense row can repeat monthly (repeat: "monthly", until repeat_until or this month) and can be for all
+   stays (property_id "*", split evenly over the active stays). Reports see one dated piece per stay and month. */
+const EXP_CATS=[['Cleaning','#0ea5e9'],['Laundry','#8b5cf6'],['Electricity','#f59e0b'],['Water','#3b82f6'],['Internet','#06b6d4'],['Supplies','#10b981'],
+  ['Repairs','#ef4444'],['Staff salary','#ec4899'],['Commission','#64748b'],['Other','#94a3b8']];
+const expColor=c=>(EXP_CATS.find(x=>x[0]===c)||[0,'#94a3b8'])[1];
+function expandExpenses(rows,props){const live=(props||[]).filter(p=>!/^(stopped|inactive)$/i.test(String(p.status||'').trim())).map(p=>p.property_id),out=[],nowK=TODAY.slice(0,7);
+  (rows||[]).filter(e=>!e.deleted_at&&e.date&&+e.amount).forEach(e=>{const pids=e.property_id==='*'?live:[e.property_id],d0=String(e.date).slice(0,10);if(!pids.length)return;
+    let dates=[d0];if(String(e.repeat||'').toLowerCase()==='monthly'){dates=[];const end=String(e.repeat_until||'').slice(0,7)||nowK,day=+d0.slice(8);let k=d0.slice(0,7);
+      while(k<=end&&k<=nowK&&dates.length<120){const last=+mEnd(k).slice(8);dates.push(k+'-'+String(Math.min(day,last)).padStart(2,'0'));k=nextM(k)}}
+    dates.forEach(dt=>pids.forEach(pid=>out.push({...e,property_id:pid,date:dt,amount:Math.round(+e.amount/pids.length*100)/100,__src:e.expense_id||null,__split:pids.length>1,__rep:dates.length>1||String(e.repeat||'')==='monthly'})))});
+  return out}
 function derive(raw){
   CHN=[...new Set([...CHN_BASE,...listVals(raw.lists,'platform'),...raw.bookings.map(b=>b.channel)].filter(Boolean).map(String))];
   const fee={...(raw.fee_pct||{})},P={};raw.props.forEach(p=>P[p.property_id]=p);
@@ -1232,7 +1282,7 @@ function derive(raw){
     const pay=!ok&&!net?'n/a':rec===0&&net>0?(b.check_in<TODAY?'Pending':'Not due'):rec<net-1?'Short':'Received';
     return{...b,nights:n,room,gross,fee:f,net,gst,bucket,owner:Math.round(net*(p.owner_share||0)),ok,money:gross>0||net>0,status,received:rec,pay,city:p.city,pname:p.property,area:p.area};
   });
-  const E=[...raw.expenses,...extra.expenses].filter(e=>P[e.property_id]).map(e=>({...e,city:P[e.property_id].city}));
+  const E=expandExpenses([...raw.expenses,...extra.expenses],raw.props).filter(e=>P[e.property_id]).map(e=>({...e,city:P[e.property_id].city}));
   const M=[...raw.maint,...extra.maint].filter(m=>P[m.property_id]).map(m=>({...m,status:extra.maintStatus[m.ticket_id]||m.status,city:P[m.property_id].city,pname:P[m.property_id].property}));
   const done=new Set(extra.turnDone);const T={};raw.turnovers.forEach(t=>T[t.booking_id]={...t,status:done.has(t.booking_id)?'Done':t.status});extra.turnDone.forEach(id=>{if(!T[id])T[id]={booking_id:id,status:'Done'}});
   const months=[...new Set(B.flatMap(b=>[b.check_in.slice(0,7),add(b.check_out,-1).slice(0,7)]))].sort();
@@ -1457,7 +1507,7 @@ function exportChart(holder,name){
     cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - ${name} - ${TODAY}.png`,b),'image/png')};
   img.onerror=()=>toast('Could not render this chart to an image.');img.src=src;
 }
-const ico={tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
+const ico={wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
 const driveLogo=()=>{const s=sv('svg',{viewBox:'0 0 87.3 78',width:20,height:18,'aria-hidden':'true'});
   [['M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z','#0066da'],['M43.65 25L29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z','#00ac47'],
    ['M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 11.5z','#ea4335'],['M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z','#00832d'],
@@ -2157,7 +2207,7 @@ function openForm(kind,pid,edit,opt){
         closeLayer();if(edit&&opt&&opt.stage){stage(edit.booking_id,{...row,booking_status:bs.value});return}if(edit){save('bookings','update',{match:{booking_id:String(edit.booking_id)},fields:{...row,booking_status:bs.value}},edit.booking_id+' updated')}else{const id=nextId(S.data.bookings,'booking_id','BK');save('bookings','append',{row:{booking_id:id,submitted_at:new Date().toISOString().slice(0,16),...row,booking_status:'Confirmed',rating:null}},id+' saved')}}},edit?'Save changes':'Save booking')]);
   } else if(kind==='expense'){
     const cat=h('select',{id:'fCat'},['Cleaning','Laundry','Electricity','Internet','Supplies','Repairs','Staff salary','Other'].map(c=>h('option',null,c))),amt=h('input',{id:'fAmt',type:'number',inputmode:'numeric',min:1,placeholder:'e.g. 1500'}),dt=h('input',{id:'fDt',type:'date',value:TODAY}),ven=h('input',{id:'fVen',placeholder:'e.g. Doon Electricals',autocomplete:'off'}),via=h('select',{id:'fVia'},['UPI','Cash','Bank transfer','Card','Auto-debit'].map(c=>h('option',null,c)));
-    modal('Add expense',h('div',{class:'form'},fld('Property',sel,1),fld('Category',cat),fld('Amount (₹)',amt),fld('Date',dt),fld('Paid via',via),fld('Vendor',ven,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){fail('Enter an amount above zero.');return}closeLayer();save('expenses','append',{row:{date:dt.value,property_id:sel.value,category:cat.value,amount:+amt.value,vendor:ven.value,paid_via:via.value,notes:null}},'Expense added')}},'Save expense')]);
+    modal('Add expense',h('div',{class:'form'},fld('Property',sel,1),fld('Category',cat),fld('Amount (₹)',amt),fld('Date',dt),fld('Paid via',via),fld('Vendor',ven,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){fail('Enter an amount above zero.');return}closeLayer();save('expenses','append',{row:{expense_id:'EX'+Date.now().toString(36),date:dt.value,property_id:sel.value,category:cat.value,amount:+amt.value,vendor:ven.value,paid_via:via.value,notes:null}},'Expense added')}},'Save expense')]);
   } else {
     const is=h('input',{id:'fIs',placeholder:'e.g. Geyser not heating…',autocomplete:'off'}),pr=h('select',{id:'fPr'},h('option',{value:'High'},'Urgent'),h('option',{value:'Medium',selected:true},'Soon'),h('option',{value:'Low'},'Routine')),as=h('select',{id:'fAs'},['Caretaker','Electrician','Plumber','Carpenter','AC service','ISP'].map(c=>h('option',null,c)));
     modal('Log maintenance issue',h('div',{class:'form'},fld('Property',sel,1),fld('Issue',is,1),fld('Priority',pr),fld('Assign to',as),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!is.value.trim()){fail('Describe the issue.');return}const id=nextId(S.data.maint,'ticket_id','MT');closeLayer();save('maintenance','append',{row:{ticket_id:id,property_id:sel.value,reported_on:TODAY,issue:is.value.trim(),priority:pr.value,assigned_to:as.value,status:'Open',cost:null,closed_on:null,source:'Dashboard'}},id+' logged')}},'Log issue')]);
@@ -2598,8 +2648,9 @@ function stage(id,fields){id=String(id);const raw=rawB(id)||{},next={...(STAGE[i
 const GSTAGE={};  // property_id -> private guest-info fields waiting to be saved (memory only)
 const LSTAGE={};
 const PRSTAGE={};  // pricing.<name> -> new value (Settings rows)
-const OVOPS=[];   // date rules: {op:'add',row,label} | {op:'del',ov_id,label}  // list row_id (or new:<n>) -> {list, value, active, fee_pct, __new, __from}
-const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length+Object.keys(LSTAGE).length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0);
+const OVOPS=[];
+const ESTAGE={};  // expense_id (or new:<n>) -> fields; deleted_at = Trash   // date rules: {op:'add',row,label} | {op:'del',ov_id,label}  // list row_id (or new:<n>) -> {list, value, active, fee_pct, __new, __from}
+const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length+Object.keys(LSTAGE).length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0)+Object.keys(ESTAGE).length;
 window.jgStaged=stagedCount;window.jgToast=(...a)=>toast(...a);  // for the self-update check (a separate script)
 function clashFor(b){return D.B.find(x=>x.ok&&x.booking_id!==String(b.booking_id)&&samePlace(x.property_id,b.property_id)&&x.check_in<b.check_out&&x.check_out>b.check_in)}
 
@@ -2675,7 +2726,7 @@ function mgUntrash(id){const b=stg(rawB(id));const c=b.booking_status!=='Cancell
   if(c){toast(`Can’t restore ${id}: it clashes with ${c.booking_id}. Cancel one of them first.`);return}
   stage(id,{deleted_at:null,deleted_by:null,notes:addNote(b.notes,'Restored from Trash')})}
 
-function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE),grows=Object.entries(GSTAGE),lrows=Object.entries(LSTAGE),total=rows.length+prows.length+grows.length+lrows.length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0);
+function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE),grows=Object.entries(GSTAGE),lrows=Object.entries(LSTAGE),total=rows.length+prows.length+grows.length+lrows.length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0)+Object.keys(ESTAGE).length;
   const body=rows.map(([id,f])=>{const raw=rawB(id)||{};return h('div',{class:'mg-rev'},h('b',null,`${id} · ${raw.guest||''}`),h('span',{class:'mg-revp'},short((D.P[raw.property_id]||{}).property||'')+' · '+fmtD(raw.check_in)+' → '+fmtD(raw.check_out)),
     Object.entries(f).filter(([k])=>k!=='deleted_by').map(([k,v])=>k==='notes'?h('div',{class:'mg-chg'},h('span',null,'Note added'),h('em',null,String(v||'').slice(String(raw.notes||'').length).trim()||'(notes edited)')):
       h('div',{class:'mg-chg'},h('span',null,MG_L[k]||k),h('s',null,mgVal(k,raw[k])),h('i',null,'→'),h('b',null,mgVal(k,v)))))});
@@ -2691,7 +2742,10 @@ function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE
      'fee_pct' in f?h('div',{class:'mg-chg'},h('span',null,'Usual fee'),h('b',null,f.fee_pct==null||f.fee_pct===''?'—':f.fee_pct+'%')):null]));
   const prbody=Object.entries(PRSTAGE).map(([k,v])=>h('div',{class:'mg-rev'},h('b',null,'Pricing · '+(PR_L[k]||k)),h('div',{class:'mg-chg'},h('span',null,'Now'),h('s',null,prShow(k,prRaw(k))),h('i',null,'→'),h('b',null,prShow(k,v)))));
   const ovbody=OVOPS.length?h('div',{class:'mg-rev'},h('b',null,`Prices on dates · ${OVOPS.length} change${OVOPS.length>1?'s':''}`),[...new Set(OVOPS.map(o=>o.label))].map(l=>h('div',{class:'mg-chg'},h('em',null,l)))):null;
-  modal(`Review ${total} change${total>1?'s':''}`,h('div',{class:'mg-revlist'},body,pbody,gbody,lbody,prbody,ovbody),
+  const ebody=Object.entries(ESTAGE).map(([id,f])=>{const raw=(S.data.expenses||[]).find(x=>x.expense_id===id)||{},e={...raw,...f};
+    return h('div',{class:'mg-rev'},h('b',null,`Expense · ${e.category||''} · ${inr(+e.amount||0)}`),h('span',{class:'mg-revp'},`${e.property_id==='*'?'All stays':short((D.P[e.property_id]||{}).property||e.property_id)} · ${fmtD(e.date)}${String(e.repeat||'')==='monthly'?' · every month':''}`),
+      h('div',{class:'mg-chg'},h('em',null,f.__new?'New expense':f.deleted_at?'Moved to Trash':'Changed: '+Object.keys(f).filter(k=>!k.startsWith('__')).map(k=>EXP_L[k]||k).join(', '))))});
+  modal(`Review ${total} change${total>1?'s':''}`,h('div',{class:'mg-revlist'},body,pbody,gbody,lbody,prbody,ovbody,ebody),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:async e=>{e.target.disabled=true;e.target.textContent='Saving…';closeLayer();await mgSave()}},`Save ${total} change${total>1?'s':''}`)])}
 async function mgSave(){let ok=0,fail=null;
   for(const[id,f]of Object.entries(STAGE)){const done=await save('bookings','update',{match:{booking_id:id},fields:f},null);if(done){delete STAGE[id];ok++}else{fail=id;break}}
@@ -2701,13 +2755,16 @@ async function mgSave(){let ok=0,fail=null;
   if(!fail)for(const[id,f]of Object.entries(GSTAGE)){const done=await giSave(id,f);if(done){delete GSTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[k,v]of Object.entries(PRSTAGE)){const done=await prSave(k,v);if(done){delete PRSTAGE[k];ok++}else{fail=k;break}}
   if(!fail&&OVOPS.length){const done=await ovSave();if(done)ok++;else fail='date prices'}
+  if(!fail)for(const[id,f]of Object.entries(ESTAGE)){const{__new,...fields}=f;
+    const done=__new?await save('expenses','append',{row:fields},null):await save('expenses','update',{match:{expense_id:id},fields},null);
+    if(done){delete ESTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(LSTAGE)){const{__new,__from,...fields}=f;let done;
     if(__new)done=await save('lists','append',{row:{row_id:nextListId(),active:'Yes',...fields}},null);
     else{done=await save('lists','update',{match:{row_id:id},fields},null);
       if(done&&__from&&fields.value&&__from!==fields.value){const col=BK_COL[f.list];if(col&&listUse(f.list,__from))done=await save('bookings','update',{match:{[col]:__from},fields:{[col]:fields.value}},null)}}
     if(done){delete LSTAGE[id];ok++}else{fail=id;break}}
   render();toast(fail?`Saved ${ok}; stopped at ${fail} - nothing else changed. Try again.`:`${ok} change${ok>1?'s':''} saved${live()?' ✓':' · demo only'}`)}
-function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];for(const k of Object.keys(LSTAGE))delete LSTAGE[k];for(const k of Object.keys(PRSTAGE))delete PRSTAGE[k];OVOPS.length=0;render()})}
+function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];for(const k of Object.keys(LSTAGE))delete LSTAGE[k];for(const k of Object.keys(PRSTAGE))delete PRSTAGE[k];OVOPS.length=0;for(const k of Object.keys(ESTAGE))delete ESTAGE[k];render()})}
 async function purgeTrash(){if(MG.purged||!live())return;MG.purged=true;
   const old=(S.data.bookings||[]).filter(b=>b.deleted_at&&diff(String(b.deleted_at).slice(0,10),TODAY)>30);
   for(const b of old)await save('bookings','delete',{match:{booking_id:String(b.booking_id)}},null);
@@ -3098,6 +3155,74 @@ function managePricing(v,tabs){prLoad();
     PRerr?h('div',{class:'gap-banner'},h('div',null,h('b',null,'Couldn’t load prices'),h('span',null,PRerr)),h('button',{class:'btn sm',onclick:()=>prLoad(true)},'Try again')):null,
     !live()?h('p',{class:'gi-priv'},icon('tag'),'Demo: connect live data to save prices to the sheet.'):null,sub,body));
   pendingBar(v)}
+/* Manage › Expenses: what each stay costs, so profit is real across the dashboard */
+const EXP_L={date:'Date',property_id:'Stay',category:'Category',amount:'Amount',vendor:'Vendor',paid_via:'Paid via',notes:'Note',repeat:'Repeats',repeat_until:'Until',deleted_at:'Trash'};
+const EXP_VIA=['UPI','Cash','Bank transfer','Card','Auto-debit'];
+const expRows=()=>{const rows=(S.data.expenses||[]).map(e=>e.expense_id&&ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e);
+  Object.entries(ESTAGE).filter(([,f])=>f.__new).forEach(([id,f])=>rows.push({...f,expense_id:f.expense_id||id}));return rows.filter(e=>!e.deleted_at)};
+function expStage(id,f){const raw=(S.data.expenses||[]).find(x=>x.expense_id===id),next={...(ESTAGE[id]||{}),...f};
+  if(raw&&!next.__new)for(const k of Object.keys(next))if(!k.startsWith('__')&&String(next[k]??'')===String(raw[k]??''))delete next[k];
+  if(Object.keys(next).filter(k=>!k.startsWith('__')).length||next.__new)ESTAGE[id]=next;else delete ESTAGE[id];render()}
+function expEditor(e0){const isNew=!e0,e=e0||{date:TODAY,category:'Cleaning',paid_via:'UPI',property_id:S.expPid||'*'};
+  let cat=e.category||'Cleaning',via=e.paid_via||'UPI',rep=String(e.repeat||'')==='monthly';
+  const amt=h('input',{type:'number',inputmode:'decimal',min:0,step:'1',value:e.amount??'',placeholder:'0',class:'ex-amt'}),dt=h('input',{type:'date',value:String(e.date||TODAY).slice(0,10)}),
+    ven=h('input',{value:e.vendor||'',placeholder:'e.g. Doon Electricals',autocomplete:'off'}),nt=h('input',{value:e.notes||'',placeholder:'Optional note',autocomplete:'off'}),
+    until=h('input',{type:'month',value:String(e.repeat_until||'').slice(0,7)}),err=h('div',{class:'err',hidden:true});
+  const props=D.props.filter(p=>!isStopped(p)||p.property_id===e.property_id).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
+  const stay=h('select',{class:'mg-pick'},h('option',{value:'*',selected:e.property_id==='*'||null},`All stays (split evenly over ${D.props.filter(p=>!isStopped(p)).length})`),
+    CITIES.filter(c=>props.some(p=>p.city===c)).map(c=>h('optgroup',{label:c},props.filter(p=>p.city===c).map(p=>h('option',{value:p.property_id,selected:p.property_id===e.property_id||null},short(p.property))))));
+  const catBox=h('div',{class:'ex-cats'}),viaBox=h('div',{class:'ex-chips'}),repBox=h('div',{class:'seg sm'}),untilF=fld('Until (optional, leave empty = keeps going)',until,1);
+  const draw=()=>{catBox.replaceChildren(...EXP_CATS.map(([c,col])=>h('button',{type:'button',class:'ex-cat'+(cat===c?' on':''),style:{'--c':col},onclick:()=>{cat=c;draw()}},h('i',null),c)));
+    viaBox.replaceChildren(...EXP_VIA.map(x=>h('button',{type:'button','aria-pressed':String(via===x),onclick:()=>{via=x;draw()}},x)));
+    repBox.replaceChildren(...[[false,'One-time'],[true,'Every month']].map(([x,l])=>h('button',{type:'button','aria-pressed':rep===x,onclick:()=>{rep=x;draw()}},l)));untilF.hidden=!rep};draw();
+  modal(isNew?'Add expense':'Edit expense',h('div',{class:'form ex-form'},
+      h('div',{class:'full ex-amtrow'},h('span',null,'₹'),amt),h('div',{class:'full'},h('span',{class:'pr-lab'},'Category'),catBox),
+      fld('Stay',stay,1),fld('Date',dt),h('label',null,'Repeats',repBox),untilF,
+      h('div',{class:'full'},h('span',{class:'pr-lab'},'Paid via'),viaBox),fld('Vendor',ven,1),fld('Note',nt,1),err),
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),!isNew?h('button',{class:'btn danger-t',onclick:()=>{closeLayer();expStage(e.expense_id,{deleted_at:new Date().toISOString().slice(0,16)})}},'Move to Trash'):null,
+     h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){err.hidden=false;err.textContent='Add the amount.';amt.focus();return}
+       if(rep&&until.value&&until.value<dt.value.slice(0,7)){err.hidden=false;err.textContent='"Until" is before the first month.';return}
+       const f={date:dt.value,property_id:stay.value,category:cat,amount:+amt.value,paid_via:via,vendor:ven.value.trim()||null,notes:nt.value.trim()||null,repeat:rep?'monthly':null,repeat_until:rep&&until.value?until.value:null};
+       closeLayer();if(isNew){const id='EX'+Date.now().toString(36);ESTAGE[id]={__new:true,expense_id:id,...f};render()}else expStage(e.expense_id,f)}},isNew?'Add expense':'Done')]);
+  setTimeout(()=>amt.focus(),50)}
+function manageExpenses(v,tabs){
+  const k=S.expM||TODAY.slice(0,7),pid=S.expPid||'',items=expandExpenses(expRows(),D.props).filter(e=>!pid||e.property_id===pid);
+  const inM=items.filter(e=>e.date.slice(0,7)===k),prevItems=items.filter(e=>e.date.slice(0,7)===prevM(k)),fyStart=(+k.slice(5)>=4?k.slice(0,4):String(+k.slice(0,4)-1))+'-04';
+  const tot=sum(inM,e=>+e.amount),prevT=sum(prevItems,e=>+e.amount),ytd=sum(items.filter(e=>e.date.slice(0,7)>=fyStart&&e.date.slice(0,7)<=k),e=>+e.amount);
+  const byCat={};inM.forEach(e=>byCat[e.category||'Other']=(byCat[e.category||'Other']||0)+(+e.amount));const cats=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const st=stats(mStart(k),mEnd(k),pid||undefined),net=st.net,owner=st.owner;
+  const kpi=(l,val,sub,cls)=>h('div',{class:'ex-k'+(cls?' '+cls:'')},h('span',null,l),h('b',{class:'num'},val),sub?h('small',null,sub):null);
+  const nav=h('div',{class:'pr-nav'},h('button',{class:'btn icon sm','aria-label':'Previous month',onclick:()=>{S.expM=prevM(k);render()}},'‹'),h('b',null,mLong(k)),
+    h('button',{class:'btn icon sm','aria-label':'Next month',disabled:k>=TODAY.slice(0,7)||null,onclick:()=>{S.expM=nextM(k);render()}},'›'));
+  const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>short(a.property).localeCompare(short(b.property)));
+  const pick=h('select',{class:'mg-pick','aria-label':'Stay',onchange:e=>{S.expPid=e.target.value;render()}},h('option',{value:''},'All stays'),props.map(p=>h('option',{value:p.property_id,selected:p.property_id===pid||null},short(p.property))));
+  /* list: one row per expense (a split "all stays" expense shows once with its full amount) */
+  const seen=new Set(),list=[];inM.sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{const key=(e.__src||e.expense_id||Math.random())+'|'+e.date;if(seen.has(key)&&!pid)return;seen.add(key);
+    list.push(!pid&&e.__split?{...e,amount:(expRows().find(x=>x.expense_id===e.__src)||e).amount,property_id:'*'}:e)});
+  const lim=S.expLim||40,shown=list.slice(0,lim),byDay={};shown.forEach(e=>(byDay[e.date]=byDay[e.date]||[]).push(e));
+  const row=e=>{const src=expRows().find(x=>x.expense_id===(e.__src||e.expense_id))||e,ed=ESTAGE[src.expense_id];
+    const open=()=>src.expense_id?expEditor(src):toast('This expense was added before expenses had ids - change it in the sheet.');
+    return h('div',{class:'ex-row'+(ed?' mg-edit':''),role:'button',tabindex:0,onclick:open,onkeydown:ev=>{if(ev.key==='Enter')open()}},
+      h('span',{class:'ex-ic',style:{'--c':expColor(e.category)}},(e.category||'?')[0]),
+      h('div',{class:'ex-tx'},h('b',null,e.vendor||e.category||'Expense'),h('span',null,[e.vendor?e.category:null,e.property_id==='*'?'All stays':short((D.P[e.property_id]||{}).property||e.property_id),e.paid_via].filter(Boolean).join(' · '))),
+      e.__rep?h('span',{class:'ex-rep','data-tip':'Repeats every month'},icon('repeat')):null,ed?h('span',{class:'pill p-warn'},ed.__new?'New':'Not saved'):null,
+      h('b',{class:'num ex-amt2'},inr(+e.amount)))};
+  const shares=D.props.filter(p=>!isStopped(p)&&(+pstg(p).owner_share>0)).length;
+  v.append(card('s12','Expenses',{hint:'what each stay costs · profit across the dashboard uses these',acts:[tabs]},
+    h('div',{class:'ex-top'},h('div',{class:'ex-filters'},pick,nav),h('button',{class:'btn primary',onclick:()=>expEditor(null)},icon('plus'),'Add expense')),
+    h('div',{class:'ex-kpis'},kpi(`Spent in ${mLabel(k)}`,inr(tot),prevT?`${tot>=prevT?'▲':'▼'} ${pct(Math.abs(tot-prevT)/prevT)} vs ${mLabel(prevM(k))}`:'nothing last month'),
+      kpi('This financial year',inr(ytd),`since 1 Apr ${fyStart.slice(0,4)}`),kpi('Biggest cost',cats[0]?cats[0][0]:'—',cats[0]?inr(cats[0][1]):'no costs yet'),
+      kpi('Profit after costs',inr(net-tot-owner),`net ${inrK(net)} − costs ${inrK(tot)}${owner?' − owner '+inrK(owner):''}`,net-tot-owner>=0?'ok':'bad')),
+    cats.length?h('div',{class:'ex-break'},h('div',{class:'ex-bar'},cats.map(([c,a])=>h('i',{style:{flexGrow:String(a/tot),background:expColor(c)},'data-tip':`${c}: ${inr(a)} (${pct(a/tot)})`}))),
+      h('div',{class:'ex-leg'},cats.map(([c,a])=>h('span',null,h('i',{style:{background:expColor(c)}}),c,h('b',{class:'num'},inrK(a)))))):null,
+    list.length?h('div',{class:'ex-days'},Object.entries(byDay).map(([d,es])=>h('div',{class:'ex-day'},h('span',{class:'pr-lab'},fmtD(d,{weekday:'short',day:'numeric',month:'short'})),h('div',{class:'ex-list'},es.map(row)))),list.length>lim?h('button',{class:'btn sm',style:{justifySelf:'start'},onclick:()=>{S.expLim=lim+40;render()}},`Show ${Math.min(40,list.length-lim)} more of ${list.length}`):null):
+      h('div',{class:'ex-empty'},h('span',{class:'ex-eic'},icon('wallet')),h('b',null,`No expenses in ${mLong(k)}`),h('span',null,'Add cleaning, electricity, internet, repairs or staff costs. Set the regular ones to repeat every month, so they fill in by themselves.'),
+        h('button',{class:'btn primary sm',onclick:()=>expEditor(null)},icon('plus'),'Add the first')),
+    h('details',{class:'ex-owner'},h('summary',null,h('b',null,'Owner shares'),h('span',null,shares?`${shares} stay${shares>1?'s':''} pay the owner a share`:'for stays you manage for someone else')),
+      h('div',{class:'ex-olist'},props.map(p=>{const cur=Math.round((+pstg(p).owner_share||0)*1000)/10;const i=h('input',{type:'number',inputmode:'decimal',min:0,max:100,step:'1',value:cur||'',placeholder:'0',
+        onchange:ev=>pstage(p.property_id,{owner_share:ev.target.value===''||+ev.target.value===0?null:+ev.target.value/100})});
+        return h('div',{class:'ex-orow'},h('span',null,short(p.property)),h('div',{class:'pr-num'},i,h('span',null,'% of net')))})))));
+  pendingBar(v)}
 function manageProps(v,tabs){
   MG.pq=MG.pq||'';MG.pstatus=MG.pstatus||'All';
   const q=MG.pq.toLowerCase(),list=[...(S.data.props||[]).map(pstg),...Object.entries(PSTAGE).filter(([,f])=>f.__new).map(([,f])=>f)]
@@ -3128,13 +3253,14 @@ function manage(v){
   purgeTrash();
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['lists','Lists',null,'list'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();render()}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
   if(MG.sec==='guest')return manageGuest(v,tabs);
   if(MG.sec==='lists')return manageLists(v,tabs);
   if(MG.sec==='pricing')return managePricing(v,tabs);
+  if(MG.sec==='expenses')return manageExpenses(v,tabs);
   if(MG.sec==='trash'){
     const list=sortBy(trash,['deleted_at',-1]);
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);
