@@ -1625,15 +1625,12 @@ const phoneTxt=p=>p?('+'+String(p).replace(/\D/g,'')):'';
 
 /* ============ booking edit / cancel / delete / payment (admin) ============ */
 function bookingActions(b){
+  /* Changes happen only in Manage (reviewed before saving): everywhere else a booking offers one way there. */
   if(!S.admin)return null;
-  const raw=(S.data.bookings||[]).find(x=>String(x.booking_id)===b.booking_id);if(!raw)return h('div',{class:'foot-note'},'Demo entry - edit it in the live sheet.');
-  return h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap'}},
-    h('button',{class:'btn sm',onclick:()=>openForm('booking',b.property_id,raw)},'Edit details'),
-    b.ok?h('button',{class:'btn sm',onclick:()=>confirmBox('Cancel '+b.booking_id+'?',`${b.guest} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)}. The dates become free for new bookings (also on WhatsApp). The guest is not messaged.`,'Cancel booking',true,()=>{closeLayer();save('bookings','update',{match:{booking_id:b.booking_id},fields:{booking_status:'Cancelled'}},b.booking_id+' cancelled')})},'Cancel booking')
-        :h('button',{class:'btn sm',onclick:()=>{closeLayer();save('bookings','update',{match:{booking_id:b.booking_id},fields:{booking_status:'Confirmed'}},b.booking_id+' restored')}},'Restore booking'),
-    h('button',{class:'btn sm',onclick:()=>openPayment(b)},'Record payment'),
-    h('button',{class:'btn sm danger-t',onclick:()=>confirmBox('Delete '+b.booking_id+' permanently?','Deleting removes the row from the sheet for good. Prefer “Cancel booking”, which keeps the history and still frees the dates. Delete only mistakes or duplicates.','Delete forever',true,()=>{closeLayer();save('bookings','delete',{match:{booking_id:b.booking_id}},b.booking_id+' deleted')})},'Delete'));
+  const raw=(S.data.bookings||[]).find(x=>String(x.booking_id)===b.booking_id);if(!raw)return h('div',{class:'foot-note'},'Demo entry - not in the sheet.');
+  return h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap'}},h('button',{class:'btn sm primary',onclick:()=>openInManage(b.booking_id)},'Edit in Manage',icon('chev')));
 }
+function openInManage(id){closeLayer();Object.assign(MG,{sec:'bookings',q:String(id),prop:'',chan:'',status:'All',month:'',lim:40});MG.sel.clear();go('manage')}
 function openPayment(b){const amt=h('input',{type:'number',inputmode:'numeric',min:1,value:Math.max(0,Math.round(b.net-b.received))}),dt=h('input',{type:'date',value:TODAY}),ref=h('input',{placeholder:'e.g. UPI ref / Airbnb payout id',autocomplete:'off'}),err=h('div',{class:'err',hidden:true});
   modal('Record payment · '+b.booking_id,h('div',{class:'form'},fld('Amount received (₹)',amt),fld('Received on',dt),fld('Reference',ref,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){err.hidden=false;err.textContent='Enter an amount above zero.';return}closeLayer();save('payouts','append',{row:{booking_id:b.booking_id,received_on:dt.value,amount_received:+amt.value,reference:ref.value.trim()||null}},'Payment recorded')}},'Save payment')])}
 
