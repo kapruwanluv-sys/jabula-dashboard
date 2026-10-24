@@ -426,6 +426,11 @@ button.sstat:hover{background:var(--surface-2)}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .kv span{font-size:11.5px;color:var(--muted);display:block}
 .kv b{font-size:13.5px;font-weight:650}
+.signin-wrap{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:var(--bg)}
+.signin-card{width:min(380px,100%);padding:34px 28px;border-radius:28px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.signin-card h2{margin:0;font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.1}
+.signin-logo{width:64px;height:64px;border-radius:18px}.signin-note{margin:0;color:var(--muted);font-size:13.5px}
+.gsi-btn{min-height:44px;display:flex;justify-content:center}
 .pd-kv{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .pd-sec{margin-top:16px}.pd-sec>span{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px}.pd-sec p{margin:0;font-size:13.5px}
 .pd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -734,7 +739,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 <script>
 /* CONFIG — for the hosted version, set DATA_URL to the live workbook / API endpoint. Empty = embedded dummy data. */
 /* CLIENT = this client's settings (client.json), injected by scripts/build.py. The foundation itself holds no client context. */
-const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Host Dashboard","short_name":"Dashboard","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#1d5bd8"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]}};
+const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Host Dashboard","short_name":"Dashboard","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#1d5bd8"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]},"google_client_id":"278276381564-fgcobg34n9c0ksfu3vkh7jm8jaadmrda.apps.googleusercontent.com"};
 const CONFIG={DATA_URL:"",API_URL:CLIENT.api_url||"",BOT_URL:CLIENT.bot_url||"",REFRESH_MINUTES:CLIENT.refresh_minutes||5,BRAND:CLIENT.brand,PHOTO_BASE:""/*__PHOTO_BASE__*/};
 const SEED={"props":[],"bookings":[],"payouts":[],"turnovers":[],"expenses":[],"maint":[],"fee_pct":{}};
 </script>
@@ -1076,7 +1081,8 @@ function renderChrome(){
   const t=d=>d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
   $('#syncText').textContent=`${S.source} · updated ${t(S.loadedAt)} · next refresh ${t(new Date(S.loadedAt.getTime()+CONFIG.REFRESH_MINUTES*6e4))}`;
   $('#menuNote').textContent=!S.admin?'View only: new bookings, expenses, issues and “mark cleaned” are hidden.':S.source==='Demo data'?(CONFIG.API_URL?'Demo data. Use “Connect live data” to read and edit the real sheet.':'Demo data.'):'Live: changes you make are saved straight into the sheet the WhatsApp bot uses.';
-  {const cb=$('#connectBtn');if(cb)cb.textContent=live()?'Disconnect this device':'Connect live data'}
+  {const cb=$('#connectBtn');if(cb)cb.textContent=SIGNIN?(live()?'Sign out':'Sign in'):live()?'Disconnect this device':'Connect live data'}
+  if(SIGNIN&&live()&&LIVE.me)$('#menuNote').textContent=`Signed in as ${LIVE.me.name||LIVE.me.email} · ${LIVE.me.role}${S.admin?'':' (view only)'}`;
   paintStatus();
 }
 /* ---- lead: hero on Overview, editorial page head elsewhere ---- */
@@ -1528,13 +1534,19 @@ function openForm(kind,pid,edit){
    The access key is entered once per device and kept only in this browser (never in the page source: the page is
    public while testing). Reads: ?format=dashboard (private fields like door codes are never sent to this key).
    Writes: append / update / delete rows; the bot sees them within minutes. */
-const LIVE={key:store.get('jg_key')||'',busy:0,prompted:false,ok:null,okAt:0,err:null};
+/* Sign in with Google (client.json google_client_id): each person signs in with their own Google account; the
+   Register checks it and returns a device session (kept until sign-out). Reads go by POST so it never sits in a URL.
+   Without google_client_id the older shared access key is used. */
+const SIGNIN=!!(CLIENT.google_client_id&&CONFIG.API_URL),KEYNAME=SIGNIN?'jg_session':'jg_key';
+const LIVE={key:store.get(KEYNAME)||'',busy:0,prompted:false,ok:null,okAt:0,err:null,me:store.get('jg_me')||null};
 const live=()=>!!(CONFIG.API_URL&&LIVE.key);
-async function apiGet(params){const r=await fetch(CONFIG.API_URL+'?'+new URLSearchParams({key:LIVE.key,...params}),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(j.error)throw new Error(j.error);return j}
+async function apiGet(params){const r=SIGNIN?await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,action:'read',...params}),cache:'no-store'}):await fetch(CONFIG.API_URL+'?'+new URLSearchParams({key:LIVE.key,...params}),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(j.error)throw new Error(j.error);return j}
 async function apiPost(body){LIVE.busy++;syncBusy();try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,...body})});const j=await r.json();if(j.error)throw new Error(j.error);return j}finally{LIVE.busy--;syncBusy()}}
 function syncBusy(){const el=$('#syncText');if(el&&LIVE.busy)el.textContent='Saving to the sheet…'}
 async function liveLoad(){const[d,b]=await Promise.all([apiGet({format:'dashboard'}),apiGet({tabs:'blocks'}).catch(()=>({tabs:{blocks:[]}}))]);d.blocks=(b.tabs||{}).blocks||[];return normLive(d)}
 function normLive(d){const n=v=>v==null||v===''?0:+v||0;
+  if(d.me){LIVE.me=d.me;store.set('jg_me',d.me);S.admin=String(d.me.role||'').toLowerCase()==='admin'}
+  delete d.guest_info;delete d.me;  // private guest info is fetched only where it is edited, never cached here
   const js=v=>{if(Array.isArray(v))return v;try{const x=JSON.parse(v);return Array.isArray(x)?x:[]}catch(e){return v?[String(v)]:[]}};
   d.props=(d.props||[]).map(p=>({...p,photos:js(p.photos),photo_thumbs:js(p.photo_thumbs),photo:p.photo||js(p.photos)[0]||null,bedrooms:n(p.bedrooms),base_rate:n(p.base_rate),cleaning_fee:n(p.cleaning_fee),owner_share:p.owner_share==null||p.owner_share===''?null:+p.owner_share}));
   d.bookings=(d.bookings||[]).filter(b=>b.booking_id&&b.check_in&&b.check_out).map(b=>({...b,booking_id:String(b.booking_id),guest:b.guest||'Guest',guests:n(b.guests)||1,nightly_rate:n(b.nightly_rate),cleaning_fee:n(b.cleaning_fee),booking_status:b.booking_status||'Confirmed',rating:b.rating?+b.rating:null}));
@@ -1554,7 +1566,28 @@ async function save(tab,op,a,msg){
   try{const r=await apiPost({action:op,tab,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
     if(op!=='append'&&!(r.updated||r.deleted))throw new Error('that row is no longer in the sheet');toast((msg||'Saved')+' ✓');return true}
   catch(e){S.data[k]=JSON.parse(before);refresh();toast('Couldn’t save: '+e.message+'. Nothing was changed.');return false}}
+function signInScreen(){
+  const err=h('div',{class:'err',hidden:true}),btn=h('div',{class:'gsi-btn'}),note=h('p',{class:'signin-note'},'Use the Google account your team added for you.');
+  const card=h('div',{class:'signin-card glass'},h('img',{src:'icons/icon-192.png',alt:'',class:'signin-logo',onerror:e=>e.target.remove()}),
+    h('h2',null,'Sign in to '+(CLIENT.brand||'the dashboard')),note,btn,err);
+  $('#layer').replaceChildren(h('div',{class:'signin-wrap'},card));
+  const fail=t=>{err.hidden=false;err.textContent=t};
+  const done=async cred=>{err.hidden=true;note.textContent='Checking…';
+    try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login',id_token:cred,device:(navigator.userAgentData&&navigator.userAgentData.platform||navigator.platform||'device')+' · '+new Date().toISOString().slice(0,10)})});
+      const j=await r.json();if(!j.ok){note.textContent='Use the Google account your team added for you.';return fail(j.error==='not_listed'?`${j.email} isn’t on this dashboard’s team list. Ask an admin to add you.`:j.error||'Sign-in failed')}
+      LIVE.key=j.session;LIVE.me=j.user;store.set(KEYNAME,j.session);store.set('jg_me',j.user);S.admin=String(j.user.role||'').toLowerCase()==='admin';
+      extra={bookings:[],expenses:[],maint:[],turnDone:[],maintStatus:{}};saveExtra();closeLayer();S.data=null;await load();toast(`Welcome, ${(j.user.name||j.user.email).split(' ')[0]}`)}
+    catch(x){note.textContent='Use the Google account your team added for you.';fail('Couldn’t reach the sheet ('+x.message+'). Try again.')}};
+  const draw=()=>{google.accounts.id.initialize({client_id:CLIENT.google_client_id,callback:r=>done(r.credential),auto_select:false,ux_mode:'popup'});
+    google.accounts.id.renderButton(btn,{theme:'outline',size:'large',text:'signin_with',shape:'pill',width:260})};
+  if(window.google&&google.accounts)draw();
+  else{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=draw;sc.onerror=()=>fail('Google sign-in didn’t load. Check your connection.');document.head.append(sc)}
+}
+async function signOut(){try{await apiPost({action:'logout'})}catch(e){}
+  try{window.google&&google.accounts&&google.accounts.id.disableAutoSelect()}catch(e){}
+  store.set(KEYNAME,'');store.set('jg_me',null);store.set('jg_live_cache',null);LIVE.key='';LIVE.me=null;LIVE.ok=null;S.data=SEED;S.source='Demo data';refresh();signInScreen()}
 function connectModal(){
+  if(SIGNIN)return signInScreen();
   const k=h('input',{type:'password',placeholder:'Paste the dashboard access key',autocomplete:'off',spellcheck:'false',id:'fKey'}),err=h('div',{class:'err',hidden:true});
   const go_=h('button',{class:'btn primary',onclick:async()=>{const v=k.value.trim();if(v.length<12){err.hidden=false;err.textContent='That key looks too short.';return}
     go_.disabled=true;go_.textContent='Checking…';LIVE.key=v;
@@ -1564,7 +1597,7 @@ function connectModal(){
     [h('button',{class:'btn',onclick:closeLayer},'Use demo data'),go_]);
   k.addEventListener('keydown',e=>{if(e.key==='Enter')go_.click()});
 }
-function disconnect(){store.set('jg_key','');store.set('jg_live_cache',null);LIVE.key='';LIVE.ok=null;S.data=SEED;S.source='Demo data';S.loadedAt=new Date();refresh();toast('This device is disconnected from the live sheet')}
+function disconnect(){if(SIGNIN)return signOut();store.set('jg_key','');store.set('jg_live_cache',null);LIVE.key='';LIVE.ok=null;S.data=SEED;S.source='Demo data';S.loadedAt=new Date();refresh();toast('This device is disconnected from the live sheet')}
 function confirmBox(title,text,okLabel,danger,fn){modal(title,h('div',{class:'form'},h('p',{class:'full',style:{margin:0}},text)),[h('button',{class:'btn',onclick:closeLayer},'Keep'),h('button',{class:'btn '+(danger?'danger':'primary'),onclick:()=>{closeLayer();fn()}},okLabel)])}
 const nextId=(arr,field,prefix)=>prefix+(Math.max(0,...arr.map(x=>+String(x[field]||'').replace(/\D/g,'')||0).filter(n=>n<1e7))+1);
 const waLink=p=>'https://wa.me/'+String(p||'').replace(/\D/g,'');
@@ -1888,7 +1921,7 @@ async function load(){
       if(!S.data){const c=store.get('jg_live_cache');if(c&&c.data){S.data=c.data;S.source='Live sheet';LIVE.cachedAt=c.at;S.loadedAt=new Date(c.at);refresh()}else showLoading()}
       try{S.data=await Promise.race([liveLoad(),new Promise((_,no)=>setTimeout(()=>no(new Error('Google took over 90 s')),9e4))]);
         S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null;LIVE.cachedAt=null;store.set('jg_live_cache',{at:Date.now(),data:S.data})}
-      catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);if(/unauthorized/.test(e.message)){LIVE.key='';store.set('jg_key','');store.set('jg_live_cache',null);toast('The access key was changed - connect again.')}else toast('Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data)S.data=SEED}}
+      catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);if(/unauthorized/.test(e.message)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;signInScreen()}else toast('The access key was changed - connect again.')}else toast('Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data)S.data=SEED}}
     else if(CONFIG.DATA_URL){try{const r=await fetch(CONFIG.DATA_URL,{cache:'no-store'});if(!r.ok)throw 0;S.data=fromWorkbook(XLSX.read(await r.arrayBuffer(),{type:'array',cellDates:true}));S.source='Live sheet'}catch(e){toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data)S.data=SEED}}
     else if(!S.data)S.data=SEED;
     if(!LIVE.cachedAt)S.loadedAt=new Date();refresh();
@@ -1950,8 +1983,9 @@ setInterval(()=>{if(live()&&S.view==='whatsapp'&&!document.hidden)load()},12e4);
 setInterval(checkBot,12e4);setInterval(paintStatus,3e4);setTimeout(checkBot,1500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkBot();paintStatus()}});
 $('#liveBadge').addEventListener('click',()=>{const s=liveState();s==='demo'?connectModal():s==='offline'?manualRefresh():go('whatsapp')});
-$('#connectBtn').addEventListener('click',()=>{setMenu(false);live()?confirmBox('Disconnect this device?','The access key is removed from this device. Connect again any time with the key.','Disconnect',false,disconnect):connectModal()});
-if(CONFIG.API_URL&&!LIVE.key)setTimeout(connectModal,700);
+$('#connectBtn').addEventListener('click',()=>{setMenu(false);live()?confirmBox(SIGNIN?'Sign out of this device?':'Disconnect this device?',SIGNIN?'You will need to sign in with Google again on this device.':'The access key is removed from this device. Connect again any time with the key.',SIGNIN?'Sign out':'Disconnect',false,disconnect):connectModal()});
+if(SIGNIN)document.querySelectorAll('.role-btn').forEach(b=>b.closest('.seg').parentElement.querySelector('h3')?b.closest('.seg').parentElement.hidden=true:b.closest('.seg').hidden=true);
+if(CONFIG.API_URL&&!LIVE.key)setTimeout(connectModal,SIGNIN?50:700);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-S.loadedAt>CONFIG.REFRESH_MINUTES*6e4)load()});
 })();
 </script>
