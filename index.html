@@ -442,9 +442,13 @@ button.sstat:hover{background:var(--surface-2)}
 .mg-main{display:flex;flex-direction:column;gap:3px;min-width:0}.mg-main>b{font-size:14px}.mg-main>span{font-size:12.5px;color:var(--muted)}
 .mg-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}.mg-note{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mg-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
-.mg-pending{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));z-index:40;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:99px;box-shadow:var(--shadow-lg);max-width:calc(100% - 32px);flex-wrap:wrap}
+.mg-pending{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom));z-index:40;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:99px;box-shadow:var(--shadow-lg);max-width:calc(100% - 32px);width:max-content;flex-wrap:nowrap;white-space:nowrap;border:1px solid var(--hair-2)}
+.mg-pending>span{display:inline-flex;align-items:center;gap:8px;font-size:13.5px}
+.mg-pending>span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 22%,transparent);flex:none}
+.mg-pending .btn{white-space:nowrap}
+@media (max-width:980px){.mg-pending{bottom:calc(env(safe-area-inset-bottom,0px) + 96px)}}  /* clear the bottom tab bar */  /* centred with left:50%: without max-content the bar shrinks to half the screen and wraps */
 @media (max-width:640px){
-  .mg-pending{left:12px;right:12px;transform:none;max-width:none;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);border-radius:18px;flex-wrap:nowrap;justify-content:space-between;gap:8px;padding:8px 8px 8px 14px;background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--hair-2)}
+  .mg-pending{left:12px;right:12px;width:auto;transform:none;max-width:none;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);border-radius:18px;flex-wrap:nowrap;justify-content:space-between;gap:8px;padding:8px 8px 8px 14px;background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--hair-2)}
   .mg-pending>span{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
   .mg-pending .btn{flex:0 0 auto;white-space:nowrap}
   .mg-list{padding-bottom:70px}  /* room so the bar never covers the last booking */
@@ -2601,7 +2605,7 @@ function mgMore(b,id,can){const go_=fn=>()=>{closeLayer();fn()};
     h('button',{class:'btn',onclick:go_(()=>mgNote([id]))},'Add note'),
     h('button',{class:'btn danger-t',onclick:go_(()=>mgTrash([id]))},'Move to Trash')),[h('button',{class:'btn',onclick:closeLayer},'Close')])}
 function pendingBar(v){const n=stagedCount();if(!n)return;
-  v.append(h('div',{class:'mg-pending glass'},h('span',null,h('b',null,`${n} change${n>1?'s':''}`),PHONE()?' · not saved':' · not saved yet'),
+  v.append(h('div',{class:'mg-pending glass'},h('span',null,PHONE()?h('b',null,`${n} unsaved`):[h('b',null,`${n} change${n>1?'s':''}`),' · not saved yet']),
     h('button',{class:'btn sm',onclick:mgDiscard},'Discard'),h('button',{class:'btn primary sm',onclick:mgReview},'Review & save')))}
 
 function render(){
