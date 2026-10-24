@@ -524,6 +524,17 @@ button.sstat:hover{background:var(--surface-2)}
 #popLayer .pop-scrim{position:fixed;inset:0;z-index:88;background:transparent}
 #popLayer .pop.drop{position:fixed;left:12px;right:12px;bottom:auto;width:auto;max-width:560px;margin:0 auto;overflow:auto;z-index:89;background:#fff;background:var(--surface);opacity:1;animation:none;transform:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--hair-2);border-radius:18px;box-shadow:0 18px 50px rgba(12,26,61,.22)}
 .cd-row{cursor:pointer;min-height:0;height:auto;align-content:center}
+/* direct-booking payment block in the booking form */
+.pay-box{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.pay-box[hidden]{display:none}
+.pay-full{display:flex !important;flex-direction:row !important;align-items:center;gap:10px;cursor:pointer}
+.pay-full input{width:22px;height:22px;flex:none;accent-color:var(--ok);margin:0}
+.pay-full span{display:grid;gap:1px}.pay-full small{color:var(--muted);font-weight:400}
+.pay-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+.pay-row input:disabled{opacity:.55}
+.pay-hint{color:var(--muted);font-size:12px}
+.chip-s.date.late{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+@media (max-width:520px){.pay-row{grid-template-columns:1fr 1fr}.pay-row>.btn{grid-column:1/-1}}
 .cd-row>svg{width:18px;height:18px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}  /* an unsized svg grows to its natural size in Safari */.cd-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .pv-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:14px 18px}
 .pv-kpis{display:flex;flex-wrap:wrap;gap:8px 26px}.pv-k{display:flex;flex-direction:column;gap:2px}.pv-k span{font-size:11.5px;color:var(--muted)}.pv-k b{font-size:19px}
@@ -1126,16 +1137,32 @@ async function saveFile(filename,data){
 function exportRows(rows,name){
   if(!rows.length){toast('Nothing to export.');return}
   const stamp=TODAY;
-  if(window.XLSX){const ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=Object.keys(rows[0]).map(k=>({wch:Math.min(36,Math.max(k.length,...rows.slice(0,50).map(r=>String(r[k]??'').length))+2)}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,name.slice(0,30));const out=XLSX.write(wb,{type:'array',bookType:'xlsx'});saveFile(`${CONFIG.BRAND} - ${name} - ${stamp}.xlsx`,new Blob([out]));}
+  if(window.XLSX){const ws=XLSX.utils.aoa_to_sheet([[CONFIG.BRAND],[`${name} · exported ${fmtD(TODAY,{day:'numeric',month:'short',year:'numeric'})}`],[]]);XLSX.utils.sheet_add_json(ws,rows,{origin:'A4'});
+    ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:3,c:0},e:{r:3+rows.length,c:Object.keys(rows[0]).length-1}})};ws['!cols']=Object.keys(rows[0]).map(k=>({wch:Math.min(36,Math.max(k.length,...rows.slice(0,50).map(r=>String(r[k]??'').length))+2)}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,name.slice(0,30));const out=XLSX.write(wb,{type:'array',bookType:'xlsx'});saveFile(`${CONFIG.BRAND} - ${name} - ${stamp}.xlsx`,new Blob([out]));}
   else{const keys=Object.keys(rows[0]);const q=v=>{const s=String(v??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};saveFile(`${CONFIG.BRAND} - ${name} - ${stamp}.csv`,[keys.map(q).join(','),...rows.map(r=>keys.map(k=>q(r[k])).join(','))].join('\n'))}
 }
+const logoImg=light=>new Promise(r=>{if(!CLIENT.logo)return r(null);const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=light&&CLIENT.logo.light||CLIENT.logo.dark});
+const darkBg=c=>{const m=String(c).match(/\d+(\.\d+)?/g);return m&&m.length>=3&&(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000<128};
 function exportChart(holder,name){
   const svg=holder.querySelector('svg');if(!svg)return;const c=svg.cloneNode(true);const w=+svg.getAttribute('width'),hh=+svg.getAttribute('height');
   c.setAttribute('xmlns',NS);c.querySelectorAll('[data-tip]').forEach(n=>n.removeAttribute('data-tip'));
+  /* the card's colour key (legend chips or list rows) goes into the image too, so a shared chart explains itself */
+  const sec=holder.closest('section'),key=sec?[...sec.querySelectorAll('.legend > *, .mix-l > *')].map(el=>{const sw=el.querySelector('.sw,i');return sw&&{c:getComputedStyle(sw).backgroundColor,t:el.innerText.replace(/\s+/g,' ').trim()}}).filter(k=>k&&k.t):[];
   const pad=28,title=name;const img=new Image();const src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(c));
-  img.onload=()=>{const k=2,cv=document.createElement('canvas');cv.width=(w+pad*2)*k;cv.height=(hh+pad*2+30)*k;const x=cv.getContext('2d');x.scale(k,k);x.fillStyle=css('--bg')||'#fff';x.fillRect(0,0,w+pad*2,hh+pad*2+30);
-    x.fillStyle=css('--ink');x.font=`700 15px ${FONT}`;x.fillText(title,pad,pad+6);x.fillStyle=css('--muted');x.font=`500 11px ${FONT}`;x.fillText(`${CONFIG.BRAND} · ${rangeLabel()}`,pad,pad+22);
-    x.drawImage(img,pad,pad+34,w,hh);cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - ${name} - ${TODAY}.png`,b),'image/png')};
+  img.onload=async()=>{const bg=css('--bg')||'#fff',lg=await logoImg(darkBg(getComputedStyle(document.body).backgroundColor)),k=2,W=Math.max(w+pad*2,360);
+    const m=document.createElement('canvas').getContext('2d');m.font=`600 12px ${FONT}`;
+    const lines=[[]];let lx=0;key.forEach(it=>{const iw=18+m.measureText(it.t).width+18;if(lx+iw>W-pad*2&&lines[lines.length-1].length){lines.push([]);lx=0}lines[lines.length-1].push(it);lx+=iw});
+    const keyH=key.length?lines.length*22+8:0,footH=lg?46:22,H=pad+40+hh+keyH+footH+pad/2;
+    const cv=document.createElement('canvas');cv.width=W*k;cv.height=H*k;const x=cv.getContext('2d');x.scale(k,k);
+    x.fillStyle=bg;x.fillRect(0,0,W,H);
+    x.fillStyle=css('--ink');x.font=`700 15px ${FONT}`;x.fillText(title,pad,pad+6);x.fillStyle=css('--muted');x.font=`500 11px ${FONT}`;x.fillText(rangeLabel(),pad,pad+22);
+    x.drawImage(img,(W-w)/2,pad+34,w,hh);
+    let y=pad+40+hh+14;x.font=`600 12px ${FONT}`;
+    lines.forEach(ln=>{let xx=pad;ln.forEach(it=>{x.fillStyle=it.c;x.beginPath();x.arc(xx+5,y-4,5,0,7);x.fill();x.fillStyle=css('--ink');x.fillText(it.t,xx+16,y);xx+=18+x.measureText(it.t).width+18});y+=22});
+    const fy=H-pad/2-(lg?10:4);x.strokeStyle=css('--hair-2')||'rgba(0,0,0,.08)';x.lineWidth=1;x.beginPath();x.moveTo(pad,fy-(lg?30:14));x.lineTo(W-pad,fy-(lg?30:14));x.stroke();
+    x.fillStyle=css('--muted');x.font=`500 10.5px ${FONT}`;x.fillText(`Exported ${fmtD(TODAY,{day:'numeric',month:'short',year:'numeric'})}`,pad,fy);
+    if(lg){const lh=24,lw=lg.width*lh/lg.height;x.drawImage(lg,W-pad-lw,fy-lh+6,lw,lh)}else{x.textAlign='right';x.fillText(CONFIG.BRAND,W-pad,fy);x.textAlign='left'}
+    cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - ${name} - ${TODAY}.png`,b),'image/png')};
   img.onerror=()=>toast('Could not render this chart to an image.');img.src=src;
 }
 const ico={dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
@@ -1291,12 +1318,12 @@ document.addEventListener('click',()=>{if(S.pop){S.pop=null;renderFilters()}});
 function overview(v){
   const f=S.f,s=stats(f.from,f.to),[pa,pz]=prevRange(),p=stats(pa,pz);
   const endM=f.to.slice(0,7),ks=D.months.filter(k=>k<=endM).slice(-6);const ms=ks.map(k=>mStats(k));
-  const due=D.B.filter(b=>fB(b)&&(b.pay==='Pending'||b.pay==='Short'));const dueAmt=sum(due,b=>b.net-b.received);
+  const due=D.B.filter(b=>fB(b)&&(b.channel==='Direct'?b.net-b.received>1:(b.pay==='Pending'||b.pay==='Short')));const dueAmt=sum(due,b=>b.net-b.received);
   // KPI strip
   const tint=c=>({background:`color-mix(in srgb, ${c} 13%, transparent)`,color:c});
   const SI={net:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',profit:'M3 17l6-6 4 4 8-8M15 7h6v6',occ:'M3 18V8M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5M7 11.5a1.5 1.5 0 100-.01',adr:'M3 12l9-9h8v8l-9 9zM15.5 8.5a1 1 0 100-.01',revpar:'M4 20V10M10 20V4M16 20v-7M22 20H2'};
   const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));return h('div',{class:'sstat','data-tip':tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d)),h('div',{class:'sp'},spark(sp,color,72,30)))};
-  const pay=h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Expected payouts not yet received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Payouts to chase'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.pay==='Short').length} short-paid`},`${due.length} bookings`))));
+  const pay=h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Balances direct guests still owe, plus platform payouts not received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Money to collect'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.channel==='Direct').length} direct guests · ${due.filter(b=>b.channel!=='Direct').length} platform payouts`},`${due.length} bookings`))));
   v.append(h('section',{class:'strip-stats glass s12','aria-label':'Key numbers'},
     st1('net','Net payout',inrK(s.net),delta(s.net,p.net),ms.map(m=>m.net),css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
     st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),ms.map(m=>m.profit),css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
@@ -1402,28 +1429,32 @@ async function copyDesk(rows,d){const L=[`${CONFIG.BRAND} — ${fmtD(d,{weekday:
   part('in','CHECK-INS');part('out','CHECK-OUTS');const txt=L.join('\n');
   try{await navigator.clipboard.writeText(txt);toast('Copied — paste it into WhatsApp')}catch(e){openText(txt)}}
 function openText(txt){const ta=h('textarea',{style:{width:'100%',height:'260px',borderRadius:'12px',padding:'10px',border:'1px solid var(--hair-2)',background:'var(--glass)'}});ta.value=txt;modal('Copy this text',h('div',{class:'form'},h('div',{class:'full'},ta)),[h('button',{class:'btn primary',onclick:closeLayer},'Done')]);setTimeout(()=>{ta.focus();ta.select()},50)}
-function deskImage(rows,d){
-  const W=1080,pad=56,rowH=96,secH=72;const ins=rows.filter(r=>r[0]==='in'),outs=rows.filter(r=>r[0]==='out');
-  const H=pad+150+(ins.length?secH+ins.length*rowH:0)+(outs.length?secH+outs.length*rowH:0)+90;
+async function deskImage(rows,d){
+  const lg=await logoImg(),W=1080,pad=56,rowH=96,secH=72,TAGH=44;const ins=rows.filter(r=>r[0]==='in'),outs=rows.filter(r=>r[0]==='out');
+  const same=b=>D.starts.has(b.property_id+'|'+b.check_out),tagN=outs.filter(([,b])=>same(b)).length+(S.desk.amounts?rows.filter(([k,b])=>!(k==='out'&&same(b))).length:0);
+  const H=pad+150+(ins.length?secH+ins.length*rowH:0)+(outs.length?secH+outs.length*rowH:0)+tagN*TAGH+90;
   const cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;const x=cv.getContext('2d');x.scale(2,2);
   const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#eef0ff');g.addColorStop(.5,'#fbf3f7');g.addColorStop(1,'#eaf6fb');x.fillStyle=g;x.fillRect(0,0,W,H);
   const rr=(X,Y,w,hh,r,fill,stroke)=>{x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+hh,r);x.arcTo(X+w,Y+hh,X,Y+hh,r);x.arcTo(X,Y+hh,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();if(fill){x.fillStyle=fill;x.fill()}if(stroke){x.strokeStyle=stroke;x.lineWidth=1;x.stroke()}};
   const fit=(t,w)=>{if(x.measureText(t).width<=w)return t;while(t.length>1&&x.measureText(t+'…').width>w)t=t.slice(0,-1);return t+'…'};
   const F=(wt,sz)=>`${wt} ${sz}px ${FONT}`;
   // header
-  const mg=x.createLinearGradient(pad,pad,pad+56,pad+56);mg.addColorStop(0,'#ff7a59');mg.addColorStop(.55,'#e2365b');mg.addColorStop(1,'#a12a6e');rr(pad,pad,56,56,16,mg);
+  if(lg){const lh=58,lw=lg.width*lh/lg.height;x.drawImage(lg,pad,pad-2,lw,lh);x.fillStyle='#6e6e73';x.font=F(500,18);x.textAlign='right';x.fillText('Check-in & check-out sheet',W-pad,pad+34);x.textAlign='left'}
+  else{const mg=x.createLinearGradient(pad,pad,pad+56,pad+56);mg.addColorStop(0,'#ff7a59');mg.addColorStop(.55,'#e2365b');mg.addColorStop(1,'#a12a6e');rr(pad,pad,56,56,16,mg);
   x.fillStyle='#fff';x.beginPath();x.moveTo(pad+12,pad+40);x.lineTo(pad+24,pad+22);x.lineTo(pad+31,pad+32);x.lineTo(pad+36,pad+25);x.lineTo(pad+45,pad+40);x.fill();
-  x.fillStyle='#1d1d1f';x.font=F(700,28);x.fillText(CONFIG.BRAND,pad+74,pad+26);x.fillStyle='#6e6e73';x.font=F(500,18);x.fillText('Check-in & check-out sheet',pad+74,pad+52);
+  x.fillStyle='#1d1d1f';x.font=F(700,28);x.fillText(CONFIG.BRAND,pad+74,pad+26);x.fillStyle='#6e6e73';x.font=F(500,18);x.fillText('Check-in & check-out sheet',pad+74,pad+52)}
   x.fillStyle='#1d1d1f';x.font=F(700,40);x.fillText(fmtD(d,{weekday:'long',day:'numeric',month:'long'}),pad,pad+122);
   let y=pad+150;
   const section=(title,list,kind,color)=>{if(!list.length)return;y+=24;x.fillStyle=color;rr(pad,y,8,26,4,color);x.fillStyle='#1d1d1f';x.font=F(700,22);x.fillText(`${title} · ${list.length}`,pad+20,y+21);y+=secH-24;
-    list.forEach(([k,b])=>{const p=D.P[b.property_id];rr(pad,y,W-pad*2,rowH-12,20,'rgba(255,255,255,.82)','rgba(28,28,50,.08)');
+    list.forEach(([k,b])=>{const p=D.P[b.property_id];
+      let tag=null;if(k==='out'&&same(b))tag=['SAME DAY CHECK-IN & CHECK-OUT','#d70015','rgba(255,59,48,.12)'];else if(S.desk.amounts)tag=[inr(b.net),'#1a8a3a','rgba(52,199,89,.15)'];
+      rr(pad,y,W-pad*2,rowH-12+(tag?TAGH:0),20,'rgba(255,255,255,.82)','rgba(28,28,50,.08)');
       x.fillStyle='#1d1d1f';x.font=F(700,26);x.fillText(k==='in'?(b.arrival_time||'—'):'11:00',pad+22,y+50);
       x.font=F(650,20);x.fillText(fit(short(b.pname),360),pad+130,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(fit(`${p.area}, ${p.city}${k==='out'?' · '+p.cleaner:''}`,360),pad+130,y+62);
-      x.fillStyle='#1d1d1f';x.font=F(600,19);x.fillText(fit(b.guest,250),pad+520,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(`${b.guests} guest${b.guests>1?'s':''} · ${b.nights} night${b.nights>1?'s':''} · ${b.channel}`,pad+520,y+62);
-      let tag=null;if(k==='out'&&D.starts.has(b.property_id+'|'+b.check_out))tag=['SAME DAY CHECK-IN & CHECK-OUT','#d70015','rgba(255,59,48,.12)'];else if(S.desk.amounts)tag=[inr(b.net),'#1a8a3a','rgba(52,199,89,.15)'];
-      if(tag){x.font=F(700,14);const tw=x.measureText(tag[0]).width+24;rr(W-pad-22-tw,y+28,tw,30,15,tag[2]);x.fillStyle=tag[1];x.fillText(tag[0],W-pad-22-tw+12,y+48)}
-      y+=rowH});};
+      const gw=W-pad-22-(pad+520);
+      x.fillStyle='#1d1d1f';x.font=F(600,19);x.fillText(fit(b.guest,gw),pad+520,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(fit(`${b.guests} guest${b.guests>1?'s':''} · ${b.nights} night${b.nights>1?'s':''} · ${b.channel}`,gw),pad+520,y+62);
+      if(tag){x.font=F(700,14);const tw=x.measureText(tag[0]).width+24;rr(pad+130,y+80,tw,30,15,tag[2]);x.fillStyle=tag[1];x.fillText(tag[0],pad+142,y+100)}
+      y+=rowH+(tag?TAGH:0)});};
   section('CHECK-INS',ins,'in','#5e5ce6');section('CHECK-OUTS',outs,'out','#ff9f0a');
   x.fillStyle='#a1a1a6';x.font=F(500,14);x.fillText(`Generated ${new Date().toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})} · check-out by 11:00`,pad,H-pad+10);
   cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - Desk ${d}.png`,b),'image/png');
@@ -1586,9 +1617,14 @@ function money(v){
   const mAll=D.B.filter(fBm).map(b=>[b,share(b,f.from,f.to)]).filter(x=>x[1]>0);
   const ce2=CHN.map(c=>{const bs=att.filter(b=>b.channel===c),xs=mAll.filter(([b])=>b.channel===c);return{c,n:bs.length,gross:sum(xs,([b,w])=>b.gross*w),fee:sum(xs,([b,w])=>b.fee*w),net:sum(xs,([b,w])=>b.net*w),stay:bs.length?sum(bs,b=>b.nights)/bs.length:0,adr:sum(bs,b=>b.nights)?sum(bs,b=>b.room)/sum(bs,b=>b.nights):0}});
   v.append(card('s6','Channel economics',{hint:rangeLabel()},table([{t:'Channel',f:r=>chd(r.c)},{t:'Bookings',r:1,f:r=>r.n},{t:'Avg stay',r:1,f:r=>r.stay.toFixed(1)+' n'},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Fees',r:1,f:r=>inr(r.fee)},{t:'Fee %',r:1,f:r=>pct(r.gross?r.fee/r.gross:0,1)},{t:'Net',r:1,f:r=>h('b',null,inr(r.net))}],ce2,{card:r=>[mTop(h('span',{class:'mdot',style:{background:chColor(r.c)}}),r.c,`${r.n} bookings · ${r.stay.toFixed(1)} nights avg`,[h('b',{class:'num'},inrK(r.net)),h('small',null,'net')]),h('div',{class:'mstats'},mStat('Avg rate',inrK(r.adr)),mStat('Fees',inrK(r.fee)),mStat('Fee share',pct(r.gross?r.fee/r.gross:0,1),r.gross?r.fee/r.gross/.25:0,'var(--bad)'))]})));
-  const due=sortBy(D.B.filter(b=>fB(b)&&(b.pay==='Pending'||b.pay==='Short')),['check_in',1]);
-  v.append(card('s6 fit','Payouts to chase',{hint:`${due.length} · ${inrK(sum(due,b=>b.net-b.received))} outstanding`,acts:[btnExport(()=>exportRows(due.map(b=>({Booking:b.booking_id,Guest:b.guest,Property:short(b.pname),Channel:b.channel,'Check-in':b.check_in,'Expected ₹':b.net,'Received ₹':b.received,'Gap ₹':b.net-b.received,Status:b.pay})),'Payouts to chase'))]},
-    due.length?table([{t:'Booking',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'Channel',f:b=>chd(b.channel)},{t:'Gap',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))},{t:'',f:b=>pillPay(b.pay)}],due.slice(0,8),{onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--bad)'}},inr(b.net-b.received)),pillPay(b.pay)]),h('div',{class:'mfoot'},chd(b.channel),h('span',{class:'chip-s date'},'Checked in '+fmtD(b.check_in)))]}):h('div',{class:'empty'},'All payouts reconciled.')));
+  /* Payments to collect: what direct guests still owe (half-upfront bookings), by check-in, so it is collected on arrival */
+  const owe=sortBy(D.B.filter(b=>fB(b)&&b.channel==='Direct'&&b.net-b.received>1),['check_in',1]);
+  const dueWhen=b=>b.check_in<TODAY?'was due '+fmtD(b.check_in):b.check_in===TODAY?'due today':'due at check-in '+fmtD(b.check_in,{weekday:'short',day:'numeric',month:'short'});
+  v.append(card('s6 fit','Payments to collect',{hint:owe.length?`${owe.length} guest${owe.length>1?'s':''} · ${inrK(sum(owe,b=>b.net-b.received))} still to collect`:'direct bookings',acts:[btnExport(()=>exportRows(owe.map(b=>({Booking:b.booking_id,Guest:b.guest,Mobile:b.phone,Property:short(b.pname),'Check-in':b.check_in,'Total ₹':b.net,'Received ₹':b.received,'To collect ₹':b.net-b.received})),'Payments to collect'))]},
+    owe.length?table([{t:'Guest',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'When',f:b=>h('span',{class:'chip-s date'+(b.check_in<TODAY?' late':'')},dueWhen(b))},{t:'Received',r:1,f:b=>inr(b.received)},{t:'To collect',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))}],owe.slice(0,S.oweAll?owe.length:8),{onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--bad)'}},inr(b.net-b.received)),h('small',null,'of '+inrK(b.net))]),h('div',{class:'mfoot'},h('span',{class:'chip-s date'+(b.check_in<TODAY?' late':'')},dueWhen(b)),h('span',{class:'hint'},'Mark collected in Manage'))]}):h('div',{class:'empty'},'No balances left with direct guests.'),owe.length>8?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.oweAll=!S.oweAll;render()}},S.oweAll?'Show fewer':`Show all ${owe.length}`):null));
+  const due=sortBy(D.B.filter(b=>fB(b)&&b.channel!=='Direct'&&(b.pay==='Pending'||b.pay==='Short')),['check_in',1]);
+  v.append(card('s6 fit','Platform payouts to chase',{hint:`${due.length} · ${inrK(sum(due,b=>b.net-b.received))} outstanding`,acts:[btnExport(()=>exportRows(due.map(b=>({Booking:b.booking_id,Guest:b.guest,Property:short(b.pname),Channel:b.channel,'Check-in':b.check_in,'Expected ₹':b.net,'Received ₹':b.received,'Gap ₹':b.net-b.received,Status:b.pay})),'Payouts to chase'))]},
+    due.length?table([{t:'Booking',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'Channel',f:b=>chd(b.channel)},{t:'Gap',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))},{t:'',f:b=>pillPay(b.pay)}],due.slice(0,S.dueAll?due.length:8),{onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--bad)'}},inr(b.net-b.received)),pillPay(b.pay)]),h('div',{class:'mfoot'},chd(b.channel),h('span',{class:'chip-s date'},'Checked in '+fmtD(b.check_in)))]}):h('div',{class:'empty'},'All payouts reconciled.'),due.length>8?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.dueAll=!S.dueAll;render()}},S.dueAll?'Show fewer':`Show all ${due.length}`):null));
 }
 
 /* ============ OPS ============ */
@@ -1671,6 +1707,7 @@ function openForm(kind,pid,edit,opt){
       ch=h('select',{id:'fCh'},L.channels.map(c=>h('option',null,c))),src=h('input',{id:'fSrc',placeholder:'e.g. Instagram, referral',autocomplete:'off'}),
       tf=num({id:'fTf',placeholder:'e.g. 9641.61'}),pf=num({id:'fPf',placeholder:'e.g. 1432.48'}),gst=num({id:'fGst',placeholder:'e.g. 459.12'}),rc=num({id:'fRc',placeholder:'e.g. 8209.19'}),
       pt=h('select',{id:'fPt'},h('option',{value:''},'Choose…'),L.payment_terms.map(c=>h('option',null,c))),ac=h('select',{id:'fAc'},h('option',{value:''},'Choose…'),L.accounts.map(c=>h('option',null,c))),
+      paidI=num({id:'fPaid',placeholder:'e.g. 5000'}),leftI=num({id:'fLeft',placeholder:'0'}),fullC=h('input',{id:'fFull',type:'checkbox'}),
       at=h('input',{id:'fAt',type:'time',value:'14:00',step:900}),bs=h('select',{id:'fBs'},['Confirmed','Cancelled'].map(c=>h('option',null,c))),nt=h('textarea',{id:'fNt',rows:2,placeholder:'e.g. 2k paid in advance, balance at check-in'});
     if(edit){bd.value=edit.booking_date||String(edit.submitted_at||'').slice(0,10)||TODAY;g.value=edit.guest||'';loc.value=edit.location||'';ph.value=String(edit.phone||'').replace(/[^\d ]/g,'').trim();
       n.value=edit.guests||1;ci.value=edit.check_in;co.value=edit.check_out;if(L.channels.includes(edit.channel))ch.value=edit.channel;src.value=edit.source&&!['Dashboard','WhatsApp','Import'].includes(edit.source)?edit.source:'';
@@ -1680,27 +1717,49 @@ function openForm(kind,pid,edit,opt){
       if(edit.payment_terms){if(!L.payment_terms.includes(edit.payment_terms))pt.append(h('option',null,edit.payment_terms));pt.value=edit.payment_terms}
       if(edit.account){if(!L.accounts.includes(edit.account))ac.append(h('option',null,edit.account));ac.value=edit.account}
       at.value=edit.arrival_time||'';bs.value=edit.booking_status||'Confirmed';nt.value=edit.notes||''}
-    const direct=()=>ch.value==='Direct';const fPf=fld('Platform fee (₹)',pf),fGst=fld('GST (₹, inside the amount received)',gst),fSrc=fld('Source (optional)',src);
+    /* direct bookings: what the guest has paid so far and what is still to collect (the half-upfront practice).
+       Stored as received = the full amount due to you, balance_due = what is left; the left part shows under
+       Payments to collect and every change is written into the notes. */
+    const oldLeft=edit?+edit.balance_due||0:0;
+    if(edit&&edit.channel==='Direct'){const tot=+rc.value||+tf.value||0;paidI.value=tot?Math.max(0,tot-oldLeft):'';leftI.value=oldLeft||'';fullC.checked=!oldLeft&&!!tot}
+    const half=h('button',{type:'button',class:'btn sm',onclick:()=>{fullC.checked=false;paidTouched=false;payCalc();calc()}},'Half paid');
+    /* a new direct booking starts as half received, half to collect (the usual practice) until someone types the advance */
+    let paidTouched=!!edit&&edit.channel==='Direct';paidI.addEventListener('input',()=>paidTouched=true);
+    const payCalc=e=>{const t=+tf.value||0;paidI.disabled=leftI.disabled=fullC.checked;
+      if(!fullC.checked&&!paidTouched&&t)paidI.value=Math.round(t/2);
+      if(fullC.checked){paidI.value=t||'';leftI.value=''}else if(!e||e.target!==leftI)leftI.value=t&&paidI.value!==''?Math.max(0,Math.round((t-(+paidI.value||0))*100)/100)||'':''};
+    const payBox=h('div',{class:'full pay-box'},h('label',{class:'pay-full'},fullC,h('span',null,h('b',null,'Full payment received'),h('small',null,'Starts as half paid · tick if the guest paid everything'))),
+      h('div',{class:'pay-row'},fld('Received so far (₹)',paidI),fld('Left to collect (₹)',leftI),half),
+      h('small',{class:'pay-hint'},'What is left shows under Payments to collect until it is paid. Both amounts are noted on the booking.'));
+    fullC.addEventListener('change',()=>{if(!fullC.checked)paidTouched=false;payCalc();calc()});[tf,paidI,leftI].forEach(i=>i.addEventListener('input',e=>{payCalc(e);calc()}));payCalc();
+    const direct=()=>ch.value==='Direct';const fPf=fld('Platform fee (₹)',pf),fGst=fld('GST (₹, inside the amount received)',gst),fSrc=fld('Source (optional)',src),fRc=fld(`Amount received by ${CLIENT.receiver||'you'} (₹)`,rc);
     const sm=h('div',{class:'sum'});let ok=false;
-    const calc=()=>{fPf.hidden=direct();fGst.hidden=direct();fSrc.hidden=!direct();const nn=diff(ci.value,co.value),r=+rc.value||0;
+    const calc=()=>{fPf.hidden=direct();fGst.hidden=direct();fSrc.hidden=!direct();fRc.hidden=direct();payBox.hidden=!direct();
+      const nn=diff(ci.value,co.value),r=direct()?(+paidI.value||0)+(+leftI.value||0):+rc.value||0;
       const split=nn>0&&r?monthSplit(ci.value,co.value,r):[];
-      sm.replaceChildren(...[['Nights',nn>0?nn:'–'],['Received',r?inr(r):'–'],['By month',bs.value==='Cancelled'?(r?mLabel(ci.value.slice(0,7))+' '+inr(r):'–'):split.length?split.map(([k,v])=>mLabel(k)+' '+inr(v)).join(' · '):'–']].map(([l,x])=>h('div',null,h('span',null,l),h('b',{class:'num'},String(x)))));
+      sm.replaceChildren(...[['Nights',nn>0?nn:'–'],direct()?['To collect',+leftI.value?inr(+leftI.value):'Nothing']:['Received',r?inr(r):'–'],['By month',bs.value==='Cancelled'?(r?mLabel(ci.value.slice(0,7))+' '+inr(r):'–'):split.length?split.map(([k,v])=>mLabel(k)+' '+inr(v)).join(' · '):'–']].map(([l,x])=>h('div',null,h('span',null,l),h('b',{class:'num'},String(x)))));
       const clash=bs.value==='Cancelled'?null:D.B.find(x=>x.ok&&samePlace(x.property_id,sel.value)&&x.check_in<co.value&&x.check_out>ci.value&&(!edit||x.booking_id!==String(edit.booking_id)));err.hidden=true;ok=true;
       if(!(nn>0)){fail('Check-out must be after check-in.');ok=false}else if(clash){fail(`Double booking: ${clash.guest} (${clash.booking_id}) stays at ${short(clash.pname)} ${fmtD(clash.check_in)} → ${fmtD(clash.check_out)}.`);ok=false}};
     [sel,ch,ci,co,rc,bs].forEach(i=>i.addEventListener('input',calc));sel.addEventListener('change',calc);calc();
-    const need=[[g,'the guest’s name'],[ph,'the guest’s mobile number'],[tf,'the tariff charged from the guest'],[rc,'the amount received'],[pt,'the payment terms'],[ac,'the account']];
+    const need=()=>[[g,'the guest’s name'],[ph,'the guest’s mobile number'],[tf,'the tariff charged from the guest'],direct()?null:[rc,'the amount received'],[pt,'the payment terms'],[ac,'the account']].filter(Boolean);
     modal(edit?'Edit '+edit.booking_id:'New booking',h('div',{class:'form'},fld('Date of booking',bd),fld('Property',sel,1),fld('Customer',g),fld('Mobile No.',ph),fld('Location (optional)',loc),locL,fld('No. of guests',n),
-      fld('Check-in',ci),fld('Check-out',co),fld('Platform',ch),fSrc,fld('Tariff charged from guest (₹)',tf),fPf,fGst,fld(`Amount received by ${CLIENT.receiver||'you'} (₹)`,rc),fld('Payment terms',pt),fld('Account details',ac),
+      fld('Check-in',ci),fld('Check-out',co),fld('Platform',ch),fSrc,fld('Tariff charged from guest (₹)',tf),fPf,fGst,fRc,payBox,fld('Payment terms',pt),fld('Account details',ac),
       fld('Expected check-in time',at),edit?fld('Status',bs):null,fld('Notes (optional)',nt,1),sm,err),
       [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{
-        for(const[el,what]of need){if(!String(el.value).trim()){fail('Add '+what+'.');el.focus();return}}
+        for(const[el,what]of need()){if(!String(el.value).trim()){fail('Add '+what+'.');el.focus();return}}
+        if(direct()&&!fullC.checked&&paidI.value===''){fail('Tick Full payment received, or add how much the guest has paid so far (0 if nothing yet).');paidI.focus();return}
         if(!(+n.value>=1)){fail('Add the number of guests.');n.focus();return}
         const pn=ph.value.replace(/\D/g,'');if(pn.length<10){fail('That mobile number looks too short.');ph.focus();return}
         calc();if(!ok)return;const v=x=>x.value===''?null:+x.value;
+        const paidN=+paidI.value||0,leftN=fullC.checked?0:+leftI.value||0;
+        let notes=nt.value.trim()||null;
+        if(direct()&&(!edit||edit.channel!=='Direct'||leftN!==oldLeft))notes=addNote(notes,leftN?`${inr(paidN)} received · ${inr(leftN)} left to collect`:
+          oldLeft&&edit?`Balance ${inr(oldLeft)} collected · paid in full (${inr(paidN)})`:`Paid in full (${inr(paidN)})`);
         const row={booking_date:bd.value||TODAY,guest:g.value.trim(),location:loc.value.trim()||null,phone:'+'+(pn.length===10?'91'+pn:pn),guests:+n.value,property_id:sel.value,
           check_in:ci.value,check_out:co.value,channel:ch.value,source:direct()&&src.value.trim()?src.value.trim():(edit?edit.source:'Dashboard'),
-          tariff:+tf.value,platform_fee:direct()?null:v(pf),gst:direct()?null:v(gst),received:+rc.value,payment_terms:pt.value,account:ac.value,
-          arrival_time:at.value||null,notes:nt.value.trim()||null};
+          tariff:+tf.value,platform_fee:direct()?null:v(pf),gst:direct()?null:v(gst),received:direct()?paidN+leftN:+rc.value,payment_terms:pt.value,account:ac.value,
+          arrival_time:at.value||null,notes};
+        if(direct())row.balance_due=leftN||null;
         closeLayer();if(edit&&opt&&opt.stage){stage(edit.booking_id,{...row,booking_status:bs.value});return}if(edit){save('bookings','update',{match:{booking_id:String(edit.booking_id)},fields:{...row,booking_status:bs.value}},edit.booking_id+' updated')}else{const id=nextId(S.data.bookings,'booking_id','BK');save('bookings','append',{row:{booking_id:id,submitted_at:new Date().toISOString().slice(0,16),...row,booking_status:'Confirmed',rating:null}},id+' saved')}}},edit?'Save changes':'Save booking')]);
   } else if(kind==='expense'){
     const cat=h('select',{id:'fCat'},['Cleaning','Laundry','Electricity','Internet','Supplies','Repairs','Staff salary','Other'].map(c=>h('option',null,c))),amt=h('input',{id:'fAmt',type:'number',inputmode:'numeric',min:1,placeholder:'e.g. 1500'}),dt=h('input',{id:'fDt',type:'date',value:TODAY}),ven=h('input',{id:'fVen',placeholder:'e.g. Doon Electricals',autocomplete:'off'}),via=h('select',{id:'fVia'},['UPI','Cash','Bank transfer','Card','Auto-debit'].map(c=>h('option',null,c)));
@@ -2135,8 +2194,8 @@ const addNote=(old,text)=>[old,`${fmtD(TODAY,{day:'numeric',month:'short',year:'
 const MG_L={booking_status:'Status',notes:'Notes',cancel_reason:'Cancel reason',received:'Amount received',platform_fee:'Platform fee',gst:'GST',
   tariff:'Tariff',account:'Account',payment_terms:'Payment terms',channel:'Platform',source:'Source',deleted_at:'Trash',deleted_by:'Moved to Trash by',
   guest:'Customer',phone:'Mobile',guests:'Guests',check_in:'Check-in',check_out:'Check-out',property_id:'Property',location:'Location',
-  booking_date:'Date of booking',arrival_time:'Expected check-in time'};
-const MONEYF=['received','platform_fee','gst','tariff'];
+  booking_date:'Date of booking',arrival_time:'Expected check-in time',balance_due:'Left to collect'};
+const MONEYF=['received','platform_fee','gst','tariff','balance_due'];
 function mgVal(k,v){if(v==null||v==='')return'—';if(MONEYF.includes(k))return inr(+v);if(k==='property_id')return short((D.P[v]||{}).property||v);
   if(k==='deleted_at')return'in Trash since '+fmtD(v);if(k==='check_in'||k==='check_out'||k==='booking_date')return fmtD(v,{day:'numeric',month:'short',year:'numeric'});return String(v)}
 function stage(id,fields){id=String(id);const raw=rawB(id)||{},next={...(STAGE[id]||{}),...fields};
@@ -2159,6 +2218,9 @@ function mgCancel(ids){
         if(one){const v=x=>x.value===''?null:+x.value;Object.assign(f,{received:v(rc),platform_fee:v(pf),gst:v(gs)})}stage(id,f)}
       MG.sel.clear();render()}},'Mark cancelled')]);
 }
+function mgCollect(id){const b=stg(rawB(id)),left=+b.balance_due||0;if(!left)return;
+  confirmBox(`Mark ${inr(left)} collected?`,`${b.guest||'Guest'} · ${id}. The balance leaves Payments to collect and the notes record it.`,'Mark collected',false,
+    ()=>stage(id,{balance_due:null,notes:addNote(b.notes,`Balance ${inr(left)} collected · paid in full`)}))}
 function mgRestore(ids){let skipped=[];
   for(const id of ids){const b=stg(rawB(id));const c=clashFor({...b,booking_status:'Confirmed'});
     if(c){skipped.push(`${id} (clashes with ${c.booking_id})`);continue}stage(id,{booking_status:'Confirmed',notes:addNote(b.notes,'Restored to confirmed')})}
@@ -2317,14 +2379,15 @@ function manage(v){
         h('span',null,`${id} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.channel||''} · received ${b.received!=null&&b.received!==''?inr(+b.received):(D.B.find(x=>x.booking_id===id)||{}).net!=null?inr((D.B.find(x=>x.booking_id===id)).net):'—'}`),
         h('div',{class:'mg-tags'},h('span',{class:'pill '+(can?'p-bad':'p-ok')},can?'Cancelled':'Confirmed'),ed?h('span',{class:'pill p-warn'},'Changed · not saved'):null,
           b.notes?h('span',{class:'chip-s mg-note',title:b.notes},'📝 '+String(b.notes).split('\n').pop().slice(0,60)):null)),
-      h('div',{class:'mg-acts'},h('button',{class:'btn sm',onclick:()=>openForm('booking',b.property_id,b,{stage:true})},'Edit'),
+      h('div',{class:'mg-acts'},+b.balance_due>0&&!can?h('button',{class:'btn sm primary',onclick:()=>mgCollect(id)},'Collected '+inrK(+b.balance_due)):null,
+        h('button',{class:'btn sm',onclick:()=>openForm('booking',b.property_id,b,{stage:true})},'Edit'),
         can?h('button',{class:'btn sm',onclick:()=>mgRestore([id])},'Restore'):h('button',{class:'btn sm',onclick:()=>mgCancel([id])},'Cancel'),
         h('button',{class:'btn sm',onclick:()=>mgNote([id])},'Note'),h('button',{class:'btn sm danger-t','aria-label':'Move to Trash',onclick:()=>mgTrash([id])},'Trash')))};
   v.append(card('s12','Manage bookings',{hint:`${rows.length} booking${rows.length===1?'':'s'} · changes are saved only after you review them`,acts:[tabs]},
     h('div',{class:'mg-filters'},search,fprop,fchan,fmon,fst),batch,rows.length?[head,h('div',{class:'mg-list'},rows.slice(0,MG.lim).map(row)),
       rows.length>MG.lim?h('button',{class:'btn',style:{marginTop:'10px'},onclick:()=>{MG.lim+=40;render()}},`Show ${Math.min(40,rows.length-MG.lim)} more`):null]:h('div',{class:'empty'},'No bookings match.')));
   pendingBar(v)}
-function mgAmount(b,id){return b.received!=null&&b.received!==''?inr(+b.received):(D.B.find(x=>x.booking_id===id)||{}).net!=null?inr(D.B.find(x=>x.booking_id===id).net):'—'}
+function mgAmount(b,id){if(+b.balance_due>0&&b.received!=null&&b.received!=='')return`${inr(+b.received)} · ${inr(+b.balance_due)} to collect`;return b.received!=null&&b.received!==''?inr(+b.received):(D.B.find(x=>x.booking_id===id)||{}).net!=null?inr(D.B.find(x=>x.booking_id===id).net):'—'}
 function mgPhoneRow(b,id,can,ed){
   return h('div',{class:'mg-prow'+(ed?' mg-edit':'')+(MG.sel.has(id)?' on':'')+(can?' cx':'')},
     h('input',{type:'checkbox',checked:MG.sel.has(id)||null,'aria-label':'Select '+id,onchange:()=>{MG.sel.has(id)?MG.sel.delete(id):MG.sel.add(id);render()}}),
@@ -2332,12 +2395,13 @@ function mgPhoneRow(b,id,can,ed){
       h('div',{class:'mg-pl1'},h('b',null,b.guest||'Guest'),h('span',{class:'num'},mgAmount(b,id))),
       h('div',{class:'mg-pl2'},`${short((D.P[b.property_id]||{}).property||b.property_id)} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)}`),
       h('div',{class:'mg-pl3'},h('i',{class:'dot',style:{background:chColor(b.channel)}}),`${b.channel||''} · ${id}`,
-        can?h('span',{class:'pill p-bad'},'Cancelled'):null,ed?h('span',{class:'pill p-warn'},'Not saved'):null,b.notes?h('span',{class:'mg-pn','aria-label':'Has notes'},'📝'):null)),
+        can?h('span',{class:'pill p-bad'},'Cancelled'):null,ed?h('span',{class:'pill p-warn'},'Not saved'):null,+b.balance_due>0&&!can?h('span',{class:'pill p-warn'},inrK(+b.balance_due)+' to collect'):null,b.notes?h('span',{class:'mg-pn','aria-label':'Has notes'},'📝'):null)),
     h('button',{class:'btn icon mg-pmore','aria-label':'Actions for '+id,onclick:()=>mgMore(b,id,can)},'⋯'))}
 function mgMore(b,id,can){const go_=fn=>()=>{closeLayer();fn()};
   modal(`${b.guest||'Guest'} · ${id}`,h('div',{class:'mg-sheet'},
     h('p',{class:'mg-sheetp'},`${short((D.P[b.property_id]||{}).property||b.property_id)} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.channel||''} · received ${mgAmount(b,id)}`),
     b.notes?h('pre',{class:'mg-notes'},b.notes):null,
+    +b.balance_due>0&&!can?h('button',{class:'btn primary',onclick:go_(()=>mgCollect(id))},`Mark ${inr(+b.balance_due)} collected`):null,
     h('button',{class:'btn',onclick:go_(()=>openForm('booking',b.property_id,b,{stage:true}))},'Edit details'),
     can?h('button',{class:'btn',onclick:go_(()=>mgRestore([id]))},'Mark confirmed again'):h('button',{class:'btn',onclick:go_(()=>mgCancel([id]))},'Cancel booking'),
     h('button',{class:'btn',onclick:go_(()=>mgNote([id]))},'Add note'),
