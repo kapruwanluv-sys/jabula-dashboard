@@ -1319,11 +1319,17 @@ const expColor=c=>{const f=EXP_CATS.find(x=>x[0]===c);if(f)return f[1];let x=0;f
 /* categories offered: the standard ones plus the owner's own from Lists (retired ones hidden) */
 function expCats(){const own=typeof listVals==='function'?listVals((S.data&&S.data.lists)||[],'expense_category'):[];const staged=Object.values(typeof LSTAGE==='object'?LSTAGE:{}).filter(f=>f.__new&&f.list==='expense_category').map(f=>f.value);
   return[...new Set([...EXP_CATS.map(x=>x[0]),...own,...staged])]}
-function expandExpenses(rows,props){const live=(props||[]).filter(p=>!/^(stopped|inactive)$/i.test(String(p.status||'').trim())).map(p=>p.property_id),out=[],nowK=TODAY.slice(0,7);
-  (rows||[]).filter(e=>!e.deleted_at&&e.date&&+e.amount).forEach(e=>{const pids=e.property_id==='*'?live:[e.property_id],d0=String(e.date).slice(0,10);if(!pids.length)return;
+function expandExpenses(rows,props){const out=[],nowK=TODAY.slice(0,7);
+  /* who shares an "All stays" cost on a date: real places running then - not combo listings (the same rooms), not stays
+     added later (active_from) or stopped before it (stopped_on; a stop without a date is left out, as before) */
+  const parts=v=>Array.isArray(v)?v:String(v||'').split(',').map(x=>x.trim()).filter(Boolean),day=v=>String(v||'').slice(0,10);
+  const sharers=dt=>(props||[]).filter(p=>!parts(p.includes).length&&(!p.active_from||day(p.active_from)<=dt)&&
+    (!/^(stopped|inactive)$/i.test(String(p.status||'').trim())||(p.stopped_on&&day(p.stopped_on)>dt))).map(p=>p.property_id);
+  (rows||[]).filter(e=>!e.deleted_at&&e.date&&+e.amount).forEach(e=>{const d0=String(e.date).slice(0,10);
     let dates=[d0];if(String(e.repeat||'').toLowerCase()==='monthly'){dates=[];const end=String(e.repeat_until||'').slice(0,7)||nowK,day=+d0.slice(8);let k=d0.slice(0,7);
       while(k<=end&&k<=nowK&&dates.length<120){const last=+mEnd(k).slice(8);dates.push(k+'-'+String(Math.min(day,last)).padStart(2,'0'));k=nextM(k)}}
-    dates.forEach(dt=>pids.forEach(pid=>out.push({...e,property_id:pid,date:dt,amount:Math.round(+e.amount/pids.length*100)/100,__src:e.expense_id||null,__split:pids.length>1,__rep:dates.length>1||String(e.repeat||'')==='monthly'})))});
+    dates.forEach(dt=>{const pids=e.property_id==='*'?sharers(dt):[e.property_id];
+      pids.forEach(pid=>out.push({...e,property_id:pid,date:dt,amount:Math.round(+e.amount/pids.length*100)/100,__src:e.expense_id||null,__split:pids.length>1,__rep:dates.length>1||String(e.repeat||'')==='monthly'}))})});
   return out}
 function derive(raw){
   CHN=[...new Set([...CHN_BASE,...listVals(raw.lists,'platform'),...raw.bookings.map(b=>b.channel)].filter(Boolean).map(String))];
@@ -1337,7 +1343,7 @@ function derive(raw){
        Older rows without a tariff fall back to nightly rate x nights + cleaning, fee from the channel %. */
     const bucket=b.tariff!=null&&b.tariff!==''&&!isNaN(+b.tariff);
     let room,gross,f,net,gst;
-    if(bucket){gross=+b.tariff;f=+b.platform_fee||0;net=b.received!=null&&b.received!==''?+b.received:gross-f;gst=+b.gst||0;room=gross}
+    if(bucket){f=+b.platform_fee||0;net=b.received!=null&&b.received!==''?+b.received:+b.tariff-f;gst=+b.gst||0;gross=ok?+b.tariff:Math.max(0,net+f);room=gross}
     else if(!ok){room=gross=f=net=gst=0}
     else{room=n*b.nightly_rate;gross=room+(+b.cleaning_fee||0);f=Math.round(gross*(fee[b.channel]||0));net=gross-f;gst=0}
     const status=!ok?'Cancelled':b.check_out<=TODAY?'Completed':b.check_in<=TODAY?'In-house':'Upcoming';
@@ -2744,7 +2750,7 @@ const addNote=(old,text)=>[old,`${fmtD(TODAY,{day:'numeric',month:'short',year:'
 const MG_L={booking_status:'Status',notes:'Notes',cancel_reason:'Cancel reason',received:'Amount received',platform_fee:'Platform fee',gst:'GST',
   tariff:'Tariff',account:'Account',payment_terms:'Payment terms',channel:'Platform',source:'Source',deleted_at:'Trash',deleted_by:'Moved to Trash by',
   guest:'Customer',phone:'Mobile',guests:'Guests',check_in:'Check-in',check_out:'Check-out',property_id:'Property',location:'Location',
-  booking_date:'Date of booking',arrival_time:'Expected check-in time',balance_due:'Left to collect'};
+  booking_date:'Date of booking',arrival_time:'Expected check-in time',balance_due:'Left to collect',refund_check:'Kept money to confirm'};
 const MONEYF=['received','platform_fee','gst','tariff','balance_due'];
 function mgVal(k,v){if(v==null||v==='')return'—';if(MONEYF.includes(k))return inr(+v);if(k==='property_id')return short((D.P[v]||{}).property||v);
   if(k==='deleted_at')return'in Trash since '+fmtD(v);if(k==='check_in'||k==='check_out'||k==='booking_date')return fmtD(v,{day:'numeric',month:'short',year:'numeric'});return String(v)}
@@ -2781,6 +2787,12 @@ function mgCancel(ids){
         if(one){const v=x=>x.value===''?null:+x.value;Object.assign(f,{received:v(rc),platform_fee:v(pf),gst:v(gs)})}stage(id,f)}
       MG.sel.clear();render()}},'Mark cancelled')]);
 }
+/* after a cancel from WhatsApp: what was actually kept (received, platform fee, GST) - the rest counts as refunded */
+function mgKept(id){const b=stg(rawB(id)),num=v=>h('input',{type:'number',inputmode:'decimal',min:0,step:'0.01',value:v??''}),rc=num(b.received),pf=num(b.platform_fee),gs=num(b.gst);
+  modal(`What was kept · ${id}`,h('div',{class:'form'},h('p',{class:'full',style:{margin:0,color:'var(--muted)'}},`${b.guest||'Guest'} was cancelled on WhatsApp. Enter what you kept after any refund; 0 if everything was refunded.`),
+    fld('Amount received (kept)',rc),fld('Platform fee',pf),fld('GST',gs)),
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{const v=x=>x.value===''?null:+x.value;closeLayer();
+      stage(id,{received:v(rc),platform_fee:v(pf),gst:v(gs),refund_check:null,notes:addNote(b.notes,`Kept after the WhatsApp cancel: ${inr(v(rc)||0)}`)});render()}},'Save')])}
 function mgCollect(id){const b=stg(rawB(id)),left=+b.balance_due||0;if(!left)return;
   confirmBox(`Mark ${inr(left)} collected?`,`${b.guest||'Guest'} · ${id}. The balance leaves Payments to collect and the notes record it.`,'Mark collected',false,
     ()=>stage(id,{balance_due:null,notes:addNote(b.notes,`Balance ${inr(left)} collected · paid in full`)}))}
@@ -2850,7 +2862,7 @@ function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE
     Object.entries(f).map(([k,v])=>h('div',{class:'mg-chg'},h('span',null,GI_L[k]||k),h('s',null,giShow(k,raw[k])),h('i',null,'→'),h('b',null,giShow(k,v)))))});
   const lbody=lrows.map(([id,f])=>h('div',{class:'mg-rev'},h('b',null,`${LIST_L[f.list]||f.list} · ${f.__new?'new option':f.__from||((S.data.lists||[]).find(r=>r.row_id===id)||{}).value||f.value}`),
     f.__new?h('div',{class:'mg-chg'},h('span',null,'Add'),h('b',null,f.value+(f.fee_pct!=null&&f.fee_pct!==''?` · fee ${f.fee_pct}%`:''))):
-    [f.__from&&f.__from!==f.value?h('div',{class:'mg-chg'},h('span',null,'Rename'),h('s',null,f.__from),h('i',null,'→'),h('b',null,f.value),h('em',null,` (${listUse(f.list,f.__from)} bookings follow)`)):null,
+    [f.__from&&f.__from!==f.value?h('div',{class:'mg-chg'},h('span',null,'Rename'),h('s',null,f.__from),h('i',null,'→'),h('b',null,f.value),h('em',null,` (${listUse(f.list,f.__from)} ${useNoun(f.list,listUse(f.list,f.__from))} follow)`)):null,
      'active' in f?h('div',{class:'mg-chg'},h('span',null,'Status'),h('b',null,/^(no|false)$/i.test(String(f.active))?'Retired (hidden from the form)':'Active')):null,
      'fee_pct' in f?h('div',{class:'mg-chg'},h('span',null,'Usual fee'),h('b',null,f.fee_pct==null||f.fee_pct===''?'—':f.fee_pct+'%')):null]));
   const prbody=Object.entries(PRSTAGE).map(([k,v])=>h('div',{class:'mg-rev'},h('b',null,'Pricing · '+(PR_L[k]||k)),h('div',{class:'mg-chg'},h('span',null,'Now'),h('s',null,prShow(k,prRaw(k))),h('i',null,'→'),h('b',null,prShow(k,v)))));
@@ -2941,7 +2953,7 @@ function pstage(id,fields){const raw=rawP(id),next={...(PSTAGE[id]||{}),...field
 const P_L={property:'Name',city:'City',area:'Area',type:'Type',status:'Status',includes:'Made of',bedrooms:'Bedrooms',bathrooms:'Bathrooms',
   base_guests:'Guests included',max_guests:'Max guests',base_rate:'Base price / night',extra_guest_fee:'Extra guest / night',pet_fee:'Pet fee / stay',
   check_in_time:'Check-in from',check_out_time:'Check-out by',description:'About',rules:'House rules',amenities:'Amenities',website_url:'Website link',airbnb_url:'Airbnb listing',booking_url:'Booking.com listing',mmt_url:'MakeMyTrip listing',
-  photos:'Photos',photo:'Cover photo',photo_thumbs:'Photo thumbnails'};
+  photos:'Photos',photo:'Cover photo',photo_thumbs:'Photo thumbnails',active_from:'Running since',stopped_on:'Stopped on'};
 function pVal(k,v){if(v==null||v==='')return'—';if(['base_rate','extra_guest_fee','pet_fee'].includes(k))return inr(+v);
   if(k==='includes')return arrOf(v).map(i=>short((D.P[i]||{}).property||i)).join(' + ')||'—';if(k==='photos')return arrOf(v).length+' photos';
   if(k==='photo')return'changed';if(k==='amenities')return arrOf(v).length+' amenities';const t=String(v);return t.length>80?t.slice(0,80)+'…':t}
@@ -2995,6 +3007,11 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
         ...Object.fromEntries(LINKS.map(([k])=>[k,lk[k].value.trim()||null])),
         photos:photos.length?photos:null,photo_thumbs:thumbs.length?thumbs:null,photo:cover||null};
       const bad=LINKS.find(([k])=>f[k]&&!/^https:\/\//.test(f[k]));if(bad)return fail(`The ${bad[1]} link must start with https://`);
+      const had=new Set(arrOf(p0&&p0.includes)),added=[...inc].filter(x=>!had.has(x));
+      if(added.length&&!isNew)for(const b of D.B.filter(x=>x.ok&&x.property_id===p.property_id&&x.check_out>TODAY)){  // past stays rented apart are fine
+        const x=D.B.find(y=>y.ok&&added.includes(y.property_id)&&y.check_in<b.check_out&&y.check_out>b.check_in);
+        if(x)return fail(`Can’t link yet: ${b.guest} (${b.booking_id}) here overlaps ${x.guest} (${x.booking_id}) at ${linkName(x.property_id)}, ${fmtD(x.check_in)} → ${fmtD(x.check_out)}. Cancel or move one of them first.`)}
+      if(isNew)f.active_from=TODAY;else if(isStopped(f)!==isStopped(p0))f.stopped_on=isStopped(f)?TODAY:null;
       closeLayer();pstage(p.property_id,isNew?{__new:true,property_id:p.property_id,...f}:f)}},isNew?'Add':'Done')]);
   peComboToggle();
 }
@@ -3088,6 +3105,7 @@ function manageGuest(v,tabs){giLoad();
 /* Manage › Lists: the booking form's drop-downs (platforms with their usual fee %, payment terms, accounts) */
 const LIST_L={platform:'Platforms',payment_term:'Payment terms',account:'Accounts',expense_category:'Expense categories'};
 const BK_COL={platform:'channel',payment_term:'payment_terms',account:'account'};  // booking field per list
+const useNoun=(list,n)=>(list==='expense_category'?'expense':'booking')+(n===1?'':'s');
 const listUse=(list,v)=>list==='expense_category'?(S.data.expenses||[]).filter(e=>!e.deleted_at&&String(e.category||'')===String(v)).length:(S.data.bookings||[]).filter(b=>!b.deleted_at&&String(b[BK_COL[list]]||'')===String(v)).length;
 function nextListId(){const ids=[...(S.data.lists||[]).map(r=>r.row_id).filter(Boolean)];let n=ids.reduce((m,x)=>Math.max(m,+(String(x).match(/\d+/)||[0])[0]),0)+1;
   const taken=new Set(ids);while(taken.has('L'+String(n).padStart(2,'0')))n++;return'L'+String(n).padStart(2,'0')}
@@ -3100,7 +3118,7 @@ function listEdit(list,it){const isNew=!it,name=h('input',{value:it?it.value:'',
     fee=list==='platform'?h('input',{type:'number',inputmode:'decimal',min:0,max:60,step:'0.1',value:it&&it.fee_pct!=null?it.fee_pct:'',placeholder:'e.g. 15'}):null,err=h('div',{class:'err',hidden:true});
   const n=it?listUse(list,it.__from||it.value):0;
   modal(isNew?`Add to ${LIST_L[list]}`:`Edit ${it.value}`,h('div',{class:'form'},fld('Name',name,1),fee?fld('Usual fee % (what the platform keeps)',fee,1):null,
-      !isNew&&n?h('p',{class:'full pe-hint'},`${n} booking${n>1?'s':''} use this. Renaming updates them too, so reports stay together.`):null,err),
+      !isNew&&n?h('p',{class:'full pe-hint'},`${n} ${useNoun(list,n)} use this. Renaming updates them too, so reports stay together.`):null,err),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{const v=name.value.trim().replace(/\s+/g,' ');if(!v){err.hidden=false;err.textContent='Add a name.';return}
       const dup=listItems(list).find(x=>x!==it&&String(x.value).toLowerCase()===v.toLowerCase()&&x.row_id!==(it&&it.row_id));if(dup){err.hidden=false;err.textContent=`"${dup.value}" is already in ${LIST_L[list]}.`;return}
       const f={value:v};if(fee)f.fee_pct=fee.value===''?null:+fee.value;closeLayer();
@@ -3110,7 +3128,7 @@ function manageLists(v,tabs){const rows=S.data.lists||[],legacy=rows.length&&!is
     const row=it=>{const n=listUse(list,it.__from||it.value),on=act(it),ed=LSTAGE[it.row_id];
       return h('div',{class:'ls-row'+(on?'':' off')+(ed?' mg-edit':'')},
         list==='platform'?h('i',{class:'ls-dot',style:{background:chColor(it.value)}}):null,
-        h('div',{class:'ls-tx'},h('b',null,it.value),h('span',null,[n?`${n.toLocaleString('en-IN')} booking${n>1?'s':''}`:'not used yet',list==='platform'&&it.fee_pct!=null&&it.fee_pct!==''?`usual fee ${it.fee_pct}%`:null,on?null:'retired'].filter(Boolean).join(' · '))),
+        h('div',{class:'ls-tx'},h('b',null,it.value),h('span',null,[n?`${n.toLocaleString('en-IN')} ${useNoun(list,n)}`:'not used yet',list==='platform'&&it.fee_pct!=null&&it.fee_pct!==''?`usual fee ${it.fee_pct}%`:null,on?null:'retired'].filter(Boolean).join(' · '))),
         ed?h('span',{class:'pill p-warn'},it.__new?'New':'Not saved'):null,
         h('div',{class:'ls-acts'},h('button',{class:'btn icon sm','aria-label':'Edit '+it.value,onclick:()=>listEdit(list,it)},icon('edit')),
           it.__new?h('button',{class:'btn icon sm','aria-label':'Remove','data-tip':'Remove',onclick:()=>{delete LSTAGE[it.row_id];render()}},icon('x')):
@@ -3148,8 +3166,8 @@ async function prSave(k,v){const val=k==='weekend_nights'?v.join(','):k==='weeke
 async function ovSave(){const ops=OVOPS.splice(0);
   for(const o of ops){try{if(live()){let m=null;if(o.op!=='add'){const row=o.row||{};if(row.ov_id)m={ov_id:row.ov_id};else if((PROV||[]).filter(x=>x.from===row.from).length===1)m={from:row.from};else throw new Error('that rule has no id - ask to add ids to the date rules')}
         const r=await apiPost(o.op==='add'?{action:'append',tab:'overrides',row:o.row}:{action:'delete',tab:'overrides',match:m});if(r.error)throw new Error(r.error)}
-      if(o.op!=='add')PROV=PROV.filter(x=>x!==o.row)}catch(e){toast('Couldn’t save date prices: '+e.message);OVOPS.unshift(...ops.slice(ops.indexOf(o)));return false}}
-  PROV=prRules();return true}
+      PROV=o.op==='add'?[...(PROV||[]),o.row]:(PROV||[]).filter(x=>x!==o.row)}catch(e){toast('Couldn’t save date prices: '+e.message);OVOPS.unshift(...ops.slice(ops.indexOf(o)));return false}}
+  return true}
 /* the date rules as they will be after the staged operations */
 function prRules(){let rows=(PROV||[]).slice();OVOPS.forEach(o=>{if(o.op==='add')rows.push(o.row);else rows=rows.filter(x=>x!==o.row)});return rows}
 const ovId=()=>'OV'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
@@ -3517,6 +3535,7 @@ function hiUndo(e){const ch=e.changes,tab=e.tab,[mk,mv]=Object.entries(e.match)[
   else if(e.action==='delete'){const row={};for(const k in ch)row[k]=ch[k][0];op='append';a={row};lines=['Puts the deleted row back as it was']}
   else if(tab==='bookings'||tab==='expenses'){op='update';a={match:{[mk]:mv},fields:{deleted_at:TODAY,deleted_by:(LIVE.me||{}).email||'admin'}};lines=['Moves it to Trash (restore within 30 days)']}
   else{op='delete';a={match:{[mk]:mv}};lines=['Removes it']}
+  const pair=hiRenamePair(e);if(pair)lines.push(pair.line);
   const k=TABKEY[tab],cur=k&&e.action==='update'?(S.data[k]||[]).find(r=>String(r[mk])===String(a.match[mk])):null;
   const drift=cur?Object.keys(ch).filter(f=>f!=='deleted_by'&&!audSame(cur[f]??null,ch[f][1])):[];
   const after=tab==='bookings'&&cur?{...cur,...a.fields}:null;
@@ -3528,7 +3547,17 @@ function hiUndo(e){const ch=e.changes,tab=e.tab,[mk,mv]=Object.entries(e.match)[
       drift.length?h('p',{class:'hi-warn'},`Changed again since: ${drift.map(f=>audField(tab,f,e)).join(', ')}. Undo will replace the newer value.`):null,
       h('p',{class:'hint'},'Saved to the sheet straight away and shown in History as an undo.')),
     [h('button',{class:'btn',onclick:()=>hiOpen(e)},'Back'),h('button',{class:'btn primary',onclick:async ev=>{ev.currentTarget.disabled=true;const b=ev.currentTarget;
-      if(await hiApply(tab,op,a,e.audit_id)){closeLayer();HI.rows=null;hiLoad(true);render()}else b.disabled=false}},'Undo')])}
+      if(await hiApply(tab,op,a,e.audit_id)&&(!pair||await hiApply(pair.tab,'update',{match:pair.match,fields:pair.fields},pair.of||e.audit_id))){closeLayer();HI.rows=null;hiLoad(true);render()}else b.disabled=false}},'Undo')])}
+/* the other half of a rename: option <-> the bookings/expenses carrying its name */
+function hiRenamePair(e){const ch=e.changes||{},col=l=>l==='expense_category'?['expenses','category']:BK_COL[l]?['bookings',BK_COL[l]]:null;
+  const partner=(t,f,v)=>(HI.rows||[]).find(x=>x!==e&&x.tab===t&&x.action==='update'&&x.changes&&x.changes[f]&&audSame(x.changes[f][0],v[0])&&audSame(x.changes[f][1],v[1]));
+  if(e.tab==='lists'&&e.action==='update'&&ch.value){const row=(S.data.lists||[]).find(r=>String(r.row_id)===String(e.target))||{},c=col(row.list);if(!c)return null;
+    const p=partner(c[0],c[1],ch.value);return{tab:c[0],match:{[c[1]]:ch.value[1]},fields:{[c[1]]:ch.value[0]},of:p&&p.audit_id,line:`Also puts the ${c[0]} back on “${ch.value[0]}”`}}
+  const f=Object.keys(ch).find(x=>['channel','payment_terms','account','category'].includes(x));
+  if(f&&e.action==='update'&&(e.tab==='bookings'||e.tab==='expenses')&&Object.keys(e.match||{})[0]===f){
+    const list=e.tab==='expenses'?'expense_category':Object.keys(BK_COL).find(l=>BK_COL[l]===f),row=(S.data.lists||[]).find(r=>r.list===list&&String(r.value)===String(ch[f][1]));if(!row)return null;
+    const p=partner('lists','value',ch[f]);return{tab:'lists',match:{row_id:row.row_id},fields:{value:ch[f][0]},of:p&&p.audit_id,line:`Also renames the option back to “${ch[f][0]}”`}}
+  return null}
 async function hiApply(tab,op,a,id){
   if(TABKEY[tab]){HI.undoing=id;try{return await save(tab,op,a,'Undone')}finally{HI.undoing=''}}
   if(!live()){HI.undoing=id;hiLocal(tab,op,a,[]);HI.undoing='';toast('Undone · demo only');return true}
@@ -3567,9 +3596,9 @@ function manageHistory(v,tabs){hiLoad();
 function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
   purgeTrash();
-  const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at);
+  const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at),trashE=(S.data.expenses||[]).map(e=>ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e).filter(e=>e.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['history','History',null,'clock'],['trash','Trash',trash.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();render()}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
@@ -3583,7 +3612,11 @@ function manage(v){
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);
       return h('div',{class:'mg-row'+(STAGE[b.booking_id]?' mg-edit':'')},h('span'),h('div',{class:'mg-main'},h('b',null,`${b.guest||'Guest'} · ${short((D.P[b.property_id]||{}).property||b.property_id)}`),
         h('span',null,`${b.booking_id} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.channel||''} · ${left>0?left+' day'+(left>1?'s':'')+' left':'removed today'}`)),
-        h('div',{class:'mg-acts'},h('button',{class:'btn sm',onclick:()=>mgUntrash(b.booking_id)},'Restore')))})):h('div',{class:'empty'},'Trash is empty.')));
+        h('div',{class:'mg-acts'},h('button',{class:'btn sm',onclick:()=>mgUntrash(b.booking_id)},'Restore')))})):h('div',{class:'empty'},trashE.length?'No bookings in Trash.':'Trash is empty.')));
+    if(trashE.length)v.append(card('s12','Expenses in Trash',{hint:'not counted in money · restore to count them again'},h('div',{class:'mg-list'},sortBy(trashE,['deleted_at',-1]).map(e=>
+      h('div',{class:'mg-row'+(ESTAGE[e.expense_id]?' mg-edit':'')},h('span'),h('div',{class:'mg-main'},h('b',null,`${e.vendor||e.category||'Expense'} · ${inr(+e.amount||0)}`),
+        h('span',null,`${e.category||''} · ${e.property_id==='*'?'All stays':short((D.P[e.property_id]||{}).property||e.property_id)} · ${fmtD(String(e.date).slice(0,10))} · in Trash since ${fmtD(String(e.deleted_at).slice(0,10))}`)),
+        h('div',{class:'mg-acts'},h('button',{class:'btn sm',onclick:()=>expStage(e.expense_id,{deleted_at:null,deleted_by:null})},'Restore')))))));
     return pendingBar(v)}
   all.forEach(b=>{b._n=+(String(b.booking_id).match(/\d+/)||[0])[0]});  // newest added first
   const q=MG.q.toLowerCase(),months=[...new Set(all.filter(b=>!b.deleted_at).map(b=>String(b.check_in).slice(0,7)))].sort().reverse();
@@ -3613,13 +3646,16 @@ function manage(v){
       h('span',{class:'av',style:{background:avc(b.guest||'G')}},ini(b.guest||'G')),
       h('div',{class:'mg-main'},h('div',{class:'mg-l1'},h('b',null,b.guest||'Guest'),h('span',{class:'mg-id'},id)),
         h('div',{class:'mg-l2'},h('span',null,short(P_.property||b.property_id)),h('span',{class:'mg-dot'},'·'),h('span',null,`${fmtD(b.check_in)} → ${fmtD(b.check_out)}`),h('span',{class:'mg-dot'},'·'),h('span',{class:'chan'},h('i',{style:{background:chColor(b.channel)}}),b.channel||'')),
-        h('div',{class:'mg-tags'},can?h('span',{class:'pill p-bad'},'Cancelled'):null,ed?h('span',{class:'pill p-warn'},'Changed · not saved'):null,bal&&!can?h('span',{class:'pill p-warn'},inrK(bal)+' to collect'):null,
+        h('div',{class:'mg-tags'},can?h('span',{class:'pill p-bad'},'Cancelled'):null,can&&b.refund_check==='Pending'?h('span',{class:'pill p-warn'},'Confirm what was kept'):null,ed?h('span',{class:'pill p-warn'},'Changed · not saved'):null,bal&&!can?h('span',{class:'pill p-warn'},inrK(bal)+' to collect'):null,
           b.notes?h('span',{class:'chip-s mg-note',title:b.notes},'📝 '+String(b.notes).split('\n').pop().slice(0,60)):null)),
       h('div',{class:'mg-amt'},h('b',{class:'num'},mgAmount(b,id).split(' · ')[0]),h('small',null,bal&&!can?'total':'received')),
       h('div',{class:'mg-acts'},bal>0&&!can?h('button',{class:'btn sm primary',onclick:()=>mgCollect(id)},'Collected'):null,
         h('button',{class:'btn sm',onclick:()=>openForm('booking',b.property_id,b,{stage:true})},icon('edit'),'Edit'),
         h('button',{class:'btn icon sm','aria-label':'More actions for '+id,onclick:()=>mgMore(b,id,can)},icon('dots'))))};
+  const toCheck=all.filter(b=>!b.deleted_at&&b.booking_status==='Cancelled'&&b.refund_check==='Pending');
   v.append(card('s12','Manage bookings',{hint:`${rows.length} booking${rows.length===1?'':'s'} · changes are saved only after you review them`,acts:[tabs]},
+    toCheck.length?h('div',{class:'gap-banner'},h('div',null,h('b',null,`${toCheck.length} cancelled on WhatsApp`),h('span',null,'Confirm what was kept so money stays right')),
+      h('button',{class:'btn primary sm',onclick:()=>mgKept(String(toCheck[0].booking_id))},'Confirm')):null,
     h('div',{class:'mg-filters'},search,fprop,fchan,fmon,fst),batch,rows.length?[PHONE()?h('div',{class:'mg-selrow'},MG.selMode||MG.sel.size?head:h('span',{class:'mg-all'},`${Math.min(rows.length,MG.lim)} shown`),h('button',{class:'btn sm',onclick:()=>{MG.selMode=!(MG.selMode||MG.sel.size);if(!MG.selMode)MG.sel.clear();render()}},MG.selMode||MG.sel.size?'Done':'Select')):head,h('div',{class:'mg-list'+(PHONE()&&!MG.selMode&&!MG.sel.size?' nosel':'')},rows.slice(0,MG.lim).map(row)),
       rows.length>MG.lim?h('button',{class:'btn',style:{marginTop:'10px'},onclick:()=>{MG.lim+=40;render()}},`Show ${Math.min(40,rows.length-MG.lim)} more`):null]:h('div',{class:'empty'},'No bookings match.')));
   pendingBar(v)}
@@ -3640,6 +3676,7 @@ function mgMore(b,id,can){const go_=fn=>()=>{closeLayer();fn()};
     h('p',{class:'mg-sheetp'},`${short((D.P[b.property_id]||{}).property||b.property_id)} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.channel||''} · received ${mgAmount(b,id)}`),
     b.notes?h('pre',{class:'mg-notes'},b.notes):null,
     +b.balance_due>0&&!can?h('button',{class:'btn primary',onclick:go_(()=>mgCollect(id))},`Mark ${inr(+b.balance_due)} collected`):null,
+    can&&b.refund_check==='Pending'?h('button',{class:'btn primary',onclick:go_(()=>mgKept(id))},'Confirm what was kept'):null,
     h('button',{class:'btn',onclick:go_(()=>openForm('booking',b.property_id,b,{stage:true}))},'Edit details'),
     can?h('button',{class:'btn',onclick:go_(()=>mgRestore([id]))},'Mark confirmed again'):h('button',{class:'btn',onclick:go_(()=>mgCancel([id]))},'Cancel booking'),
     can?null:h('button',{class:'btn',onclick:go_(()=>mgExtend(id))},'Extend stay'),
