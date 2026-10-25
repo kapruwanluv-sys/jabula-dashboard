@@ -1654,8 +1654,11 @@ function expandExpenses(rows,props){const out=[],nowK=TODAY.slice(0,7);
   const sharers=dt=>(props||[]).filter(p=>!up[p.property_id]&&(!p.active_from||day(p.active_from)<=dt)&&
     (!/^(stopped|inactive)$/i.test(String(p.status||'').trim())||(p.stopped_on&&day(p.stopped_on)>dt))).map(p=>p.property_id);
   (rows||[]).filter(e=>!e.deleted_at&&e.date&&+e.amount).forEach(e=>{const d0=e.bill_month&&!e.repeat?mEnd(String(e.bill_month).slice(0,7)):String(e.date).slice(0,10);
-    let dates=[d0];if(String(e.repeat||'').toLowerCase()==='monthly'){dates=[];const end=String(e.repeat_until||'').slice(0,7)||nowK,day=+d0.slice(8);let k=d0.slice(0,7);
-      while(k<=end&&k<=nowK&&dates.length<120){const last=+mEnd(k).slice(8);dates.push(k+'-'+String(Math.min(day,last)).padStart(2,'0'));k=nextM(k)}}
+    /* a monthly fixed cost (rent, salaries, maintenance) also counts in the next 12 months, so future months' profit
+       isn't overstated; a bill's amount changes month to month, so it counts only up to this month */
+    let dates=[d0];if(String(e.repeat||'').toLowerCase()==='monthly'){dates=[];const end=String(e.repeat_until||'').slice(0,7)||'9999-12',day=+d0.slice(8);let k=d0.slice(0,7);
+      let lastK=nowK;if(!BILLS.includes(e.category))for(let i=0;i<12;i++)lastK=nextM(lastK);
+      while(k<=end&&k<=lastK&&dates.length<120){const last=+mEnd(k).slice(8);dates.push(k+'-'+String(Math.min(day,last)).padStart(2,'0'));k=nextM(k)}}
     /* a split is equal per stay listed; a flat's part goes to its family, so two flats of one family give it two parts */
     dates.forEach(dt=>{const listed=e.property_id==='*'?sharers(dt):[...new Set(parts(e.property_id))],w={};listed.forEach(x=>{w[fam(x)]=(w[fam(x)]||0)+1});const pids=Object.keys(w);
       pids.forEach(pid=>out.push({...e,property_id:pid,date:dt,amount:Math.round(+e.amount*w[pid]/listed.length*100)/100,__src:e.expense_id||null,__split:pids.length>1,__rep:dates.length>1||String(e.repeat||'')==='monthly'}))})});
@@ -1829,11 +1832,15 @@ document.addEventListener('scroll',()=>$('#tip').hidden=true,true);
 const FONT='-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",sans-serif';
 function svgRoot(w,hh){return sv('svg',{viewBox:`0 0 ${w} ${hh}`,width:w,height:hh,'font-family':FONT,'font-size':11})}
 function niceMax(v){if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v))),f=v/e;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e}
-function axisY(s,{l,r,t,b,w,hh,max,min=0,fmt,right}){const muted=css('--muted'),line=css('--hair-2');const y=v=>t+(hh-t-b)*(1-(v-min)/(max-min));
-  for(let i=0;i<=4;i++){const v=min+(max-min)*i/4;s.append(sv('line',{x1:l,x2:w-r,y1:y(v),y2:y(v),stroke:line,'stroke-width':1,'stroke-dasharray':i===0&&min===0?null:'2 4'}));s.append(sv('text',{x:right?w-r+6:l-8,y:y(v)+4,'text-anchor':right?'start':'end',fill:muted},fmt(v)))}return y}
+function axisY(s,{l,r,t,b,w,hh,max,min=0,fmt,right,step}){const muted=css('--muted'),line=css('--hair-2');const y=v=>t+(hh-t-b)*(1-(v-min)/(max-min));
+  const n=step?Math.round((max-min)/step):4;  // step: ticks every step from min (a chart that goes below zero)
+  for(let i=0;i<=n;i++){const v=min+(max-min)*i/n;s.append(sv('line',{x1:l,x2:w-r,y1:y(v),y2:y(v),stroke:Math.abs(v)<1e-9&&min<0?css('--hair'):line,'stroke-width':1,'stroke-dasharray':Math.abs(v)<1e-9?null:'2 4'}));s.append(sv('text',{x:right?w-r+6:l-8,y:y(v)+4,'text-anchor':right?'start':'end',fill:muted},fmt(v)))}return y}
 function stacked(w,{cats,series,line,hi,fmt,onClick,hh=250,ghost,future,totals:showTot}){
   const l=56,r=line&&line.right?52:14,t=14,b=30;const s=svgRoot(w,hh);const totals=cats.map((_,i)=>sum(series,x=>x.vals[i]));
-  const mx=niceMax(Math.max(...totals,...(line&&!line.right?line.vals:[0]),...(ghost?ghost.vals:[0]))*(showTot?1.12:1.05));const y=axisY(s,{l,r,t,b,w,hh,max:mx,fmt});
+  let mx=niceMax(Math.max(...totals,...(line&&!line.right?line.vals:[0]),...(ghost?ghost.vals:[0]))*(showTot?1.12:1.05)),mn=0,step;
+  /* a profit line below zero (a loss, e.g. future months carrying their fixed costs): the axis goes below zero too */
+  const low=line&&!line.right?Math.min(0,...line.vals):0;if(low<0){step=niceMax((mx-low)/5);mn=-Math.ceil(-low*1.05/step)*step;mx=Math.ceil(mx/step)*step}
+  const y=axisY(s,{l,r,t,b,w,hh,max:mx,min:mn,fmt,step});
   const bw=(w-l-r)/cats.length,bar=Math.min(46,bw*.56);const muted=css('--muted'),ink=css('--ink');
   cats.forEach((c,i)=>{let acc=0;const x=l+i*bw+(bw-bar)/2,on=!hi||hi.has(i),fut=future&&future.has(i);
     /* last year: a soft rounded "ghost" bar behind this year's bar */
@@ -1845,7 +1852,7 @@ function stacked(w,{cats,series,line,hi,fmt,onClick,hh=250,ghost,future,totals:s
     const hit=sv('rect',{x:l+i*bw,y:t,width:bw,height:hh-t-b,fill:'transparent','data-tip':c.tip(i),style:onClick?'cursor:pointer':null});if(onClick)hit.addEventListener('click',()=>onClick(i));s.append(hit)});
   if(line){let ly=y;if(line.right){const lm=niceMax(Math.max(...line.vals,0.01)*1.1);ly=axisY(s,{l,r,t,b,w,hh,max:lm,fmt:line.fmt,right:true});s.querySelectorAll('line').forEach((n,i)=>{if(i>4)n.remove()})}
     const pts=line.vals.map((v,i)=>[l+i*bw+bw/2,ly(v)]);s.append(sv('path',{d:'M'+pts.map(p=>p.join(' ')).join('L'),fill:'none',stroke:line.color,'stroke-width':2.2,'stroke-linejoin':'round','stroke-linecap':'round','pointer-events':'none'}));
-    pts.forEach(p=>s.append(sv('circle',{cx:p[0],cy:p[1],r:3.6,fill:css('--glass-2'),stroke:line.color,'stroke-width':2,'pointer-events':'none'})))}
+    pts.forEach((p,i)=>s.append(sv('circle',{cx:p[0],cy:p[1],r:3.6,fill:css('--glass-2'),stroke:line.vals[i]<0?css('--bad'):line.color,'stroke-width':2,'pointer-events':'none'})))}  // a loss month: red dot
   return s;
 }
 /* Count chart built to be read on a phone: whole-number axis, the number on every bar, date labels spaced so they
@@ -1905,13 +1912,15 @@ function scatter(w,{pts,xFmt,yFmt,xLab,yLab,onClick,hh=320}){
 }
 function waterfall(w,{steps,hh=250}){
   const l=56,r=10,t=14,b=44,s=svgRoot(w,hh);let run=0;const bars=steps.map(st=>{if(st.total){const o={...st,a:0,z:st.value};run=st.value;return o}const a=run;run+=st.value;return{...st,a,z:run}});
-  const mx=niceMax(Math.max(...bars.map(x=>Math.max(x.a,x.z)))*1.05);const y=axisY(s,{l,r,t,b,w,hh,max:mx,fmt:inrK});
+  let mx=niceMax(Math.max(...bars.map(x=>Math.max(x.a,x.z)))*1.05),mn=0,step;const low=Math.min(0,...bars.map(x=>Math.min(x.a,x.z)));  // ends in a loss: axis below zero
+  if(low<0){step=niceMax((mx-low)/5);mn=-Math.ceil(-low*1.05/step)*step;mx=Math.ceil(mx/step)*step}
+  const y=axisY(s,{l,r,t,b,w,hh,max:mx,min:mn,fmt:inrK,step});
   const hid='wfh'+Math.random().toString(36).slice(2,8);if(bars.some(x=>x.ghost)){const pt=sv('pattern',{id:hid,width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'});
     pt.append(sv('rect',{width:6,height:6,fill:css('--bad'),'fill-opacity':.12}),sv('rect',{width:2.4,height:6,fill:css('--bad'),'fill-opacity':.55}));const df=sv('defs');df.append(pt);s.append(df)}const bw=(w-l-r)/bars.length,bar=Math.min(56,bw*.6);const ink=css('--ink');
   bars.forEach((x,i)=>{const X=l+i*bw+(bw-bar)/2,top=y(Math.max(x.a,x.z)),bot=y(Math.min(x.a,x.z));
-    s.append(sv('rect',{x:X,y:top,width:bar,height:Math.max(1,bot-top),rx:6,fill:x.ghost?`url(#${hid})`:x.total?(x.final?css('--ok'):css('--accent')):css('--bad'),'fill-opacity':x.ghost||x.total?1:.75,
+    s.append(sv('rect',{x:X,y:top,width:bar,height:Math.max(1,bot-top),rx:6,fill:x.ghost?`url(#${hid})`:x.total?(x.final?(x.value<0?css('--bad'):css('--ok')):css('--accent')):css('--bad'),'fill-opacity':x.ghost||x.total?1:.75,
       stroke:x.ghost?css('--bad'):null,'stroke-opacity':x.ghost?.45:null,'stroke-dasharray':x.ghost?'4 3':null,'data-tip':x.tip||`${x.label}: ${inr(x.value)}`}));
-    s.append(sv('text',{x:X+bar/2,y:top-6,'text-anchor':'middle',fill:ink,'font-weight':650,'font-size':10},inrK(x.value)));
+    s.append(sv('text',{x:X+bar/2,y:x.total&&x.value<0?bot+13:top-6,'text-anchor':'middle',fill:ink,'font-weight':650,'font-size':10},inrK(x.value)));
     /* labels: two words a line, one word a line when the columns are narrow (phones), so neighbours never overlap */
     const words=x.label.split(' '),lines=(bw<72?words:[words.slice(0,2).join(' '),words.slice(2).join(' ')]).filter(Boolean).slice(0,3);
     lines.forEach((tx,k)=>s.append(sv('text',{x:l+i*bw+bw/2,y:hh-b+15+k*12,'text-anchor':'middle',fill:css('--muted'),'font-size':10},tx)));
@@ -2654,7 +2663,7 @@ function money(v){
   const ks=D.months.filter(k=>mEnd(k)>=f.from&&mStart(k)<=f.to);const ksU=ks.length>=2?ks:D.months.filter(k=>k<=f.to.slice(0,7)).slice(-6);const ms=ksU.map(k=>({k,...mStats(k),fam:lone.length?fsOf(mStart(k),mEnd(k)):0}));
   const lines=[['Bookings','count',x=>x],['Nights sold','nightsAttr',x=>x.toLocaleString('en-IN')],['Occupancy','occ',x=>pct(x)],['Gross booking value','gross',inr],['Platform fees','fee',x=>inr(-x)],['Net payout','net',inr,1],['Owner share','owner',x=>inr(-x)],['Expenses','exp',x=>inr(-x)],
     ...(lone.length&&ms.some(m=>m.fam)?[['Family costs share','fam',x=>inr(-Math.round(x)),0,'ghost']]:[]),['Profit','profit',inr,1],['Avg nightly rate','adr',inr],['RevPAR','revpar',inr]];
-  v.append(card('s12','Profit & loss by month',{hint:'money split by nights across months · future months = booked so far',acts:[btnExport(()=>exportRows(lines.map(([l,k])=>Object.fromEntries([['Line',l],...ms.map(m=>[mLong(m.k),k==='occ'?+(m[k]*100).toFixed(1):Math.round(m[k])])])),'Profit and loss'))]},
+  v.append(card('s12','Profit & loss by month',{hint:'money split by nights across months · future months = booked so far, with fixed costs',acts:[btnExport(()=>exportRows(lines.map(([l,k])=>Object.fromEntries([['Line',l],...ms.map(m=>[mLong(m.k),k==='occ'?+(m[k]*100).toFixed(1):Math.round(m[k])])])),'Profit and loss'))]},
     h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,''),ms.map(m=>h('th',{class:'r'},mLabel(m.k)+(m.k>TODAY.slice(0,7)?'*':''))))),h('tbody',null,lines.map(([l,k,fm,hl,cl])=>h('tr',{class:(hl?'hl':'')+(cl?' '+cl:''),'data-tip':cl?'Shown for comparison - kept at the family, not taken off this flat\'s profit':null},h('td',null,l),ms.map(m=>h('td',{class:'r num'},String(fm(m[k])))))))))));
   // channel economics
   const att=D.B.filter(b=>fB(b)&&b.check_in>=f.from&&b.check_in<=f.to);
