@@ -2147,13 +2147,13 @@ function money(v){
   const owe=sortBy(D.B.filter(b=>fB(b)&&b.channel==='Direct'&&b.net-b.received>1),['check_in',1]);
   const dueWhen=b=>b.check_in<TODAY?'was due '+fmtD(b.check_in):b.check_in===TODAY?'due today':'due at check-in '+fmtD(b.check_in,{weekday:'short',day:'numeric',month:'short'});
   /* collected balances (collected_on / collected_amount, written by Mark collected) - newest first, undo puts them back */
-  const got=sortBy(D.B.filter(b=>fB(b)&&b.collected_on&&+b.collected_amount>0),['collected_on',-1]);S.oweTab=S.oweTab||'due';
+  const got=D.B.filter(b=>fB(b)&&(+b.collected_amount>0||+b.written_off>0)).sort((a,b)=>String(b.collected_on||'').localeCompare(String(a.collected_on||'')));S.oweTab=S.oweTab||'due';
   const oweSeg=h('div',{class:'seg sm',role:'group','aria-label':'Show'},[['due',`To collect · ${owe.length}`],['got',`Collected · ${got.length}`]].map(([k,l])=>h('button',{'aria-pressed':S.oweTab===k,onclick:()=>{S.oweTab=k;render()}},l)));
-  const collectBtn=b=>S.admin?h('button',{class:'btn sm',onclick:e=>{e.stopPropagation();collectNow(b.booking_id)}},'Mark collected'):null;
+  const collectBtn=b=>S.admin?h('button',{class:'btn sm',onclick:e=>{e.stopPropagation();collectNow(b.booking_id)}},'Collect…'):null;
   const undoBtn=b=>S.admin?h('button',{class:'btn sm',onclick:e=>{e.stopPropagation();uncollect(b.booking_id)}},'Undo'):null;
-  if(S.oweTab==='got')v.append(card('s6 fit','Payments to collect',{hint:got.length?`${got.length} collected · ${inrK(sum(got,b=>+b.collected_amount))} in all`:'balances you marked collected show here',acts:[oweSeg,btnExport(()=>exportRows(got.map(b=>({Booking:b.booking_id,Guest:b.guest,Mobile:phoneNice(b.phone),Property:short(b.pname),'Check-in':b.check_in,'Collected on':String(b.collected_on).slice(0,10),'Collected ₹':+b.collected_amount})),'Payments collected'))]},
-    got.length?table([{t:'Guest',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'Collected',f:b=>h('span',{class:'chip-s date'},fmtD(String(b.collected_on).slice(0,10)))},{t:'Amount',r:1,f:b=>h('b',{style:{color:'var(--ok)'}},inr(+b.collected_amount))},{t:'',f:undoBtn}],got.slice(0,S.oweAll?got.length:8),
-      {onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--ok)'}},inr(+b.collected_amount)),h('small',null,'collected')]),h('div',{class:'mfoot'},h('span',{class:'chip-s date'},'Collected '+fmtD(String(b.collected_on).slice(0,10))),undoBtn(b))]})
+  if(S.oweTab==='got')v.append(card('s6 fit','Payments to collect',{hint:got.length?`${got.length} guest${got.length>1?'s':''} · ${inrK(sum(got,b=>+b.collected_amount||0))} collected${sum(got,b=>+b.written_off||0)?' · '+inrK(sum(got,b=>+b.written_off||0))+' written off':''}`:'balances you marked collected show here',acts:[oweSeg,btnExport(()=>exportRows(got.map(b=>({Booking:b.booking_id,Guest:b.guest,Mobile:phoneNice(b.phone),Property:short(b.pname),'Check-in':b.check_in,'Collected on':String(b.collected_on||'').slice(0,10),'Collected ₹':+b.collected_amount||0,'Written off ₹':+b.written_off||0,'Still to collect ₹':+b.balance_due||0})),'Payments collected'))]},
+    got.length?table([{t:'Guest',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'Collected',f:b=>b.collected_on?h('span',{class:'chip-s date'},fmtD(String(b.collected_on).slice(0,10))):h('span',{class:'hint'},'written off')},{t:'Amount',r:1,f:b=>h('span',null,h('b',{style:{color:'var(--ok)'}},inr(+b.collected_amount||0)),+b.written_off>0?h('small',{style:{display:'block',color:'var(--muted)'}},inr(+b.written_off)+' written off'):null,+b.balance_due>0?h('small',{style:{display:'block',color:'var(--bad)'}},inr(+b.balance_due)+' still to collect'):null)},{t:'',f:b=>+b.collected_amount>0?undoBtn(b):null}],got.slice(0,S.oweAll?got.length:8),
+      {onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--ok)'}},inr(+b.collected_amount||0)),h('small',null,+b.balance_due>0?inr(+b.balance_due)+' still to collect':+b.written_off>0?inr(+b.written_off)+' written off':'collected')]),h('div',{class:'mfoot'},b.collected_on?h('span',{class:'chip-s date'},'Collected '+fmtD(String(b.collected_on).slice(0,10))):h('span',{class:'hint'},'written off'),+b.collected_amount>0?undoBtn(b):null)]})
       :h('div',{class:'empty'},'Nothing marked collected yet.'),got.length>8?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.oweAll=!S.oweAll;render()}},S.oweAll?'Show fewer':`Show all ${got.length}`):null));
   else v.append(card('s6 fit','Payments to collect',{hint:owe.length?`${owe.length} guest${owe.length>1?'s':''} · ${inrK(sum(owe,b=>b.net-b.received))} still to collect`:'direct bookings',acts:[oweSeg,btnExport(()=>exportRows(owe.map(b=>({Booking:b.booking_id,Guest:b.guest,Mobile:phoneNice(b.phone),Property:short(b.pname),'Check-in':b.check_in,'Total ₹':b.net,'Received ₹':b.received,'To collect ₹':b.net-b.received})),'Payments to collect'))]},
     owe.length?table([{t:'Guest',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'When',f:b=>h('span',{class:'chip-s date'+(b.check_in<TODAY?' late':'')},dueWhen(b))},{t:'Received',r:1,f:b=>inr(b.received)},{t:'To collect',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))},{t:'',f:collectBtn}],owe.slice(0,S.oweAll?owe.length:8),{onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--bad)'}},inr(b.net-b.received)),h('small',null,'of '+inrK(b.net))]),h('div',{class:'mfoot'},h('span',{class:'chip-s date'+(b.check_in<TODAY?' late':'')},dueWhen(b)),collectBtn(b))]}):h('div',{class:'empty'},'No balances left with direct guests.'),owe.length>8?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.oweAll=!S.oweAll;render()}},S.oweAll?'Show fewer':`Show all ${owe.length}`):null));
@@ -2188,7 +2188,7 @@ function bookings(v){
   /* "Recently added" (default): every date, newest booking first (booking ids grow as rows are added);
      "By check-in": the period filter applies, as before. */
   const recent=st.sort[0]==='added',idn=b=>+(String(b.booking_id).match(/\d+/)||[0])[0];
-  const pool=D.B.filter(b=>fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))&&(recent||(b.check_in>=f.from&&b.check_in<=f.to))&&(st.status==='All'||b.status===st.status)&&(!st.pay||st.pay==='Any'||(st.pay==='To collect'?b.ok&&+b.balance_due>0:!!b.collected_on))&&(!ql||(b.guest+' '+b.booking_id+' '+b.pname).toLowerCase().includes(ql)));
+  const pool=D.B.filter(b=>fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))&&(recent||(b.check_in>=f.from&&b.check_in<=f.to))&&(st.status==='All'||b.status===st.status)&&(!st.pay||st.pay==='Any'||(st.pay==='To collect'?b.ok&&+b.balance_due>0:!!(b.collected_on||+b.written_off)))&&(!ql||(b.guest+' '+b.booking_id+' '+b.pname).toLowerCase().includes(ql)));
   const rows=recent?[...pool].sort((a,b)=>(idn(b)-idn(a))*(st.sort[1]<0?1:-1)):sortBy(pool,st.sort);
   const q=h('input',{class:'search',type:'search',placeholder:'Search guest, booking ID, property…',value:st.q,id:'bkQ',style:{flex:'1 1 220px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;st.lim=60;render();const n=$('#bkQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
   const cols=[{t:'Booking',k:'booking_id',m:1,f:b=>b.booking_id},{t:'Guest',k:'guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''}`)},{t:'Property',k:'pname',f:b=>h('div',{class:'who'},h('div',null,h('b',null,short(b.pname)),h('span',null,b.area+', '+b.city)))},{t:'Channel',k:'channel',f:b=>chd(b.channel)},{t:'Check-in',k:'check_in',f:b=>fmtD(b.check_in)+(b.arrival_time?' · '+b.arrival_time:'')},{t:'Nights',k:'nights',r:1,f:b=>b.nights},{t:'Gross',k:'gross',r:1,f:b=>inr(b.gross)},{t:'Payout',k:'net',r:1,f:b=>inr(b.net)},{t:'Stay',k:'status',f:b=>pillStatus(b.status)},{t:'Payout status',k:'pay',f:b=>pillPay(b.pay)},{t:'Notes',k:'notes',f:b=>b.notes?h('span',{class:'bk-note',title:b.notes},String(b.notes).split('\n').pop()):'–'}];
@@ -2765,8 +2765,8 @@ const addNote=(old,text)=>[old,`${fmtD(TODAY,{day:'numeric',month:'short',year:'
 const MG_L={booking_status:'Status',notes:'Notes',cancel_reason:'Cancel reason',received:'Amount received',platform_fee:'Platform fee',gst:'GST',
   tariff:'Tariff',account:'Account',payment_terms:'Payment terms',channel:'Platform',source:'Source',deleted_at:'Trash',deleted_by:'Moved to Trash by',
   guest:'Customer',phone:'Mobile',guests:'Guests',check_in:'Check-in',check_out:'Check-out',property_id:'Property',location:'Location',
-  booking_date:'Date of booking',arrival_time:'Expected check-in time',balance_due:'Left to collect',refund_check:'Kept money to confirm',collected_on:'Collected on',collected_amount:'Collected'};
-const MONEYF=['received','platform_fee','gst','tariff','balance_due','collected_amount'];
+  booking_date:'Date of booking',arrival_time:'Expected check-in time',balance_due:'Left to collect',refund_check:'Kept money to confirm',collected_on:'Collected on',collected_amount:'Collected',written_off:'Written off'};
+const MONEYF=['received','platform_fee','gst','tariff','balance_due','collected_amount','written_off'];
 function mgVal(k,v){if(v==null||v==='')return'—';if(MONEYF.includes(k))return inr(+v);if(k==='property_id')return short((D.P[v]||{}).property||v);
   if(k==='deleted_at')return'in Trash since '+fmtD(v);if(k==='check_in'||k==='check_out'||k==='booking_date')return fmtD(v,{day:'numeric',month:'short',year:'numeric'});return String(v)}
 function stage(id,fields){id=String(id);const raw=rawB(id)||{},next={...(STAGE[id]||{}),...fields};
@@ -2810,15 +2810,34 @@ function mgKept(id){const b=stg(rawB(id)),num=v=>h('input',{type:'number',inputm
       stage(id,{received:v(rc),platform_fee:v(pf),gst:v(gs),refund_check:null,notes:addNote(b.notes,`Kept after the WhatsApp cancel: ${inr(v(rc)||0)}`)});render()}},'Save')])}
 /* Money › Payments to collect: mark a balance collected / undo it. Saved straight away (logged in History with an Undo);
    collected_on + collected_amount keep it under Collected, and the morning WhatsApp summary drops it. */
-function collectNow(id){const b=rawB(id),left=+(b&&b.balance_due)||0;if(!left)return;
-  confirmBox(`Mark ${inr(left)} collected?`,`${b.guest||'Guest'} · ${id}. It moves to Collected, leaves the morning reminder, and the notes record it.`,'Mark collected',false,
-    ()=>save('bookings','update',{match:{booking_id:String(id)},fields:{balance_due:null,collected_on:TODAY,collected_amount:left,notes:addNote(b.notes,`Balance ${inr(left)} collected · paid in full`)}},`${inr(left)} collected`))}
-function uncollect(id){const b=rawB(id),amt=+(b&&b.collected_amount)||0;if(!amt)return;
-  confirmBox(`Put ${inr(amt)} back to collect?`,`${b.guest||'Guest'} · ${id}. Use this if it was marked collected by mistake.`,'Put back',false,
-    ()=>save('bookings','update',{match:{booking_id:String(id)},fields:{balance_due:amt,collected_on:null,collected_amount:null,notes:addNote(b.notes,`Collection of ${inr(amt)} undone · ${inr(amt)} left to collect`)}},`${inr(amt)} back to collect`))}
-function mgCollect(id){const b=stg(rawB(id)),left=+b.balance_due||0;if(!left)return;
-  confirmBox(`Mark ${inr(left)} collected?`,`${b.guest||'Guest'} · ${id}. The balance leaves Payments to collect and the notes record it.`,'Mark collected',false,
-    ()=>stage(id,{balance_due:null,collected_on:TODAY,collected_amount:left,notes:addNote(b.notes,`Balance ${inr(left)} collected · paid in full`)}))}
+/* Collect what a guest still owes - all of it or part (some pay in pieces), and optionally write off what won't be paid.
+   collected_amount = everything collected from the balance so far, collected_on = the last time; written_off = what was
+   given up (it also comes off the booking's tariff and amount due, so money shows what was really earned). Saved
+   straight away from Money (logged in History, undoable there) or staged from Manage. */
+function collectBox(id,staged){const b=staged?stg(rawB(id)):rawB(id),left=+(b&&b.balance_due)||0;if(!left)return;
+  const amt=h('input',{type:'number',inputmode:'decimal',min:0,max:left,step:'1',value:left}),wo=h('input',{type:'checkbox'}),err=h('div',{class:'err',hidden:true});
+  const woLine=h('label',{class:'full chk',hidden:true},wo,h('span',null,'')),info=h('p',{class:'full hint',style:{margin:0}},'');
+  const sync=()=>{const a=Math.max(0,+amt.value||0),rest=Math.max(0,left-a);woLine.hidden=!(rest>0);woLine.lastChild.textContent=`The rest (${inr(rest)}) won't be paid - write it off`;
+    info.textContent=!rest?'Paid in full - it moves to Collected.':wo.checked?`${inr(rest)} comes off the booking's tariff and amount due; nothing left to collect.`:`${inr(rest)} stays under Payments to collect (and in the morning reminder).`};
+  amt.addEventListener('input',sync);wo.addEventListener('change',sync);sync();
+  modal(`Collect · ${id}`,h('div',{class:'form'},h('p',{class:'full',style:{margin:0}},`${b.guest||'Guest'} still owes ${inr(left)}.`),fld('Collected now (₹)',amt,1),woLine,info,err),
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{const a=Math.round((+amt.value||0)*100)/100,rest=Math.round((left-a)*100)/100;
+      if(!(a>=0)||a>left){err.hidden=false;err.textContent=`Enter an amount from 0 to ${inr(left)}.`;return}
+      const off=rest>0&&wo.checked?rest:0;if(!a&&!off){err.hidden=false;err.textContent='Enter what was collected, or tick write-off.';return}
+      const f={balance_due:rest-off>0?rest-off:null,notes:addNote(b.notes,[a?`${inr(a)} collected`:'',off?`${inr(off)} written off`:'',rest-off>0?`${inr(rest-off)} still to collect`:'paid in full'].filter(Boolean).join(' · '))};
+      if(a){f.collected_amount=(+b.collected_amount||0)+a;f.collected_on=TODAY}
+      if(off){f.written_off=(+b.written_off||0)+off;f.received=Math.max(0,(+b.received||0)-off);if(b.tariff!=null&&b.tariff!=='')f.tariff=Math.max(0,+b.tariff-off)}
+      closeLayer();if(staged){stage(id,f);render()}else save('bookings','update',{match:{booking_id:String(id)},fields:f},a?`${inr(a)} collected`:`${inr(off)} written off`)}},'Save')])}
+const collectNow=id=>collectBox(id,false),mgCollect=id=>collectBox(id,true);
+/* put back what was marked collected by mistake (all or part) */
+function uncollect(id){const b=rawB(id),got=+(b&&b.collected_amount)||0;if(!got)return;
+  const amt=h('input',{type:'number',inputmode:'decimal',min:0,max:got,step:'1',value:got}),err=h('div',{class:'err',hidden:true});
+  modal(`Put back · ${id}`,h('div',{class:'form'},h('p',{class:'full',style:{margin:0}},`${b.guest||'Guest'}: ${inr(got)} marked collected. How much goes back to collect?`),fld('Put back (₹)',amt,1),err),
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{const a=Math.round((+amt.value||0)*100)/100;
+      if(!(a>0)||a>got){err.hidden=false;err.textContent=`Enter an amount from 1 to ${inr(got)}.`;return}
+      const keep=Math.round((got-a)*100)/100;closeLayer();
+      save('bookings','update',{match:{booking_id:String(id)},fields:{balance_due:(+b.balance_due||0)+a,collected_amount:keep||null,collected_on:keep?b.collected_on:null,
+        notes:addNote(b.notes,`${inr(a)} put back to collect (marked collected by mistake)`)}},`${inr(a)} back to collect`)}},'Put back')])}
 function mgRestore(ids){let skipped=[];
   for(const id of ids){const b=stg(rawB(id));const c=clashWhy({...b,booking_status:'Confirmed'});
     if(c){skipped.push(`${id} (${c})`);continue}stage(id,{booking_status:'Confirmed',notes:addNote(b.notes,'Restored to confirmed')})}
@@ -3483,7 +3502,7 @@ function audField(tab,k,e){
   if(tab==='overrides')return({rate:'Price / night',pct:'Markup %',from:'From',to:'To',note:'Name',unit_id:'Stay',ov_id:'Id'})[k]||k;
   if(tab==='lists')return({value:'Option',fee_pct:'Usual fee %',active:'In use',list:'List',row_id:'Id'})[k]||k;
   const m={bookings:MG_L,properties:P_L,expenses:EXP_L,guest_info:GI_L}[tab]||{};return m[k]||k.replace(/_/g,' ').replace(/^./,x=>x.toUpperCase())}
-const AUD_MONEY=['tariff','platform_fee','gst','received','balance_due','collected_amount','amount','rate','base_rate','extra_guest_fee','cleaning_fee','nightly_rate','amount_received','pet_fee'];
+const AUD_MONEY=['tariff','platform_fee','gst','received','balance_due','collected_amount','written_off','amount','rate','base_rate','extra_guest_fee','cleaning_fee','nightly_rate','amount_received','pet_fee'];
 function audVal(e,k,v){if(v===undefined)return'not recorded';if(v===null||v==='')return'—';if(k==='wifi_password')return'••••••';
   if(Array.isArray(v))return v.length?v.join(', '):'—';if(typeof v==='object')return JSON.stringify(v);
   if(AUD_MONEY.includes(k)&&v!==''&&!isNaN(+v))return inr(+v);if(k==='owner_share'&&!isNaN(+v))return Math.round(+v*100)+'%';
@@ -3643,7 +3662,7 @@ function manage(v){
     return pendingBar(v)}
   all.forEach(b=>{b._n=+(String(b.booking_id).match(/\d+/)||[0])[0]});  // newest added first
   const q=MG.q.toLowerCase(),months=[...new Set(all.filter(b=>!b.deleted_at).map(b=>String(b.check_in).slice(0,7)))].sort().reverse();
-  const rows=sortBy(all.filter(b=>!b.deleted_at&&(!MG.prop||b.property_id===MG.prop)&&(!MG.chan||b.channel===MG.chan)&&(MG.status==='All'?true:MG.status==='To collect'?b.booking_status!=='Cancelled'&&+b.balance_due>0:MG.status==='Collected'?!!b.collected_on:(b.booking_status||'Confirmed')===MG.status)&&
+  const rows=sortBy(all.filter(b=>!b.deleted_at&&(!MG.prop||b.property_id===MG.prop)&&(!MG.chan||b.channel===MG.chan)&&(MG.status==='All'?true:MG.status==='To collect'?b.booking_status!=='Cancelled'&&+b.balance_due>0:MG.status==='Collected'?!!(b.collected_on||+b.written_off):(b.booking_status||'Confirmed')===MG.status)&&
     (!MG.month||String(b.check_in).startsWith(MG.month))&&(!q||[b.guest,b.booking_id,b.phone,b.notes].join(' ').toLowerCase().includes(q))),['_n',-1]);
   const L=bookingLists(),sel=[...MG.sel].filter(id=>rows.some(b=>String(b.booking_id)===id));
   const opt=(val,label,cur)=>h('option',{value:val,selected:val===cur||null},label);
@@ -3698,7 +3717,7 @@ function mgMore(b,id,can){const go_=fn=>()=>{closeLayer();fn()};
   modal(`${b.guest||'Guest'} · ${id}`,h('div',{class:'mg-sheet'},
     h('p',{class:'mg-sheetp'},`${short((D.P[b.property_id]||{}).property||b.property_id)} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.channel||''} · received ${mgAmount(b,id)}`),
     b.notes?h('pre',{class:'mg-notes'},b.notes):null,
-    +b.balance_due>0&&!can?h('button',{class:'btn primary',onclick:go_(()=>mgCollect(id))},`Mark ${inr(+b.balance_due)} collected`):null,
+    +b.balance_due>0&&!can?h('button',{class:'btn primary',onclick:go_(()=>mgCollect(id))},`Collect ${inr(+b.balance_due)}…`):null,
     can&&b.refund_check==='Pending'?h('button',{class:'btn primary',onclick:go_(()=>mgKept(id))},'Confirm what was kept'):null,
     h('button',{class:'btn',onclick:go_(()=>openForm('booking',b.property_id,b,{stage:true}))},'Edit details'),
     can?h('button',{class:'btn',onclick:go_(()=>mgRestore([id]))},'Mark confirmed again'):h('button',{class:'btn',onclick:go_(()=>mgCancel([id]))},'Cancel booking'),
