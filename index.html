@@ -1758,9 +1758,10 @@ function famMoney(from,to,par){const kids=kidsOf(par),ids=new Set([par,...kids])
   const nightsOf=id=>sum(D.B.filter(b=>b.ok&&(b.property_id===id||b.property_id===par)&&b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to));
   const es=D.E.filter(e=>ids.has(e.property_id)&&e.date>=from&&e.date<=to),cats={};es.forEach(e=>cats[e.category||'Other']=(cats[e.category||'Other']||0)+(+e.amount||0));
   return{par,kids,net:sum(mb,([b,w])=>b.net*w),exp:sum(es,e=>+e.amount||0),owner:ownerCut(ids,mb,from,to),by,cats,nights:Object.fromEntries(kids.map(k=>[k,nightsOf(k)]))}}
-/* a child's fair share of its family's costs, by nights booked - shown for comparison only, never deducted */
-function fairShare(from,to,kid){const par=parentOf(kid);if(!par)return null;const fm=famMoney(from,to,par),tot=sum(Object.values(fm.nights),x=>x);
-  return{par,amount:tot?fm.exp*(fm.nights[kid]||0)/tot:0,exp:fm.exp}}
+/* a child's fair share of its family's costs: split evenly between the family's flats, so it stays the same whatever is
+   booked - shown for comparison only, never deducted */
+function fairShare(from,to,kid){const par=parentOf(kid);if(!par)return null;const fm=famMoney(from,to,par),n=fm.kids.length||1;
+  return{par,amount:fm.exp/n,exp:fm.exp,n}}
 /* where an expense sits, in words */
 function stayLabel(e){const id=String(e.property_id||''),ids=id.split(',').map(x=>x.trim()).filter(Boolean),nm=x=>short((D.P[x]||{}).property||x);
   if(id==='*')return'All stays';if(ids.length>1)return`Split: ${ids.map(nm).join(', ')}`;
@@ -2612,7 +2613,7 @@ function property(v){
   if(S.admin&&st.inFamily){const fs=fairShare(f.from,f.to,p.property_id),par=D.P[st.inFamily];
     v.append(h('section',{class:'card glass s12 fam-note'},h('div',{class:'fam-note-in'},icon('info'),h('div',null,
       h('b',null,`Costs for this flat are kept in the ${short(par.property)} family`),
-      h('span',null,`Its revenue, nights and charts below are its own.${fs&&fs.exp?` Its fair share of family costs in this period would be about ${inrK(fs.amount)} (by nights booked), shown for comparison only.`:''}`))),
+      h('span',null,`Its revenue, nights and charts below are its own.${fs&&fs.exp?` Its fair share of family costs in this period would be about ${inrK(fs.amount)} (split evenly between its ${fs.n} flats), shown for comparison only.`:''}`))),
       h('button',{class:'btn sm',onclick:()=>go('property',{propId:st.inFamily})},'Open family')))}
   v.append(propDetails(p));
   // 90 day strip
@@ -2643,19 +2644,19 @@ function money(v){
   const f=S.f,s=stats(f.from,f.to),[pa,pz]=prevRange(),p=stats(pa,pz);
   const t=(l,val,d,cap)=>h('div',{class:'kpi glass s3'},h('div',{class:'l'},l),h('div',{class:'v num'},val),h('div',{class:'foot'},h('div',{style:{display:'flex',gap:'8px',alignItems:'center'}},d,cap?h('span',{class:'cap'},cap):null)));
   /* a flat picked without its whole place: its family's costs are kept at the whole place, so its profit is before them.
-     Its fair share of those costs (by nights booked) is drawn hatched - shown, never taken off its own figures. */
+     Its fair share of those costs (split evenly between the family's flats) is drawn hatched - shown, never taken off its own figures. */
   const lone=f.props.filter(id=>{const par=parentOf(id);return par&&!f.props.includes(par)&&fP(D.P[id])});
   const pars=[...new Set(lone.map(parentOf))],fsOf=(a,z)=>sum(lone,k=>(fairShare(a,z,k)||{amount:0}).amount),fsTot=fsOf(f.from,f.to);
   const fsCats={};lone.forEach(k=>{const fs=fairShare(f.from,f.to,k),fm=famMoney(f.from,f.to,parentOf(k));if(!fs||!fm.exp)return;Object.entries(fm.cats).forEach(([c,a])=>fsCats[c]=(fsCats[c]||0)+a*fs.amount/fm.exp)});
   const famName=pars.map(x=>short(D.P[x].property)).join(' and '),flatName=lone.map(x=>short(D.P[x].property)).join(' and ');
   if(lone.length)v.append(h('section',{class:'card glass s12 fam-note'},h('div',{class:'fam-note-in'},icon('info'),h('div',null,
     h('b',null,`${flatName}: costs are counted in the ${famName} famil${pars.length>1?'ies':'y'}`),
-    h('span',null,`Revenue below is ${lone.length>1?'these flats\'':'this flat\'s'} own. ${fsTot?`Fair share of family costs this period: about ${inrK(fsTot)} by nights booked, shown hatched.`:'No family costs recorded in this period.'}`))),
+    h('span',null,`Revenue below is ${lone.length>1?'these flats\'':'this flat\'s'} own. ${fsTot?`Fair share of family costs this period: about ${inrK(fsTot)}, split evenly between the family's flats, shown hatched.`:'No family costs recorded in this period.'}`))),
     h('button',{class:'btn sm',onclick:()=>setF({props:[...new Set([...f.props.filter(x=>!lone.includes(x)),...pars])]})},'Show family')));
   v.append(t('Gross booking value',inrK(s.gross),delta(s.gross,p.gross),`${s.count} bookings`),t('Platform fees',inrK(s.fee),delta(s.fee,p.fee,true),s.gross?pct(s.fee/s.gross,1)+' of gross':'no bookings'),t('Net payout',inrK(s.net),delta(s.net,p.net)),
     t('Profit',inrK(s.profit),delta(s.profit,p.profit),lone.length?(fsTot?`${inrK(s.profit-fsTot)} after fair share`:'before family costs'):s.net>0?pct(s.profit/s.net)+' margin':'no income'));
   let wh;
-  v.append(card('s7','From bookings to profit',{hint:rangeLabel(),acts:[btnPNG(()=>wh,'Bookings to profit')]},wh=chart(w=>waterfall(w,{steps:[{label:'Gross booking value',value:s.gross,total:1},{label:'Platform fees',value:-s.fee},{label:'Owner share',value:-s.owner},...(s.exp||!fsTot?[{label:'Running expenses',value:-s.exp}]:[]),...(fsTot?[{label:'Family costs share',value:-fsTot,ghost:1,tip:`Fair share of ${famName} family costs: ${inr(fsTot)} (kept at the family, by nights booked)`}]:[]),
+  v.append(card('s7','From bookings to profit',{hint:rangeLabel(),acts:[btnPNG(()=>wh,'Bookings to profit')]},wh=chart(w=>waterfall(w,{steps:[{label:'Gross booking value',value:s.gross,total:1},{label:'Platform fees',value:-s.fee},{label:'Owner share',value:-s.owner},...(s.exp||!fsTot?[{label:'Running expenses',value:-s.exp}]:[]),...(fsTot?[{label:'Family costs share',value:-fsTot,ghost:1,tip:`Fair share of ${famName} family costs: ${inr(fsTot)} (kept at the family, split evenly between its flats)`}]:[]),
     {label:fsTot?'After fair share':'Profit',value:s.profit-fsTot,total:1,final:1}]}))));
   const ids=new Set(D.props.filter(fP).map(x=>x.property_id));const cats={};D.E.filter(e=>ids.has(e.property_id)&&e.date>=f.from&&e.date<=f.to).forEach(e=>cats[e.category]=(cats[e.category]||0)+(+e.amount||0));const ce=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const mx=ce.length?ce[0][1]:1;
   const ceF=Object.entries(fsCats).sort((a,b)=>b[1]-a[1]),mxA=Math.max(mx,...ceF.map(x=>x[1]));
