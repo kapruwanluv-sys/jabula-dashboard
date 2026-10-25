@@ -1248,6 +1248,10 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .kp-m{top:-4px;bottom:-4px;width:3px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
 .kp small{font-size:11.5px;gap:6px}.kp small b{font-weight:700;color:var(--ink-2)}
 .kp-k{width:3px;height:11px;background:var(--ink)}
+.cmp-bar{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:6px 10px;margin:-6px 4px -8px;font-size:12.5px;color:var(--muted)}
+.cmp-when{font-weight:650;color:var(--ink-2);font-variant-numeric:tabular-nums}
+@media (max-width:640px){.cmp-bar{justify-content:space-between;row-gap:2px}.cmp-when{flex-basis:100%;text-align:right;padding-right:6px}}
+.strip-stats .sstat .l{white-space:normal;line-height:1.25}
 .kp-m.ly{background:none;border-left:2px dotted var(--ink-2);width:0;box-shadow:none}.kp-k.ly{background:none;border-left:2px dotted var(--ink-2);width:0}
 .kp small{flex-wrap:wrap;column-gap:10px;row-gap:2px;white-space:normal}.kp-c{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.strip-stats .sstat{transition:none}.strip-stats .sstat:hover{transform:none}}
@@ -1435,7 +1439,9 @@ const fade_=(c,t)=>{const a=rgb_(c),b=rgb_(css('--bg')||'#fff');return`rgb(${a.m
 /* the filtered period in words, for "34% booked this month" */
 function bookedWhen(){const f=F(),k=f.from.slice(0,7),whole=f.from===mStart(k)&&f.to===mEnd(k),now=TODAY.slice(0,7);
   if(whole)return k===now?'this month':k===prevM(now)?'last month':k===nextM(now)?'next month':'in '+mLong(k);return 'in this period'}
-function prevRange(){const f=F(),n=diff(f.from,f.to)+1;if(f.preset==='month'||f.preset==='last'||(f.from.endsWith('-01')&&f.to===mEnd(f.from.slice(0,7)))){const k=prevM(f.from.slice(0,7));return[mStart(k),mEnd(k)]}return[add(f.from,-n),add(f.from,-1)]}
+function prevRange(){const f=F(),n=diff(f.from,f.to)+1;
+  if(f.from.endsWith('-01')&&f.to===mEnd(f.to.slice(0,7))){let m=1;for(let k=f.from.slice(0,7);k<f.to.slice(0,7);k=nextM(k))m++;let a=f.from.slice(0,7),z=f.to.slice(0,7);for(let i=0;i<m;i++){a=prevM(a);z=prevM(z)}return[mStart(a),mEnd(z)]}
+  return[add(f.from,-n),add(f.from,-1)]}
 const PRESETS=[['month','This month'],['last','Last month'],['next30','Next 30 days'],['last90','Last 90 days'],['season','Whole season'],['custom','Custom']];
 function applyPreset(p){
   const f=S.f;f.preset=p;const k=TODAY.slice(0,7);
@@ -1801,29 +1807,32 @@ function overview(v){
   const tint=c=>({background:`color-mix(in srgb, ${c} 13%, transparent)`,color:c});
   const SI={net:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',profit:'M3 17l6-6 4 4 8-8M15 7h6v6',occ:'M3 18V8M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5M7 11.5a1.5 1.5 0 100-.01',adr:'M3 12l9-9h8v8l-9 9zM15.5 8.5a1 1 0 100-.01',revpar:'M4 20V10M10 20V4M16 20v-7M22 20H2'};
   /* pace bar: how far this period has got (fill) against the whole previous period (marker) - ahead or behind at a glance */
-  /* pace bar: this period so far (fill) against last month (solid mark) and the same period last year (dotted mark) */
-  const wholeM=(a,z)=>a.endsWith('-01')&&z===mEnd(a.slice(0,7));
-  const prevL=(()=>{const[a,z]=prevRange();return wholeM(a,z)?mLabel(a.slice(0,7)):'last period'})();
+  /* comparison for the KPI tiles: one thing, picked once above the strip - the same dates last year (default) or the
+     period before. Fill = this period, mark = the comparison, caption names its dates. */
+  /* a period in a few words: 'Sept', "Oct '25", "Jul–Sep '25", "Jul '25–Mar '26", '3 Oct–9 Oct' */
+  const spanL=(a,z,yr)=>{const ma=mLabel(a.slice(0,7)),mz=mLabel(z.slice(0,7)),ya="'"+a.slice(2,4),yz="'"+z.slice(2,4);
+    if(!(a.endsWith('-01')&&z===mEnd(z.slice(0,7))))return`${fmtD(a)}–${fmtD(z)}`+(yr?' '+yz:'');
+    if(a.slice(0,7)===z.slice(0,7))return ma+(yr?' '+ya:'');return ya===yz?`${ma}–${mz}${yr?' '+ya:''}`:`${ma} ${ya}–${mz} ${yz}`};
   const yAgo=d=>{const x=(+d.slice(0,4)-1)+d.slice(4);return x.endsWith('-02-29')?x.slice(0,8)+'28':x};
-  const lyS=stats(yAgo(f.from),yAgo(f.to)),lyL=wholeM(f.from,f.to)?`${mLabel(f.from.slice(0,7))} '${String(+f.from.slice(2,4)-1).padStart(2,'0')}`:'last year';
-  const curL=wholeM(f.from,f.to)?mLabel(f.from.slice(0,7)):'this period';
-  const paceBar=(cur,prev,ly,fmt,color)=>{if(!(prev>0)&&!(ly>0))return null;const top=Math.max(cur,prev,ly,1e-9),at=x=>`calc(${(Math.max(0,Math.min(1,x/top))*100).toFixed(1)}% - 1px)`;
-    return h('div',{class:'kp'},h('div',{class:'kp-t'},h('i',{class:'kp-f',style:{width:(Math.max(0,Math.min(1,cur/top))*100).toFixed(1)+'%',background:color,color}}),
-        prev>0?h('i',{class:'kp-m',style:{left:at(prev)}}):null,ly>0?h('i',{class:'kp-m ly',style:{left:at(ly)}}):null),
-      h('small',null,prev>0?h('span',{class:'kp-c'},h('i',{class:'kp-k'}),prevL+' ',h('b',null,fmt(prev))):null,ly>0?h('span',{class:'kp-c'},h('i',{class:'kp-k ly'}),lyL+' ',h('b',null,fmt(ly))):null,
-        null))};
-  /* tooltip: one short line - what the number is and what the bar compares */
+  const cmpLY=(f.cmp||'ly')==='ly',[pa_,pz_]=prevRange();
+  const base=cmpLY?stats(yAgo(f.from),yAgo(f.to)):p,baseL=cmpLY?spanL(yAgo(f.from),yAgo(f.to),true):spanL(pa_,pz_,pa_.slice(0,4)!==f.from.slice(0,4));
+  const paceBar=(cur,b,fmt,color)=>{if(!(b>0))return null;const top=Math.max(cur,b,1e-9),pc=x=>(Math.max(0,Math.min(1,x/top))*100).toFixed(1);
+    return h('div',{class:'kp'},h('div',{class:'kp-t'},h('i',{class:'kp-f',style:{width:pc(cur)+'%',background:color,color}}),h('i',{class:'kp-m',style:{left:`calc(${pc(b)}% - 1px)`}})),
+      h('small',null,h('span',{class:'kp-c'},h('i',{class:'kp-k'}),'was ',h('b',null,fmt(b)))))};
+  /* the change chip against the same comparison; a jump from a tiny base reads "▲ 61×", not "▲ 5977%" */
+  const chip=(cur,b)=>{if(!(b>0))return null;const el=delta(cur,b);el.removeAttribute('data-tip');if(cur/b>=4)el.textContent=`▲ ${Math.round(cur/b)}×`;return el};
   const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));
-    const cmp=sp?[sp[1]>0?prevL:null,sp[2]>0?lyL:null].filter(Boolean):[],short_=cmp.length?`${curL} vs ${cmp.join(' and ')}`:null;
-    if(sp&&!cmp.length)d=null;  // nothing to compare: drop the empty '—' chip too
-    return h('div',{class:'sstat','data-tip':sp?short_:tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d),sp?paceBar(sp[0],sp[1],sp[2],sp[3],color):null))};
+    if(sp)d=chip(sp[0],sp[1]);
+    return h('div',{class:'sstat','data-tip':sp?null:tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),d?h('span',{class:'d'},d):null,sp?paceBar(sp[0],sp[1],sp[2],color):null))};
   const pay=!S.admin?null:h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Tap to see who still owes'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Money to collect'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.channel==='Direct').length} direct guests · ${due.filter(b=>b.channel!=='Direct').length} platform payouts`},`${due.length} bookings`))));
+  v.append(h('div',{class:'cmp-bar s12'},h('span',null,'Compare with'),h('div',{class:'seg sm',role:'group','aria-label':'Compare with'},
+    [['ly','Last year'],['prev',f.preset==='month'?'Previous month':'Previous period']].map(([k,l])=>h('button',{'aria-pressed':(f.cmp||'ly')===k,onclick:()=>{S.f.cmp=k;saveF();render()}},l))),h('b',{class:'cmp-when'},baseL)));
   v.append(h('section',{class:'strip-stats glass s12','aria-label':'Key numbers'},
-    !S.admin?null:st1('net','Net payout',inrK(s.net),delta(s.net,p.net),[s.net,p.net,lyS.net,inrK],css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
-    !S.admin?null:st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),[s.profit,p.profit,lyS.profit,inrK],css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
-    st1('occ','Booked '+bookedWhen(),pct(s.occ),delta(s.occ,p.occ),[s.occ,p.occ,lyS.occ,x=>pct(x)],css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
-    !S.admin?null:st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),[s.adr,p.adr,lyS.adr,inrK],css('--city-3'),'ADR: room revenue ÷ nights sold'),
-    !S.admin?null:st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),[s.revpar,p.revpar,lyS.revpar,inrK],css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
+    !S.admin?null:st1('net','Net payout',inrK(s.net),delta(s.net,p.net),[s.net,base.net,inrK],css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
+    !S.admin?null:st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),[s.profit,base.profit,inrK],css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
+    st1('occ','Booked '+bookedWhen(),pct(s.occ),delta(s.occ,p.occ),[s.occ,base.occ,x=>pct(x,x>0&&x<.01?1:0)],css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
+    !S.admin?null:st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),[s.adr,base.adr,inrK],css('--city-3'),'ADR: room revenue ÷ nights sold'),
+    !S.admin?null:st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),[s.revpar,base.revpar,inrK],css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
   // trend: a window of months you swipe through (phones 6, laptops 15), not every month squeezed in
   const all=D.months,nowK=TODAY.slice(0,7),cities=liveCities().filter(c=>!f.cities.length||f.cities.includes(c));
   const netC=(c,k)=>sum(D.B.filter(b=>fBm(b)&&b.city===c),b=>b.net*share(b,mStart(k),mEnd(k)));
