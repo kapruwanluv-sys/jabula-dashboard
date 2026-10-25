@@ -1838,7 +1838,7 @@ function svgRoot(w,hh){return sv('svg',{viewBox:`0 0 ${w} ${hh}`,width:w,height:
 function niceMax(v){if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v))),f=v/e;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e}
 function axisY(s,{l,r,t,b,w,hh,max,min=0,fmt,right,step}){const muted=css('--muted'),line=css('--hair-2');const y=v=>t+(hh-t-b)*(1-(v-min)/(max-min));
   const n=step?Math.round((max-min)/step):4;  // step: ticks every step from min (a chart that goes below zero)
-  for(let i=0;i<=n;i++){const v=min+(max-min)*i/n;s.append(sv('line',{x1:l,x2:w-r,y1:y(v),y2:y(v),stroke:Math.abs(v)<1e-9&&min<0?css('--hair'):line,'stroke-width':1,'stroke-dasharray':Math.abs(v)<1e-9?null:'2 4'}));s.append(sv('text',{x:right?w-r+6:l-8,y:y(v)+4,'text-anchor':right?'start':'end',fill:muted},fmt(v)))}return y}
+  for(let i=0;i<=n;i++){const v=min+(max-min)*i/n;const z0=Math.abs(v)<1e-9;s.append(sv('line',{x1:l,x2:w-r,y1:y(v),y2:y(v),stroke:z0&&min<0?css('--ink'):line,'stroke-opacity':z0&&min<0?.55:null,'stroke-width':z0&&min<0?1.6:1,'stroke-dasharray':z0?null:'2 4'}));s.append(sv('text',{x:right?w-r+6:l-8,y:y(v)+4,'text-anchor':right?'start':'end',fill:z0&&min<0?css('--ink'):muted,'font-weight':z0&&min<0?650:null},fmt(v)))}return y}
 function stacked(w,{cats,series,line,hi,fmt,onClick,hh=250,ghost,future,totals:showTot}){
   const l=56,r=line&&line.right?52:14,t=14,b=30;const s=svgRoot(w,hh);const totals=cats.map((_,i)=>sum(series,x=>x.vals[i]));
   let mx=niceMax(Math.max(...totals,...(line&&!line.right?line.vals:[0]),...(ghost?ghost.vals:[0]))*(showTot?1.12:1.05)),mn=0,step;
@@ -1924,7 +1924,7 @@ function waterfall(w,{steps,hh=250}){
   bars.forEach((x,i)=>{const X=l+i*bw+(bw-bar)/2,top=y(Math.max(x.a,x.z)),bot=y(Math.min(x.a,x.z));
     s.append(sv('rect',{x:X,y:top,width:bar,height:Math.max(1,bot-top),rx:6,fill:x.ghost?`url(#${hid})`:x.total?(x.final?(x.value<0?css('--bad'):css('--ok')):css('--accent')):css('--bad'),'fill-opacity':x.ghost||x.total?1:.75,
       stroke:x.ghost?css('--bad'):null,'stroke-opacity':x.ghost?.45:null,'stroke-dasharray':x.ghost?'4 3':null,'data-tip':x.tip||`${x.label}: ${inr(x.value)}`}));
-    s.append(sv('text',{x:X+bar/2,y:x.total&&x.value<0?bot+13:top-6,'text-anchor':'middle',fill:ink,'font-weight':650,'font-size':10},inrK(x.value)));
+    s.append(sv('text',{x:X+bar/2,y:top-6,'text-anchor':'middle',fill:ink,'font-weight':650,'font-size':10},inrK(x.value)));
     /* labels: two words a line, one word a line when the columns are narrow (phones), so neighbours never overlap */
     const words=x.label.split(' '),lines=(bw<72?words:[words.slice(0,2).join(' '),words.slice(2).join(' ')]).filter(Boolean).slice(0,3);
     lines.forEach((tx,k)=>s.append(sv('text',{x:l+i*bw+bw/2,y:hh-b+15+k*12,'text-anchor':'middle',fill:css('--muted'),'font-size':10},tx)));
