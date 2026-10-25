@@ -273,6 +273,9 @@ button.sstat:hover{background:var(--surface-2)}
 .sstat .l{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
 .sstat .d{display:flex;gap:6px;align-items:center}
 .sstat .sp{margin-left:auto;width:64px;flex:none}
+.kp{display:grid;gap:4px;margin-top:5px;max-width:150px}.kp-t{position:relative;height:6px;border-radius:99px;background:var(--hair-2)}
+.kp-f{position:absolute;left:0;top:0;bottom:0;border-radius:99px;opacity:.9}.kp-m{position:absolute;top:-3px;bottom:-3px;width:2px;border-radius:2px;background:var(--ink-2)}
+.kp small{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kp small{display:flex;align-items:center;gap:5px}.kp-k{display:inline-block;width:2px;height:10px;border-radius:2px;background:var(--ink-2);flex:none}
 @media (max-width:1560px){.sstat .sp{display:none}}
 
 /* ---------- hbars & comparisons ---------- */
@@ -1226,6 +1229,27 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 @media (max-width:640px){.hi-row{grid-template-columns:32px minmax(0,1fr);padding:12px 12px 12px 16px;gap:10px}.hi-av{width:32px;height:32px;font-size:12px}
   .hi-tags{grid-column:2;justify-content:flex-start}.hi-tags:empty{display:none}.hi-filters input[type=search]{flex-basis:100%}.hi-filters .mg-pick{flex:1 1 40%}
   .hi-th,.hi-tr{grid-template-columns:minmax(76px,.7fr) 1fr 1fr;gap:8px;padding:9px 10px;font-size:12.5px}.hi-sheet{padding:4px 18px 16px}}
+
+/* ---------- KPI strip, premium: floating glass tiles + pace bars (Apple-like soft depth) ---------- */
+.strip-stats.glass{background:none;border:0;box-shadow:none;padding:0;gap:14px;overflow:visible}
+.strip-stats .sstat{background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);
+  border:1px solid color-mix(in srgb,var(--glass-line) 70%,transparent);border-radius:22px;padding:14px 16px;align-items:flex-start;
+  box-shadow:0 1px 0 rgba(255,255,255,.65) inset,0 1px 2px rgba(12,26,61,.04),0 10px 30px -14px rgba(12,26,61,.22);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.strip-stats .sstat:hover{transform:translateY(-3px);box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 2px 4px rgba(12,26,61,.05),0 18px 38px -16px rgba(12,26,61,.30)}
+.strip-stats .sstat::before{display:none!important}
+.strip-stats button.sstat:hover{background:color-mix(in srgb,var(--surface) 86%,transparent)}
+.strip-stats .sstat .ic{width:40px;height:40px;box-shadow:0 6px 14px -8px currentColor}
+.strip-stats .sstat .tx{flex:1;gap:3px}
+.strip-stats .sstat .v{font-size:21px}
+/* pace bar */
+.kp{max-width:none;margin-top:8px;gap:6px}
+.kp-t{height:7px;background:rgba(12,26,61,.07);box-shadow:inset 0 1px 2px rgba(12,26,61,.10)}
+.kp-f{opacity:1;background-image:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.35))!important;background-blend-mode:normal;box-shadow:0 0 10px -2px currentColor}
+.kp-m{top:-4px;bottom:-4px;width:3px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
+.kp small{font-size:11.5px;gap:6px}.kp small b{font-weight:700;color:var(--ink-2)}
+.kp-k{width:3px;height:11px;background:var(--ink)}
+@media (prefers-reduced-motion:reduce){.strip-stats .sstat{transition:none}.strip-stats .sstat:hover{transform:none}}
+@media (max-width:760px){.strip-stats.glass{gap:10px}.strip-stats .sstat{padding:12px;border-radius:20px}.strip-stats .sstat .ic{width:34px;height:34px}.strip-stats .sstat .v{font-size:19px}}
 </style>
 </head>
 <body>
@@ -1774,14 +1798,20 @@ function overview(v){
   // KPI strip
   const tint=c=>({background:`color-mix(in srgb, ${c} 13%, transparent)`,color:c});
   const SI={net:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',profit:'M3 17l6-6 4 4 8-8M15 7h6v6',occ:'M3 18V8M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5M7 11.5a1.5 1.5 0 100-.01',adr:'M3 12l9-9h8v8l-9 9zM15.5 8.5a1 1 0 100-.01',revpar:'M4 20V10M10 20V4M16 20v-7M22 20H2'};
-  const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));return h('div',{class:'sstat','data-tip':tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d)),h('div',{class:'sp'},spark(sp,color,72,30)))};
+  /* pace bar: how far this period has got (fill) against the whole previous period (marker) - ahead or behind at a glance */
+  const prevL=(()=>{const[a,z]=prevRange();return a.endsWith('-01')&&z===mEnd(a.slice(0,7))?mLabel(a.slice(0,7)):'last period'})();
+  const paceBar=(cur,prev,fmt,color)=>{const top=Math.max(cur,prev,1e-9),fw=Math.max(0,Math.min(1,cur/top)),mw=Math.max(0,Math.min(1,prev/top)),ahead=cur>=prev;
+    return h('div',{class:'kp','aria-label':`${fmt(cur)} now, ${prevL} ${fmt(prev)}`},h('div',{class:'kp-t'},h('i',{class:'kp-f',style:{width:(fw*100).toFixed(1)+'%',background:color,color}}),prev>0?h('i',{class:'kp-m',style:{left:`calc(${(mw*100).toFixed(1)}% - 1px)`}}):null),
+      h('small',null,prev>0?[h('i',{class:'kp-k','aria-hidden':'true'}),h('span',null,'vs '+prevL),h('b',null,fmt(prev))]:`nothing in ${prevL}`))};
+  const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));return h('div',{class:'sstat','data-tip':tip+(sp?`
+Bar: this period so far · mark: ${prevL} (${sp[2](sp[1])}). The bar stopping short of the mark = behind ${prevL}.`:'')},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d),sp?paceBar(sp[0],sp[1],sp[2],color):null))};
   const pay=!S.admin?null:h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Balances direct guests still owe, plus platform payouts not received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Money to collect'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.channel==='Direct').length} direct guests · ${due.filter(b=>b.channel!=='Direct').length} platform payouts`},`${due.length} bookings`))));
   v.append(h('section',{class:'strip-stats glass s12','aria-label':'Key numbers'},
-    !S.admin?null:st1('net','Net payout',inrK(s.net),delta(s.net,p.net),ms.map(m=>m.net),css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
-    !S.admin?null:st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),ms.map(m=>m.profit),css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
-    st1('occ','Booked '+bookedWhen(),pct(s.occ),delta(s.occ,p.occ),ms.map(m=>m.occ),css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
-    !S.admin?null:st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),ms.map(m=>m.adr),css('--city-3'),'ADR: room revenue ÷ nights sold'),
-    !S.admin?null:st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),ms.map(m=>m.revpar),css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
+    !S.admin?null:st1('net','Net payout',inrK(s.net),delta(s.net,p.net),[s.net,p.net,inrK],css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
+    !S.admin?null:st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),[s.profit,p.profit,inrK],css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
+    st1('occ','Booked '+bookedWhen(),pct(s.occ),delta(s.occ,p.occ),[s.occ,p.occ,x=>pct(x)],css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
+    !S.admin?null:st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),[s.adr,p.adr,inrK],css('--city-3'),'ADR: room revenue ÷ nights sold'),
+    !S.admin?null:st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),[s.revpar,p.revpar,inrK],css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
   // trend: a window of months you swipe through (phones 6, laptops 15), not every month squeezed in
   const all=D.months,nowK=TODAY.slice(0,7),cities=liveCities().filter(c=>!f.cities.length||f.cities.includes(c));
   const netC=(c,k)=>sum(D.B.filter(b=>fBm(b)&&b.city===c),b=>b.net*share(b,mStart(k),mEnd(k)));
@@ -1833,12 +1863,12 @@ function overview(v){
   // check dates: tap a stay for its month calendar (free and booked nights)
   const props=D.props.filter(p=>fP(p)&&active(p));  // also used by the sections below
   const cdProps=[...props].sort((x,y)=>String(x.city).localeCompare(String(y.city))||short(x.property).localeCompare(short(y.property)));
-  const in30=add(TODAY,30);
+  const monK=TODAY.slice(0,7),monEnd=add(mEnd(monK),1),monLeft=diff(TODAY,monEnd),monName=mLong(monK).split(' ')[0];  // nights left this month, tonight included
   const cdShow=S.cdAll?cdProps:cdProps.slice(0,6);
-  v.append(card('s12','Check dates',{hint:'free nights in the next 30 days · tap a stay for its calendar'},cdProps.length?[h('div',{class:'cd-list'},cdShow.map(p=>{
-    const fr=freeRanges(p.property_id,TODAY,in30),freeN=sum(fr,r=>r.n);
+  v.append(card('s12','Check dates',{hint:`empty nights left in ${monName} (${monLeft} night${monLeft===1?'':'s'}) · tap a stay for its calendar`},cdProps.length?[h('div',{class:'cd-list'},cdShow.map(p=>{
+    const fr=freeRanges(p.property_id,TODAY,monEnd),freeN=sum(fr,r=>r.n);
     return h('div',{class:'cd-row',role:'button',tabindex:0,onclick:()=>openAvail(p.property_id),onkeydown:e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openAvail(p.property_id)}}},thumb(p),h('div',{class:'cd-main'},h('b',null,short(p.property)),h('span',null,[p.area,p.city].filter(Boolean).join(', '))),
-      h('div',{class:'cd-free'+(freeN?'':' full')},h('b',null,freeN?`${freeN} free`:'Full'),h('span',null,fr[0]?(fr[0].a===TODAY?'free tonight':'from '+fmtD(fr[0].a)):'30 days')),icon('chev'))})),
+      h('div',{class:'cd-free'+(freeN?'':' full')},h('b',null,freeN?`${freeN} empty`:`Full in ${monName}`),h('span',null,freeN?`of ${monLeft} left in ${monName} · ${fr[0].a===TODAY?'free tonight':'next '+fmtD(fr[0].a)}`:'no empty nights left')),icon('chev'))})),
       cdProps.length>6?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.cdAll=!S.cdAll;render()}},S.cdAll?'Show fewer':`Show all ${cdProps.length}`):null]:
     h('div',{class:'empty'},'No properties match these filters.')));
   // cities head to head: one split bar per metric (each city's share), who leads, and the change vs the last period
