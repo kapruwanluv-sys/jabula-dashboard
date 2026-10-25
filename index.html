@@ -1280,9 +1280,9 @@ const mLong=k=>pd(k+'-01').toLocaleDateString('en-IN',{month:'long',year:'numeri
 const prevM=k=>iso(new Date(pd(k+'-01').getFullYear(),pd(k+'-01').getMonth()-1,1)).slice(0,7);
 const nextM=k=>iso(new Date(pd(k+'-01').getFullYear(),pd(k+'-01').getMonth()+1,1)).slice(0,7);
 const short=s=>(s||'').split(/,(?![^(]*\))/)[0];  // 'Pine Villa, Kulri' -> 'Pine Villa'; keeps 'Milestones (2 BHK, upper floor)' whole
-const ini=n=>n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+const ini=n=>String(n||'?').split(' ').filter(Boolean).map(x=>x[0]).join('').slice(0,2).toUpperCase();
 const AVC=['#5e5ce6','#0071e3','#ff9f0a','#34c759','#ff375f','#30b0c7','#bf5af2','#a2845e'];
-const avc=s=>{let x=0;for(const c of s)x=(x*31+c.charCodeAt(0))>>>0;return AVC[x%AVC.length]};
+const avc=s=>{let x=0;for(const c of String(s||''))x=(x*31+c.charCodeAt(0))>>>0;return AVC[x%AVC.length]};
 const CHN_BASE=['Airbnb','Booking.com','MakeMyTrip','Direct'];let CHN=CHN_BASE;  // + channels from the Lists tab and bookings (e.g. Website)
 const chColor=c=>css({'Airbnb':'--c-airbnb','Booking.com':'--c-booking','MakeMyTrip':'--c-mmt','Direct':'--c-direct','Website':'--c-website'}[c]||'--accent');
 const CITIES=CLIENT.cities.map(c=>c.name);
@@ -1588,7 +1588,7 @@ const pillStatus=s=>h('span',{class:'pill '+({Upcoming:'p-acc','In-house':'p-ok'
 const pillPay=s=>h('span',{class:'pill '+({Received:'p-ok',Short:'p-bad',Pending:'p-warn'}[s]||'p-mute')},s);
 const pillPrio=s=>h('span',{class:'pill '+({High:'p-bad',Medium:'p-warn',Low:'p-ok'}[s])},{High:'Urgent',Medium:'Soon',Low:'Routine'}[s]);
 const chd=c=>h('span',{class:'chd'},h('i',{style:{background:chColor(c)}}),c);
-const who=(name,sub)=>h('div',{class:'who'},h('div',{class:'av',style:{background:avc(name)}},ini(name)),h('div',null,h('b',null,name),sub?h('span',null,sub):null));
+const who=(name,sub)=>{name=name||'Not assigned';return h('div',{class:'who'},h('div',{class:'av',style:{background:avc(name)}},ini(name)),h('div',null,h('b',null,name),sub?h('span',null,sub):null))};
 const delta=(a,b,inv)=>{if(!b||!isFinite(a/b))return h('span',{class:'delta flat'},'—');const d=(a-b)/Math.abs(b);const good=inv?d<=0:d>=0;return h('span',{class:'delta '+(Math.abs(d)<.005?'flat':good?'up':'down'),'data-tip':'vs previous period'},(d>=0?'▲ ':'▼ ')+Math.abs(d*100).toFixed(Math.abs(d)<.1?1:0)+'%')};
 const PHONE=()=>innerWidth<760;
 function table(cols,rows,{sort,onSort,onRow,hl,card}={}){
@@ -1894,14 +1894,14 @@ function desk(v){
     h('button',{class:'btn','aria-label':'Copy as text',onclick:()=>copyDesk(allRows,d)},icon('copy'),h('span',{class:'lbl'},'Copy text')),
     sel.length?h('button',{class:'btn',onclick:()=>{ds.sel.clear();render()}},'Clear'):null));
 }
-function deskRow(k,b){const p=D.P[b.property_id];const r={Type:k==='in'?'Check-in':'Check-out',Date:k==='in'?b.check_in:b.check_out,Time:k==='in'?(b.arrival_time||''):'11:00',Property:short(b.pname),Area:p.area,City:p.city,Guest:b.guest,Guests:b.guests,Nights:b.nights,Channel:b.channel,Housekeeping:p.cleaner,'Same Day Check-In & Check-Out':k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?'Yes':''};if(S.desk.amounts){r['Gross ₹']=b.gross;r['Payout ₹']=b.net;r['Payout status']=b.pay}r['Booking']=b.booking_id;return r}
+function deskRow(k,b){const p=D.P[b.property_id];const r={Type:k==='in'?'Check-in':'Check-out',Date:k==='in'?b.check_in:b.check_out,Time:k==='in'?(b.arrival_time||''):'11:00',Property:short(b.pname),Area:p.area,City:p.city,Guest:b.guest,Mobile:phoneNice(b.phone),Guests:b.guests,Nights:b.nights,Channel:b.channel,Housekeeping:p.cleaner,'Same Day Check-In & Check-Out':k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?'Yes':''};if(S.desk.amounts){r['Gross ₹']=b.gross;r['Payout ₹']=b.net;r['Payout status']=b.pay}r['Booking']=b.booking_id;return r}
 async function copyDesk(rows,d){const L=[`${CONFIG.BRAND} — ${fmtD(d,{weekday:'long',day:'numeric',month:'long'})}`];
-  const part=(k,t)=>{const rs=rows.filter(x=>x[0]===k);if(!rs.length)return;L.push('',t);rs.forEach(([_,b])=>{const p=D.P[b.property_id];L.push(`• ${k==='in'?(b.arrival_time||'—'):'11:00'}  ${short(b.pname)} (${p.area}) — ${b.guest}, ${b.guests} pax${k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?' — SAME DAY CHECK-IN & CHECK-OUT':''}${k==='out'?' — '+p.cleaner:''}${S.desk.amounts?' — '+inr(b.net):''}`)})};
+  const part=(k,t)=>{const rs=rows.filter(x=>x[0]===k);if(!rs.length)return;L.push('',t);rs.forEach(([_,b])=>{const p=D.P[b.property_id];L.push(`• ${k==='in'?(b.arrival_time||'—'):'11:00'}  ${short(b.pname)} (${p.area}) — ${b.guest}${b.phone?' ('+phoneNice(b.phone)+')':''}, ${b.guests} pax${k==='out'&&D.starts.has(b.property_id+'|'+b.check_out)?' — SAME DAY CHECK-IN & CHECK-OUT':''}${k==='out'&&p.cleaner?' — '+p.cleaner:''}${S.desk.amounts?' — '+inr(b.net):''}`)})};
   part('in','CHECK-INS');part('out','CHECK-OUTS');const txt=L.join('\n');
   try{await navigator.clipboard.writeText(txt);toast('Copied — paste it into WhatsApp')}catch(e){openText(txt)}}
 function openText(txt){const ta=h('textarea',{style:{width:'100%',height:'260px',borderRadius:'12px',padding:'10px',border:'1px solid var(--hair-2)',background:'var(--glass)'}});ta.value=txt;modal('Copy this text',h('div',{class:'form'},h('div',{class:'full'},ta)),[h('button',{class:'btn primary',onclick:closeLayer},'Done')]);setTimeout(()=>{ta.focus();ta.select()},50)}
 async function deskImage(rows,d){
-  const lg=await logoImg(),W=1080,pad=56,rowH=96,secH=72,TAGH=44;const ins=rows.filter(r=>r[0]==='in'),outs=rows.filter(r=>r[0]==='out');
+  const lg=await logoImg(),W=1080,pad=56,rowH=118,secH=72,TAGH=44;const ins=rows.filter(r=>r[0]==='in'),outs=rows.filter(r=>r[0]==='out');
   const same=b=>D.starts.has(b.property_id+'|'+b.check_out),tagN=outs.filter(([,b])=>same(b)).length+(S.desk.amounts?rows.filter(([k,b])=>!(k==='out'&&same(b))).length:0);
   const H=pad+150+(ins.length?secH+ins.length*rowH:0)+(outs.length?secH+outs.length*rowH:0)+tagN*TAGH+90;
   const cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;const x=cv.getContext('2d');x.scale(2,2);
@@ -1921,9 +1921,10 @@ async function deskImage(rows,d){
       let tag=null;if(k==='out'&&same(b))tag=['SAME DAY CHECK-IN & CHECK-OUT','#d70015','rgba(255,59,48,.12)'];else if(S.desk.amounts)tag=[inr(b.net),'#1a8a3a','rgba(52,199,89,.15)'];
       rr(pad,y,W-pad*2,rowH-12+(tag?TAGH:0),20,'rgba(255,255,255,.82)','rgba(28,28,50,.08)');
       x.fillStyle='#1d1d1f';x.font=F(700,26);x.fillText(k==='in'?(b.arrival_time||'—'):'11:00',pad+22,y+50);
-      x.font=F(650,20);x.fillText(fit(short(b.pname),360),pad+130,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(fit(`${p.area}, ${p.city}${k==='out'?' · '+p.cleaner:''}`,360),pad+130,y+62);
+      x.font=F(650,20);x.fillText(fit(short(b.pname),360),pad+130,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(fit(`${p.area}, ${p.city}${k==='out'&&p.cleaner?' · '+p.cleaner:''}`,360),pad+130,y+62);
       const gw=W-pad-22-(pad+520);
       x.fillStyle='#1d1d1f';x.font=F(600,19);x.fillText(fit(b.guest,gw),pad+520,y+36);x.fillStyle='#6e6e73';x.font=F(500,16);x.fillText(fit(`${b.guests} guest${b.guests>1?'s':''} · ${b.nights} night${b.nights>1?'s':''} · ${b.channel}`,gw),pad+520,y+62);
+      if(b.phone){x.fillStyle='#1d1d1f';x.font=F(600,17);x.fillText(fit('📞 '+phoneNice(b.phone),gw),pad+520,y+88)}
       if(tag){x.font=F(700,14);const tw=x.measureText(tag[0]).width+24;rr(pad+130,y+80,tw,30,15,tag[2]);x.fillStyle=tag[1];x.fillText(tag[0],pad+142,y+100)}
       y+=rowH+(tag?TAGH:0)});};
   section('CHECK-INS',ins,'in','#5e5ce6');section('CHECK-OUTS',outs,'out','#ff9f0a');
@@ -1993,7 +1994,7 @@ function calendar(v){
   v.append(card('s12',title,{hint:`${pct(tot/((props.length||1)*n))} occupied · tap a stay for details`,acts:[zoom,monSel,nav,h('button',{class:'btn sm admin',onclick:()=>openForm('booking')},icon('plus'),'Booking'),btnExport(()=>exportRows(D.B.filter(b=>fB(b)&&b.check_in<=end&&b.check_out>start).map(bookRow),`Calendar ${start}`))]},
     h('div',{class:'legend'},CHN.map(c=>h('button',{'aria-pressed':!S.f.channels.length||S.f.channels.includes(c),onclick:()=>toggleIn('channels',c)},h('span',{class:'sw',style:{background:chColor(c)}}),c))),props.length?body:h('div',{class:'empty'},'No properties match these filters. Clear a filter above to see stays.')));
 }
-const bookRow=b=>({Notes:b.notes||'',Booking:b.booking_id,Guest:b.guest,Guests:b.guests,Property:short(b.pname),Area:b.area,City:b.city,Channel:b.channel,'Check-in':b.check_in,'Check-in time':b.arrival_time||'','Check-out':b.check_out,Nights:b.nights,'Nightly rate ₹':b.nightly_rate,'Gross ₹':b.gross,'Platform fee ₹':b.fee,'Payout ₹':b.net,Stay:b.status,'Payout status':b.pay,Rating:b.rating||''});
+const bookRow=b=>({Notes:b.notes||'',Booking:b.booking_id,Guest:b.guest,Mobile:phoneNice(b.phone),Guests:b.guests,Property:short(b.pname),Area:b.area,City:b.city,Channel:b.channel,'Check-in':b.check_in,'Check-in time':b.arrival_time||'','Check-out':b.check_out,Nights:b.nights,'Nightly rate ₹':b.nightly_rate,'Gross ₹':b.gross,'Platform fee ₹':b.fee,'Payout ₹':b.net,Stay:b.status,'Payout status':b.pay,Rating:b.rating||''});
 
 /* ============ PROPERTIES ============ */
 function propRows(){const f=S.f;return D.props.filter(p=>fP(p)&&active(p)).map(p=>{const st=stats(f.from,f.to,p.property_id);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);const nx=bs.filter(b=>b.check_in>=TODAY).sort((a,b)=>a.check_in.localeCompare(b.check_in))[0];
@@ -2115,10 +2116,10 @@ function money(v){
   /* Payments to collect: what direct guests still owe (half-upfront bookings), by check-in, so it is collected on arrival */
   const owe=sortBy(D.B.filter(b=>fB(b)&&b.channel==='Direct'&&b.net-b.received>1),['check_in',1]);
   const dueWhen=b=>b.check_in<TODAY?'was due '+fmtD(b.check_in):b.check_in===TODAY?'due today':'due at check-in '+fmtD(b.check_in,{weekday:'short',day:'numeric',month:'short'});
-  v.append(card('s6 fit','Payments to collect',{hint:owe.length?`${owe.length} guest${owe.length>1?'s':''} · ${inrK(sum(owe,b=>b.net-b.received))} still to collect`:'direct bookings',acts:[btnExport(()=>exportRows(owe.map(b=>({Booking:b.booking_id,Guest:b.guest,Mobile:b.phone,Property:short(b.pname),'Check-in':b.check_in,'Total ₹':b.net,'Received ₹':b.received,'To collect ₹':b.net-b.received})),'Payments to collect'))]},
+  v.append(card('s6 fit','Payments to collect',{hint:owe.length?`${owe.length} guest${owe.length>1?'s':''} · ${inrK(sum(owe,b=>b.net-b.received))} still to collect`:'direct bookings',acts:[btnExport(()=>exportRows(owe.map(b=>({Booking:b.booking_id,Guest:b.guest,Mobile:phoneNice(b.phone),Property:short(b.pname),'Check-in':b.check_in,'Total ₹':b.net,'Received ₹':b.received,'To collect ₹':b.net-b.received})),'Payments to collect'))]},
     owe.length?table([{t:'Guest',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'When',f:b=>h('span',{class:'chip-s date'+(b.check_in<TODAY?' late':'')},dueWhen(b))},{t:'Received',r:1,f:b=>inr(b.received)},{t:'To collect',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))}],owe.slice(0,S.oweAll?owe.length:8),{onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--bad)'}},inr(b.net-b.received)),h('small',null,'of '+inrK(b.net))]),h('div',{class:'mfoot'},h('span',{class:'chip-s date'+(b.check_in<TODAY?' late':'')},dueWhen(b)),h('span',{class:'hint'},'Mark collected in Manage'))]}):h('div',{class:'empty'},'No balances left with direct guests.'),owe.length>8?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.oweAll=!S.oweAll;render()}},S.oweAll?'Show fewer':`Show all ${owe.length}`):null));
   const due=sortBy(D.B.filter(b=>fB(b)&&b.channel!=='Direct'&&(b.pay==='Pending'||b.pay==='Short')),['check_in',1]);
-  v.append(card('s6 fit','Platform payouts to chase',{hint:`${due.length} · ${inrK(sum(due,b=>b.net-b.received))} outstanding`,acts:[btnExport(()=>exportRows(due.map(b=>({Booking:b.booking_id,Guest:b.guest,Property:short(b.pname),Channel:b.channel,'Check-in':b.check_in,'Expected ₹':b.net,'Received ₹':b.received,'Gap ₹':b.net-b.received,Status:b.pay})),'Payouts to chase'))]},
+  v.append(card('s6 fit','Platform payouts to chase',{hint:`${due.length} · ${inrK(sum(due,b=>b.net-b.received))} outstanding`,acts:[btnExport(()=>exportRows(due.map(b=>({Booking:b.booking_id,Guest:b.guest,Mobile:phoneNice(b.phone),Property:short(b.pname),Channel:b.channel,'Check-in':b.check_in,'Expected ₹':b.net,'Received ₹':b.received,'Gap ₹':b.net-b.received,Status:b.pay})),'Payouts to chase'))]},
     due.length?table([{t:'Booking',f:b=>who(b.guest,`${b.booking_id} · ${short(b.pname)}`)},{t:'Channel',f:b=>chd(b.channel)},{t:'Gap',r:1,f:b=>h('b',{style:{color:'var(--bad)'}},inr(b.net-b.received))},{t:'',f:b=>pillPay(b.pay)}],due.slice(0,S.dueAll?due.length:8),{onRow:openBooking,card:b=>[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${short(b.pname)}`,[h('b',{class:'num',style:{color:'var(--bad)'}},inr(b.net-b.received)),pillPay(b.pay)]),h('div',{class:'mfoot'},chd(b.channel),h('span',{class:'chip-s date'},'Checked in '+fmtD(b.check_in)))]}):h('div',{class:'empty'},'All payouts reconciled.'),due.length>8?h('button',{class:'btn sm',style:{marginTop:'10px'},onclick:()=>{S.dueAll=!S.dueAll;render()}},S.dueAll?'Show fewer':`Show all ${due.length}`):null));
 }
 
@@ -2133,7 +2134,7 @@ function ops(v){
     return h('div',{class:'board-m'},h('div',{class:'seg',role:'group'},cols.map(([t,l],i)=>h('button',{'aria-pressed':i===on,onclick:()=>{S.boardTab={...S.boardTab,[key]:i};render()}},`${t} ${l.length}`))),col(cols[on][0],cols[on][1],cols[on][2]))};
   const tTile=b=>{const p=D.P[b.property_id],t=D.T[b.booking_id],done=t&&t.status==='Done',turn=D.starts.has(b.property_id+'|'+b.check_out);
     return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,short(p.property)),turn?h('span',{class:'pill p-bad'},'Same Day Check-In & Check-Out'):null,h('span',{class:'end'},done?h('span',{class:'pill p-ok'},'✓ Cleaned'):h('span',{class:'pill p-warn'},'To clean'))),h('div',{class:'m'},`${p.area} · ${fmtD(b.check_out,{weekday:'short',day:'numeric'})} 11:00 · ${p.bedrooms} BR · ${p.bedrooms*2} linen sets`),h('div',{class:'row'},who(p.cleaner),done?null:h('button',{class:'btn sm admin end',onclick:()=>(S.data.turnovers||[]).some(x=>String(x.booking_id)===b.booking_id)?save('turnovers','update',{match:{booking_id:b.booking_id},fields:{status:'Done'}},short(p.property)+' marked as cleaned'):save('turnovers','append',{row:{booking_id:b.booking_id,cleaner:p.cleaner,status:'Done'}},short(p.property)+' marked as cleaned')},'Mark cleaned')))};
-  v.append(card('s12','Cleaning turnovers',{hint:'from check-outs · red = next guest checks in the same day',acts:[btnExport(()=>exportRows(outs.map(b=>{const p=D.P[b.property_id];return{Date:b.check_out,Property:short(p.property),Area:p.area,City:p.city,Housekeeping:p.cleaner,Bedrooms:p.bedrooms,'Linen sets':p.bedrooms*2,'Same Day Check-In & Check-Out':D.starts.has(b.property_id+'|'+b.check_out)?'Yes':'',Status:(D.T[b.booking_id]||{}).status==='Done'?'Cleaned':'To clean'}}),'Cleaning schedule'))]},
+  v.append(card('s12','Cleaning turnovers',{hint:'from check-outs · red = next guest checks in the same day',acts:[btnExport(()=>exportRows(outs.map(b=>{const p=D.P[b.property_id];return{Date:b.check_out,Property:short(p.property),Area:p.area,City:p.city,'Guest leaving':b.guest,Mobile:phoneNice(b.phone),Housekeeping:p.cleaner,Bedrooms:p.bedrooms,'Linen sets':p.bedrooms*2,'Same Day Check-In & Check-Out':D.starts.has(b.property_id+'|'+b.check_out)?'Yes':'',Status:(D.T[b.booking_id]||{}).status==='Done'?'Cleaned':'To clean'}}),'Cleaning schedule'))]},
     board('clean',[['Today',outs.filter(b=>b.check_out===TODAY),tTile],['Tomorrow',outs.filter(b=>b.check_out===d1),tTile],['Later',outs.filter(b=>b.check_out>d1),tTile]])));
   const mTile=m=>{const next=m.status==='Open'?'In progress':m.status==='In progress'?'Closed':null;return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,m.issue),h('span',{class:'end'},m.status==='Closed'?h('span',{class:'pill p-mute'},m.cost?inr(m.cost):'Closed'):pillPrio(m.priority))),h('div',{class:'m'},`${short(m.pname)} · ${m.ticket_id} · ${m.status==='Closed'?'fixed in '+diff(m.reported_on,m.closed_on||TODAY)+' d':diff(m.reported_on,TODAY)+' days open'}`),h('div',{class:'row'},who(m.assigned_to),next?h('button',{class:'btn sm admin end',onclick:()=>save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{status:next,closed_on:next==='Closed'?TODAY:null}},`${m.ticket_id} moved to ${next}`)},next==='Closed'?'Close':'Start'):null))};
   const pr=m=>({High:0,Medium:1,Low:2}[m.priority]);
@@ -2350,6 +2351,8 @@ function confirmBox(title,text,okLabel,danger,fn){modal(title,h('div',{class:'fo
 const nextId=(arr,field,prefix)=>prefix+(Math.max(0,...arr.map(x=>+String(x[field]||'').replace(/\D/g,'')||0).filter(n=>n<1e7))+1);
 const waLink=p=>'https://wa.me/'+String(p||'').replace(/\D/g,'');
 const phoneTxt=p=>p?('+'+String(p).replace(/\D/g,'')):'';
+/* phone as people read it in exports: +91 98000 12345 for Indian numbers, +<digits> otherwise ('' when none) */
+const phoneNice=p=>{const d=String(p||'').replace(/\D/g,'');if(!d)return'';const n=d.length===10?'91'+d:d;return n.length===12&&n.startsWith('91')?`+91 ${n.slice(2,7)} ${n.slice(7)}`:'+'+n};
 
 /* ============ booking edit / cancel / delete / payment (admin) ============ */
 function bookingActions(b){
