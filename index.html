@@ -3041,23 +3041,30 @@ function fromWorkbook(wb){
     maint:sheetRows(wb,'Maintenance','Ticket').map(r=>({ticket_id:String(r.Ticket),property_id:r['Property ID'],reported_on:dI(r['Reported on']),issue:r.Issue,priority:r.Priority,assigned_to:r['Assigned to']||'Caretaker',status:r.Status,cost:r['Cost (₹)'],closed_on:dI(r['Closed on'])}))};
 }
 let loading=null;
+/* A refusal signs this device out only when a second, fresh check of the same session is refused too: one failed read on
+   the sheet's side, or a late reply meant for an older session, must never sign anyone out. */
+async function stillRefused(k){await new Promise(r=>setTimeout(r,2000));if(k!==LIVE.key)return false;
+  try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:k,device:DEVICE,action:'me'})});
+    return (await r.json()).error==='unauthorized'&&k===LIVE.key}catch(e){return false}}
 function showLoading(){const v=$('#view');if(!v)return;v.replaceChildren(h('section',{class:'card glass s12'},h('div',{class:'loading-live'},h('span',{class:'spin-dot'}),h('div',null,h('b',null,'Loading live data from the Google Sheet…'),h('div',{class:'light-note'},'Usually 5-10 seconds; up to a minute if Google is waking up. This device will open instantly next time.')))),h('div',{class:'skel-grid','aria-hidden':'true'},...[0,1,2,3,4,5].map(i=>h('div',{class:i>3?'skel tall':'skel'}))));const b=$('#liveBadge');if(b){b.className='live-badge demo';b.querySelector('.lb-t').textContent='Updating…'}}
 async function load(){
   if(loading)return loading;
-  loading=(async()=>{
+  loading=(async()=>{const keyAt=LIVE.key;
     if(live()){
       // open instantly: show this device's last live copy (or a loading card), then update in the background
       if(!S.data){const c=store.get('jg_live_cache');if(c&&c.data){S.data=c.data;S.source='Live sheet';LIVE.cachedAt=c.at;S.loadedAt=new Date(c.at);refresh()}else showLoading()}
       try{S.data=await Promise.race([liveLoad(),new Promise((_,no)=>setTimeout(()=>no(new Error('Google took over 90 s')),9e4))]);
         S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null;LIVE.cachedAt=null;store.set('jg_live_cache',{at:Date.now(),data:S.data})}
-      catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);if(/unauthorized/.test(e.message)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;signInScreen()}else toast('The access key was changed - connect again.')}else toast('Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data||S.source==='Sheet unreachable'){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
+      catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);const no=/unauthorized/.test(e.message);
+        if(no&&await stillRefused(keyAt)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;signInScreen()}else toast('The access key was changed - connect again.')}
+        else if(keyAt===LIVE.key)toast(no||/try_again/.test(e.message)?'The sheet didn’t answer just now. Showing the last data.':'Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data||S.source==='Sheet unreachable'){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
     else if(CONFIG.DATA_URL){try{await needXLSX();const r=await fetch(CONFIG.DATA_URL,{cache:'no-store'});if(!r.ok)throw 0;S.data=fromWorkbook(XLSX.read(await r.arrayBuffer(),{type:'array',cellDates:true}));S.source='Live sheet'}catch(e){toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
     else if(!S.data)S.data=SEED;
     if(!LIVE.cachedAt)S.loadedAt=new Date();refresh();
   })();
   try{await loading}finally{loading=null}
 }
-async function manualRefresh(btn){btn&&btn.classList.add('spin');await load();setTimeout(()=>btn&&btn.classList.remove('spin'),500);toast('Up to date · '+S.loadedAt.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}))}
+async function manualRefresh(btn){btn&&btn.classList.add('spin');await load();setTimeout(()=>btn&&btn.classList.remove('spin'),500);if(live()&&LIVE.ok===false)return;toast('Up to date · '+S.loadedAt.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}))}
 $('#xlsxIn').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{await needXLSX()}catch(x){}if(!window.XLSX){toast('Excel reader didn’t load. Check your connection.');return}try{S.data=fromWorkbook(XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}));S.source=file.name;S.loadedAt=new Date();refresh();toast('Loaded '+file.name)}catch(err){toast('This file doesn’t match the tracker layout: '+err.message)}e.target.value=''});
 $('#refreshBtn').addEventListener('click',()=>manualRefresh());
 $('#resetDemo').addEventListener('click',()=>{extra={bookings:[],expenses:[],maint:[],turnDone:[],maintStatus:{}};saveExtra();refresh();toast('Demo entries cleared')});
@@ -3804,6 +3811,7 @@ const AUD_LV={bookings:{critical:['tariff','platform_fee','gst','received','bala
   lists:{important:['value','fee_pct']}};
 function audLevel(tab,action,ch,row){const f=Object.keys(ch||{}),L=AUD_LV[tab]||{},any=l=>f.some(k=>(l||[]).includes(k));row=row||{};ch=ch||{};
   if(action==='replace'||['users','payouts','rates','seasons'].includes(tab))return'critical';
+  if(action==='session_refused')return'important';
   if(['login','logout','export','upload'].includes(action))return'routine';
   if(tab==='settings')return String(row.key)==='pricing.addons'?'important':'critical';
   if(tab==='overrides')return String(row.unit_id)==='*'?'important':'critical';
@@ -3870,6 +3878,7 @@ function audWhat(e){const ch=e.changes,f=Object.keys(ch),t=e.target,now=k=>ch[k]
   else if(e.tab==='lists')subj=now('value')||((S.data.lists||[]).find(x=>String(x.row_id)===t)||{}).value||t;
   else if(e.tab==='blocks'){const k=(S.data.blocks||[]).find(x=>String(x.block_id)===t)||{},g=k_=>now(k_)??k[k_],pid=g('property_id')||String(g('unit_id')||'').split('-')[0];
     subj=pid?[stay(pid),g('from')?fmtD(String(g('from')).slice(0,10))+' → '+fmtD(String(g('to')).slice(0,10)):'',g('reason')].filter(Boolean).join(' · '):t}
+  if(e.action==='session_refused')return['Sign-in refused',t];
   if(e.result==='blocked')return['Tried to change '+audArea(e).toLowerCase()+' · blocked',/^["{]/.test(subj)?'':subj];
   if(e.result==='failed')return['A save failed',t];
   if(e.action==='login')return['Signed in',''];
