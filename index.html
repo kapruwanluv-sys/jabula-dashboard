@@ -1320,6 +1320,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
   .nav button[aria-current="page"]{background:#fff;color:var(--accent-ink);box-shadow:0 1px 2px rgba(12,26,61,.06),0 4px 12px -4px rgba(12,26,61,.18)}
   .nav button[aria-current="page"]::after{display:none}
 }
+@media (min-width:1241px) and (max-width:1440px){.nav button{padding:8px 10px}}  /* ten sections fit at 1366 */
 @media (min-width:981px) and (max-width:1240px){.nav button{padding:8px 9px}}
 @media (min-width:981px) and (max-width:1100px){.nav button{padding:8px 7px}}
 
@@ -1464,6 +1465,30 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 @keyframes okPop{from{transform:scale(.3);opacity:0}}
 @keyframes shake{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 @keyframes sheetUp{from{transform:translateY(60px);opacity:0}}
+
+/* ---------- AI insights ---------- */
+.ins-ctl{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.ins-meta{display:flex;align-items:center;gap:12px;min-width:0}.ins-meta>div{display:grid;gap:2px;min-width:0}.ins-meta b{font-size:14.5px}.ins-meta small{color:var(--muted);font-size:12px}
+.ins-spark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff;background:linear-gradient(140deg,#8b6cff,#1d5bd8);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -10px rgba(76,60,220,.8)}
+.ins-spark svg{width:18px;height:18px;fill:currentColor;stroke:none}
+.ins-spark.sm{width:22px;height:22px;border-radius:7px;box-shadow:none}.ins-spark.sm svg{width:12px;height:12px}
+.ins-run{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ins-cost{color:var(--muted);font-size:12px}
+.ins-ai{display:flex;gap:10px;align-items:flex-start;margin:0;padding:11px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;color:var(--ink-2);
+  background:linear-gradient(135deg,color-mix(in srgb,#8b6cff 9%,transparent),color-mix(in srgb,var(--accent) 6%,transparent))}
+.ins-moves{display:grid;gap:10px}
+.ins-move{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 14px;border:1px solid var(--g-edge);border-radius:18px;background:var(--surface);box-shadow:var(--sh-1)}
+.ins-n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:750;background:var(--accent-soft);color:var(--accent-ink)}
+.ins-mt{display:grid;gap:3px;min-width:0}.ins-mt b{font-size:14.5px}.ins-mt span{font-size:13px;color:var(--muted);line-height:1.45}.ins-mt .ins-act{color:var(--ink);font-weight:600}
+.ins-gain{display:grid;justify-items:end;font-weight:750;color:var(--ok);font-size:16px;white-space:nowrap}.ins-gain small{font-size:11px;color:var(--muted);font-weight:500}
+.ins-list{display:grid;gap:6px;margin:0;padding:0;list-style:none}.ins-list li{font-size:13px;line-height:1.45;padding:8px 11px;border-radius:12px;background:var(--fill-2)}.ins-list b{font-weight:650}
+.ins-fest{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}.ins-f{padding:11px 13px;border:1px solid var(--g-edge);border-radius:16px;display:grid;gap:5px;background:var(--surface)}
+.ins-f-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ins-f small{color:var(--muted);font-size:12.5px;line-height:1.45}
+.ins-past>summary{cursor:pointer;font-size:13px;font-weight:650;color:var(--accent-ink);padding:4px 0}
+.ins-wd{display:grid;gap:2px}.ins-wd .hb{cursor:default}.ins-wd .hb:hover{background:none}
+.ins-heat{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px}.ins-heat div{border-radius:9px;padding:6px 2px;text-align:center;font-size:10.5px;line-height:1.25}.ins-heat b{display:block;font-size:12px}
+.ins-next{white-space:normal!important;min-width:220px;font-size:12.5px;line-height:1.4}
+.ins-notes{margin:0;padding-left:18px;color:var(--muted);font-size:12.5px;display:grid;gap:4px}
+@media (max-width:640px){.ins-heat{grid-template-columns:repeat(6,minmax(0,1fr))}.ins-move{grid-template-columns:28px minmax(0,1fr)}.ins-gain{grid-column:2;justify-items:start}.ins-fest{grid-template-columns:1fr}.ins-run{width:100%}}
 
 /* ---------- desktop scrollbars ---------- */
 @media (pointer:fine){
@@ -1814,6 +1839,89 @@ function waterfall(w,{steps,hh=250}){
   return s;
 }
 
+/* ============ AI insights: exact numbers computed by the bot server from the register, suggestions written by Claude
+   (engine wa_engine/insights.py). Saved in the register's Insights tab; admins only (money inside). ============ */
+const SPARK='M12 2.5l2.1 5.6 5.9 1.9-5.9 1.9L12 17.5l-2.1-5.6L4 10l5.9-1.9zM19 15.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z';
+const INS_MODELS=[['claude-haiku-5-5','Haiku 5.5','about ₹0.4 a run'],['claude-sonnet-5-5','Sonnet 5.5','about ₹8 a run'],['claude-opus-5-5','Opus 5.5','about ₹16 a run']];
+const insName=m=>(INS_MODELS.find(x=>x[0]===m)||[0,m||'AI'])[1];
+function insData(){const I={};((S.data&&S.data.insights)||[]).forEach(r=>{let x=r.data;if(typeof x==='string'){try{x=JSON.parse(x)}catch(e){x=null}}I[r.section]=x});return I}
+const ymL=k=>k?pd(String(k).slice(0,7)+'-01').toLocaleDateString('en-IN',{month:'short'})+" '"+String(k).slice(2,4):'';
+const whenL=iso=>new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});
+function insights(v){
+  const I=insData(),A=I._ai||{},M=I._meta||{},R=I._request||{},stays=I.stays||[],nm=id=>(stays.find(x=>x.stay_id===id)||{}).stay||id;
+  const asked=R.requested_at&&(!M.generated_at||new Date(R.requested_at)>new Date(M.generated_at));
+  const pick=S.insModel||R.model||M.model||'claude-sonnet-5-5';
+  const spark=sm=>h('span',{class:'ins-spark'+(sm?' sm':''),'aria-hidden':'true'},navIcon(SPARK));
+  const say=t=>t?h('p',{class:'ins-ai'},spark(true),h('span',null,t)):null;
+  const list=items=>items&&items.length?h('ul',{class:'ins-list'},items.map(x=>h('li',null,...x))):null;
+  const tbl=(head,rows)=>h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,head.map(([l,r])=>h('th',{class:r?'r':null},l)))),h('tbody',null,rows)));
+  const td=(x,r)=>h('td',{class:r?'r num':null},x);
+  const ask=async btn=>{btn.disabled=true;
+    try{await apiPost({action:'insights_refresh',model:pick});
+      S.data.insights=[...(S.data.insights||[]).filter(r=>r.section!=='_request'),{section:'_request',data:{requested_at:new Date().toISOString(),model:pick}}];
+      toast(`New analysis asked for with ${insName(pick)} · usually ready in about 5 minutes`);render()}
+    catch(e){btn.disabled=false;toast('Couldn’t ask for it: '+e.message)}};
+  v.append(h('section',{class:'card glass s12 ins-ctl'},
+    h('div',{class:'ins-meta'},spark(),h('div',null,h('b',null,M.generated_at?'Updated '+whenL(M.generated_at):'No analysis yet'),
+      h('small',null,M.generated_at?`${insName(M.model)} · this run cost ₹${(+M.cost_inr||0).toFixed(2)} · numbers from your bookings, suggestions by AI`:'The first analysis runs at 6 am, or ask for one now'))),
+    h('div',{class:'ins-run'},h('div',{class:'seg',role:'group','aria-label':'AI model'},INS_MODELS.map(([k,l])=>h('button',{'aria-pressed':pick===k,onclick:()=>{S.insModel=k;render()}},l))),
+      h('small',{class:'ins-cost'},(INS_MODELS.find(x=>x[0]===pick)||[])[2]||''),
+      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},'Run new analysis'))));
+  if(!M.generated_at){v.append(card('s12','AI insights',{},h('div',{class:'empty'},'Your first analysis will appear here: where prices can go up, which festivals to charge more for, and what to fix.')));return}
+  // 1 money moves
+  const moves=A.moves||[];
+  v.append(card('s12','This week’s money moves',{hint:'biggest first'},moves.length?h('div',{class:'ins-moves'},moves.map((m,i)=>h('div',{class:'ins-move'},
+    h('span',{class:'ins-n num'},i+1),h('div',{class:'ins-mt'},h('b',null,m.title),h('span',null,m.why),h('span',{class:'ins-act'},m.action)),
+    m.gain_inr>0?h('span',{class:'ins-gain num'},'+'+inrK(m.gain_inr),h('small',null,'next 3 months')):null))):h('div',{class:'empty'},'Nothing new this time.')));
+  // 2 underpriced seasons
+  const up=[...(I.underpriced||[])].sort((a,b)=>b.month.localeCompare(a.month));
+  v.append(card('s12','Underpriced seasons',{hint:'months a stay was 85%+ full'},say((A.underpriced||{}).summary),
+    list(((A.underpriced||{}).items||[]).map(x=>[h('b',null,`${nm(x.stay_id)} · ${x.period}: `),x.suggestion])),
+    up.length?tbl([['Stay'],['Month'],['Booked',1],['Paid a night',1],['Usual',1]],up.map(x=>h('tr',null,td(x.stay),td(ymL(x.month)),td(x.occ+'%',1),td(inrK(x.rate),1),td(inrK(x.usual_rate),1)))):h('div',{class:'empty'},'No month was 85% full yet.')));
+  // 3 festivals and local events
+  const F=I.festivals||{},cityL=r=>(r||[]).map(x=>x.booked_now!=null?`${x.city} ${x.booked_now}% booked so far`:`${x.city} ${x.occ}% at ${inrK(x.rate)} (rest of month ${x.month_occ}% at ${inrK(x.month_rate)})`).join(' · ');
+  v.append(card('s12','Festivals and local events',{hint:'price vs fill'},say((A.festivals||{}).summary),
+    list(((A.festivals||{}).items||[]).map(x=>[h('b',null,x.event+': '),x.suggestion])),
+    (F.upcoming||[]).length?h('div',{class:'ins-fest'},F.upcoming.map(e=>h('div',{class:'ins-f'},h('div',{class:'ins-f-h'},h('b',null,e.name),h('span',{class:'chip-s date'},fmtD(e.from)+(e.to!==e.from?' – '+fmtD(e.to):''))),
+      h('small',null,cityL(e.cities)+(e.rule_pct?` · holiday rule +${e.rule_pct}%`:'')),
+      e.last_time?h('small',null,'Last time: '+cityL(e.last_time.cities)):null))):null,
+    (F.past||[]).length?h('details',{class:'ins-past'},h('summary',null,`Past festivals (${F.past.length})`),
+      tbl([['Event'],['City'],['Booked',1],['Paid a night',1],['Rest of month',1]],F.past.flatMap(e=>e.cities.map(x=>h('tr',null,td(e.name+' · '+fmtD(e.from)),td(x.city),td(x.occ+'%',1),td(inrK(x.rate),1),td(`${x.month_occ}% · ${inrK(x.month_rate)}`,1)))))):null));
+  // 4 weekend vs weekday
+  const W=I.weekday||{};
+  v.append(card('s6','Weekend vs weekday',{hint:'last 12 months'},say((A.weekday||{}).summary),say((A.weekday||{}).suggestion),
+    ...Object.entries(W).map(([city,days])=>h('div',{class:'ins-wd'},h('div',{class:'sub-h'},city),days.map(x=>h('div',{class:'hb'},h('span',null,x.day),h('span',{class:'t'},h('i',{style:{width:(x.occ||0)+'%',background:'var(--accent)'}})),h('span',{class:'v num'},`${x.occ??'–'}% · ${inrK(x.rate)}`)))))));
+  // 6 short stays and gaps (beside weekday)
+  const G=I.gaps||{},gp=G.gaps_last_12_months||{};
+  v.append(card('s6','Short stays and empty gaps',{},say((A.gaps||{}).summary),say((A.gaps||{}).suggestion),
+    h('div',{class:'stat-row'},[[(G.one_night_share??0)+'%','one-night stays'],[gp.one_night||0,'single empty nights (12 months)'],[gp.two_nights||0,'two-night gaps (12 months)']].map(([b,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},b),h('span',null,l)))),
+    (G.upcoming_gaps||[]).length?h('div',null,h('div',{class:'sub-h'},'Gaps coming up (next 60 days)'),list(G.upcoming_gaps.slice(0,12).map(x=>[h('b',null,x.stay),` · ${fmtD(x.from)} · ${x.nights} night${x.nights>1?'s':''}`]))):null));
+  // 5 price changes
+  const pv={'increase helped':'p-ok','increase held':'p-acc','increase hurt':'p-bad','cut filled more':'p-warn','cut did not help':'p-bad'};
+  const ch=[...(I.price_changes||[])].sort((a,b)=>b.month.localeCompare(a.month)||a.stay.localeCompare(b.stay));
+  v.append(card('s12','How your price changes worked',{hint:'same month last year vs this year'},say((A.price_changes||{}).summary),
+    ch.length?tbl([['Stay'],['Month'],['Paid a night',1],['Booked',1],['Revenue',1],['Result']],ch.map(x=>h('tr',null,td(x.stay),td(ymL(x.month)),
+      td(`${inrK(x.rate_before)} → ${inrK(x.rate_after)} (${x.rate_change_pct>0?'+':''}${x.rate_change_pct}%)`,1),td(`${x.occ_before}% → ${x.occ_after}%`,1),
+      td(x.revenue_change_pct==null?'–':`${x.revenue_change_pct>0?'+':''}${x.revenue_change_pct}%`,1),td(h('span',{class:'pill '+(pv[x.verdict]||'p-mute')},x.verdict))))):h('div',{class:'empty'},'Needs a full year of history for the same month.')));
+  // 7 groups
+  const gr=(I.groups||[]).filter(x=>x.above_base);
+  v.append(card('s6','Group size and extra-guest income',{hint:'last 12 months'},say((A.groups||{}).summary),say((A.groups||{}).suggestion),
+    gr.length?tbl([['Stay'],['Above base',1],['Extra guest-nights',1],['If charged',1]],gr.map(x=>h('tr',null,td(x.stay),td(`${x.above_base} of ${x.bookings} (${x.above_base_pct}%)`,1),td(x.extra_guest_nights,1),td(inrK(x.potential_income),1)))):h('div',{class:'empty'},'No bookings above the base guest count.')));
+  // 8 lean months
+  const L=I.lean||{};
+  v.append(card('s6','Lean-month plan',{hint:'booked % by month'},say((A.lean||{}).summary),list(((A.lean||{}).items||[]).map(x=>[h('b',null,x.period+': '),x.idea])),
+    ...Object.entries(L).map(([city,ms])=>h('div',null,h('div',{class:'sub-h'},city),h('div',{class:'ins-heat'},ms.map(x=>{const o=x.occ||0;
+      return h('div',{style:{background:`color-mix(in srgb,var(--accent) ${Math.round(o*.75)}%,var(--surface-2))`,color:o>55?'#fff':'var(--ink)'}},ymL(x.month).split(' ')[0],h('b',{class:'num'},o+'%'))}))))));
+  // 9 scorecard
+  const act=Object.fromEntries((A.scorecard||[]).map(x=>[x.stay_id,x.action])),sp=x=>/^low/.test(x)?'p-ok':/^high/.test(x)?'p-bad':/^mixed/.test(x)?'p-warn':'p-mute';
+  v.append(card('s12','Stay-by-stay scorecard',{hint:'last 12 months'},tbl([['Stay'],['Booked',1],['Paid a night',1],['Weekend / weekday',1],['Best month'],['Lean month'],['Price sensitivity'],['Next step']],
+    (I.scorecard||[]).map(x=>h('tr',null,td(h('div',{class:'who'},h('div',null,h('b',null,x.stay),h('span',null,x.city)))),td(x.occ+'%',1),td(inrK(x.rate),1),td(`${inrK(x.weekend_rate)} / ${inrK(x.weekday_rate)}`,1),
+      td(x.best_month?`${ymL(x.best_month)} · ${x.best_occ}%`:'–'),td(x.worst_month?`${ymL(x.worst_month)} · ${x.worst_occ}%`:'–'),td(h('span',{class:'pill '+sp(x.price_sensitivity||'')},x.price_sensitivity||'–')),
+      h('td',{class:'ins-next'},act[x.stay_id]||'–'))))));
+  // 10 data notes
+  v.append(card('s12','Data notes',{},h('ul',{class:'ins-notes'},(I.notes||[]).map(t=>h('li',null,t)))));
+}
+
 /* ============ export ============ */
 let dlP=null;
 async function saveFile(filename,data){
@@ -1899,15 +2007,15 @@ function sortBy(arr,[k,dir]){return[...arr].sort((a,b)=>{const x=a[k],y=b[k];ret
 let toastT;function toast(m,undo,label){document.querySelectorAll('.toast').forEach(t=>t.remove());const ms=String(m||''),ok=(/✓/.test(ms)||/^(saved|downloaded|loaded|copied|connected|undone|up to date|welcome|all done)/i.test(ms))&&!/(couldn|can[’']t|not|failed|error|blocked|disconnected|demo)/i.test(ms);if(ok&&typeof m==='string')m=m.replace(/\s*✓\s*$/,'');const t=h('div',{class:'toast'+(ok?' ok':''),role:'status'},m,undo?h('button',{class:'undo',onclick:()=>{t.remove();undo()}},label||'Undo'):null);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),undo?5000:3000)}
 
 /* ============ navigation ============ */
-const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Money','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3'],['whatsapp','WhatsApp','M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z'],['manage','Manage','M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6']];
-const navViews=()=>VIEWS.filter(([k])=>(k!=='manage'&&k!=='money')||S.admin);
+const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Money','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3'],['whatsapp','WhatsApp','M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z'],['insights','AI insights','M12 2.5l2.1 5.6 5.9 1.9-5.9 1.9L12 17.5l-2.1-5.6L4 10l5.9-1.9zM19 15.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z'],['manage','Manage','M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6']];
+const navViews=()=>VIEWS.filter(([k])=>!['manage','money','insights'].includes(k)||S.admin);
 /* cards that are only money: hidden for view-only roles (the sheet already strips their money fields) */
 const MONEY_CARDS=new Set(['Revenue by month','Channel mix','Cities head to head','Property ranking','Month by month','Where the money goes','Owner statement',
   'From bookings to profit','Expenses by category','Profit & loss by month','Platform fees & direct share','Payments to collect','Platform payouts to chase']);
 const SUB_MG={properties:'Add or change stays, prices, photos and links - reviewed before saving',guest:'Wi-Fi, door PIN and check-in steps the bot sends on check-in day',
   pricing:'Weekend %, holidays, add-ons and custom prices on dates',expenses:'What each stay costs - profit everywhere uses these',lists:'The drop-downs in the booking form',
   history:'Every saved change: who, when, before → after, with Undo',trash:'Restore within 30 days - then removed for good'};
-const SUB={overview:'How the business is doing for the period you pick',desk:'Who checks in and out — select rows to share with staff',calendar:'Every stay, night by night',properties:'Compare listings and open any one for detail',property:'Everything about one listing',money:'Profit, platform fees, expenses and payouts',ops:'Cleaning turnovers and maintenance',bookings:'Every booking from the form',manage:'Change bookings: cancel, notes, batch edits, Trash - reviewed before saving',whatsapp:'Enquiries, leads, requests and issues from the bot - see the status lights below for whether this is live'};
+const SUB={insights:'Price and season opportunities found in your own bookings',overview:'How the business is doing for the period you pick',desk:'Who checks in and out — select rows to share with staff',calendar:'Every stay, night by night',properties:'Compare listings and open any one for detail',property:'Everything about one listing',money:'Profit, platform fees, expenses and payouts',ops:'Cleaning turnovers and maintenance',bookings:'Every booking from the form',manage:'Change bookings: cancel, notes, batch edits, Trash - reviewed before saving',whatsapp:'Enquiries, leads, requests and issues from the bot - see the status lights below for whether this is live'};
 const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* the address of what is on screen (shareable, survives a refresh) */
 const hashNow=()=>S.view==='property'&&S.propId?'property/'+S.propId:S.view==='manage'&&MG.sec&&MG.sec!=='bookings'?'manage/'+MG.sec:S.view;
@@ -1944,7 +2052,7 @@ function renderChrome(){
   paintStatus();
 }
 /* ---- lead: hero on Overview, editorial page head elsewhere ---- */
-const HEAD={desk:['Check-ins &','check-outs'],calendar:['Every night,','at a glance'],properties:['Your','stays'],money:['Where the money','goes'],ops:['Cleaning &','repairs'],bookings:['Every','booking'],whatsapp:['Your','WhatsApp bot']};
+const HEAD={desk:['Check-ins &','check-outs'],calendar:['Every night,','at a glance'],properties:['Your','stays'],money:['Where the money','goes'],ops:['Cleaning &','repairs'],bookings:['Every','booking'],whatsapp:['Your','WhatsApp bot'],insights:['Where to','earn more']};
 const mtn=()=>{const s=sv('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'currentColor','aria-hidden':'true'});s.append(sv('path',{d:'M2.5 18.5l6-9 3.6 5.2 2.6-3.6 6.8 7.4z'}));return s};
 const swoosh=()=>{const s=sv('svg',{width:64,height:14,viewBox:'0 0 64 14',fill:'none','aria-hidden':'true'});s.append(sv('path',{d:'M1 12C14 2 34 1 52 6',stroke:'currentColor','stroke-width':1.5,'stroke-dasharray':'3 4','stroke-linecap':'round',opacity:.7}),sv('circle',{cx:58,cy:7,r:3,fill:'currentColor'}));return s};
 let heroImg=null;
@@ -1992,7 +2100,7 @@ addEventListener('scroll',()=>{if(S.pop&&PHONE()){S.pop=null;renderFilters()}},{
 function renderFilters(){
   const oldPop=document.querySelector('#popLayer .pop')||document.querySelector('#filters .pop'),keepTop=oldPop?oldPop.scrollTop:0,keepKey=S._popOpen;
   if(!S.pop||!PHONE())popHost(null);
-  if(S.view==='manage'){$('#filters').replaceChildren();return}
+  if(S.view==='manage'||S.view==='insights'){$('#filters').replaceChildren();return}  // insights cover the whole business
   const wrap=$('#filters');const f=S.f;const keep=wrap.querySelector('.fbar')?.scrollLeft||0;
   const bar=h('div',{class:'fbar'});
   const close=()=>{S.pop=null;renderFilters()};
@@ -3812,6 +3920,7 @@ const AUD_LV={bookings:{critical:['tariff','platform_fee','gst','received','bala
 function audLevel(tab,action,ch,row){const f=Object.keys(ch||{}),L=AUD_LV[tab]||{},any=l=>f.some(k=>(l||[]).includes(k));row=row||{};ch=ch||{};
   if(action==='replace'||['users','payouts','rates','seasons'].includes(tab))return'critical';
   if(action==='session_refused')return'important';
+  if(action==='insights_refresh')return'routine';
   if(['login','logout','export','upload'].includes(action))return'routine';
   if(tab==='settings')return String(row.key)==='pricing.addons'?'important':'critical';
   if(tab==='overrides')return String(row.unit_id)==='*'?'important':'critical';
@@ -3879,6 +3988,7 @@ function audWhat(e){const ch=e.changes,f=Object.keys(ch),t=e.target,now=k=>ch[k]
   else if(e.tab==='blocks'){const k=(S.data.blocks||[]).find(x=>String(x.block_id)===t)||{},g=k_=>now(k_)??k[k_],pid=g('property_id')||String(g('unit_id')||'').split('-')[0];
     subj=pid?[stay(pid),g('from')?fmtD(String(g('from')).slice(0,10))+' → '+fmtD(String(g('to')).slice(0,10)):'',g('reason')].filter(Boolean).join(' · '):t}
   if(e.action==='session_refused')return['Sign-in refused',t];
+  if(e.action==='insights_refresh')return['Asked for a new AI analysis',insName(t)];
   if(e.result==='blocked')return['Tried to change '+audArea(e).toLowerCase()+' · blocked',/^["{]/.test(subj)?'':subj];
   if(e.result==='failed')return['A save failed',t];
   if(e.action==='login')return['Signed in',''];
@@ -4088,10 +4198,10 @@ function render(){
   if(!D)return;pending.length=0;
   /* a filter, sort or toggle redraws the page: keep the reader where they were (a new page starts at the top) */
   const sc=document.scrollingElement||document.documentElement,keepY=S._rv===S.view?sc.scrollTop:0;S._rv=S.view;
-  if((S.view==='manage'||S.view==='money')&&!S.admin){S.view='overview';try{history.replaceState(null,'','#overview')}catch(e){}}
+  if(['manage','money','insights'].includes(S.view)&&!S.admin){S.view='overview';try{history.replaceState(null,'','#overview')}catch(e){}}
   renderChrome();renderLead();renderFilters();
   const v=$('#view');v.style.minHeight=keepY?v.offsetHeight+'px':'';v.replaceChildren();
-  ({overview,desk,calendar,properties,property,money,ops,bookings,whatsapp,manage})[S.view](v);
+  ({overview,desk,calendar,properties,property,money,ops,bookings,whatsapp,insights,manage})[S.view](v);
   if(S.source==='Sheet unreachable')v.prepend(h('section',{class:'card glass s12 offline-note',role:'alert'},h('b',null,'Can’t reach the Google Sheet'),
     h('span',null,`Nothing is shown until it answers${LIVE.err?' ('+LIVE.err+')':''}. Check the internet connection, then try again.`),h('button',{class:'btn primary sm',onclick:e=>manualRefresh(e.currentTarget)},'Try again')));
   fillRows(v);
