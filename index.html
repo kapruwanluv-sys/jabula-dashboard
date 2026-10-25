@@ -1469,6 +1469,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 /* ---------- families (combo parent + flats) ---------- */
 .tile-parts{white-space:normal;max-width:100%;line-height:1.3}
 .in-fam{font-size:12px;color:var(--muted);font-weight:600}
+/* a flat's fair share of costs kept at its family: hatched, never solid */
+.hb.ghost .t i{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--bad) 62%,transparent) 0 3px,color-mix(in srgb,var(--bad) 14%,transparent) 3px 7px);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 35%,transparent)}
+.hb.ghost>span:first-child{display:grid;gap:1px}.hb.ghost small{font-size:10.5px;color:var(--muted);font-weight:500}.hb.ghost .v{color:var(--muted)}
+.tbl tr.ghost td{color:var(--muted);font-style:italic}
 .fam-src{display:grid;gap:2px}.fam-src .hb small{color:var(--muted);font-weight:500}
 .fam-note{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .fam-note-in{display:flex;gap:10px;align-items:flex-start;min-width:0;flex:1 1 320px}.fam-note-in>svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--accent);fill:none;stroke:currentColor;stroke-width:2}
@@ -1652,8 +1656,9 @@ function expandExpenses(rows,props){const out=[],nowK=TODAY.slice(0,7);
   (rows||[]).filter(e=>!e.deleted_at&&e.date&&+e.amount).forEach(e=>{const d0=e.bill_month&&!e.repeat?mEnd(String(e.bill_month).slice(0,7)):String(e.date).slice(0,10);
     let dates=[d0];if(String(e.repeat||'').toLowerCase()==='monthly'){dates=[];const end=String(e.repeat_until||'').slice(0,7)||nowK,day=+d0.slice(8);let k=d0.slice(0,7);
       while(k<=end&&k<=nowK&&dates.length<120){const last=+mEnd(k).slice(8);dates.push(k+'-'+String(Math.min(day,last)).padStart(2,'0'));k=nextM(k)}}
-    dates.forEach(dt=>{const pids=e.property_id==='*'?sharers(dt):[...new Set(parts(e.property_id).map(fam))];
-      pids.forEach(pid=>out.push({...e,property_id:pid,date:dt,amount:Math.round(+e.amount/pids.length*100)/100,__src:e.expense_id||null,__split:pids.length>1,__rep:dates.length>1||String(e.repeat||'')==='monthly'}))})});
+    /* a split is equal per stay listed; a flat's part goes to its family, so two flats of one family give it two parts */
+    dates.forEach(dt=>{const listed=e.property_id==='*'?sharers(dt):[...new Set(parts(e.property_id))],w={};listed.forEach(x=>{w[fam(x)]=(w[fam(x)]||0)+1});const pids=Object.keys(w);
+      pids.forEach(pid=>out.push({...e,property_id:pid,date:dt,amount:Math.round(+e.amount*w[pid]/listed.length*100)/100,__src:e.expense_id||null,__split:pids.length>1,__rep:dates.length>1||String(e.repeat||'')==='monthly'}))})});
   /* monthly bills not entered yet: the last amount of that bill at that stay stands in, marked estimated - from its first
      real bill up to this month, unless the stay has that bill switched off - so profit isn't overstated while waiting */
   const P_=Object.fromEntries((props||[]).map(p=>[p.property_id,p])),seen={};
@@ -1692,7 +1697,9 @@ function derive(raw){
   return{P,props:raw.props,B,E,M,T,fee,months,starts};
 }
 const F=()=>S.f;
-const fP=p=>{const f=F();return(!f.cities.length||f.cities.includes(p.city))&&(!f.props.length||f.props.includes(p.property_id))&&(f.own==='All'||p.ownership===f.own)};
+/* picking a whole place (combo) picks its family: its flats come along, since the family's money, costs and nights are one */
+const fP=p=>{const f=F();if(!((!f.cities.length||f.cities.includes(p.city))&&(f.own==='All'||p.ownership===f.own)))return false;
+  if(!f.props.length||f.props.includes(p.property_id))return true;const par=parentOf(p.property_id);return!!par&&f.props.includes(par)};
 /* A stopped property keeps its money in every financial figure, but leaves the operational views (calendar,
    occupancy, properties, filters, forms). */
 const isStopped=p=>/^(stopped|inactive)$/i.test(String((p&&p.status)||'').trim());
@@ -1898,9 +1905,12 @@ function scatter(w,{pts,xFmt,yFmt,xLab,yLab,onClick,hh=320}){
 }
 function waterfall(w,{steps,hh=250}){
   const l=56,r=10,t=14,b=44,s=svgRoot(w,hh);let run=0;const bars=steps.map(st=>{if(st.total){const o={...st,a:0,z:st.value};run=st.value;return o}const a=run;run+=st.value;return{...st,a,z:run}});
-  const mx=niceMax(Math.max(...bars.map(x=>Math.max(x.a,x.z)))*1.05);const y=axisY(s,{l,r,t,b,w,hh,max:mx,fmt:inrK});const bw=(w-l-r)/bars.length,bar=Math.min(56,bw*.6);const ink=css('--ink');
+  const mx=niceMax(Math.max(...bars.map(x=>Math.max(x.a,x.z)))*1.05);const y=axisY(s,{l,r,t,b,w,hh,max:mx,fmt:inrK});
+  const hid='wfh'+Math.random().toString(36).slice(2,8);if(bars.some(x=>x.ghost)){const pt=sv('pattern',{id:hid,width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'});
+    pt.append(sv('rect',{width:6,height:6,fill:css('--bad'),'fill-opacity':.12}),sv('rect',{width:2.4,height:6,fill:css('--bad'),'fill-opacity':.55}));const df=sv('defs');df.append(pt);s.append(df)}const bw=(w-l-r)/bars.length,bar=Math.min(56,bw*.6);const ink=css('--ink');
   bars.forEach((x,i)=>{const X=l+i*bw+(bw-bar)/2,top=y(Math.max(x.a,x.z)),bot=y(Math.min(x.a,x.z));
-    s.append(sv('rect',{x:X,y:top,width:bar,height:Math.max(1,bot-top),rx:6,fill:x.total?(x.final?css('--ok'):css('--accent')):css('--bad'),'fill-opacity':x.total?1:.75,'data-tip':`${x.label}: ${inr(x.value)}`}));
+    s.append(sv('rect',{x:X,y:top,width:bar,height:Math.max(1,bot-top),rx:6,fill:x.ghost?`url(#${hid})`:x.total?(x.final?css('--ok'):css('--accent')):css('--bad'),'fill-opacity':x.ghost||x.total?1:.75,
+      stroke:x.ghost?css('--bad'):null,'stroke-opacity':x.ghost?.45:null,'stroke-dasharray':x.ghost?'4 3':null,'data-tip':x.tip||`${x.label}: ${inr(x.value)}`}));
     s.append(sv('text',{x:X+bar/2,y:top-6,'text-anchor':'middle',fill:ink,'font-weight':650,'font-size':10},inrK(x.value)));
     /* labels: two words a line, one word a line when the columns are narrow (phones), so neighbours never overlap */
     const words=x.label.split(' '),lines=(bw<72?words:[words.slice(0,2).join(' '),words.slice(2).join(' ')]).filter(Boolean).slice(0,3);
@@ -2078,7 +2088,7 @@ function sortBy(arr,[k,dir]){return[...arr].sort((a,b)=>{const x=a[k],y=b[k];ret
 let toastT;function toast(m,undo,label){document.querySelectorAll('.toast').forEach(t=>t.remove());const ms=String(m||''),ok=(/✓/.test(ms)||/^(saved|downloaded|loaded|copied|connected|undone|up to date|welcome|all done)/i.test(ms))&&!/(couldn|can[’']t|not|failed|error|blocked|disconnected|demo)/i.test(ms);if(ok&&typeof m==='string')m=m.replace(/\s*✓\s*$/,'');const t=h('div',{class:'toast'+(ok?' ok':''),role:'status'},m,undo?h('button',{class:'undo',onclick:()=>{t.remove();undo()}},label||'Undo'):null);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),undo?5000:3000)}
 
 /* ============ navigation ============ */
-const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Money','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3'],['whatsapp','WhatsApp','M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z'],['insights','AI insights','M12 2.5l2.1 5.6 5.9 1.9-5.9 1.9L12 17.5l-2.1-5.6L4 10l5.9-1.9zM19 15.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z'],['manage','Manage','M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6']];
+const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Financials','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3'],['whatsapp','WhatsApp','M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z'],['insights','AI insights','M12 2.5l2.1 5.6 5.9 1.9-5.9 1.9L12 17.5l-2.1-5.6L4 10l5.9-1.9zM19 15.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z'],['manage','Manage','M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6']];
 const navViews=()=>VIEWS.filter(([k])=>!['manage','money','insights'].includes(k)||S.admin);
 /* cards that are only money: hidden for view-only roles (the sheet already strips their money fields) */
 const MONEY_CARDS=new Set(['Revenue by month','Channel mix','Cities head to head','Property ranking','Month by month','Where the money goes','Owner statement',
@@ -2197,7 +2207,7 @@ function renderFilters(){
   bar.lastChild.querySelector('.pop')?.classList.add('r');
   bar.append(h('button',{class:'fgo','aria-label':'Refresh data from the sheet now','data-tip':'Refresh',onclick:e=>{e.stopPropagation();manualRefresh(e.currentTarget)}},fIcon('sync')));
   const kids=[bar];
-  const chips=[...f.cities.map(c=>['cities',c,c]),...f.props.map(p=>['props',p,short(D.P[p]?.property||p)]),...f.channels.map(c=>['channels',c,c]),...(f.own!=='All'?[['own',f.own,f.own]]:[])];
+  const chips=[...f.cities.map(c=>['cities',c,c]),...f.props.map(p=>['props',p,short(D.P[p]?.property||p)+(kidsOf(p).length?` + its ${kidsOf(p).length} flats`:'')]),...f.channels.map(c=>['channels',c,c]),...(f.own!=='All'?[['own',f.own,f.own]]:[])];
   if(chips.length)kids.push(h('div',{class:'chips'},h('span',{class:'range-label',style:{color:'var(--muted)'}},'Showing only'),chips.map(([k,v,l])=>h('button',{class:'chip',onclick:()=>k==='own'?setF({own:'All'}):toggleIn(k,v),'aria-label':'Remove filter '+l},l,h('i',null,'✕'))),h('button',{class:'chip ghost',onclick:()=>setF({cities:[],props:[],channels:[],own:'All'})},'Clear all')));
   wrap.replaceChildren(...kids);bar.scrollLeft=keep;
   const newPop=document.querySelector('#popLayer .pop')||document.querySelector('#filters .pop');
@@ -2359,7 +2369,7 @@ function overview(v){
   v.append(card('s5','Needs your attention',{},
     h('div',{style:{display:'flex',flexDirection:'column',gap:'2px'}},h('div',{class:'sub-h'},'Maintenance'),urgent.length?urgent.map(m=>h('div',{class:'hb',style:{gridTemplateColumns:'1fr auto'}},h('div',{class:'who'},h('div',null,h('b',null,m.issue),h('span',null,`${short(m.pname)} · ${diff(m.reported_on,TODAY)} days open · ${m.assigned_to}`))),pillPrio(m.priority))):h('div',{class:'empty'},'Nothing open.')),
     h('div',{style:{display:'flex',flexDirection:'column',gap:'2px'}},h('div',{class:'sub-h'},'Payouts'),chase.length?chase.map(b=>h('div',{class:'hb',style:{gridTemplateColumns:'1fr auto auto',cursor:'pointer'},onclick:()=>openBooking(b)},h('div',{class:'who'},h('div',null,h('b',null,`${b.booking_id} · ${b.guest}`),h('span',null,`${short(b.pname)} · ${b.channel} · ${fmtD(b.check_in)}`))),h('span',{class:'v num'},inr(b.net-b.received)),pillPay(b.pay))):h('div',{class:'empty'},'All reconciled.')),
-    h('div',{style:{display:'flex',gap:'8px'}},h('button',{class:'btn sm',onclick:()=>go('ops')},'Operations',icon('chev')),h('button',{class:'btn sm',onclick:()=>go('money')},'Money',icon('chev')))));
+    h('div',{style:{display:'flex',gap:'8px'}},h('button',{class:'btn sm',onclick:()=>go('ops')},'Operations',icon('chev')),h('button',{class:'btn sm',onclick:()=>go('money')},'Financials',icon('chev')))));
 }
 
 /* ============ DESK ============ */
@@ -2378,7 +2388,7 @@ function desk(v){
     const cbx=h('input',{type:'checkbox',checked:on||null,'aria-label':'Select '+b.guest,onchange:()=>{on?ds.sel.delete(key):ds.sel.add(key);render()}});
     return h('div',{class:'drow'+(on?' on':'')},cbx,h('div',{class:'time num'},kind==='in'?b.arrival_time||'—':'11:00'),
       h('div',{style:{minWidth:0,cursor:'pointer'},onclick:()=>openBooking(b)},who(b.guest,`${b.guests} guest${b.guests>1?'s':''} · ${b.nights} night${b.nights>1?'s':''} · ${b.channel}`)),
-      h('div',{class:'prop-l',style:{minWidth:0}},h('b',null,short(b.pname)),h('span',null,`${p.area}, ${p.city}${kind==='out'?' · '+p.cleaner:''}`)),
+      h('div',{class:'prop-l',style:{minWidth:0}},h('b',null,short(b.pname)),h('span',null,`${p.area}, ${p.city}${kind==='out'&&p.cleaner?' · '+p.cleaner:''}`)),
       h('div',{class:'flags'},kind==='out'&&turn(b)?h('span',{class:'pill p-bad','data-tip':'Clean first - next guest today'},'Same Day Check-In & Check-Out'):null,kind==='out'&&t&&t.status==='Done'?h('span',{class:'pill p-ok'},'Cleaned'):null,kind==='in'&&b.pay==='Pending'?h('span',{class:'pill p-warn'},'Unpaid'):null,kind==='in'&&b.guests>=p.bedrooms*2?h('span',{class:'pill p-acc','data-tip':'At full capacity'},'Full house'):null));
   };
   const panel=(title,list,kind)=>{const keys=list.map(b=>kind+':'+b.booking_id),all=keys.length&&keys.every(k=>ds.sel.has(k));
@@ -2395,7 +2405,7 @@ function desk(v){
     h('button',{class:'btn','aria-label':'Copy as text',onclick:()=>copyDesk(allRows,d)},icon('copy'),h('span',{class:'lbl'},'Copy text')),
     sel.length?h('button',{class:'btn',onclick:()=>{ds.sel.clear();render()}},'Clear'):null));
 }
-function deskRow(k,b){const p=D.P[b.property_id];const r={Type:k==='in'?'Check-in':'Check-out',Date:k==='in'?b.check_in:b.check_out,Time:k==='in'?(b.arrival_time||''):'11:00',Property:short(b.pname),Area:p.area,City:p.city,Guest:b.guest,Mobile:phoneNice(b.phone),Guests:b.guests,Nights:b.nights,Channel:b.channel,Housekeeping:p.cleaner,'Same Day Check-In & Check-Out':k==='out'&&sameDayTurn(b)?'Yes':''};if(S.desk.amounts){r['Gross ₹']=b.gross;r['Payout ₹']=b.net;r['Payout status']=b.pay}r['Booking']=b.booking_id;return r}
+function deskRow(k,b){const p=D.P[b.property_id];const r={Type:k==='in'?'Check-in':'Check-out',Date:k==='in'?b.check_in:b.check_out,Time:k==='in'?(b.arrival_time||''):'11:00',Property:short(b.pname),Area:p.area,City:p.city,Guest:b.guest,Mobile:phoneNice(b.phone),Guests:b.guests,Nights:b.nights,Channel:b.channel,Housekeeping:p.cleaner||'','Same Day Check-In & Check-Out':k==='out'&&sameDayTurn(b)?'Yes':''};if(S.desk.amounts){r['Gross ₹']=b.gross;r['Payout ₹']=b.net;r['Payout status']=b.pay}r['Booking']=b.booking_id;return r}
 async function copyDesk(rows,d){const L=[`${CONFIG.BRAND} — ${fmtD(d,{weekday:'long',day:'numeric',month:'long'})}`];
   const part=(k,t)=>{const rs=rows.filter(x=>x[0]===k);if(!rs.length)return;L.push('',t);rs.forEach(([_,b])=>{const p=D.P[b.property_id];L.push(`• ${k==='in'?(b.arrival_time||'—'):'11:00'}  ${short(b.pname)} (${p.area}) — ${b.guest}${b.phone?' ('+phoneNice(b.phone)+')':''}, ${b.guests} pax${k==='out'&&sameDayTurn(b)?' — SAME DAY CHECK-IN & CHECK-OUT':''}${k==='out'&&p.cleaner?' — '+p.cleaner:''}${S.desk.amounts?' — '+inr(b.net):''}`)})};
   part('in','CHECK-INS');part('out','CHECK-OUTS');const txt=L.join('\n');
@@ -2619,17 +2629,33 @@ function property(v){
 function money(v){
   const f=S.f,s=stats(f.from,f.to),[pa,pz]=prevRange(),p=stats(pa,pz);
   const t=(l,val,d,cap)=>h('div',{class:'kpi glass s3'},h('div',{class:'l'},l),h('div',{class:'v num'},val),h('div',{class:'foot'},h('div',{style:{display:'flex',gap:'8px',alignItems:'center'}},d,cap?h('span',{class:'cap'},cap):null)));
-  v.append(t('Gross booking value',inrK(s.gross),delta(s.gross,p.gross),`${s.count} bookings`),t('Platform fees',inrK(s.fee),delta(s.fee,p.fee,true),pct(s.gross?s.fee/s.gross:0,1)+' of gross'),t('Net payout',inrK(s.net),delta(s.net,p.net)),t('Profit',inrK(s.profit),delta(s.profit,p.profit),pct(s.net?s.profit/s.net:0)+' margin'));
+  /* a flat picked without its whole place: its family's costs are kept at the whole place, so its profit is before them.
+     Its fair share of those costs (by nights booked) is drawn hatched - shown, never taken off its own figures. */
+  const lone=f.props.filter(id=>{const par=parentOf(id);return par&&!f.props.includes(par)&&fP(D.P[id])});
+  const pars=[...new Set(lone.map(parentOf))],fsOf=(a,z)=>sum(lone,k=>(fairShare(a,z,k)||{amount:0}).amount),fsTot=fsOf(f.from,f.to);
+  const fsCats={};lone.forEach(k=>{const fs=fairShare(f.from,f.to,k),fm=famMoney(f.from,f.to,parentOf(k));if(!fs||!fm.exp)return;Object.entries(fm.cats).forEach(([c,a])=>fsCats[c]=(fsCats[c]||0)+a*fs.amount/fm.exp)});
+  const famName=pars.map(x=>short(D.P[x].property)).join(' and '),flatName=lone.map(x=>short(D.P[x].property)).join(' and ');
+  if(lone.length)v.append(h('section',{class:'card glass s12 fam-note'},h('div',{class:'fam-note-in'},icon('info'),h('div',null,
+    h('b',null,`${flatName}: costs are counted in the ${famName} famil${pars.length>1?'ies':'y'}`),
+    h('span',null,`Revenue below is ${lone.length>1?'these flats\'':'this flat\'s'} own. ${fsTot?`Fair share of family costs this period: about ${inrK(fsTot)} by nights booked, shown hatched.`:'No family costs recorded in this period.'}`))),
+    h('button',{class:'btn sm',onclick:()=>setF({props:[...new Set([...f.props.filter(x=>!lone.includes(x)),...pars])]})},'Show family')));
+  v.append(t('Gross booking value',inrK(s.gross),delta(s.gross,p.gross),`${s.count} bookings`),t('Platform fees',inrK(s.fee),delta(s.fee,p.fee,true),s.gross?pct(s.fee/s.gross,1)+' of gross':'no bookings'),t('Net payout',inrK(s.net),delta(s.net,p.net)),
+    t('Profit',inrK(s.profit),delta(s.profit,p.profit),lone.length?(fsTot?`${inrK(s.profit-fsTot)} after fair share`:'before family costs'):s.net>0?pct(s.profit/s.net)+' margin':'no income'));
   let wh;
-  v.append(card('s7','From bookings to profit',{hint:rangeLabel(),acts:[btnPNG(()=>wh,'Bookings to profit')]},wh=chart(w=>waterfall(w,{steps:[{label:'Gross booking value',value:s.gross,total:1},{label:'Platform fees',value:-s.fee},{label:'Owner share',value:-s.owner},{label:'Running expenses',value:-s.exp},{label:'Profit',value:s.profit,total:1,final:1}]}))));
+  v.append(card('s7','From bookings to profit',{hint:rangeLabel(),acts:[btnPNG(()=>wh,'Bookings to profit')]},wh=chart(w=>waterfall(w,{steps:[{label:'Gross booking value',value:s.gross,total:1},{label:'Platform fees',value:-s.fee},{label:'Owner share',value:-s.owner},...(s.exp||!fsTot?[{label:'Running expenses',value:-s.exp}]:[]),...(fsTot?[{label:'Family costs share',value:-fsTot,ghost:1,tip:`Fair share of ${famName} family costs: ${inr(fsTot)} (kept at the family, by nights booked)`}]:[]),
+    {label:fsTot?'After fair share':'Profit',value:s.profit-fsTot,total:1,final:1}]}))));
   const ids=new Set(D.props.filter(fP).map(x=>x.property_id));const cats={};D.E.filter(e=>ids.has(e.property_id)&&e.date>=f.from&&e.date<=f.to).forEach(e=>cats[e.category]=(cats[e.category]||0)+(+e.amount||0));const ce=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const mx=ce.length?ce[0][1]:1;
-  v.append(card('s5','Expenses by category',{hint:inrK(s.exp)+' total',acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('expense')},icon('plus'),'Expense'),btnExport(()=>exportRows(D.E.filter(e=>ids.has(e.property_id)&&e.date>=f.from&&e.date<=f.to).map(e=>({Date:e.date,Property:short(D.P[e.property_id].property),City:e.city,Category:e.category,'Amount ₹':e.amount,Vendor:e.vendor||'','Paid via':e.paid_via||'',Notes:e.notes||''})),'Expenses'))]},
-    ce.length?h('div',null,ce.map(([k,val])=>h('div',{class:'hb'},h('span',null,k),h('span',{class:'t'},h('i',{style:{width:val/mx*100+'%',background:'var(--accent)'}})),h('span',{class:'v num'},inr(val))))):h('div',{class:'empty'},'No expenses logged in this period yet.')));
+  const ceF=Object.entries(fsCats).sort((a,b)=>b[1]-a[1]),mxA=Math.max(mx,...ceF.map(x=>x[1]));
+  v.append(card('s5','Expenses by category',{hint:fsTot?`${inrK(s.exp)} own · ${inrK(fsTot)} family share`:inrK(s.exp)+' total',acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('expense')},icon('plus'),'Expense'),btnExport(()=>exportRows(D.E.filter(e=>ids.has(e.property_id)&&e.date>=f.from&&e.date<=f.to).map(e=>({Date:e.date,Property:short(D.P[e.property_id].property),City:e.city,Category:e.category,'Amount ₹':e.amount,Vendor:e.vendor||'','Paid via':e.paid_via||'',Notes:e.notes||''})),'Expenses'))]},
+    ce.length||ceF.length?h('div',null,ce.map(([k,val])=>h('div',{class:'hb'},h('span',null,k),h('span',{class:'t'},h('i',{style:{width:val/mxA*100+'%',background:'var(--accent)'}})),h('span',{class:'v num'},inr(val)))),
+      ceF.map(([k,val])=>h('div',{class:'hb ghost','data-tip':`Fair share of ${famName} family ${k.toLowerCase()} (kept at the family)`},h('span',null,k,h('small',null,'family share')),h('span',{class:'t'},h('i',{style:{width:Math.max(val/mxA*100,4)+'%'}})),h('span',{class:'v num'},inr(Math.round(val)))))):
+      h('div',{class:'empty'},lone.length?`Costs are kept with the ${famName} family; none recorded in this period.`:'No expenses logged in this period yet.')));
   // P&L by month
-  const ks=D.months.filter(k=>mEnd(k)>=f.from&&mStart(k)<=f.to);const ksU=ks.length>=2?ks:D.months.filter(k=>k<=f.to.slice(0,7)).slice(-6);const ms=ksU.map(k=>({k,...mStats(k)}));
-  const lines=[['Bookings','count',x=>x],['Nights sold','nightsAttr',x=>x.toLocaleString('en-IN')],['Occupancy','occ',x=>pct(x)],['Gross booking value','gross',inr],['Platform fees','fee',x=>inr(-x)],['Net payout','net',inr,1],['Owner share','owner',x=>inr(-x)],['Expenses','exp',x=>inr(-x)],['Profit','profit',inr,1],['Avg nightly rate','adr',inr],['RevPAR','revpar',inr]];
+  const ks=D.months.filter(k=>mEnd(k)>=f.from&&mStart(k)<=f.to);const ksU=ks.length>=2?ks:D.months.filter(k=>k<=f.to.slice(0,7)).slice(-6);const ms=ksU.map(k=>({k,...mStats(k),fam:lone.length?fsOf(mStart(k),mEnd(k)):0}));
+  const lines=[['Bookings','count',x=>x],['Nights sold','nightsAttr',x=>x.toLocaleString('en-IN')],['Occupancy','occ',x=>pct(x)],['Gross booking value','gross',inr],['Platform fees','fee',x=>inr(-x)],['Net payout','net',inr,1],['Owner share','owner',x=>inr(-x)],['Expenses','exp',x=>inr(-x)],
+    ...(lone.length&&ms.some(m=>m.fam)?[['Family costs share','fam',x=>inr(-Math.round(x)),0,'ghost']]:[]),['Profit','profit',inr,1],['Avg nightly rate','adr',inr],['RevPAR','revpar',inr]];
   v.append(card('s12','Profit & loss by month',{hint:'money split by nights across months · future months = booked so far',acts:[btnExport(()=>exportRows(lines.map(([l,k])=>Object.fromEntries([['Line',l],...ms.map(m=>[mLong(m.k),k==='occ'?+(m[k]*100).toFixed(1):Math.round(m[k])])])),'Profit and loss'))]},
-    h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,''),ms.map(m=>h('th',{class:'r'},mLabel(m.k)+(m.k>TODAY.slice(0,7)?'*':''))))),h('tbody',null,lines.map(([l,k,fm,hl])=>h('tr',{class:hl?'hl':''},h('td',null,l),ms.map(m=>h('td',{class:'r num'},String(fm(m[k])))))))))));
+    h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,''),ms.map(m=>h('th',{class:'r'},mLabel(m.k)+(m.k>TODAY.slice(0,7)?'*':''))))),h('tbody',null,lines.map(([l,k,fm,hl,cl])=>h('tr',{class:(hl?'hl':'')+(cl?' '+cl:''),'data-tip':cl?'Shown for comparison - kept at the family, not taken off this flat\'s profit':null},h('td',null,l),ms.map(m=>h('td',{class:'r num'},String(fm(m[k])))))))))));
   // channel economics
   const att=D.B.filter(b=>fB(b)&&b.check_in>=f.from&&b.check_in<=f.to);
   const mAll=D.B.filter(fBm).map(b=>[b,share(b,f.from,f.to)]).filter(x=>x[1]>0);
@@ -2640,7 +2666,7 @@ function money(v){
   const dd=(+CLIENT.direct_discount_pct||5)/100,mv=S.mvPct||.1,save=pFee*mv-pGross*mv*dd;
   const segs=[...plat,dir].filter(r=>r.gross>0);
   v.append(card('s6','Platform fees & direct share',{hint:rangeLabel(),acts:[btnExport(()=>exportRows(ce2.map(r=>({Platform:r.c,Bookings:r.n,'Gross ₹':Math.round(r.gross),'Fees ₹':Math.round(r.fee),'Fee %':r.gross?+(r.fee/r.gross*100).toFixed(1):0,'Net ₹':Math.round(r.net),'Share of gross %':+(r.gross/totG*100).toFixed(1)})),'Platform fees'))]},
-    h('div',{class:'pf-head'},h('div',null,h('span',null,'Paid to platforms'),h('b',{class:'num'},inrK(pFee)),h('small',null,`${pct(pGross?pFee/pGross:0,1)} of their bookings · `,delta(pFee,prevFee,true))),
+    h('div',{class:'pf-head'},h('div',null,h('span',null,'Paid to platforms'),h('b',{class:'num'},inrK(pFee)),pGross?h('small',null,`${pct(pFee/pGross,1)} of their bookings · `,delta(pFee,prevFee,true)):h('small',null,'no platform bookings')),
       h('div',{class:'pf-dir'},h('span',null,'Came direct'),h('b',{class:'num'},pct(dir.gross/totG)),h('small',null,`${inrK(dir.gross)} · ${dir.n} booking${dir.n===1?'':'s'} · no fees`))),
     segs.length?h('div',{class:'pf-bar'},segs.map(r=>h('i',{style:{flexGrow:String(Math.max(r.gross/totG,.02)),background:chColor(r.c)},'data-tip':`${r.c}: ${pct(r.gross/totG)} of gross (${inr(r.gross)})`}))):null,
     h('div',{class:'pf-rows'},[...plat,dir].map(r=>h('button',{class:'pf-row',onclick:()=>toggleIn('channels',r.c)},
@@ -3332,7 +3358,7 @@ function mgKept(id){const b=stg(rawB(id)),num=v=>h('input',{type:'number',inputm
     fld('Amount received (kept)',rc),fld('Platform fee',pf),fld('GST',gs)),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{const v=x=>x.value===''?null:+x.value;closeLayer();
       stage(id,{received:v(rc),platform_fee:v(pf),gst:v(gs),refund_check:null,notes:addNote(b.notes,`Kept after the WhatsApp cancel: ${inr(v(rc)||0)}`)});render()}},'Save')])}
-/* Money › Payments to collect: mark a balance collected / undo it. Saved straight away (logged in History with an Undo);
+/* Financials › Payments to collect: mark a balance collected / undo it. Saved straight away (logged in History with an Undo);
    collected_on + collected_amount keep it under Collected, and the morning WhatsApp summary drops it. */
 /* Collect what a guest still owes - all of it or part (some pay in pieces), and optionally write off what won't be paid.
    collected_amount = everything collected from the balance so far, collected_on = the last time; written_off = what was
