@@ -2276,7 +2276,7 @@ function openForm(kind,pid,edit,opt){
     modal(edit?'Edit '+edit.booking_id:'New booking',h('div',{class:'form'},fld('Date of booking',bd),fld('Property',sel,1),fld('Customer',g),fld('Mobile No.',ph),fld('Location (optional)',loc),locL,fld('No. of guests',n),
       fld('Check-in',ci),fld('Check-out',co),fld('Platform',ch),fSrc,fTf,fPf,fGst,fRc,payBox,fld('Payment terms',pt),fld('Account details',ac),
       fld('Expected check-in time',at),edit?fld('Status',bs):null,fld('Notes (optional)',nt,1),sm,err),
-      [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{
+      [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:async()=>{
         for(const[el,what]of need()){if(!String(el.value).trim()){fail('Add '+what+'.');el.focus();return}}
         if(direct()&&pm==='other'&&paidI.value===''){fail('Add how much the guest has paid so far (0 if nothing yet).');paidI.focus();return}
         if(direct()&&(+paidI.value||0)>(+tf.value||0)){fail('Received so far is more than the tariff.');paidI.focus();return}
@@ -2292,13 +2292,18 @@ function openForm(kind,pid,edit,opt){
           tariff:+tf.value,platform_fee:direct()?null:v(pf),gst:direct()?null:v(gst),received:direct()?paidN+leftN:+rc.value,payment_terms:pt.value,account:ac.value,
           arrival_time:at.value||null,notes};
         if(direct())row.balance_due=leftN||null;
-        closeLayer();if(edit&&opt&&opt.stage){stage(edit.booking_id,{...row,booking_status:bs.value});return}if(edit){save('bookings','update',{match:{booking_id:String(edit.booking_id)},fields:{...row,booking_status:bs.value}},edit.booking_id+' updated')}else{const id=nextId(S.data.bookings,'booking_id','BK');save('bookings','append',{row:{booking_id:id,submitted_at:new Date().toISOString().slice(0,16),...row,booking_status:'Confirmed',rating:null}},id+' saved')}}},edit?'Save changes':'Save booking')]);
+        if(edit&&opt&&opt.stage){closeLayer();stage(edit.booking_id,{...row,booking_status:bs.value});return}
+        /* the form stays (hidden) until the sheet says yes - a failed save brings it back with everything typed */
+        const box=$('#layer').firstElementChild;if(box)box.style.display='none';
+        const done=edit?await save('bookings','update',{match:{booking_id:String(edit.booking_id)},fields:{...row,booking_status:bs.value}},edit.booking_id+' updated')
+          :await(id=>save('bookings','append',{row:{booking_id:id,submitted_at:new Date().toISOString().slice(0,16),...row,booking_status:'Confirmed',rating:null},newId:'booking_id'},id+' saved'))(nextId(S.data.bookings,'booking_id','BK'));
+        if(done||!box||!box.isConnected)closeLayer();else{box.style.display='';fail('Not saved (the reason is in the message at the bottom). Everything you typed is still here - tap Save again.')}}},edit?'Save changes':'Save booking')]);
   } else if(kind==='expense'){
     const cat=h('select',{id:'fCat'},['Cleaning','Laundry','Electricity','Internet','Supplies','Repairs','Staff salary','Other'].map(c=>h('option',null,c))),amt=h('input',{id:'fAmt',type:'number',inputmode:'numeric',min:1,placeholder:'e.g. 1500'}),dt=h('input',{id:'fDt',type:'date',value:TODAY}),ven=h('input',{id:'fVen',placeholder:'e.g. Doon Electricals',autocomplete:'off'}),via=h('select',{id:'fVia'},['UPI','Cash','Bank transfer','Card','Auto-debit'].map(c=>h('option',null,c)));
     modal('Add expense',h('div',{class:'form'},fld('Property',sel,1),fld('Category',cat),fld('Amount (₹)',amt),fld('Date',dt),fld('Paid via',via),fld('Vendor',ven,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){fail('Enter an amount above zero.');return}closeLayer();save('expenses','append',{row:{expense_id:'EX'+Date.now().toString(36),date:dt.value,property_id:sel.value,category:cat.value,amount:+amt.value,vendor:ven.value,paid_via:via.value,notes:null}},'Expense added')}},'Save expense')]);
   } else {
     const is=h('input',{id:'fIs',placeholder:'e.g. Geyser not heating…',autocomplete:'off'}),pr=h('select',{id:'fPr'},h('option',{value:'High'},'Urgent'),h('option',{value:'Medium',selected:true},'Soon'),h('option',{value:'Low'},'Routine')),as=h('select',{id:'fAs'},['Caretaker','Electrician','Plumber','Carpenter','AC service','ISP'].map(c=>h('option',null,c)));
-    modal('Log maintenance issue',h('div',{class:'form'},fld('Property',sel,1),fld('Issue',is,1),fld('Priority',pr),fld('Assign to',as),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!is.value.trim()){fail('Describe the issue.');return}const id=nextId(S.data.maint,'ticket_id','MT');closeLayer();save('maintenance','append',{row:{ticket_id:id,property_id:sel.value,reported_on:TODAY,issue:is.value.trim(),priority:pr.value,assigned_to:as.value,status:'Open',cost:null,closed_on:null,source:'Dashboard'}},id+' logged')}},'Log issue')]);
+    modal('Log maintenance issue',h('div',{class:'form'},fld('Property',sel,1),fld('Issue',is,1),fld('Priority',pr),fld('Assign to',as),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!is.value.trim()){fail('Describe the issue.');return}const id=nextId(S.data.maint,'ticket_id','MT');closeLayer();save('maintenance','append',{row:{ticket_id:id,property_id:sel.value,reported_on:TODAY,issue:is.value.trim(),priority:pr.value,assigned_to:as.value,status:'Open',cost:null,closed_on:null,source:'Dashboard'},newId:'ticket_id'},id+' logged')}},'Log issue')]);
   }
 }
 
@@ -2340,8 +2345,13 @@ function applyLocal(tab,op,a){const k=TABKEY[tab],arr=S.data[k]||(S.data[k]=[]);
 async function save(tab,op,a,msg){
   const k=TABKEY[tab],before=JSON.stringify(S.data[k]||[]);applyLocal(tab,op,a);refresh();
   if(!live()){hiLocal(tab,op,a,JSON.parse(before));toast((msg||'Saved')+' · demo only - connect live data to save to the sheet');return true}
-  try{const r=await apiPost({action:op,tab,undo_of:HI.undoing||undefined,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
-    if(op!=='append'&&!(r.updated||r.deleted))throw new Error('that row is no longer in the sheet');toast((msg||'Saved')+' ✓');return true}
+  try{const r=await apiPost({action:op,tab,undo_of:HI.undoing||undefined,new_id:a.newId||undefined,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
+    if(op!=='append'&&!(r.updated||r.deleted))throw new Error('that row is no longer in the sheet');
+    /* new numbered rows (BK277…): the sheet settles the number - another person may have just used ours */
+    if(op==='append'&&a.newId){const was=a.row[a.newId];
+      if(r.id&&String(r.id)!==String(was)){a.row[a.newId]=r.id;if(msg)msg=msg.split(was).join(r.id)+` (${was} was just taken)`;refresh()}
+      else if(r.duplicate&&!r.id){TAKEN.add(String(was));throw new Error(`${was} was just used by someone else`)}}
+    toast((msg||'Saved')+' ✓');return true}
   catch(e){S.data[k]=JSON.parse(before);refresh();toast('Couldn’t save: '+e.message+'. Nothing was changed.');return false}}
 function signInScreen(){
   const err=h('div',{class:'err',hidden:true}),btn=h('div',{class:'gsi-btn'}),note=h('p',{class:'signin-note'},'Use the Google account your team added for you.');
@@ -2376,7 +2386,8 @@ function connectModal(){
 }
 function disconnect(){if(SIGNIN)return signOut();store.set('jg_key','');store.set('jg_live_cache',null);LIVE.key='';LIVE.ok=null;S.data=SEED;S.source='Demo data';S.loadedAt=new Date();refresh();toast('This device is disconnected from the live sheet')}
 function confirmBox(title,text,okLabel,danger,fn){modal(title,h('div',{class:'form'},h('p',{class:'full',style:{margin:0}},text)),[h('button',{class:'btn',onclick:closeLayer},'Keep'),h('button',{class:'btn '+(danger?'danger':'primary'),onclick:()=>{closeLayer();fn()}},okLabel)])}
-const nextId=(arr,field,prefix)=>prefix+(Math.max(0,...arr.map(x=>+String(x[field]||'').replace(/\D/g,'')||0).filter(n=>n<1e7))+1);
+const TAKEN=new Set();  // ids the sheet said someone else just used (refreshed data may not have them yet)
+const nextId=(arr,field,prefix)=>prefix+(Math.max(0,...[...arr.map(x=>x[field]),...TAKEN].map(x=>+String(x||'').replace(/\D/g,'')||0).filter(n=>n<1e7))+1);
 const waLink=p=>'https://wa.me/'+String(p||'').replace(/\D/g,'');
 const phoneTxt=p=>p?('+'+String(p).replace(/\D/g,'')):'';
 /* phone as people read it in exports: +91 98000 12345 for Indian numbers, +<digits> otherwise ('' when none) */
@@ -2852,7 +2863,8 @@ function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE
 async function mgSave(){let ok=0,fail=null;
   for(const[id,f]of Object.entries(STAGE)){const done=await save('bookings','update',{match:{booking_id:id},fields:f},null);if(done){delete STAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(PSTAGE)){const{__new,...fields}=f;
-    const done=__new?await save('properties','append',{row:{property_id:id,...fields}},null):await save('properties','update',{match:{property_id:id},fields},null);
+    const row={property_id:id,...fields},done=__new?await save('properties','append',{row,newId:'property_id'},null):await save('properties','update',{match:{property_id:id},fields},null);
+    if(done&&row.property_id!==id&&GSTAGE[id]){GSTAGE[row.property_id]=GSTAGE[id];delete GSTAGE[id]}  // the sheet gave the new stay another id
     if(done){delete PSTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(GSTAGE)){const done=await giSave(id,f);if(done){delete GSTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[k,v]of Object.entries(PRSTAGE)){const done=await prSave(k,v);if(done){delete PRSTAGE[k];ok++}else{fail=k;break}}
@@ -2861,7 +2873,7 @@ async function mgSave(){let ok=0,fail=null;
     const done=__new?await save('expenses','append',{row:fields},null):await save('expenses','update',{match:{expense_id:id},fields},null);
     if(done){delete ESTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(LSTAGE)){const{__new,__from,...fields}=f;let done;
-    if(__new)done=await save('lists','append',{row:{row_id:nextListId(),active:'Yes',...fields}},null);
+    if(__new)done=await save('lists','append',{row:{row_id:nextListId(),active:'Yes',...fields},newId:'row_id'},null);
     else{done=await save('lists','update',{match:{row_id:id},fields},null);
       if(done&&__from&&fields.value&&__from!==fields.value){if(f.list==='expense_category'){if(listUse(f.list,__from))done=await save('expenses','update',{match:{category:__from},fields:{category:fields.value}},null)}else{const col=BK_COL[f.list];if(col&&listUse(f.list,__from))done=await save('bookings','update',{match:{[col]:__from},fields:{[col]:fields.value}},null)}}}
     if(done){delete LSTAGE[id];ok++}else{fail=id;break}}
