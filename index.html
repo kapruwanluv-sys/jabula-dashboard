@@ -17,16 +17,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://images.unsplash.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 /* Travel-brand look: bright paper, navy ink, royal blue, serif display with italic accent line, photo hero in a wavy mask, floating pill filter bar. */
 :root{
   --bg:#f6f8fc; --surface:#ffffff; --surface-2:#f2f5fb;
   --glass:#ffffff; --glass-2:#ffffff; --glass-line:#e7ecf4;
   --hair:#eef2f8; --hair-2:#dde4ef;
-  --ink:#0c1a3d; --ink-2:#2f3d5e; --muted:#66728d; --faint:#9aa4ba;
+  --ink:#0c1a3d; --ink-2:#2f3d5e; --muted:#5a6681; --faint:#9aa4ba;
   --accent:#1d5bd8; --accent-2:#3d7bff; --accent-soft:#eaf1ff; --accent-ink:#1749b8;
-  --ok:#12804c; --ok-soft:#e3f5eb; --warn:#b4570a; --warn-soft:#fff1de; --bad:#d6342c; --bad-soft:#fdecea;
+  --ok:#12804c; --ok-soft:#e3f5eb; --warn:#b4570a; --warn-soft:#fff1de; --bad:#bf2a20; --bad-soft:#fdecea;
   --c-airbnb:#ff385c; --c-booking:#2f6fe0; --c-mmt:#d97706; --c-direct:#16a34a; --c-website:#7c3aed;
   --city-1:#0e9f8b; --city-2:#e0742f; --city-3:#8b5cf6;
   --seg:#eef2f8; --seg-on:#ffffff; --tipbg:#0c1a3d; --tipink:#fff;
@@ -134,7 +133,7 @@ button{cursor:pointer}
 .float-card .top{display:flex;align-items:center;gap:8px}
 .float-card .n{margin-left:auto;width:42px;height:42px;border-radius:50%;background:#1d5bd8;color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .float-card b{font-size:13.5px;font-weight:700;display:block}
-.float-card small{font-size:11.5px;color:#66728d}
+.float-card small{font-size:12px;color:#5a6681}
 .avs{display:flex}
 .avs .av{width:30px;height:30px;border:2px solid #fff;margin-left:-8px;font-size:10.5px}
 .avs .av:first-child{margin-left:0}
@@ -301,6 +300,12 @@ button.sstat:hover{background:var(--surface-2)}
 .drow .flags{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
 .prop-l b{font-weight:650;display:block}
 .prop-l span{font-size:11.5px;color:var(--muted)}
+.actionbar.still{position:static}
+/* touch targets at least 24 px (WCAG 2.2) */
+.legend button,.lg-linked,.seg button,.chip,.chip-s,.btn.sm,.pd-back{min-height:24px}
+@media (max-width:640px){.ex-row .ex-tx span{white-space:normal;overflow:visible;text-overflow:clip}.kpi.s3{grid-column:span 6}.kpi .v{font-size:22px}
+  .cal-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}}
+.card-h .hint,.tbl small,.mcard small,.sstat small,.mfoot small{font-size:12px}
 .actionbar{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:25;border-radius:99px;padding:10px 10px 10px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow-lg)}
 .actionbar b{font-size:13px}
 .toggle{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;cursor:pointer}
@@ -577,7 +582,7 @@ button.sstat:hover{background:var(--surface-2)}
 .mg-selrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 8px}.mg-selrow .mg-all{margin:0}
 .card-h .acts:has(.mg-tabs){flex:1 1 100%;min-width:0;width:100%}
 .mg-chev{color:var(--muted);display:grid;place-items:center;padding-right:6px}.mg-chev svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-@media (max-width:640px){.mg-tabs{width:100%;display:flex;overflow-x:auto;scrollbar-width:none}.mg-tabs::-webkit-scrollbar{display:none}.mg-tabs button{flex:0 0 auto;padding-left:12px!important;padding-right:12px!important}.mg-tabs button svg{display:none}.mg-tabs button{padding:9px 4px;gap:5px;font-size:12.5px;min-width:0}.mg-tabs button b{padding:2px 5px;font-size:10px}}.mg-ck input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
+@media (max-width:1000px){.mg-tabs{width:100%;display:flex;overflow-x:auto;scrollbar-width:none}.mg-tabs::-webkit-scrollbar{display:none}.mg-tabs button{flex:0 0 auto;padding-left:12px!important;padding-right:12px!important}.mg-tabs button svg{display:none}.mg-tabs button{padding:9px 4px;gap:5px;font-size:12.5px;min-width:0}.mg-tabs button b{padding:2px 5px;font-size:10px}}.mg-ck input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
 .mg-row.bk{grid-template-columns:auto auto minmax(0,1fr) auto auto;gap:14px;padding:12px 14px;border-radius:18px;transition:box-shadow .15s,border-color .15s}
 .mg-row.bk:hover{box-shadow:0 6px 20px rgba(12,26,61,.07);border-color:var(--hair-2)}
 .mg-row.bk .av,.mg-prow .av{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-family:inherit;font-weight:700;font-size:13px;line-height:1;flex:none}
@@ -953,6 +958,14 @@ body:not(.is-admin) .admin{display:none!important}
   .chip{min-height:32px}
 }
 .tabbar,.tabwrap{display:none}
+.tabwrap{transition:transform .25s ease,opacity .25s ease}.tabwrap.tb-away{transform:translateY(130%);opacity:0;pointer-events:none}
+@media (max-height:500px){.fwrap{position:static}}
+/* header: the actions never leave the screen - the section links shrink and scroll first (UI-01) */
+.topbar{min-width:0}.brand,.top-r{flex:0 0 auto}
+.nav{min-width:0;flex:0 1 auto;overflow-x:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+@media (min-width:981px) and (max-width:1440px){.live-badge .lb-t{display:none}.live-badge{padding:0 11px}.brand-logo{height:36px}}
+@media (min-width:981px) and (max-width:1340px){.top-r .btn.primary{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}.top-r .btn.primary .lbl{display:none}.brand-logo{height:30px}}
+.offline-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;border-left:4px solid var(--bad)}.offline-note span{flex:1 1 260px;color:var(--muted)}
 
 
 /* ---------- tablet ---------- */
@@ -1178,7 +1191,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .hi-lvls button[aria-checked=true]{background:var(--lc);border-color:var(--lc);color:#fff;box-shadow:0 2px 10px color-mix(in srgb,var(--lc) 30%,transparent)}
 .hi-lvls button[aria-checked=true] i{background:#fff}.hi-lvls button[aria-checked=true] b{background:rgba(255,255,255,.24);color:#fff}
 .hi-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.hi-filters input[type=search]{flex:1 1 240px;min-width:0}
-.lv-critical{--lc:var(--bad)}.lv-important{--lc:var(--warn)}.lv-routine{--lc:#a3adbd}
+.lv-critical{--lc:var(--bad)}.lv-important{--lc:var(--warn)}.lv-routine{--lc:#6b7590}
 .hi-list{display:grid;border:1px solid var(--hair);border-radius:18px;overflow:hidden;background:var(--surface)}
 .hi-row{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px 12px 18px;border-top:1px solid var(--hair);cursor:pointer}
 .hi-row:first-child{border-top:0}.hi-row:hover{background:color-mix(in srgb,var(--ink) 3%,transparent)}
@@ -1259,12 +1272,13 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 const CLIENT={"brand":"Jabula Getaways","tagline":"Stays in the hills","region":"Dehradun · Rishikesh · Mussoorie","app":{"app_name":"Jabula Getaways","short_name":"Jabula","description":"Bookings, money, check-in desk and WhatsApp leads in one place.","background":"#f6f8fc","theme":"#f6f8fc","icon_color":"#686762"},"api_url":"https://script.google.com/macros/s/AKfycbx4XDMPpi09WM91pvbvFWVcsW4jF4kpwyafG59BSlP5fLT0h4kETheXehJk6J9eMpCncQ/exec","bot_url":"https://wa-jabula.onrender.com","refresh_minutes":5,"hero_photo":"1672380797993-6cab11c471cc","hero_alt":"Sunset on the Himalayan snow range","promo_photo":"1767653431683-9d8346bc18f3","cities":[{"name":"Dehradun","scene":"town","palette":["#fde9df","#f2c9cf","#cfa3c8","#9d7cb6","#665a92"],"photos":["1630579334479-ec171871a550","1762862170883-4cfc75c7672a","1788145719294-cd9471aedad3","1764527156145-cbbbbf0fe5be","1573040219364-5d599e1d53f3","1707993365739-fd69a5675fd3","1610195771759-7926c38df364","1631756964162-25c8c07579b5","1571990300261-b8153d033b04","1637387568999-92c68bdee212"]},{"name":"Rishikesh","scene":"river","palette":["#dff3fb","#aed9ea","#7cb7d3","#4d8db6","#2c5f89"],"photos":["1639405791326-b1168dd7ad71","1758250899745-c2bbd225a110","1606586593596-5308e16d0a48","1627750168257-9a7d3965ef8b","1787945836456-095ad9d899e1","1784019226271-f89c21f7791a","1770802238260-4bd394f5128b","1722867710896-8b5ddb94e141","1626197849364-664e6b759261","1698336722567-56ffe159af71"]},{"name":"Mussoorie","scene":"peaks","palette":["#dfe3ff","#b8bff2","#8f95dd","#6266b8","#3e3f86"],"photos":["1570793005386-840846445fed","1767285784658-f9311736c569","1718307201967-72a0ab7dd7f3","1689465331799-e7db20438ea1","1746280484973-b5359505f5d1","1679155779025-852535ed4aa3","1721714808874-35bcb03a8277","1647481259677-6c7fd7c0b00c","1761508724129-b2b5cbeec852","1605272058466-5988743ff1db"]}],"demo_owner_leads":[{"location":"Landour, Mussoorie","type":"Villa","bedrooms":3,"listed":"Already on Airbnb","name":"Neha Arora"},{"location":"Rajpur Road, Dehradun","type":"Apartment","bedrooms":2,"listed":"New to renting","name":"Vikram Rawat"},{"location":"Tapovan, Rishikesh","type":"Cottage","bedrooms":1,"listed":"Booking.com","name":"Sunil Negi"}],"receiver":"Jabula","booking_lists":{"channels":["Airbnb","Booking.com","MakeMyTrip","Direct"],"payment_terms":["Banking","UPI","Cash"],"accounts":["Jabula HDFC ac","Shivam ac","Shubham ac"]},"google_client_id":"278276381564-fgcobg34n9c0ksfu3vkh7jm8jaadmrda.apps.googleusercontent.com","guest_info_caretaker":false,"pricing_defaults":{"weekend_markup_pct":10,"weekend_nights":["fri","sat","sun"],"weekend_stacks_with_overrides":false,"holiday_markup_pct":10,"direct_discount_pct":5,"addons":[{"id":"cook","title":"🍳 Home cook","price":600,"per":"per meal","desc":"Local home-style meals in the stay"},{"id":"bonfire","title":"🔥 Bonfire evening","price":800,"per":"per evening","desc":"Barbecue & bonfire on prior request","stays":["P01","P02","P03","P04"]},{"id":"pickup","title":"🚕 Station pickup","price":1500,"per":"one way","desc":"Dehradun station / Jolly Grant"},{"id":"housekeeping","title":"🧹 Extra housekeeping","price":400,"per":"per visit","desc":"Fresh towels, cleaning"},{"id":"early_checkin","title":"⏰ Early check-in","price":1000,"per":"if available","desc":"From 10 AM"},{"id":"late_checkout","title":"🌙 Late check-out","price":1000,"per":"if available","desc":"Until 2 PM"},{"id":"decor","title":"🎉 Celebration decor","price":2500,"per":"setup","desc":"Birthdays, anniversaries"}]},"logo":{"dark":"brand/wordmark-dark-web.png","light":"brand/wordmark-light-web.png"}};
 const CONFIG={DATA_URL:"",API_URL:CLIENT.api_url||"",BOT_URL:CLIENT.bot_url||"",REFRESH_MINUTES:CLIENT.refresh_minutes||5,BRAND:CLIENT.brand,PHOTO_BASE:""/*__PHOTO_BASE__*/};
 const SEED={"props":[],"bookings":[],"payouts":[],"turnovers":[],"expenses":[],"maint":[],"fee_pct":{}};
+const EMPTY_DATA=()=>Object.fromEntries(Object.entries(SEED).map(([k,v])=>[k,Array.isArray(v)?[]:v]));  // the shape of the data, no rows
 </script>
 <script>
 (function(){
 /* ============ helpers ============ */
 const $=s=>document.querySelector(s);
-function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(v==null||v===false)continue;if(x==='class')e.className=v;else if(x==='text')e.textContent=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else e.setAttribute(x,v===true?'':v)}for(const c of k.flat(9)){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}
+function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(v!=null&&/^aria-(pressed|selected|checked|expanded)$/.test(x)){e.setAttribute(x,String(v===true||v==='true'));continue}if(v==null||v===false)continue;if(x==='class')e.className=v;else if(x==='text')e.textContent=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else e.setAttribute(x,v===true?'':v)}for(const c of k.flat(9)){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}
   if(a&&typeof a.onclick==='function'&&!/^(button|a|input|select|label|summary|textarea)$/.test(t)&&!e.hasAttribute('role')){e.setAttribute('role','button');e.tabIndex=0;e.addEventListener('keydown',ev=>{if(ev.target===e&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}})}
   return e}
 const NS='http://www.w3.org/2000/svg';
@@ -1294,7 +1308,7 @@ const CITIES=CLIENT.cities.map(c=>c.name);
 const liveCities=()=>CITIES.filter(c=>!D||D.props.some(p=>p.city===c&&!/^(stopped|inactive)$/i.test(String(p.status||'').trim())));
 const cityColor=c=>css(['--city-1','--city-2','--city-3'][CITIES.indexOf(c)]||'--accent');
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const TODAY=iso(new Date());
+const TODAY=(()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:(window.CLIENT&&CLIENT.timezone)||'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}catch(e){return iso(new Date())}})();
 const TOMORROW=add(TODAY,1);
 const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
 const esc=s=>String(s).replace(/[,"\n]/g,m=>m);
@@ -1423,8 +1437,9 @@ function photoImg(id,w,hh,alt,eager,sizes){
 function photoFit(src,alt,onFail){
   const fg=h('img',{class:'fg',src,alt:alt||'',loading:'lazy',decoding:'async'}),wrap=h('span',{class:'phf'},h('img',{class:'bg',src,alt:'','aria-hidden':'true',loading:'lazy',decoding:'async'}),fg);
   fg.addEventListener('error',()=>onFail?wrap.replaceWith(onFail()):wrap.remove(),{once:true});return wrap}
+const coverThumb=p=>{const ph=arrOf(p.photos),th=arrOf(p.photo_thumbs),i=ph.indexOf(p.photo);return th[i>=0?i:0]||null};
 function scene(p,w=640,hgt=400){
-  if(p.photo)return photoFit(p.photo,p.property,()=>sceneSvg(p,w,hgt));
+  if(p.photo)return photoFit(w<=480&&coverThumb(p)||p.photo,p.property,()=>sceneSvg(p,w,hgt));
   const img=photoImg(stockId(p),w,hgt,p.property);
   img.addEventListener('error',()=>img.replaceWith(sceneSvg(p,w,hgt)),{once:true});return img;
 }
@@ -1548,8 +1563,12 @@ async function saveFile(filename,data){
   if(dl){try{await dl.save({filename,data});toast('Saved '+filename)}catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('A save is already waiting for your OK.');return}toast('Couldn\'t save here ('+((e&&e.code)||'unavailable')+').')}return}
   try{const blob=data instanceof Blob?data:new Blob([data]);const a=h('a',{href:URL.createObjectURL(blob),download:filename});document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Downloaded '+filename)}catch(e){toast('Download is blocked in this view.')}
 }
+/* the Excel library (861 KB) is fetched the first time it is needed, not on every visit */
+const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';let xlsxP=null;
+function needXLSX(){if(window.XLSX)return Promise.resolve();return xlsxP=xlsxP||new Promise((ok,no)=>{const sc=document.createElement('script');sc.src=XLSX_URL;sc.onload=ok;sc.onerror=()=>{xlsxP=null;no(new Error('Excel library did not load'))};document.head.append(sc)})}
 function exportRows(rows,name){
   if(!rows.length){toast('Nothing to export.');return}
+  if(!window.XLSX&&!exportRows.tried){exportRows.tried=true;needXLSX().then(()=>exportRows(rows,name),()=>exportRows(rows,name)).finally(()=>{exportRows.tried=false});return}
   const stamp=TODAY;
   if(window.XLSX){const ws=XLSX.utils.aoa_to_sheet([[CONFIG.BRAND],[`${name} · exported ${fmtD(TODAY,{day:'numeric',month:'short',year:'numeric'})}`],[]]);XLSX.utils.sheet_add_json(ws,rows,{origin:'A4'});
     ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:3,c:0},e:{r:3+rows.length,c:Object.keys(rows[0]).length-1}})};ws['!cols']=Object.keys(rows[0]).map(k=>({wch:Math.min(36,Math.max(k.length,...rows.slice(0,50).map(r=>String(r[k]??'').length))+2)}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,name.slice(0,30));const out=XLSX.write(wb,{type:'array',bookType:'xlsx'});saveFile(`${CONFIG.BRAND} - ${name} - ${stamp}.xlsx`,new Blob([out]));}
@@ -1594,7 +1613,7 @@ const btnPNG=(holderFn,name)=>h('button',{class:'btn sm',onclick:()=>exportChart
 /* ============ UI atoms ============ */
 const pending=[];
 function chart(drawFn,opts={}){const d=h('div',{class:'chart',style:opts.minH?{minHeight:opts.minH+'px'}:null});pending.push(()=>{d.replaceChildren(drawFn(Math.max(240,Math.floor(d.clientWidth))))});return d}
-function card(span,title,{hint,acts,id}={},...body){return h('section',{class:`card glass ${span}`,id},h('div',{class:'card-h'},h('h2',null,title),hint?h('span',{class:'hint'},hint):null,acts?h('div',{class:'acts'},acts):null),...body)}
+function card(span,title,{hint,acts,id}={},...body){if(!S.admin&&MONEY_CARDS.has(title))return h('section',{hidden:true});return h('section',{class:`card glass ${span}`,id},h('div',{class:'card-h'},h('h2',null,title),hint?h('span',{class:'hint'},hint):null,acts?h('div',{class:'acts'},acts):null),...body)}
 const pillStatus=s=>h('span',{class:'pill '+({Upcoming:'p-acc','In-house':'p-ok',Completed:'p-mute',Cancelled:'p-bad'}[s]||'p-mute')},s);
 const pillPay=s=>h('span',{class:'pill '+({Received:'p-ok',Short:'p-bad',Pending:'p-warn'}[s]||'p-mute')},s);
 const pillPrio=s=>h('span',{class:'pill '+({High:'p-bad',Medium:'p-warn',Low:'p-ok'}[s])},{High:'Urgent',Medium:'Soon',Low:'Routine'}[s]);
@@ -1621,10 +1640,22 @@ let toastT;function toast(m,undo,label){document.querySelectorAll('.toast').forE
 
 /* ============ navigation ============ */
 const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Money','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3'],['whatsapp','WhatsApp','M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z'],['manage','Manage','M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6']];
-const navViews=()=>VIEWS.filter(([k])=>k!=='manage'||S.admin);
+const navViews=()=>VIEWS.filter(([k])=>(k!=='manage'&&k!=='money')||S.admin);
+/* cards that are only money: hidden for view-only roles (the sheet already strips their money fields) */
+const MONEY_CARDS=new Set(['Revenue by month','Channel mix','Cities head to head','Property ranking','Month by month','Where the money goes','Owner statement',
+  'From bookings to profit','Expenses by category','Profit & loss by month','Platform fees & direct share','Payments to collect','Platform payouts to chase']);
+const SUB_MG={properties:'Add or change stays, prices, photos and links - reviewed before saving',guest:'Wi-Fi, door PIN and check-in steps the bot sends on check-in day',
+  pricing:'Weekend %, holidays, add-ons and custom prices on dates',expenses:'What each stay costs - profit everywhere uses these',lists:'The drop-downs in the booking form',
+  history:'Every saved change: who, when, before → after, with Undo',trash:'Restore within 30 days - then removed for good'};
 const SUB={overview:'How the business is doing for the period you pick',desk:'Who checks in and out — select rows to share with staff',calendar:'Every stay, night by night',properties:'Compare listings and open any one for detail',property:'Everything about one listing',money:'Profit, platform fees, expenses and payouts',ops:'Cleaning turnovers and maintenance',bookings:'Every booking from the form',manage:'Change bookings: cancel, notes, batch edits, Trash - reviewed before saving',whatsapp:'Enquiries, leads, requests and issues from the bot - see the status lights below for whether this is live'};
 const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
-function go(v,extra){S.view=v;if(extra)Object.assign(S,extra);S.pop=null;try{history.replaceState(null,'','#'+(v==='property'?'properties':v))}catch(e){}
+/* the address of what is on screen (shareable, survives a refresh) */
+const hashNow=()=>S.view==='property'&&S.propId?'property/'+S.propId:S.view==='manage'&&MG.sec&&MG.sec!=='bookings'?'manage/'+MG.sec:S.view;
+function pushHash(){const h_='#'+hashNow();if(location.hash!==h_)try{history.pushState(null,'',h_)}catch(e){}}
+/* read an address: '#property/P15', '#manage/pricing', '#money' */
+function fromHash(hs){const[k,arg]=String(hs||'').replace(/^#/,'').split('/');if(k==='property'&&arg)return{view:'property',propId:arg};if(k==='manage')return{view:'manage',sec:arg||'bookings'};
+  return VIEWS.some(x=>x[0]===k)?{view:k}:null}
+function go(v,extra){S.view=v;if(extra)Object.assign(S,extra);S.pop=null;pushHash();
   const swap=()=>{render();window.scrollTo({top:0})};if(document.startViewTransition&&!calm()){const t=document.startViewTransition(swap);t.ready.catch(()=>{});t.finished.catch(()=>{})}else swap()}
 function countUp(root){if(calm())return;root.querySelectorAll('[data-count]').forEach(el=>{const t=el.textContent,m=t.match(/^([^\d−-]*)([\d.,]+)(.*)$/);if(!m)return;const target=parseFloat(m[2].replace(/,/g,'')),dec=(m[2].split('.')[1]||'').length,t0=performance.now();
   const step=now=>{const k=Math.min(1,(now-t0)/750),e=1-Math.pow(1-k,3);el.textContent=m[1]+(target*e).toFixed(dec)+m[3];if(k<1)requestAnimationFrame(step);else el.textContent=t};requestAnimationFrame(step)})}
@@ -1640,7 +1671,7 @@ function renderChrome(){
   const arrT=D.B.filter(b=>fB(b)&&b.check_in===TODAY).length,depT=D.B.filter(b=>fB(b)&&b.check_out===TODAY).length;
   const cur=S.view==='property'?'properties':S.view;
   $('#nav').replaceChildren(...navViews().map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),l,k==='desk'?h('span',{class:'badge'},arrT+depT):k==='ops'&&openIss?h('span',{class:'badge'+(urgent?' hot':''),'data-tip':`${openIss} open issues, ${urgent} urgent`},urgent||openIss):null)));
-  {const tb=$('#tabbar'),keep=tb.scrollLeft;tb.replaceChildren(...navViews().map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),{overview:'Home',desk:'Desk',properties:'Stays',ops:'Ops',whatsapp:'Bot'}[k]||l)));
+  {const tb=$('#tabbar'),keep=tb.scrollLeft;tb.replaceChildren(...navViews().map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),{desk:'Desk',ops:'Ops'}[k]||l)));
    tb.scrollLeft=keep;const on=tb.querySelector('[aria-current=page]');if(on){const r=on.offsetLeft+on.offsetWidth/2-tb.clientWidth/2;if(on.offsetLeft<tb.scrollLeft+8||on.offsetLeft+on.offsetWidth>tb.scrollLeft+tb.clientWidth-8)tb.scrollTo({left:r,behavior:calm()?'auto':'smooth'})}tabEdges()}
   document.body.classList.toggle('is-admin',S.admin);
   document.querySelectorAll('.role-btn').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.role==='admin')===S.admin));
@@ -1662,7 +1693,7 @@ function renderLead(){
   if(S.view==='overview'){L.replaceChildren(hero());return}
   if(S.view==='property'){L.replaceChildren();return}
   const [a,b]=HEAD[S.view]||['',''];
-  L.replaceChildren(h('header',{class:'pagehead'},h('div',null,h('div',{class:'eyebrow'},mtn(),(VIEWS.find(v=>v[0]===S.view)||[0,''])[1]),h('h1',null,a+' ',h('em',null,b)),h('div',{class:'sub'},SUB[S.view]))));
+  L.replaceChildren(h('header',{class:'pagehead'},h('div',null,h('div',{class:'eyebrow'},mtn(),(VIEWS.find(v=>v[0]===S.view)||[0,''])[1]),h('h1',null,a+' ',h('em',null,b)),h('div',{class:'sub'},S.view==='manage'&&SUB_MG[MG.sec]||SUB[S.view]))));
 }
 function hero(){
   const f=S.f,s=stats(f.from,f.to);
@@ -1679,7 +1710,7 @@ function hero(){
     h('div',{class:'hero-media'},h('div',{class:'hero-photo'},heroImg),
       h('button',{class:'float-card',onclick:()=>{S.desk.mode='today';go('desk')},'aria-label':`${arr.length} checking in today. Open the check-in desk.`},
         h('div',{class:'top'},h('div',{class:'avs'},arr.length?arr.slice(0,3).map(b=>h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest))):h('span',{class:'av',style:{background:'#9aa4ba'}},'–')),h('span',{class:'n num'},arr.length)),
-        h('div',null,h('b',null,'Checking in today'),h('small',null,arr.length?`First at ${arr[0].arrival_time||'—'} · ${short(arr[0].pname)}`:'No check-ins today')),
+        h('div',null,h('b',null,'Checking in today'),h('small',null,arr.length?(arr[0].arrival_time?`First at ${arr[0].arrival_time} · ${short(arr[0].pname)}`:`First: ${short(arr[0].pname)} · time not set`):'No check-ins today')),
         h('div',{class:'line'},`${dep.length} check-outs by 11:00`))));
   return el;
 }
@@ -1744,13 +1775,13 @@ function overview(v){
   const tint=c=>({background:`color-mix(in srgb, ${c} 13%, transparent)`,color:c});
   const SI={net:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',profit:'M3 17l6-6 4 4 8-8M15 7h6v6',occ:'M3 18V8M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5M7 11.5a1.5 1.5 0 100-.01',adr:'M3 12l9-9h8v8l-9 9zM15.5 8.5a1 1 0 100-.01',revpar:'M4 20V10M10 20V4M16 20v-7M22 20H2'};
   const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));return h('div',{class:'sstat','data-tip':tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d)),h('div',{class:'sp'},spark(sp,color,72,30)))};
-  const pay=h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Balances direct guests still owe, plus platform payouts not received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Money to collect'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.channel==='Direct').length} direct guests · ${due.filter(b=>b.channel!=='Direct').length} platform payouts`},`${due.length} bookings`))));
+  const pay=!S.admin?null:h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Balances direct guests still owe, plus platform payouts not received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Money to collect'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.channel==='Direct').length} direct guests · ${due.filter(b=>b.channel!=='Direct').length} platform payouts`},`${due.length} bookings`))));
   v.append(h('section',{class:'strip-stats glass s12','aria-label':'Key numbers'},
-    st1('net','Net payout',inrK(s.net),delta(s.net,p.net),ms.map(m=>m.net),css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
-    st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),ms.map(m=>m.profit),css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
+    !S.admin?null:st1('net','Net payout',inrK(s.net),delta(s.net,p.net),ms.map(m=>m.net),css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
+    !S.admin?null:st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),ms.map(m=>m.profit),css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
     st1('occ','Booked '+bookedWhen(),pct(s.occ),delta(s.occ,p.occ),ms.map(m=>m.occ),css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
-    st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),ms.map(m=>m.adr),css('--city-3'),'ADR: room revenue ÷ nights sold'),
-    st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),ms.map(m=>m.revpar),css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
+    !S.admin?null:st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),ms.map(m=>m.adr),css('--city-3'),'ADR: room revenue ÷ nights sold'),
+    !S.admin?null:st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),ms.map(m=>m.revpar),css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
   // trend: a window of months you swipe through (phones 6, laptops 15), not every month squeezed in
   const all=D.months,nowK=TODAY.slice(0,7),cities=liveCities().filter(c=>!f.cities.length||f.cities.includes(c));
   const netC=(c,k)=>sum(D.B.filter(b=>fBm(b)&&b.city===c),b=>b.net*share(b,mStart(k),mEnd(k)));
@@ -1759,6 +1790,7 @@ function overview(v){
   if(S.revFY!=null)wk=all.filter(k=>fyOf(k)===S.revFY);
   if(!wk||!wk.length){let tgt=nowK;for(let i=0;i<(PHONE()?2:3);i++)tgt=nextM(tgt);const endK=S.revEnd||tgt;
     let e=all.reduce((m,k,i)=>k<=endK?i:m,all.length-1);e=Math.max(Math.min(e,all.length-1),Math.min(wN,all.length)-1);wk=all.slice(Math.max(0,e-wN+1),e+1)}
+  if(!wk.length)wk=[nowK];  // no bookings yet (new client, empty sheet): one empty month, not a crash
   const wI0=all.indexOf(wk[0]),wI1=all.indexOf(wk[wk.length-1]);
   const wShift=n=>{const e=Math.max(Math.min(all.length,wN)-1,Math.min(all.length-1,wI1+n));S.revFY=null;S.revEnd=all[e];render()};
   const byCity=cities.map(c=>({name:c,color:cityColor(c),vals:wk.map(k=>netC(c,k))}));
@@ -1853,8 +1885,8 @@ function overview(v){
   const en=props.filter(p=>!isCombo(p)).map(p=>{const r=stats(add(TODAY,-90),add(TODAY,-1),p.property_id).adr||+p.base_rate||0,miss=emptyN(p.property_id,mStart(nowK),TODAY),next=emptyN(p.property_id,TODAY,add(TODAY,30));return{p,r,miss,next,missV:miss*r,nextV:next*r}});
   const enTop=sortBy(en.filter(x=>x.nextV>0),['nextV',-1]).slice(0,PHONE()?3:4),missV=sum(en,x=>x.missV),missN=sum(en,x=>x.miss),nextV=sum(en,x=>x.nextV),nextN=sum(en,x=>x.next);
   v.append(card('s4','Empty nights',{hint:'value at each stay’s usual rate'},
-    h('div',{class:'en-k'},h('div',{class:'en-miss'},h('span',null,'Missed this month'),h('b',{class:'num'},TODAY.slice(8)==='01'?'–':inrK(missV)),h('small',null,`${missN} night${missN===1?'':'s'} since 1 ${mLabel(nowK)}`)),
-      h('div',{class:'en-next'},h('span',null,'Still to sell · next 30 days'),h('b',{class:'num'},inrK(nextV)),h('small',null,`${nextN} night${nextN===1?'':'s'} free`))),
+    h('div',{class:'en-k'},h('div',{class:'en-miss'},h('span',null,'Missed this month'),h('b',{class:'num'},!S.admin?`${missN} night${missN===1?'':'s'}`:TODAY.slice(8)==='01'?'–':inrK(missV)),h('small',null,!S.admin?`empty since 1 ${mLabel(nowK)}`:`${missN} night${missN===1?'':'s'} since 1 ${mLabel(nowK)}`)),
+      h('div',{class:'en-next'},h('span',null,'Still to sell · next 30 days'),h('b',{class:'num'},!S.admin?`${nextN} night${nextN===1?'':'s'}`:inrK(nextV)),h('small',null,!S.admin?'free to sell':`${nextN} night${nextN===1?'':'s'} free`))),
     enTop.length?h('div',{class:'en-list'},h('span',{class:'en-lh'},'Most to gain'),enTop.map(x=>h('button',{class:'en-row',onclick:()=>openAvail(x.p.property_id)},h('span',null,short(x.p.property)),h('span',{class:'num'},`${x.next} n · ${inrK(x.nextV)}`)))):h('div',{class:'empty'},'Fully booked for the next 30 days.'),
     h('div',{class:'foot-note'},'Usual rate = the stay’s average nightly rate over the last 90 days. Blocked dates and combo listings (counted through their parts) are left out.')));
   // leaders
@@ -1898,7 +1930,7 @@ function desk(v){
   const sel=[...arr.map(b=>['in',b]),...dep.map(b=>['out',b])].filter(([k,b])=>ds.sel.has(k+':'+b.booking_id));
   const allRows=sel.length?sel:[...arr.map(b=>['in',b]),...dep.map(b=>['out',b])];
   const amt=h('input',{type:'checkbox',checked:ds.amounts||null,id:'amtT',onchange:e=>{ds.amounts=e.target.checked;render()}});
-  if(allRows.length)v.append(h('div',{class:'s12 actionbar glass'},h('b',null,sel.length?`${sel.length} selected`:`Nothing selected · exports include all ${allRows.length}`),
+  if(allRows.length)v.append(h('div',{class:'s12 actionbar glass'+(sel.length?'':' still')},h('b',null,sel.length?`${sel.length} selected`:`Nothing selected · exports include all ${allRows.length}`),
     h('label',{class:'toggle',for:'amtT'},amt,'Amounts'),h('div',{class:'grow'}),
     h('button',{class:'btn primary',onclick:()=>deskImage(allRows,d),disabled:allRows.length?null:true},icon('img'),'Share as image'),
     h('button',{class:'btn','aria-label':'Download as Excel',onclick:()=>exportRows(allRows.map(([k,b])=>deskRow(k,b)),`Desk ${d}`)},icon('dl'),h('span',{class:'lbl'},'Excel')),
@@ -2177,7 +2209,7 @@ function ops(v){
     return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,short(p.property)),turn?h('span',{class:'pill p-bad'},'Same Day Check-In & Check-Out'):null,h('span',{class:'end'},done?h('span',{class:'pill p-ok'},'✓ Cleaned'):h('span',{class:'pill p-warn'},'To clean'))),h('div',{class:'m'},`${p.area} · ${fmtD(b.check_out,{weekday:'short',day:'numeric'})} 11:00 · ${p.bedrooms} BR · ${p.bedrooms*2} linen sets`),h('div',{class:'row'},who(p.cleaner),done?null:h('button',{class:'btn sm admin end',onclick:()=>(S.data.turnovers||[]).some(x=>String(x.booking_id)===b.booking_id)?save('turnovers','update',{match:{booking_id:b.booking_id},fields:{status:'Done'}},short(p.property)+' marked as cleaned'):save('turnovers','append',{row:{booking_id:b.booking_id,cleaner:p.cleaner,status:'Done'}},short(p.property)+' marked as cleaned')},'Mark cleaned')))};
   v.append(card('s12','Cleaning turnovers',{hint:'from check-outs · red = next guest checks in the same day',acts:[btnExport(()=>exportRows(outs.map(b=>{const p=D.P[b.property_id];return{Date:b.check_out,Property:short(p.property),Area:p.area,City:p.city,'Guest leaving':b.guest,Mobile:phoneNice(b.phone),Housekeeping:p.cleaner,Bedrooms:p.bedrooms,'Linen sets':p.bedrooms*2,'Same Day Check-In & Check-Out':D.starts.has(b.property_id+'|'+b.check_out)?'Yes':'',Status:(D.T[b.booking_id]||{}).status==='Done'?'Cleaned':'To clean'}}),'Cleaning schedule'))]},
     board('clean',[['Today',outs.filter(b=>b.check_out===TODAY),tTile],['Tomorrow',outs.filter(b=>b.check_out===d1),tTile],['Later',outs.filter(b=>b.check_out>d1),tTile]])));
-  const mTile=m=>{const next=m.status==='Open'?'In progress':m.status==='In progress'?'Closed':null;return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,m.issue),h('span',{class:'end'},m.status==='Closed'?h('span',{class:'pill p-mute'},m.cost?inr(m.cost):'Closed'):pillPrio(m.priority))),h('div',{class:'m'},`${short(m.pname)} · ${m.ticket_id} · ${m.status==='Closed'?'fixed in '+diff(m.reported_on,m.closed_on||TODAY)+' d':diff(m.reported_on,TODAY)+' days open'}`),h('div',{class:'row'},who(m.assigned_to),next?h('button',{class:'btn sm admin end',onclick:()=>save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{status:next,closed_on:next==='Closed'?TODAY:null}},`${m.ticket_id} moved to ${next}`)},next==='Closed'?'Close':'Start'):null))};
+  const mTile=m=>{const next=m.status==='Open'?'In progress':m.status==='In progress'?'Closed':null;return h('div',{class:'tile'},h('div',{class:'row'},h('b',null,m.issue),h('span',{class:'end'},m.status==='Closed'?h('span',{class:'pill p-mute'},m.cost?inr(m.cost):'Closed'):pillPrio(m.priority))),h('div',{class:'m'},`${short(m.pname)} · ${m.ticket_id} · ${m.status==='Closed'?'fixed in '+diff(m.reported_on,m.closed_on||TODAY)+' d':diff(m.reported_on,TODAY)+' days open'}`),h('div',{class:'row'},who(m.assigned_to),next?h('button',{class:'btn sm admin end',onclick:()=>(next==='Closed'?fn=>confirmBox('Close this issue?',`${m.issue} · ${short(m.pname)} · ${m.ticket_id}`,'Close issue',false,fn):fn=>fn())(()=>save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{status:next,closed_on:next==='Closed'?TODAY:null}},`${m.ticket_id} moved to ${next}`))},next==='Closed'?'Close':'Start'):null))};
   const pr=m=>({High:0,Medium:1,Low:2}[m.priority]);
   v.append(card('s12','Maintenance',{acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('issue')},icon('plus'),'Log issue'),btnExport(()=>exportRows(D.M.filter(m=>fP(D.P[m.property_id])).map(m=>({Ticket:m.ticket_id,Property:short(m.pname),City:m.city,Issue:m.issue,Priority:m.priority,'Assigned to':m.assigned_to,Status:m.status,'Reported on':m.reported_on,'Closed on':m.closed_on||'','Cost ₹':m.cost||''})),'Maintenance'))]},
     board('maint',[['Open',open.filter(m=>m.status==='Open').sort((a,b)=>pr(a)-pr(b)),mTile],['In progress',open.filter(m=>m.status==='In progress').sort((a,b)=>pr(a)-pr(b)),mTile],['Closed',sortBy(closed,['closed_on',-1]).slice(0,5),mTile]])));
@@ -2192,8 +2224,8 @@ function bookings(v){
   const recent=st.sort[0]==='added',idn=b=>+(String(b.booking_id).match(/\d+/)||[0])[0];
   const pool=D.B.filter(b=>fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))&&(recent||(b.check_in>=f.from&&b.check_in<=f.to))&&(st.status==='All'||b.status===st.status)&&(!st.pay||st.pay==='Any'||(st.pay==='To collect'?b.ok&&+b.balance_due>0:!!(b.collected_on||+b.written_off)))&&(!ql||(b.guest+' '+b.booking_id+' '+b.pname).toLowerCase().includes(ql)));
   const rows=recent?[...pool].sort((a,b)=>(idn(b)-idn(a))*(st.sort[1]<0?1:-1)):sortBy(pool,st.sort);
-  const q=h('input',{class:'search',type:'search',placeholder:'Search guest, booking ID, property…',value:st.q,id:'bkQ',style:{flex:'1 1 220px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;st.lim=60;render();const n=$('#bkQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
-  const cols=[{t:'Booking',k:'booking_id',m:1,f:b=>b.booking_id},{t:'Guest',k:'guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''}`)},{t:'Property',k:'pname',f:b=>h('div',{class:'who'},h('div',null,h('b',null,short(b.pname)),h('span',null,b.area+', '+b.city)))},{t:'Channel',k:'channel',f:b=>chd(b.channel)},{t:'Check-in',k:'check_in',f:b=>fmtD(b.check_in)+(b.arrival_time?' · '+b.arrival_time:'')},{t:'Nights',k:'nights',r:1,f:b=>b.nights},{t:'Gross',k:'gross',r:1,f:b=>inr(b.gross)},{t:'Payout',k:'net',r:1,f:b=>inr(b.net)},{t:'Stay',k:'status',f:b=>pillStatus(b.status)},{t:'Payout status',k:'pay',f:b=>pillPay(b.pay)},{t:'Notes',k:'notes',f:b=>b.notes?h('span',{class:'bk-note',title:b.notes},String(b.notes).split('\n').pop()):'–'}];
+  const q=h('input',{class:'search',type:'search','aria-label':'Search bookings',placeholder:'Search guest, booking ID, property…',value:st.q,id:'bkQ',style:{flex:'1 1 220px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;st.lim=60;render();const n=$('#bkQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
+  const cols=[{t:'Booking',k:'booking_id',m:1,f:b=>b.booking_id},{t:'Guest',k:'guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''}`)},{t:'Property',k:'pname',f:b=>h('div',{class:'who'},h('div',null,h('b',null,short(b.pname)),h('span',null,b.area+', '+b.city)))},{t:'Channel',k:'channel',f:b=>chd(b.channel)},{t:'Check-in',k:'check_in',f:b=>fmtD(b.check_in)+(b.arrival_time?' · '+b.arrival_time:'')},{t:'Nights',k:'nights',r:1,f:b=>b.nights},{t:'Gross',k:'gross',r:1,f:b=>inr(b.gross)},{t:'Payout',k:'net',r:1,f:b=>inr(b.net)},{t:'Stay',k:'status',f:b=>pillStatus(b.status)},{t:'Payout status',k:'pay',f:b=>pillPay(b.pay)},{t:'Notes',k:'notes',f:b=>b.notes?h('span',{class:'bk-note',title:b.notes},String(b.notes).split('\n').pop()):'–'}].filter(c=>S.admin||!['Gross','Payout','Payout status'].includes(c.t));  // view-only roles: no money columns
   const order=h('div',{class:'seg',role:'group','aria-label':'Order'},[['added','Recently added'],['check_in','By check-in']].map(([k,l])=>h('button',{'aria-pressed':st.sort[0]===k||(k==='check_in'&&!recent),onclick:()=>{st.sort=[k,-1];st.lim=per;render()}},l)));
   v.append(card('s12','Bookings',{hint:recent?`${rows.length} bookings · newest added first · all dates`:`${rows.length} checking in ${rangeLabel()}`,acts:[order,btnExport(()=>exportRows(rows.map(bookRow),'Bookings'))]},
     h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}},q,h('div',{class:'seg'},['All','Upcoming','In-house','Completed','Cancelled'].map(x=>h('button',{'aria-pressed':st.status===x,onclick:()=>{st.status=x;st.lim=per;render()}},x))),
@@ -2216,7 +2248,7 @@ function openBooking(b){
       bookingActions(b),
       h('button',{class:'btn',onclick:()=>{closeLayer();go('property',{propId:p.property_id})}},'Open property',icon('chev'))))));
 }
-function modal(title,body,actions){$('#layer').replaceChildren(h('div',{class:'scrim',onclick:closeLayer}),h('div',{class:'modal-wrap',onclick:e=>{if(e.target.classList.contains('modal-wrap'))closeLayer()}},h('div',{class:'modal',role:'dialog','aria-modal':'true','aria-label':title},h('div',{class:'modal-h'},h('h2',null,title),h('button',{class:'x','aria-label':'Close',onclick:closeLayer},'✕')),body,h('div',{class:'modal-f'},actions))));if(!matchMedia('(pointer:coarse)').matches){const f=$('#layer input:not([type=checkbox]):not([type=date]):not([type=time]),#layer textarea');if(f)f.focus()}}
+function modal(title,body,actions){$('#layer').replaceChildren(h('div',{class:'scrim',onclick:closeLayer}),h('div',{class:'modal-wrap',onclick:e=>{if(e.target.classList.contains('modal-wrap'))closeLayer()}},h('div',{class:'modal',role:'dialog','aria-modal':'true','aria-label':title},h('div',{class:'modal-h'},h('h2',null,title),h('button',{class:'x','aria-label':'Close',onclick:closeLayer},'✕')),body,h('div',{class:'modal-f'},actions))));const dlg=$('#layer .modal');if(dlg)dlg.setAttribute('tabindex','-1');const f=matchMedia('(pointer:coarse)').matches?null:$('#layer input:not([type=checkbox]):not([type=date]):not([type=time]),#layer textarea');(f||dlg)&&(f||dlg).focus({preventScroll:true})}
 const fld=(l,i,full)=>h('label',{class:full?'full':null},l,i);
 /* Drop-downs for the booking form: the owner's Lists tab in the Sheet wins; client.json booking_lists are the
    defaults. Lists rows: channel (+commission_pct), payment_term, account - each column is its own list. */
@@ -2303,6 +2335,14 @@ function openForm(kind,pid,edit,opt){
         if(direct()&&(+paidI.value||0)>(+tf.value||0)){fail('Received so far is more than the tariff.');paidI.focus();return}
         if(!(+n.value>=1)){fail('Add the number of guests.');n.focus();return}
         const pn=ph.value.replace(/\D/g,'');if(pn.length<10){fail('That mobile number looks too short.');ph.focus();return}
+        if(pn.length>13){fail('That mobile number is too long - up to 13 digits with the country code.');ph.focus();return}
+        if(g.value.trim().length>80){fail('Keep the guest’s name under 80 characters.');g.focus();return}
+        const nv=x=>x.value===''?0:+x.value;
+        if([tf,pf,gst,rc,paidI].some(x=>nv(x)<0)){fail('Amounts can’t be negative.');return}
+        if(!direct()&&nv(pf)>nv(tf)){fail('The platform fee is more than the tariff.');pf.focus();return}
+        if(!direct()&&nv(rc)>nv(tf)){fail('The amount received is more than the tariff charged from the guest.');rc.focus();return}
+        if(!direct()&&nv(gst)>nv(rc)){fail('GST is more than the amount received (it is part of it).');gst.focus();return}
+        {const mx=+((D.P[sel.value]||{}).max_guests)||0;if(mx&&+n.value>mx&&n.dataset.ok!==n.value){n.dataset.ok=n.value;fail(`${short(D.P[sel.value].property)} sleeps up to ${mx}. Tap Save again to keep ${n.value} guests.`);n.focus();return}}
         touched=true;calc();if(!ok)return;const v=x=>x.value===''?null:+x.value;
         const paidN=+paidI.value||0,leftN=fullC.checked?0:+leftI.value||0;
         let notes=nt.value.trim()||null;
@@ -2507,7 +2547,7 @@ function whatsapp(v){
   v.append(h('div',{class:'s12 wa-live glass',id:'waStatus'},waStatusKids()));
   // KPIs (tap to filter the list below)
   const PEOPLE=heatPeople(W.guests);const booked=W.reached('Booked'),asked=W.guests.length,follow=W.guests.filter(l=>(['Quoted','Held','Requested','Expired','Cancelled'].includes(l.stage)||l.asked_team)&&l.status!=='Lost'&&l.status!=='Won');
-  const k=(n,l,sub,fn)=>h('button',{class:'stat glass',onclick:fn||null,style:fn?{cursor:'pointer'}:null},h('b',{class:'num'},n),h('span',null,l),sub?h('small',{style:{color:'var(--muted)'}},sub):null);
+  const k=(n,l,sub,fn)=>h(fn?'button':'div',{class:'stat glass',onclick:fn||null,style:fn?{cursor:'pointer'}:null},h('b',{class:'num'},n),h('span',null,l),sub?h('small',{style:{color:'var(--muted)'}},sub):null);
   const setL=p=>{Object.assign(st,{type:'All',stage:'All',status:'All',heat:'All',lim:25},p);render();setTimeout(()=>{const el=$('#waLeads');el&&el.scrollIntoView({behavior:calm()?'auto':'smooth'})},60)};
   v.append(h('div',{class:'s12 stat-row wa-kpis'},
     k(asked,'Guest enquiries',`from ${PEOPLE.length} ${PEOPLE.length===1?'person':'people'} · ${waWin().label.toLowerCase()}`,()=>setL({type:'Guests',mode:'people'})),
@@ -2546,7 +2586,7 @@ function whatsapp(v){
     dh=chart(w=>countBars(w,{cats:wks.map(d=>({label:fmtD(d),tip:`Week from ${fmtD(d,{weekday:'short',day:'numeric',month:'short'})}`})),series:[{name:'Asked',color:css('--accent'),vals:askV},{name:'Booked',color:css('--ok'),vals:bkV}],stack:false,hh:PHONE()?200:220}))));
   // leads: grouped per person (default, hottest first) or every enquiry flat
   const ql=st.q.toLowerCase();
-  const q=h('input',{class:'search',type:'search',placeholder:'Search name, phone, stay…',value:st.q,id:'waQ',style:{flex:'1 1 200px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;render();const n=$('#waQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
+  const q=h('input',{class:'search',type:'search','aria-label':'Search enquiries',placeholder:'Search name, phone, stay…',value:st.q,id:'waQ',style:{flex:'1 1 200px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;render();const n=$('#waQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
   const selF=(val,opts,fn)=>{const s=h('select',{class:'btn sm'},opts.map(([v_,t])=>h('option',{value:v_,selected:v_===val||null},t)));s.addEventListener('change',()=>fn(s.value));return s};
   const modeSeg=h('div',{class:'seg'},[['people','People'],['all','All enquiries']].map(([m,t])=>h('button',{'aria-pressed':st.mode===m,onclick:()=>{st.mode=m;st.lim=25;render()}},t)));
   const typeSeg=h('div',{class:'seg'},['All','Guests','Hosting'].map(x=>h('button',{'aria-pressed':st.type===x,onclick:()=>{st.type=x;st.lim=25;render()}},x)));
@@ -2731,15 +2771,15 @@ async function load(){
       if(!S.data){const c=store.get('jg_live_cache');if(c&&c.data){S.data=c.data;S.source='Live sheet';LIVE.cachedAt=c.at;S.loadedAt=new Date(c.at);refresh()}else showLoading()}
       try{S.data=await Promise.race([liveLoad(),new Promise((_,no)=>setTimeout(()=>no(new Error('Google took over 90 s')),9e4))]);
         S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null;LIVE.cachedAt=null;store.set('jg_live_cache',{at:Date.now(),data:S.data})}
-      catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);if(/unauthorized/.test(e.message)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;signInScreen()}else toast('The access key was changed - connect again.')}else toast('Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data)S.data=SEED}}
-    else if(CONFIG.DATA_URL){try{const r=await fetch(CONFIG.DATA_URL,{cache:'no-store'});if(!r.ok)throw 0;S.data=fromWorkbook(XLSX.read(await r.arrayBuffer(),{type:'array',cellDates:true}));S.source='Live sheet'}catch(e){toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data)S.data=SEED}}
+      catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);if(/unauthorized/.test(e.message)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;signInScreen()}else toast('The access key was changed - connect again.')}else toast('Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data||S.source==='Sheet unreachable'){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
+    else if(CONFIG.DATA_URL){try{await needXLSX();const r=await fetch(CONFIG.DATA_URL,{cache:'no-store'});if(!r.ok)throw 0;S.data=fromWorkbook(XLSX.read(await r.arrayBuffer(),{type:'array',cellDates:true}));S.source='Live sheet'}catch(e){toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
     else if(!S.data)S.data=SEED;
     if(!LIVE.cachedAt)S.loadedAt=new Date();refresh();
   })();
   try{await loading}finally{loading=null}
 }
 async function manualRefresh(btn){btn&&btn.classList.add('spin');await load();setTimeout(()=>btn&&btn.classList.remove('spin'),500);toast('Up to date · '+S.loadedAt.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}))}
-$('#xlsxIn').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(!window.XLSX){toast('Excel reader didn’t load. Check your connection.');return}try{S.data=fromWorkbook(XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}));S.source=file.name;S.loadedAt=new Date();refresh();toast('Loaded '+file.name)}catch(err){toast('This file doesn’t match the tracker layout: '+err.message)}e.target.value=''});
+$('#xlsxIn').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{await needXLSX()}catch(x){}if(!window.XLSX){toast('Excel reader didn’t load. Check your connection.');return}try{S.data=fromWorkbook(XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}));S.source=file.name;S.loadedAt=new Date();refresh();toast('Loaded '+file.name)}catch(err){toast('This file doesn’t match the tracker layout: '+err.message)}e.target.value=''});
 $('#refreshBtn').addEventListener('click',()=>manualRefresh());
 $('#resetDemo').addEventListener('click',()=>{extra={bookings:[],expenses:[],maint:[],turnDone:[],maintStatus:{}};saveExtra();refresh();toast('Demo entries cleared')});
 document.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>{S.admin=b.dataset.role==='admin';render()}));
@@ -2965,10 +3005,6 @@ async function mgSave(){let ok=0,fail=null;
     if(done){delete LSTAGE[id];ok++}else{fail=id;break}}
   render();toast(fail?`Saved ${ok}; stopped at ${fail} - nothing else changed. Try again.`:`${ok} change${ok>1?'s':''} saved${live()?' ✓':' · demo only'}`)}
 function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];for(const k of Object.keys(LSTAGE))delete LSTAGE[k];for(const k of Object.keys(PRSTAGE))delete PRSTAGE[k];OVOPS.length=0;for(const k of Object.keys(ESTAGE))delete ESTAGE[k];render()})}
-async function purgeTrash(){if(MG.purged||!live())return;MG.purged=true;
-  const old=(S.data.bookings||[]).filter(b=>b.deleted_at&&diff(String(b.deleted_at).slice(0,10),TODAY)>30);
-  for(const b of old)await save('bookings','delete',{match:{booking_id:String(b.booking_id)}},null);
-  if(old.length)toast(`${old.length} booking${old.length>1?'s':''} left in Trash over 30 days removed for good`)}
 
 /* Manage › Properties: every guest-facing detail, status, combo parts and photos; staged like bookings. The bot
    rebuilds the property's brochure by itself after a change (engine auto_brochures). */
@@ -3653,7 +3689,7 @@ function manageHistory(v,tabs){hiLoad();
     h('button',{role:'radio','aria-checked':String(HI.lvl===k),class:'lv-'+k,onclick:()=>{HI.lvl=k;HI.show=60;render()}},k==='all'?null:h('i',{'aria-hidden':'true'}),h('span',null,l),h('b',{class:'num'},cnt[k]))));
   const who=h('select',{class:'mg-pick','aria-label':'Person',onchange:e=>{HI.who=e.target.value;HI.show=60;render()}},h('option',{value:''},'Everyone'),people.map(([b,n])=>h('option',{value:b,selected:HI.who===b||null},n||b)));
   const area=h('select',{class:'mg-pick','aria-label':'Area',onchange:e=>{HI.area=e.target.value;HI.show=60;render()}},h('option',{value:''},'All areas'),areas.map(x=>h('option',{value:x,selected:HI.area===x||null},x)));
-  const search=h('input',{type:'search',id:'hiSearch',placeholder:'Search booking ID, guest, stay or amount',value:HI.q,'aria-label':'Search history',
+  const search=h('input',{type:'search',id:'hiSearch',placeholder:'Search changes','aria-label':'Search the change history',value:HI.q,'aria-label':'Search history',
     oninput:e=>{HI.q=e.target.value;HI.show=60;clearTimeout(HI.t);HI.t=setTimeout(()=>{render();const s_=$('#hiSearch');if(s_){s_.focus();s_.setSelectionRange(s_.value.length,s_.value.length)}},250)}});
   const shown=rows.slice(0,HI.show),byDay=new Map();shown.forEach(e=>{const k=hiDay(e.at);if(!byDay.has(k))byDay.set(k,[]);byDay.get(k).push(e)});
   const body=HI.rows==null?h('div',{class:'empty'},'Loading the change history…'):HI.err?h('div',{class:'empty'},'Couldn’t load the history ('+HI.err+'). ',h('button',{class:'btn sm',onclick:()=>{HI.rows=null;hiLoad(true);render()}},'Try again')):
@@ -3669,11 +3705,10 @@ function manageHistory(v,tabs){hiLoad();
   return pendingBar(v)}
 function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
-  purgeTrash();
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at),trashE=(S.data.expenses||[]).map(e=>ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e).filter(e=>e.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
   const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash']].map(([k,l,n,ic])=>
-    h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();render()}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
+    h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();pushHash();render();requestAnimationFrame(()=>document.querySelector('.mg-tabs [aria-selected=true]')?.scrollIntoView({block:'nearest',inline:'center'}))}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
   if(MG.sec==='guest')return manageGuest(v,tabs);
@@ -3765,10 +3800,12 @@ function render(){
   if(!D)return;pending.length=0;
   /* a filter, sort or toggle redraws the page: keep the reader where they were (a new page starts at the top) */
   const sc=document.scrollingElement||document.documentElement,keepY=S._rv===S.view?sc.scrollTop:0;S._rv=S.view;
+  if((S.view==='manage'||S.view==='money')&&!S.admin){S.view='overview';try{history.replaceState(null,'','#overview')}catch(e){}}
   renderChrome();renderLead();renderFilters();
   const v=$('#view');v.style.minHeight=keepY?v.offsetHeight+'px':'';v.replaceChildren();
-  if(S.view==='manage'&&!S.admin)S.view='overview';
   ({overview,desk,calendar,properties,property,money,ops,bookings,whatsapp,manage})[S.view](v);
+  if(S.source==='Sheet unreachable')v.prepend(h('section',{class:'card glass s12 offline-note',role:'alert'},h('b',null,'Can’t reach the Google Sheet'),
+    h('span',null,`Nothing is shown until it answers${LIVE.err?' ('+LIVE.err+')':''}. Check the internet connection, then try again.`),h('button',{class:'btn primary sm',onclick:e=>manualRefresh(e.currentTarget)},'Try again')));
   fillRows(v);
   if(!S.counted&&S.view==='overview'){S.counted=true;countUp(v)}
   if(keepY)sc.scrollTop=keepY;
@@ -3796,8 +3833,13 @@ let rz,lastW=innerWidth;addEventListener('resize',()=>{if(Math.abs(innerWidth-la
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>render());
 new MutationObserver(()=>render()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 if(CLIENT.logo){const bb=$('#brandBtn');if(bb)bb.replaceChildren(h('img',{class:'brand-logo',src:CLIENT.logo.dark,alt:CLIENT.brand,width:132,height:48}))}  // the client's own wordmark
-const hs=location.hash.slice(1);if(VIEWS.some(x=>x[0]===hs))S.view=hs;
-addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(VIEWS.some(x=>x[0]===k)&&k!==S.view&&!(k==='properties'&&S.view==='property'))go(k)});
+{const t=fromHash(location.hash);if(t){S.view=t.view;if(t.propId)S.propId=t.propId;if(t.sec)MG.sec=t.sec}}
+/* Back / Forward (and a typed address): close an open dialog first; otherwise show the place in the address */
+function onAddress(){if($('#layer').children.length){closeLayer();try{history.pushState(null,'','#'+hashNow())}catch(e){}return}
+  const t=fromHash(location.hash);if(!t)return;const same=t.view===S.view&&(t.view!=='property'||t.propId===S.propId)&&(t.view!=='manage'||t.sec===MG.sec);if(same)return;
+  if(t.sec)MG.sec=t.sec;S.view=t.view;if(t.propId)S.propId=t.propId;S.pop=null;render();window.scrollTo({top:0})}
+addEventListener('popstate',onAddress);addEventListener('hashchange',onAddress);
+{let lastY=0;addEventListener('scroll',()=>{const y=scrollY,tw=$('#tabwrap');if(!tw)return;if(y>lastY+8&&y>120)tw.classList.add('tb-away');else if(y<lastY-8||y<60)tw.classList.remove('tb-away');lastY=y},{passive:true})}
 load();
 /* Live data: hourly while open, plus on return to the tab if the data is older than the refresh window. */
 setInterval(load,CONFIG.REFRESH_MINUTES*6e4);
