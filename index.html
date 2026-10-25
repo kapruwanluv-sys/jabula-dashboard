@@ -2266,7 +2266,9 @@ function openForm(kind,pid,edit,opt){
       const split=nn>0&&r?monthSplit(ci.value,co.value,r):[];
       sm.replaceChildren(...[['Nights',nn>0?nn:'–'],direct()?['To collect',+leftI.value?inr(+leftI.value):'Nothing']:['Received',r?inr(r):'–'],['By month',bs.value==='Cancelled'?(r?mLabel(ci.value.slice(0,7))+' '+inr(r):'–'):split.length?split.map(([k,v])=>mLabel(k)+' '+inr(v)).join(' · '):'–']].map(([l,x])=>h('div',null,h('span',null,l),h('b',{class:'num'},String(x)))));
       const clash=bs.value==='Cancelled'?null:D.B.find(x=>x.ok&&samePlace(x.property_id,sel.value)&&x.check_in<co.value&&x.check_out>ci.value&&(!edit||x.booking_id!==String(edit.booking_id)));err.hidden=true;ok=true;
-      if(!(nn>0)){fail('Check-out must be after check-in.');ok=false}else if(clash){fail(`Double booking: ${clash.guest} (${clash.booking_id}) stays at ${short(clash.pname)} ${fmtD(clash.check_in)} → ${fmtD(clash.check_out)}.`);ok=false}};
+      const blk=bs.value==='Cancelled'||!(nn>0)?null:blockFor(sel.value,ci.value,co.value);
+      if(!(nn>0)){fail('Check-out must be after check-in.');ok=false}else if(clash){fail(`Double booking: ${clash.guest} (${clash.booking_id}) stays at ${short(clash.pname)} ${fmtD(clash.check_in)} → ${fmtD(clash.check_out)}.`);ok=false}
+      else if(blk){fail(`Blocked: ${blk.reason||'dates blocked'} at ${linkName(blockPid(blk))} ${fmtD(String(blk.from).slice(0,10))} → ${fmtD(String(blk.to).slice(0,10))}. Unblock it in Operations first.`);ok=false}};
     [sel,ch,ci,co,rc,bs].forEach(i=>i.addEventListener('input',calc));sel.addEventListener('change',calc);calc();
     const need=()=>[[g,'the guest’s name'],[ph,'the guest’s mobile number'],[tf,'the tariff charged from the guest'],direct()?null:[rc,'the amount received'],[pt,'the payment terms'],[ac,'the account']].filter(Boolean);
     modal(edit?'Edit '+edit.booking_id:'New booking',h('div',{class:'form'},fld('Date of booking',bd),fld('Property',sel,1),fld('Customer',g),fld('Mobile No.',ph),fld('Location (optional)',loc),locL,fld('No. of guests',n),
@@ -2741,6 +2743,7 @@ const OVOPS=[];
 const ESTAGE={};  // expense_id (or new:<n>) -> fields; deleted_at = Trash   // date rules: {op:'add',row,label} | {op:'del',ov_id,label}  // list row_id (or new:<n>) -> {list, value, active, fee_pct, __new, __from}
 const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length+Object.keys(LSTAGE).length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0)+Object.keys(ESTAGE).length;
 window.jgStaged=stagedCount;window.jgToast=(...a)=>toast(...a);  // for the self-update check (a separate script)
+function blockFor(pid,ci,co){return(S.data.blocks||[]).find(k=>blockPid(k)&&samePlace(blockPid(k),pid)&&String(k.from).slice(0,10)<co&&String(k.to).slice(0,10)>ci)}
 function clashFor(b){return D.B.find(x=>x.ok&&x.booking_id!==String(b.booking_id)&&samePlace(x.property_id,b.property_id)&&x.check_in<b.check_out&&x.check_out>b.check_in)}
 
 function mgCancel(ids){
