@@ -2052,6 +2052,8 @@ function properties(v){
   v.append(card('s12','Compare stays',{hint:'tap a column to sort · tap a row to open',acts:[btnExport(()=>exportRows(sortBy(rows,S.lb.sort).map(r=>({Property:r.name,Area:r.area,City:r.city,Type:r.type,Bedrooms:r.beds,'Occupancy %':+(r.occ*100).toFixed(1),'Avg rate ₹':Math.round(r.adr),'RevPAR ₹':Math.round(r.revpar),'Net payout ₹':r.net,'Profit ₹':r.profit,'Open issues':r.issues,'Next check-in':r.next})),'Properties'))]},
     table(cols,sortBy(rows,S.lb.sort),{card:r=>propCard({...r,inHouse:r.inHouse}),sort:S.lb.sort,onSort:k=>{S.lb.sort=[k,S.lb.sort[0]===k?-S.lb.sort[1]:-1];render()},onRow:r=>go('property',{propId:r.id})})));
 }
+/* "14:00" -> "2 PM", "11:30" -> "11:30 AM"; anything else shown as typed */
+const clock12=v=>{const m=/^(\d{1,2}):(\d{2})/.exec(String(v).trim());if(!m)return v;const hh=+m[1];return `${hh%12||12}${m[2]==='00'?'':':'+m[2]} ${hh<12?'AM':'PM'}`};
 function propDetails(p){
   const kv=(l,val)=>val==null||val===''?null:h('div',null,h('span',null,l),h('b',null,String(val)));
   const guests=p.max_guests?(p.base_guests&&+p.base_guests!==+p.max_guests?`${p.base_guests} included · up to ${p.max_guests}`:`Up to ${p.max_guests}`):null;
@@ -2314,7 +2316,9 @@ async function apiGet(params){const r=SIGNIN?await fetch(CONFIG.API_URL,{method:
 /* the device a change came from, for the Change history ("iPhone · Safari") */
 const DEVICE=(()=>{const u=navigator.userAgent||'';const os=/iPhone/.test(u)?'iPhone':/iPad/.test(u)?'iPad':/Android/.test(u)?'Android':/Macintosh/.test(u)?'Mac':/Windows/.test(u)?'Windows':'Device';
   const br=/Edg\//.test(u)?'Edge':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox/.test(u)?'Firefox':/Safari\//.test(u)?'Safari':'';return br?os+' · '+br:os})();
-async function apiPost(body){LIVE.busy++;syncBusy();try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,device:DEVICE,...body})});const j=await r.json();if(j.error)throw new Error(j.error);return j}finally{LIVE.busy--;syncBusy()}}
+async function apiPost(body){LIVE.busy++;syncBusy();try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,device:DEVICE,...body})});const j=await r.json();if(j.error)throw new Error(j.error);
+  if(!['read','login'].includes(body.action)&&typeof HI!=='undefined')HI.rows=null;  // History shows a change as soon as it is saved, ready to undo
+  return j}finally{LIVE.busy--;syncBusy()}}
 function syncBusy(){const el=$('#syncText');if(el&&LIVE.busy)el.textContent='Saving to the sheet…'}
 async function liveLoad(){const[d,b]=await Promise.all([apiGet({format:'dashboard'}),apiGet({tabs:'blocks'}).catch(()=>({tabs:{blocks:[]}}))]);d.blocks=(b.tabs||{}).blocks||[];return normLive(d)}
 function normLive(d){const n=v=>v==null||v===''?0:+v||0;
@@ -2401,7 +2405,7 @@ function blocksCard(){
 function openBlock(){const props=D.props.filter(p=>!isStopped(p));const sel=h('select',null,CITIES.filter(c=>props.some(p=>p.city===c)).map(c=>h('optgroup',{label:c},props.filter(p=>p.city===c).map(p=>h('option',{value:p.property_id},`${short(p.property)} — ${p.area}`)))));
   const fr=h('input',{type:'date',value:TOMORROW}),to=h('input',{type:'date',value:add(TOMORROW,2)}),rs=h('input',{placeholder:'e.g. Owner stay, deep cleaning',autocomplete:'off'}),err=h('div',{class:'err',hidden:true});
   modal('Block dates',h('div',{class:'form'},fld('Property',sel,1),fld('From',fr),fld('To (check-out day)',to),fld('Reason',rs,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(to.value>fr.value)){err.hidden=false;err.textContent='“To” must be after “From”.';return}
-    const clash=D.B.find(b=>b.ok&&b.property_id===sel.value&&b.check_in<to.value&&b.check_out>fr.value);if(clash&&!err.dataset.ok){err.hidden=false;err.dataset.ok=1;err.textContent=`Overlaps ${clash.guest} (${clash.booking_id}). That booking stays. Tap Block again to continue.`;return}
+    const clash=D.B.find(b=>b.ok&&samePlace(b.property_id,sel.value)&&b.check_in<to.value&&b.check_out>fr.value);if(clash&&!err.dataset.ok){err.hidden=false;err.dataset.ok=1;err.textContent=`Overlaps ${clash.guest} (${clash.booking_id})${clash.property_id!==sel.value?' at '+linkName(clash.property_id):''}. That booking stays. Tap Block again to continue.`;return}
     closeLayer();save('blocks','append',{row:{block_id:'BL'+Date.now().toString().slice(-9),property_id:sel.value,from:fr.value,to:to.value,reason:rs.value.trim()||'Blocked by owner',created_at:new Date().toISOString().slice(0,16),source:'Dashboard'}},'Dates blocked')}},'Block')])}
 
 
@@ -2744,7 +2748,13 @@ const ESTAGE={};  // expense_id (or new:<n>) -> fields; deleted_at = Trash   // 
 const stagedCount=()=>Object.keys(STAGE).length+Object.keys(PSTAGE).length+Object.keys(GSTAGE).length+Object.keys(LSTAGE).length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0)+Object.keys(ESTAGE).length;
 window.jgStaged=stagedCount;window.jgToast=(...a)=>toast(...a);  // for the self-update check (a separate script)
 function blockFor(pid,ci,co){return(S.data.blocks||[]).find(k=>blockPid(k)&&samePlace(blockPid(k),pid)&&String(k.from).slice(0,10)<co&&String(k.to).slice(0,10)>ci)}
-function clashFor(b){return D.B.find(x=>x.ok&&x.booking_id!==String(b.booking_id)&&samePlace(x.property_id,b.property_id)&&x.check_in<b.check_out&&x.check_out>b.check_in)}
+/* the booking b would overlap, counting changes waiting in Review & save (so two staged restores can't double-book) */
+function clashFor(b){const id=String(b.booking_id),hit=x=>String(x.booking_id)!==id&&samePlace(x.property_id,b.property_id)&&String(x.check_in).slice(0,10)<b.check_out&&String(x.check_out).slice(0,10)>b.check_in;
+  return D.B.find(x=>x.ok&&!STAGE[x.booking_id]&&hit(x))||Object.keys(STAGE).map(k=>rawB(k)&&stg(rawB(k))).find(x=>x&&!x.deleted_at&&x.booking_status!=='Cancelled'&&x.check_in&&hit(x))}
+/* why a booking can't be live on its dates (null = it can): another booking or a block, on it or a linked stay */
+function clashWhy(b){const ci=String(b.check_in).slice(0,10),co=String(b.check_out).slice(0,10),x=clashFor({...b,check_in:ci,check_out:co});
+  if(x)return`it clashes with ${x.guest} (${x.booking_id})${x.property_id!==b.property_id?' at '+linkName(x.property_id):''}. Cancel one of them first`;
+  const k=blockFor(b.property_id,ci,co);return k?`the dates are blocked (${k.reason||'Blocked'}${blockPid(k)!==b.property_id?' at '+linkName(blockPid(k)):''}). Unblock them in Operations first`:null}
 
 function mgCancel(ids){
   const one=ids.length===1?stg(rawB(ids[0])):null,num=(v,ph)=>h('input',{type:'number',inputmode:'decimal',min:0,step:'0.01',value:v??'',placeholder:ph||''});
@@ -2764,8 +2774,8 @@ function mgCollect(id){const b=stg(rawB(id)),left=+b.balance_due||0;if(!left)ret
   confirmBox(`Mark ${inr(left)} collected?`,`${b.guest||'Guest'} · ${id}. The balance leaves Payments to collect and the notes record it.`,'Mark collected',false,
     ()=>stage(id,{balance_due:null,notes:addNote(b.notes,`Balance ${inr(left)} collected · paid in full`)}))}
 function mgRestore(ids){let skipped=[];
-  for(const id of ids){const b=stg(rawB(id));const c=clashFor({...b,booking_status:'Confirmed'});
-    if(c){skipped.push(`${id} (clashes with ${c.booking_id})`);continue}stage(id,{booking_status:'Confirmed',notes:addNote(b.notes,'Restored to confirmed')})}
+  for(const id of ids){const b=stg(rawB(id));const c=clashWhy({...b,booking_status:'Confirmed'});
+    if(c){skipped.push(`${id} (${c})`);continue}stage(id,{booking_status:'Confirmed',notes:addNote(b.notes,'Restored to confirmed')})}
   MG.sel.clear();render();if(skipped.length)toast('Not restored: '+skipped.join(', '))}
 /* Extend a stay: a later check-out, the price of the extra nights (suggested from the booking's own nightly rate),
    and for direct bookings how much of that extra was paid. Staged like every Manage change (Review & save). */
@@ -2785,7 +2795,7 @@ function mgExtend(id){
       fOther.hidden=pm!=='other';tR.textContent=a?inr(pd):'–';tL.textContent=a?(left?inr(left):'Nothing'):'–';leftTile.classList.toggle('due',left>0);
       seg.replaceChildren(...[['half','Half paid'],['full','Paid in full'],['other','Other amount']].map(([k,l])=>h('button',{type:'button',role:'radio','aria-checked':String(pm===k),onclick:()=>{pm=k;if(k==='other'&&paid.value==='')paid.value=Math.round(a/2)||'';calc();if(k==='other')setTimeout(()=>paid.focus(),0)}},l)))}
     else if(!recTouched)recP.value=a?Math.round(a*(tariff0>0?Math.min(1,rec0/tariff0):1)):'';  // the platform keeps its usual share
-    err.hidden=true;ok=true;const c=extra>0?clashFor({...b,booking_status:'Confirmed',check_out:co.value}):null,bl=(S.data.blocks||[]).find(k=>samePlace(k.property_id,b.property_id)&&k.from<co.value&&k.to>b.check_out);
+    err.hidden=true;ok=true;const c=extra>0?clashFor({...b,booking_status:'Confirmed',check_out:co.value}):null,bl=extra>0?blockFor(b.property_id,String(b.check_out).slice(0,10),co.value):null;
     if(!(extra>0)){err.hidden=false;err.textContent='Pick a check-out after '+fmtD(b.check_out)+'.';ok=false}
     else if(c){err.hidden=false;err.textContent=`Can't extend: ${c.guest} (${c.booking_id}) arrives ${fmtD(c.check_in)}.`;ok=false}
     else if(bl){err.hidden=false;err.textContent=`Those nights are blocked (${bl.reason||'blocked'}, ${fmtD(bl.from)} → ${fmtD(bl.to)}).`;ok=false}
@@ -2814,8 +2824,8 @@ function mgSet(ids,k,v){for(const id of ids)stage(id,{[k]:v});MG.sel.clear();ren
 function mgTrash(ids){confirmBox(ids.length===1?`Move ${ids[0]} to Trash?`:`Move ${ids.length} bookings to Trash?`,
   'Trash hides a booking everywhere (calendar, money, the bot) and frees its dates. Restore it within 30 days; after that it is removed for good. Use Cancel instead if the guest cancelled.',
   'Move to Trash',true,()=>{for(const id of ids){const b=stg(rawB(id));stage(id,{deleted_at:TODAY,deleted_by:LIVE.me?LIVE.me.email:'admin',notes:addNote(b.notes,'Moved to Trash')})}MG.sel.clear();render()})}
-function mgUntrash(id){const b=stg(rawB(id));const c=b.booking_status!=='Cancelled'&&clashFor(b);
-  if(c){toast(`Can’t restore ${id}: it clashes with ${c.booking_id}. Cancel one of them first.`);return}
+function mgUntrash(id){const b=stg(rawB(id));const c=b.booking_status!=='Cancelled'&&clashWhy(b);
+  if(c){toast(`Can’t restore ${id}: ${c}.`);return}
   stage(id,{deleted_at:null,deleted_by:null,notes:addNote(b.notes,'Restored from Trash')})}
 
 function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE),grows=Object.entries(GSTAGE),lrows=Object.entries(LSTAGE),total=rows.length+prows.length+grows.length+lrows.length+Object.keys(PRSTAGE).length+(OVOPS.length?1:0)+Object.keys(ESTAGE).length;
@@ -3439,6 +3449,8 @@ function audWhat(e){const ch=e.changes,f=Object.keys(ch),t=e.target,now=k=>ch[k]
   else if(e.tab==='settings')subj=e.action==='update'&&ch.value?'':PR_L[String(t).replace('pricing.','')]||t;  // "Changed weekend %" already says which
   else if(e.tab==='expenses'){const x=(S.data.expenses||[]).find(x=>String(x.expense_id)===t)||{},g=k=>now(k)??x[k];subj=[g('vendor')||g('category'),g('amount')?inr(+g('amount')):''].filter(Boolean).join(' · ')||t}
   else if(e.tab==='lists')subj=now('value')||((S.data.lists||[]).find(x=>String(x.row_id)===t)||{}).value||t;
+  else if(e.tab==='blocks'){const k=(S.data.blocks||[]).find(x=>String(x.block_id)===t)||{},g=k_=>now(k_)??k[k_],pid=g('property_id')||String(g('unit_id')||'').split('-')[0];
+    subj=pid?[stay(pid),g('from')?fmtD(String(g('from')).slice(0,10))+' → '+fmtD(String(g('to')).slice(0,10)):'',g('reason')].filter(Boolean).join(' · '):t}
   if(e.result==='blocked')return['Tried to change '+audArea(e).toLowerCase()+' · blocked',/^["{]/.test(subj)?'':subj];
   if(e.result==='failed')return['A save failed',t];
   if(e.action==='login')return['Signed in',''];
@@ -3448,6 +3460,7 @@ function audWhat(e){const ch=e.changes,f=Object.keys(ch),t=e.target,now=k=>ch[k]
   if(e.action==='replace')return['Replaced the whole '+audArea(e)+' tab',e.rows?e.rows+' rows (bulk import)':''];
   const noun={bookings:'booking',properties:'stay',expenses:'expense',lists:'list option',guest_info:'guest info',settings:'pricing setting',blocks:'block',payouts:'payout',
     overrides:/^Custom/.test(subj)?'custom price':'holiday'}[e.tab]||'row';
+  if(e.tab==='blocks'&&(e.action==='append'||e.action==='delete'))return[e.action==='append'?'Blocked dates':'Unblocked dates',subj];
   if(e.action==='append')return['New '+noun,subj];
   if(e.action==='delete')return['Deleted '+noun,subj];
   if(ch.deleted_at)return[ch.deleted_at[1]?'Moved to Trash':'Restored from Trash',subj];
@@ -3494,6 +3507,11 @@ function hiUndo(e){const ch=e.changes,tab=e.tab,[mk,mv]=Object.entries(e.match)[
   else{op='delete';a={match:{[mk]:mv}};lines=['Removes it']}
   const k=TABKEY[tab],cur=k&&e.action==='update'?(S.data[k]||[]).find(r=>String(r[mk])===String(a.match[mk])):null;
   const drift=cur?Object.keys(ch).filter(f=>f!=='deleted_by'&&!audSame(cur[f]??null,ch[f][1])):[];
+  const after=tab==='bookings'&&cur?{...cur,...a.fields}:null;
+  const stop=after&&!after.deleted_at&&after.booking_status!=='Cancelled'&&after.check_in&&after.check_out?clashWhy(after):null;
+  if(stop)return modal('Can’t undo this yet',h('div',{class:'hi-sheet'},h('p',{class:'hi-warn'},`Undo would bring ${cur.booking_id} back, but ${stop}.`)),[h('button',{class:'btn',onclick:()=>hiOpen(e)},'Back')]);
+  const kb=tab==='blocks'&&op==='append'&&a.row.from&&a.row.to?D.B.find(b=>b.ok&&samePlace(b.property_id,blockPid(a.row))&&b.check_in<String(a.row.to).slice(0,10)&&b.check_out>String(a.row.from).slice(0,10)):null;
+  if(kb)lines.push(`Overlaps ${kb.guest} (${kb.booking_id}) - that booking stays`);
   modal('Undo this change?',h('div',{class:'hi-sheet'},h('ul',{class:'hi-undo'},lines.map(l=>h('li',null,l))),
       drift.length?h('p',{class:'hi-warn'},`Changed again since: ${drift.map(f=>audField(tab,f,e)).join(', ')}. Undo will replace the newer value.`):null,
       h('p',{class:'hint'},'Saved to the sheet straight away and shown in History as an undo.')),
