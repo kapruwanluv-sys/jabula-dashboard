@@ -1713,25 +1713,29 @@ const fB=b=>{const f=F();return b.ok&&fP(D.P[b.property_id])&&(!f.channels.lengt
 const fBm=b=>{const f=F();return b.money&&fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))};
 function share(b,from,to){if(!b.ok||b.nights<=0)return b.check_in>=from&&b.check_in<=to?1:0;return overlap(b,from,to)/b.nights}
 const overlap=(b,a,z)=>Math.max(0,Math.min(diff(a,b.check_out),diff(a,z)+1)-Math.max(0,diff(a,b.check_in)));
-function stats(from,to,pid){
-  const all=D.props.filter(p=>pid?p.property_id===pid:fP(p)),props=pid?all:all.filter(active);
+function stats(from,to,pid,fam){
+  /* fam: a whole place's page and the ranking speak for its family - its flats' bookings, nights and money come along */
+  const kidsF=pid&&fam?kidsOf(pid):[],famIds=kidsF.length?new Set([pid,...kidsF]):null,one=pid&&!famIds;
+  const all=D.props.filter(p=>famIds?famIds.has(p.property_id):pid?p.property_id===pid:fP(p)),props=one?all:all.filter(active);
   const ids=new Set(all.map(p=>p.property_id)),opIds=new Set(props.map(p=>p.property_id));  // money: all; occupancy: live
   /* occupancy counts real places: a whole-place listing (combo) is its flats, so it adds no capacity of its own, and a
      night it is booked fills each of its flats. A flat's own page counts the nights its whole place was booked too. */
   const incOf=id=>arrOf((D.P[id]||{}).includes);
-  let phys=pid?props:props.filter(p=>!incOf(p.property_id).length);if(!phys.length)phys=props;
+  let phys=one?props:props.filter(p=>!incOf(p.property_id).length);if(!phys.length)phys=props;
   const physIds=new Set(phys.map(p=>p.property_id)),chOk=b=>b.ok&&(!F().channels.length||F().channels.includes(b.channel));
   const days=diff(from,to)+1,avail=phys.length*days;
   const bs=D.B.filter(b=>opIds.has(b.property_id)&&(pid?b.ok:fB(b)));
   const att=bs.filter(b=>b.check_in>=from&&b.check_in<=to);
-  const par=pid?parentOf(pid):null,cover=b=>pid?1:incOf(b.property_id).filter(k=>physIds.has(k)).length||(physIds.has(b.property_id)?1:0);
-  const nb=D.B.filter(b=>(pid?b.ok&&(b.property_id===pid||b.property_id===par):chOk(b)&&(opIds.has(b.property_id)||incOf(b.property_id).some(k=>physIds.has(k)))));
+  const par=one?parentOf(pid):null,cover=b=>one?1:incOf(b.property_id).filter(k=>physIds.has(k)).length||(physIds.has(b.property_id)?1:0);
+  const nb=D.B.filter(b=>(one?b.ok&&(b.property_id===pid||b.property_id===par):famIds?b.ok&&opIds.has(b.property_id):chOk(b)&&(opIds.has(b.property_id)||incOf(b.property_id).some(k=>physIds.has(k)))));
   const nights=sum(nb.filter(b=>b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to)*cover(b));
   const mb=D.B.filter(b=>ids.has(b.property_id)&&(pid?b.money:fBm(b))).map(b=>[b,share(b,from,to)]).filter(x=>x[1]>0);
   const ms=k=>sum(mb,([b,w])=>b[k]*w);
   const s={listings:phys.length,days,avail,nights,count:att.length,room:ms('room'),gross:ms('gross'),fee:ms('fee'),net:ms('net'),gst:ms('gst'),owner:ms('owner'),nightsAttr:nights};
   s.exp=sum(D.E.filter(e=>ids.has(e.property_id)&&e.date>=from&&e.date<=to),e=>+e.amount||0);s.owner=ownerCut(ids,mb,from,to);
-  s.occ=avail?nights/avail:0;s.roomStay=sum(mb.filter(([b])=>b.ok),([b,w])=>b.room*w);s.adr=s.nightsAttr?s.roomStay/s.nightsAttr:0;s.revpar=s.occ*s.adr;s.profit=s.net-s.exp-s.owner;
+  /* a flat's nightly rate is its own money over its own nights (its whole place's nights fill it, but earn on the whole place) */
+  const ownN=one&&par?sum(D.B.filter(b=>b.ok&&b.property_id===pid&&b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to)):nights;
+  s.occ=avail?nights/avail:0;s.roomStay=sum(mb.filter(([b])=>b.ok),([b,w])=>b.room*w);s.adr=ownN?s.roomStay/ownN:0;s.revpar=avail?s.roomStay/avail:0;s.profit=s.net-s.exp-s.owner;
   if(pid){const par=parentOf(pid);
     if(par){s.profit=null;s.inFamily=par}                                     // a flat's costs sit with its family
     else if(kidsOf(pid).length){const fm=famMoney(from,to,pid);s.family=fm;s.profit=fm.net-fm.exp-fm.owner}}  // the parent speaks for the family
@@ -2367,7 +2371,7 @@ function overview(v){
     enTop.length?h('div',{class:'en-list'},h('span',{class:'en-lh'},'Most to gain'),enTop.map(x=>h('button',{class:'en-row',onclick:()=>openAvail(x.p.property_id)},h('span',null,short(x.p.property)),h('span',{class:'num'},`${x.next} n · ${inrK(x.nextV)}`)))):h('div',{class:'empty'},'Fully booked for the next 30 days.'),
     h('div',{class:'foot-note'},'Usual rate = the stay’s average nightly rate over the last 90 days. Blocked dates and combo listings (counted through their parts) are left out.')));
   // leaders
-  const rowsP=props.filter(p=>!parentOf(p.property_id)).map(p=>{const st=stats(f.from,f.to,p.property_id);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);return{id:p.property_id,name:short(p.property),city:p.city,area:p.area,occ:st.occ,adr:st.adr,net:st.net,profit:st.profit,rating:rated.length?sum(rated,b=>b.rating)/rated.length:null,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length}});
+  const rowsP=props.filter(p=>!parentOf(p.property_id)).map(p=>{const st=stats(f.from,f.to,p.property_id,1);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);return{id:p.property_id,name:short(p.property),city:p.city,area:p.area,occ:st.occ,adr:st.adr,net:st.net,profit:st.profit,rating:rated.length?sum(rated,b=>b.rating)/rated.length:null,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length}});
   const ranked=sortBy(rowsP,['profit',-1]);const nL=PHONE()?3:6,list=S.leaders==='top'?ranked.slice(0,nL):ranked.slice(-nL).reverse();
   const colsL=[{t:'Property',f:r=>who(r.name,`${r.area}, ${r.city}`)},{t:'Occupancy',r:1,f:r=>pct(r.occ)},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Profit',r:1,f:r=>profitCell(r.profit)},{t:'Rating',r:1,f:r=>r.rating?'★ '+r.rating.toFixed(1):'–'},{t:'Issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'}];
   v.append(card('s7','Property ranking',{hint:'by profit in this period',acts:[h('div',{class:'seg'},h('button',{'aria-pressed':S.leaders==='top',onclick:()=>{S.leaders='top';render()}},'Best'),h('button',{'aria-pressed':S.leaders==='bottom',onclick:()=>{S.leaders='bottom';render()}},'Needs attention')),btnExport(()=>exportRows(ranked.map(r=>({Property:r.name,Area:r.area,City:r.city,'Occupancy %':+(r.occ*100).toFixed(1),'Avg nightly rate':Math.round(r.adr),'Net payout':r.net,Profit:r.profit,Rating:r.rating?+r.rating.toFixed(2):'','Open issues':r.issues})),'Property ranking'))]},
@@ -2587,7 +2591,7 @@ function propDetails(p){
   return card('s12','Property details',{acts:[p.website_url?h('a',{class:'btn sm',href:p.website_url,target:'_blank',rel:'noopener'},'Website'):null,...LINKS.filter(([k])=>/^https:\/\//.test(p[k]||'')).map(([k,l])=>h('a',{class:'btn sm',href:p[k],target:'_blank',rel:'noopener'},l+' ↗'))].filter(Boolean).length?[p.website_url?h('a',{class:'btn sm',href:p.website_url,target:'_blank',rel:'noopener'},'Website'):null,...LINKS.filter(([k])=>/^https:\/\//.test(p[k]||'')).map(([k,l])=>h('a',{class:'btn sm',href:p[k],target:'_blank',rel:'noopener'},l+' ↗'))].filter(Boolean):null},...body);
 }
 function property(v){
-  const p=D.P[S.propId];if(!p){go('properties');return}const f=S.f,st=stats(f.from,f.to,p.property_id),[pa,pz]=prevRange(),pv=stats(pa,pz,p.property_id);
+  const p=D.P[S.propId];if(!p){go('properties');return}const f=S.f,st=stats(f.from,f.to,p.property_id,1),[pa,pz]=prevRange(),pv=stats(pa,pz,p.property_id,1);
   const bs=D.B.filter(b=>b.property_id===p.property_id);const okb=bs.filter(b=>b.ok);const rated=okb.filter(b=>b.rating);const cur=okb.find(b=>b.status==='In-house');const nx=okb.filter(b=>b.check_in>TODAY).sort((a,b)=>a.check_in.localeCompare(b.check_in))[0];
   v.append(h('div',{class:'s12'},h('button',{class:'back',onclick:()=>go('properties')},icon('back'),'All properties')));
   v.append(h('section',{class:'card glass s12'},h('div',{class:'phero'},h('div',{class:'img'},scene(p,960,600)),
@@ -2596,7 +2600,7 @@ function property(v){
       h('div',{class:'kv'},h('div',null,h('span',null,cur?'Staying now':'Last guest'),h('b',null,cur?`${cur.guest} · checks out ${fmtD(cur.check_out)}`:'—')),h('div',null,h('span',null,'Next check-in'),h('b',null,nx?`${nx.guest} · ${fmtD(nx.check_in)} ${nx.arrival_time||''}`:'None booked')),h('div',null,h('span',null,'Guest rating'),h('b',null,rated.length?`★ ${(sum(rated,b=>b.rating)/rated.length).toFixed(2)} from ${rated.length} stays`:'No ratings yet')),h('div',null,h('span',null,'Open issues'),h('b',null,String(D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length)))),
       h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap'}},h('button',{class:'btn primary admin',onclick:()=>openForm('booking',p.property_id)},icon('plus'),'Booking'),h('button',{class:'btn admin',onclick:()=>expEditor(null,{property_id:p.property_id})},icon('plus'),'Expense'),h('button',{class:'btn admin',onclick:()=>openForm('issue',p.property_id)},icon('plus'),'Issue'),h('button',{class:'btn',onclick:()=>{S.calM=TODAY.slice(0,7);setF({props:[p.property_id]});go('calendar')}},'Open in calendar'),S.admin?h('button',{class:'btn admin',onclick:()=>openPropInManage(p.property_id)},'Edit in Manage'):null)))));
   const t=(l,val,d)=>h('div',{class:'kpi glass s2'},h('div',{class:'l'},l),h('div',{class:'v num'},val),h('div',{class:'foot'},d));
-  v.append(t('Net payout',inrK(st.net),delta(st.net,pv.net)),t(st.family?'Family profit':'Profit',st.profit==null?'in family':inrK(st.profit),st.profit==null?null:delta(st.profit,pv.profit)),t('Occupancy',pct(st.occ),delta(st.occ,pv.occ)),t('Avg nightly rate',inrK(st.adr),delta(st.adr,pv.adr)),t('Stays',String(st.count),delta(st.count,pv.count)),t('Expenses',st.inFamily?'in family':inrK(st.family?st.family.exp:st.exp),st.inFamily?null:delta(st.exp,pv.exp,true)));
+  v.append(t(st.family?'Family net payout':'Net payout',inrK(st.net),delta(st.net,pv.net)),t(st.family?'Family profit':'Profit',st.profit==null?'in family':inrK(st.profit),st.profit==null?null:delta(st.profit,pv.profit)),t('Occupancy',pct(st.occ),delta(st.occ,pv.occ)),t('Avg nightly rate',inrK(st.adr),delta(st.adr,pv.adr)),t('Stays',String(st.count),delta(st.count,pv.count)),t('Expenses',st.inFamily?'in family':inrK(st.family?st.family.exp:st.exp),st.inFamily?null:delta(st.exp,pv.exp,true)));
   if(S.admin&&st.family){const fm=st.family,parts=[[p.property_id,'Whole '+short(p.property)],...fm.kids.map(k=>[k,short(D.P[k].property)])],tot=fm.net||1;
     const cats=Object.entries(fm.cats).sort((a,b)=>b[1]-a[1]);
     v.append(card('s12','Family money',{hint:`${rangeLabel()} · costs counted once, here`},
