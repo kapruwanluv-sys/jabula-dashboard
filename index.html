@@ -1248,6 +1248,8 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .kp-m{top:-4px;bottom:-4px;width:3px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
 .kp small{font-size:11.5px;gap:6px}.kp small b{font-weight:700;color:var(--ink-2)}
 .kp-k{width:3px;height:11px;background:var(--ink)}
+.kp-m.ly{background:none;border-left:2px dotted var(--ink-2);width:0;box-shadow:none}.kp-k.ly{background:none;border-left:2px dotted var(--ink-2);width:0}
+.kp small{flex-wrap:wrap;column-gap:10px;row-gap:2px;white-space:normal}.kp-c{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.strip-stats .sstat{transition:none}.strip-stats .sstat:hover{transform:none}}
 @media (max-width:760px){.strip-stats.glass{gap:10px}.strip-stats .sstat{padding:12px;border-radius:20px}.strip-stats .sstat .ic{width:34px;height:34px}.strip-stats .sstat .v{font-size:19px}}
 </style>
@@ -1780,7 +1782,7 @@ function renderFilters(){
   bar.append(seg('chan','chan','Channel',f.channels.length?f.channels.join(', '):'All channels',()=>panel('Channel',CHN.map(c=>cb(f.channels.includes(c),c,()=>toggleIn('channels',c),chColor(c))))));
   bar.append(seg('own','own','Ownership',f.own==='All'?'All':f.own,()=>panel('Ownership',['All','Owned','Managed'].map(o=>rb('own',f.own===o,o==='All'?'Owned & managed':o,()=>{S.pop=null;setF({own:o})})))));
   bar.lastChild.querySelector('.pop')?.classList.add('r');
-  bar.append(h('button',{class:'fgo','aria-label':'Refresh data from the sheet now','data-tip':'Refresh from the sheet now',onclick:e=>{e.stopPropagation();manualRefresh(e.currentTarget)}},fIcon('sync')));
+  bar.append(h('button',{class:'fgo','aria-label':'Refresh data from the sheet now','data-tip':'Refresh',onclick:e=>{e.stopPropagation();manualRefresh(e.currentTarget)}},fIcon('sync')));
   const kids=[bar];
   const chips=[...f.cities.map(c=>['cities',c,c]),...f.props.map(p=>['props',p,short(D.P[p]?.property||p)]),...f.channels.map(c=>['channels',c,c]),...(f.own!=='All'?[['own',f.own,f.own]]:[])];
   if(chips.length)kids.push(h('div',{class:'chips'},h('span',{class:'range-label',style:{color:'var(--muted)'}},'Showing only'),chips.map(([k,v,l])=>h('button',{class:'chip',onclick:()=>k==='own'?setF({own:'All'}):toggleIn(k,v),'aria-label':'Remove filter '+l},l,h('i',null,'✕'))),h('button',{class:'chip ghost',onclick:()=>setF({cities:[],props:[],channels:[],own:'All'})},'Clear all')));
@@ -1799,19 +1801,29 @@ function overview(v){
   const tint=c=>({background:`color-mix(in srgb, ${c} 13%, transparent)`,color:c});
   const SI={net:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',profit:'M3 17l6-6 4 4 8-8M15 7h6v6',occ:'M3 18V8M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5M7 11.5a1.5 1.5 0 100-.01',adr:'M3 12l9-9h8v8l-9 9zM15.5 8.5a1 1 0 100-.01',revpar:'M4 20V10M10 20V4M16 20v-7M22 20H2'};
   /* pace bar: how far this period has got (fill) against the whole previous period (marker) - ahead or behind at a glance */
-  const prevL=(()=>{const[a,z]=prevRange();return a.endsWith('-01')&&z===mEnd(a.slice(0,7))?mLabel(a.slice(0,7)):'last period'})();
-  const paceBar=(cur,prev,fmt,color)=>{const top=Math.max(cur,prev,1e-9),fw=Math.max(0,Math.min(1,cur/top)),mw=Math.max(0,Math.min(1,prev/top)),ahead=cur>=prev;
-    return h('div',{class:'kp','aria-label':`${fmt(cur)} now, ${prevL} ${fmt(prev)}`},h('div',{class:'kp-t'},h('i',{class:'kp-f',style:{width:(fw*100).toFixed(1)+'%',background:color,color}}),prev>0?h('i',{class:'kp-m',style:{left:`calc(${(mw*100).toFixed(1)}% - 1px)`}}):null),
-      h('small',null,prev>0?[h('i',{class:'kp-k','aria-hidden':'true'}),h('span',null,'vs '+prevL),h('b',null,fmt(prev))]:`nothing in ${prevL}`))};
-  const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));return h('div',{class:'sstat','data-tip':tip+(sp?`
-Bar: this period so far · mark: ${prevL} (${sp[2](sp[1])}). The bar stopping short of the mark = behind ${prevL}.`:'')},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d),sp?paceBar(sp[0],sp[1],sp[2],color):null))};
-  const pay=!S.admin?null:h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Balances direct guests still owe, plus platform payouts not received in full. Tap to see them.'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Money to collect'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.channel==='Direct').length} direct guests · ${due.filter(b=>b.channel!=='Direct').length} platform payouts`},`${due.length} bookings`))));
+  /* pace bar: this period so far (fill) against last month (solid mark) and the same period last year (dotted mark) */
+  const wholeM=(a,z)=>a.endsWith('-01')&&z===mEnd(a.slice(0,7));
+  const prevL=(()=>{const[a,z]=prevRange();return wholeM(a,z)?mLabel(a.slice(0,7)):'last period'})();
+  const yAgo=d=>{const x=(+d.slice(0,4)-1)+d.slice(4);return x.endsWith('-02-29')?x.slice(0,8)+'28':x};
+  const lyS=stats(yAgo(f.from),yAgo(f.to)),lyL=wholeM(f.from,f.to)?`${mLabel(f.from.slice(0,7))} '${String(+f.from.slice(2,4)-1).padStart(2,'0')}`:'last year';
+  const curL=wholeM(f.from,f.to)?mLabel(f.from.slice(0,7)):'this period';
+  const paceBar=(cur,prev,ly,fmt,color)=>{if(!(prev>0)&&!(ly>0))return null;const top=Math.max(cur,prev,ly,1e-9),at=x=>`calc(${(Math.max(0,Math.min(1,x/top))*100).toFixed(1)}% - 1px)`;
+    return h('div',{class:'kp'},h('div',{class:'kp-t'},h('i',{class:'kp-f',style:{width:(Math.max(0,Math.min(1,cur/top))*100).toFixed(1)+'%',background:color,color}}),
+        prev>0?h('i',{class:'kp-m',style:{left:at(prev)}}):null,ly>0?h('i',{class:'kp-m ly',style:{left:at(ly)}}):null),
+      h('small',null,prev>0?h('span',{class:'kp-c'},h('i',{class:'kp-k'}),prevL+' ',h('b',null,fmt(prev))):null,ly>0?h('span',{class:'kp-c'},h('i',{class:'kp-k ly'}),lyL+' ',h('b',null,fmt(ly))):null,
+        null))};
+  /* tooltip: one short line - what the number is and what the bar compares */
+  const st1=(k,label,val,d,sp,color,tip)=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:SI[k]}));
+    const cmp=sp?[sp[1]>0?prevL:null,sp[2]>0?lyL:null].filter(Boolean):[],short_=cmp.length?`${curL} vs ${cmp.join(' and ')}`:null;
+    if(sp&&!cmp.length)d=null;  // nothing to compare: drop the empty '—' chip too
+    return h('div',{class:'sstat','data-tip':sp?short_:tip},h('span',{class:'ic',style:tint(color)},ic),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},val),h('span',{class:'l'},label),h('span',{class:'d'},d),sp?paceBar(sp[0],sp[1],sp[2],sp[3],color):null))};
+  const pay=!S.admin?null:h('button',{class:'sstat pay',onclick:()=>go('money'),'data-tip':'Tap to see who still owes'},h('span',{class:'ic',style:tint(css('--warn'))},(()=>{const ic=sv('svg',{viewBox:'0 0 24 24'});ic.append(sv('path',{d:'M12 7v5l3 2M12 21a9 9 0 100-18 9 9 0 000 18z'}));return ic})()),h('div',{class:'tx'},h('span',{class:'v num','data-count':''},inrK(dueAmt)),h('span',{class:'l'},'Money to collect'),h('span',{class:'d'},h('span',{class:'delta '+(due.length?'down':'flat'),'data-tip':`${due.filter(b=>b.channel==='Direct').length} direct guests · ${due.filter(b=>b.channel!=='Direct').length} platform payouts`},`${due.length} bookings`))));
   v.append(h('section',{class:'strip-stats glass s12','aria-label':'Key numbers'},
-    !S.admin?null:st1('net','Net payout',inrK(s.net),delta(s.net,p.net),[s.net,p.net,inrK],css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
-    !S.admin?null:st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),[s.profit,p.profit,inrK],css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
-    st1('occ','Booked '+bookedWhen(),pct(s.occ),delta(s.occ,p.occ),[s.occ,p.occ,x=>pct(x)],css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
-    !S.admin?null:st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),[s.adr,p.adr,inrK],css('--city-3'),'ADR: room revenue ÷ nights sold'),
-    !S.admin?null:st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),[s.revpar,p.revpar,inrK],css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
+    !S.admin?null:st1('net','Net payout',inrK(s.net),delta(s.net,p.net),[s.net,p.net,lyS.net,inrK],css('--accent'),`After platform fees · ${s.count} bookings. Split across months by nights; cancellations count in the check-in month.`),
+    !S.admin?null:st1('profit','Profit',inrK(s.profit),delta(s.profit,p.profit),[s.profit,p.profit,lyS.profit,inrK],css('--ok'),`${pct(s.net?s.profit/s.net:0)} margin\nNet payout − expenses − owner share`+(f.channels.length?'\nExpenses are not split by channel.':'')),
+    st1('occ','Booked '+bookedWhen(),pct(s.occ),delta(s.occ,p.occ),[s.occ,p.occ,lyS.occ,x=>pct(x)],css('--city-1'),`${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights occupied`),
+    !S.admin?null:st1('adr','Avg nightly rate',inrK(s.adr),delta(s.adr,p.adr),[s.adr,p.adr,lyS.adr,inrK],css('--city-3'),'ADR: room revenue ÷ nights sold'),
+    !S.admin?null:st1('revpar','RevPAR',inrK(s.revpar),delta(s.revpar,p.revpar),[s.revpar,p.revpar,lyS.revpar,inrK],css('--c-mmt'),'Revenue per available night: occupancy × average nightly rate'),pay));
   // trend: a window of months you swipe through (phones 6, laptops 15), not every month squeezed in
   const all=D.months,nowK=TODAY.slice(0,7),cities=liveCities().filter(c=>!f.cities.length||f.cities.includes(c));
   const netC=(c,k)=>sum(D.B.filter(b=>fBm(b)&&b.city===c),b=>b.net*share(b,mStart(k),mEnd(k)));
@@ -1832,7 +1844,7 @@ Bar: this period so far · mark: ${prevL} (${sp[2](sp[1])}). The bar stopping sh
   const wFys=[...new Set(all.map(fyOf))].slice(-3);
   const wShort1=PHONE()&&wk.length>8;let trendHolder;
   const wHead=h('div',{class:'rev-head'},h('div',null,h('b',{class:'num'},inrK(sumNow)),h('span',null,`net · ${wRng}`)),
-    sumLy>0?h('span',{class:'delta '+(sumNowPast>=sumLy?'up':'down'),'data-tip':`Months up to ${mLabel(nowK)}: ${inr(sumNowPast)} vs ${inr(sumLy)} the year before`},`${sumNowPast>=sumLy?'+':''}${pct((sumNowPast-sumLy)/sumLy)} vs last year`):null);
+    sumLy>0?h('span',{class:'delta '+(sumNowPast>=sumLy?'up':'down'),'data-tip':`${inr(sumNowPast)} vs ${inr(sumLy)} last year`},`${sumNowPast>=sumLy?'+':''}${pct((sumNowPast-sumLy)/sumLy)} vs last year`):null);
   const wNav=h('div',{class:'rev-nav'},
     h('button',{class:'btn icon sm','aria-label':'Earlier months',disabled:wI0<=0||null,onclick:()=>wShift(-(PHONE()?1:3))},'‹'),
     h('div',{class:'rev-track','aria-hidden':'true'},h('i',{style:{left:(wI0/all.length*100)+'%',width:(wk.length/all.length*100)+'%'}})),
@@ -1857,7 +1869,7 @@ Bar: this period so far · mark: ${prevL} (${sp[2](sp[1])}). The bar stopping sh
   const chs=CHN.map(c=>{const xs=allCh.filter(([b])=>b.channel===c);return{key:c,value:sum(xs,([b,w])=>b.gross*w),fees:sum(xs,([b,w])=>b.fee*w),n:xs.filter(([b])=>b.ok&&b.check_in>=f.from&&b.check_in<=f.to).length}});const tot=sum(chs,x=>x.value)||1;
   let dh;
   v.append(card('s4','Channel mix',{hint:'tap to filter',acts:[btnPNG(()=>dh,'Channel mix')]},
-    h('div',{class:'mix'},dh=h('div',{class:'chart'},donut(150,{parts:chs.map(x=>({...x,color:chColor(x.key),dim:f.channels.length&&!f.channels.includes(x.key),tip:`${x.key}\n${inr(x.value)} gross · ${x.n} bookings\nFees ${inr(x.fees)}`})),center:pct(chs[3].value/tot),sub:'direct',onClick:p=>toggleIn('channels',p.key)})),
+    h('div',{class:'mix'},dh=h('div',{class:'chart'},donut(150,{parts:chs.map(x=>({...x,color:chColor(x.key),dim:f.channels.length&&!f.channels.includes(x.key),tip:`${x.key}: ${inr(x.value)} · ${x.n} bookings`})),center:pct(chs[3].value/tot),sub:'direct',onClick:p=>toggleIn('channels',p.key)})),
       h('div',{class:'mix-l'},chs.map(x=>h('button',{class:'hb',style:{gridTemplateColumns:'1fr auto'},onclick:()=>toggleIn('channels',x.key)},h('span',{class:'chd'},h('i',{style:{background:chColor(x.key)}}),x.key),h('span',{class:'v num'},pct(x.value/tot)))))),
     h('div',{class:'foot-note'},`Platforms took ${inrK(sum(chs,x=>x.fees))} in fees this period. Moving 10% of bookings to direct saves about ${inrK(sum(chs,x=>x.fees)*.1)}.`)));
   // check dates: tap a stay for its month calendar (free and booked nights)
@@ -1883,7 +1895,7 @@ Bar: this period so far · mark: ${prevL} (${sp[2](sp[1])}). The bar stopping sh
     return h('div',{class:'h2h-row'},
       h('div',{class:'h2h-h'},h('span',null,label),lt?h('span',{class:'h2h-lead',style:lt==='level'?null:{color:cityColor(lead.c)}},lt==='level'?'Level':lt):null),
       cityStats.length>1?h('div',{class:'h2h-bar'},cityStats.map((x,i)=>h('i',{style:{flexGrow:String(Math.max(vals[i]/tot,.04)),background:cityColor(x.c)}}))):null,
-      h('div',{class:'h2h-v'+(cityStats.length===2?' two':'')},cityStats.map(x=>h('button',{class:'h2h-c',onclick:()=>toggleIn('cities',x.c),'data-tip':`${x.c} · ${label}\nThis period: ${fmt(x.now[key]||0)}\nLast period: ${fmt(x.prev[key]||0)}\n${x.now.listings} listings · tap to focus`},
+      h('div',{class:'h2h-v'+(cityStats.length===2?' two':'')},cityStats.map(x=>h('button',{class:'h2h-c',onclick:()=>toggleIn('cities',x.c),'data-tip':`${x.c}: ${fmt(x.now[key]||0)} · last period ${fmt(x.prev[key]||0)}`},
         h('i',{style:{background:cityColor(x.c)}}),h('span',null,x.c),h('b',{class:'num'},fmt(x.now[key]||0)),chg(x.now[key]||0,x.prev[key]||0,pts)))))};
   v.append(card('s4','Cities head to head',{hint:'▲▼ vs last period · tap a city to focus'},
     cityStats.length?h('div',{class:'h2h'},mets.map(h2hRow)):h('div',{class:'empty'},'No cities match these filters.')));
@@ -1902,7 +1914,7 @@ Bar: this period so far · mark: ${prevL} (${sp[2](sp[1])}). The bar stopping sh
     return h('div',{class:'pace-bar'},h('i',{class:'fill',style:{width:Math.max(fw,x.now>0?2:0)+'%'}}),x.typ>=1?h('i',{class:'mark'}):null)};
   v.append(card('s4','Booking pace',{hint:'next 3 months · nights booked so far vs. usual by this date'},
     vline,
-    h('div',{class:'pace'},pace.map(x=>h('div',{class:'pace-row','data-tip':`${mLong(x.k)}\nBooked so far: ${Math.round(x.now)} of ${x.cap} nights (${pct(x.now/x.cap)} full)\nUsual by today: ${Math.round(x.typ)} nights (avg of last year and the 2 months before, by booking date)`},
+    h('div',{class:'pace'},pace.map(x=>h('div',{class:'pace-row','data-tip':`${mLong(x.k)}: ${Math.round(x.now)} of ${x.cap} nights booked · usual ${Math.round(x.typ)}`},
       h('div',{class:'pace-h'},h('b',null,mLabel(x.k)),h('span',{class:'num'},`${pct(x.now/x.cap)} full`),h('span',{class:'pill '+({Ahead:'p-ok',Behind:'p-bad','On pace':'p-mute',New:'p-mute'}[x.verdict])},x.verdict+(x.d!=null&&x.verdict!=='On pace'?` ${x.d>0?'+':'−'}${pct(Math.abs(x.d))}`:''))),
       pbar(x),
       h('div',{class:'pace-f'},h('span',null,h('b',null,String(Math.round(x.now))),` of ${x.cap} nights`),x.typ>=1?h('span',null,'usual by now ',h('b',null,String(Math.round(x.typ)))):h('span',null,'no history yet'))))),
@@ -1951,7 +1963,7 @@ function desk(v){
     return h('div',{class:'drow'+(on?' on':'')},cbx,h('div',{class:'time num'},kind==='in'?b.arrival_time||'—':'11:00'),
       h('div',{style:{minWidth:0,cursor:'pointer'},onclick:()=>openBooking(b)},who(b.guest,`${b.guests} guest${b.guests>1?'s':''} · ${b.nights} night${b.nights>1?'s':''} · ${b.channel}`)),
       h('div',{class:'prop-l',style:{minWidth:0}},h('b',null,short(b.pname)),h('span',null,`${p.area}, ${p.city}${kind==='out'?' · '+p.cleaner:''}`)),
-      h('div',{class:'flags'},kind==='out'&&turn(b)?h('span',{class:'pill p-bad','data-tip':'Next guest checks in today. Clean first.'},'Same Day Check-In & Check-Out'):null,kind==='out'&&t&&t.status==='Done'?h('span',{class:'pill p-ok'},'Cleaned'):null,kind==='in'&&b.pay==='Pending'?h('span',{class:'pill p-warn'},'Unpaid'):null,kind==='in'&&b.guests>=p.bedrooms*2?h('span',{class:'pill p-acc','data-tip':'At full capacity'},'Full house'):null));
+      h('div',{class:'flags'},kind==='out'&&turn(b)?h('span',{class:'pill p-bad','data-tip':'Clean first - next guest today'},'Same Day Check-In & Check-Out'):null,kind==='out'&&t&&t.status==='Done'?h('span',{class:'pill p-ok'},'Cleaned'):null,kind==='in'&&b.pay==='Pending'?h('span',{class:'pill p-warn'},'Unpaid'):null,kind==='in'&&b.guests>=p.bedrooms*2?h('span',{class:'pill p-acc','data-tip':'At full capacity'},'Full house'):null));
   };
   const panel=(title,list,kind)=>{const keys=list.map(b=>kind+':'+b.booking_id),all=keys.length&&keys.every(k=>ds.sel.has(k));
     return card('s6 deskp',title,{hint:list.length?`${list.length}`:'',acts:list.length?[h('button',{class:'btn sm',onclick:()=>{keys.forEach(k=>all?ds.sel.delete(k):ds.sel.add(k));render()}},all?'Clear':'Select all')]:null},
@@ -2033,7 +2045,7 @@ function openAvail(pid,m){m=m||TODAY.slice(0,7);const p=D.P[pid];if(!p)return;
   const first=mStart(m),last=mEnd(m),lead=(pd(first).getDay()+6)%7,cells=[...Array(lead)].map(()=>h('div',{class:'avl-c avl-x'}));const used=new Set();
   for(let d=first;d<=last;d=add(d,1)){const b=nightBooking(pid,d),cls=(d<TODAY?' past':'')+(d===TODAY?' td':'');
     const k=b?null:nightBlock(pid,d);
-    if(b&&b.property_id!==pid){used.add('linked');const via=linkName(b.property_id);cells.push(h('button',{class:'avl-c avl-b avl-lk'+cls,'aria-label':`${fmtD(d)}: not available, ${via} is booked (${b.guest})`,'data-tip':`Not available — ${via} is booked\n${b.guest}`,onclick:()=>openBooking(b)},+d.slice(8)))}
+    if(b&&b.property_id!==pid){used.add('linked');const via=linkName(b.property_id);cells.push(h('button',{class:'avl-c avl-b avl-lk'+cls,'aria-label':`${fmtD(d)}: not available, ${via} is booked (${b.guest})`,'data-tip':`${via} is booked · ${b.guest}`,onclick:()=>openBooking(b)},+d.slice(8)))}
     else if(b){used.add(b.channel);cells.push(h('button',{class:'avl-c avl-b'+cls,style:{background:chColor(b.channel)},'aria-label':`${fmtD(d)}: booked, ${b.guest}`,onclick:()=>openBooking(b)},+d.slice(8)))}
     else if(k){used.add('block');cells.push(h('div',{class:'avl-c avl-bl'+cls,'aria-label':`${fmtD(d)}: blocked, ${k.reason||'blocked'}`,'data-tip':`Blocked — ${k.reason||'no reason given'}`},+d.slice(8)))}
     else cells.push(h('div',{class:'avl-c avl-f'+cls,'aria-label':`${fmtD(d)}: free`},+d.slice(8)))}
@@ -2071,12 +2083,12 @@ function calendar(v){
     const row=h('div',{class:'cal-row',style:{gridTemplateColumns:cols,minWidth:minW?minW+'px':null}},h('div',{class:'cal-name',style:{cursor:'pointer'},onclick:()=>go('property',{propId:p.property_id})},short(p.property),h('span',null,narrow?h('b',{class:'num',style:{color:oc}},pct(o)):null,narrow?` · ${p.city}`:`${p.area} · ${p.city}`)));
     days.forEach((ds,i)=>row.append(h('div',{class:'cal-cell'+(ds===TODAY?' td':'')+([0,6].includes(pd(ds).getDay())?' we':''),style:{gridColumn:i+2}})));
     bs.forEach(b=>{const s0=Math.max(0,diff(start,b.check_in)),e0=Math.min(n,diff(start,b.check_out));
-      row.append(h('button',{class:'cal-bar'+(b.check_in<start?' ol':'')+(b.check_out>add(end,1)?' or':''),style:{gridColumn:`${s0+2}/${e0+2}`,background:chColor(b.channel)},onclick:()=>openBooking(b),'aria-label':`${b.guest}, ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`,'data-tip':`${b.guest} · ${b.guests} guests\n${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.nights} nights\n${b.channel} · ${inr(b.gross)}`},(narrow&&!two)?'':e0-s0>=2?b.guest.split(' ')[0]:zm==='w'?ini(b.guest):''))});
+      row.append(h('button',{class:'cal-bar'+(b.check_in<start?' ol':'')+(b.check_out>add(end,1)?' or':''),style:{gridColumn:`${s0+2}/${e0+2}`,background:chColor(b.channel)},onclick:()=>openBooking(b),'aria-label':`${b.guest}, ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`,'data-tip':`${b.guest}\n${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.channel}`},(narrow&&!two)?'':e0-s0>=2?b.guest.split(' ')[0]:zm==='w'?ini(b.guest):''))});
     /* nights this stay can't be sold because a linked stay (its combo, or one of its parts) is booked */
     D.B.filter(b=>b.ok&&b.property_id!==p.property_id&&samePlace(b.property_id,p.property_id)&&b.check_in<=end&&b.check_out>start).forEach(b=>{
       const s0=Math.max(0,diff(start,b.check_in)),e0=Math.min(n,diff(start,b.check_out)),via=linkName(b.property_id);
       row.append(h('button',{class:'cal-bar cal-linked',style:{gridColumn:`${s0+2}/${e0+2}`},onclick:()=>openBooking(b),'aria-label':`Not available: ${via} is booked ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`,
-        'data-tip':`Not available — ${via} is booked\n${b.guest} · ${fmtD(b.check_in)} → ${fmtD(b.check_out)}`},narrow?'':'via '+via))});
+        'data-tip':`${via} is booked · ${b.guest}`},narrow?'':'via '+via))});
     if(!narrow)row.append(h('div',{class:'cal-occ num',style:{gridColumn:n+2,color:oc}},pct(o)));wrap.append(row)});
   const body=wrap;
   const title=two?`${fmtD(start,{day:'numeric',month:'short'})} – ${fmtD(end,{day:'numeric',month:'short',year:'numeric'})}`:mLong(k);
@@ -2113,7 +2125,7 @@ function properties(v){
         h('span',{class:'hint'},`${rs.length} stay${rs.length>1?'s':''} · ${pct(occ)} occupied · busiest first`)),h('div',{class:'ps-grid'},rs.map(tile))))});
     return}
   if(mode==='chart'){let sh;
-    v.append(card('s12','Price vs occupancy',{hint:'bubble size = net payout · tap a bubble to open',acts:[btnPNG(()=>sh,'Price vs occupancy')]},sh=chart(w=>scatter(w,{pts:rows.map(r=>({id:r.id,x:r.occ,y:r.adr,r:5+Math.sqrt(Math.max(0,r.net)/mxNet)*16,color:cityColor(r.city),tip:`${r.name} (${r.area})\nOccupancy ${pct(r.occ)} · ADR ${inr(r.adr)}\nNet ${inr(r.net)}`})),xFmt:x=>pct(x),yFmt:inrK,xLab:'Occupancy',yLab:'Avg nightly rate',onClick:id=>go('property',{propId:id})})),
+    v.append(card('s12','Price vs occupancy',{hint:'bubble size = net payout · tap a bubble to open',acts:[btnPNG(()=>sh,'Price vs occupancy')]},sh=chart(w=>scatter(w,{pts:rows.map(r=>({id:r.id,x:r.occ,y:r.adr,r:5+Math.sqrt(Math.max(0,r.net)/mxNet)*16,color:cityColor(r.city),tip:`${r.name}: ${pct(r.occ)} booked · ${inr(r.net)}`})),xFmt:x=>pct(x),yFmt:inrK,xLab:'Occupancy',yLab:'Avg nightly rate',onClick:id=>go('property',{propId:id})})),
       h('div',{class:'legend'},liveCities().map(c=>h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:cityColor(c)}}),c)))));
     return}
   const cols=[{t:'Property',k:'name',f:r=>h('div',{class:'who'},h('div',{style:{width:'44px',height:'32px',borderRadius:'8px',overflow:'hidden',flex:'none'}},scene(r.p,88,64)),h('div',null,h('b',null,r.name),h('span',null,`${r.area}, ${r.city}${r.type?' · '+r.type:''}${r.beds?' · '+r.beds+' BR':''}`)))},{t:'',f:r=>r.inHouse?h('span',{class:'pill p-ok'},'Occupied'):h('span',{class:'pill p-mute'},'Vacant')},{t:'Occupancy',k:'occ',r:1,f:r=>pct(r.occ)},{t:'Avg rate',k:'adr',r:1,f:r=>inr(r.adr)},{t:'RevPAR',k:'revpar',r:1,f:r=>inr(r.revpar)},{t:'Net payout',k:'net',r:1,f:r=>inr(r.net)},{t:'Profit',k:'profit',r:1,f:r=>h('b',null,inr(r.profit))},{t:'Issues',k:'issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'},{t:'Next check-in',k:'next',f:r=>r.next?fmtD(r.next):'–'}];
@@ -3173,7 +3185,7 @@ function mpGroups(list,row){
     const singles=ps.filter(p=>!partsOf(p).length&&!kidIds.has(p.property_id));
     return h('div',{class:'mp-grid'},parents.map(par=>{const kids=partsOf(par).map(id=>by.get(id)).filter(k=>k&&ps.includes(k)),
         br=sum(kids,k=>+k.bedrooms||0),gs=sum(kids,k=>+k.max_guests||0);
-      return h('div',{class:'mp-fam'},h('div',{class:'mp-fam-h'},h('span',{class:'mp-fam-tag'},'Combo family'),h('span',{'data-tip':'Booking the combo blocks its parts, and booking a part blocks the combo (for guests and the bot).'},`Blocks ${kids.length===2?'both parts':'all '+kids.length+' parts'}${br?` · ${br} BR`:''}${gs?` · up to ${gs} guests`:''}`)),
+      return h('div',{class:'mp-fam'},h('div',{class:'mp-fam-h'},h('span',{class:'mp-fam-tag'},'Combo family'),h('span',{'data-tip':'Booking one blocks the others'},`Blocks ${kids.length===2?'both parts':'all '+kids.length+' parts'}${br?` · ${br} BR`:''}${gs?` · up to ${gs} guests`:''}`)),
         row(par),h('div',{class:'mp-kids'},kids.map(mpKid)))}),singles.map(p=>row(p)))};
   const live=list.filter(p=>!isStopped(p)),off=list.filter(p=>isStopped(p));
   const cities=[...new Set([...CITIES,...live.map(p=>p.city)])].filter(c=>live.some(p=>p.city===c));
@@ -3272,7 +3284,7 @@ function manageLists(v,tabs){const rows=S.data.lists||[],legacy=rows.length&&!is
         ed?h('span',{class:'pill p-warn'},it.__new?'New':'Not saved'):null,
         h('div',{class:'ls-acts'},h('button',{class:'btn icon sm','aria-label':'Edit '+it.value,onclick:()=>listEdit(list,it)},icon('edit')),
           it.__new?h('button',{class:'btn icon sm','aria-label':'Remove','data-tip':'Remove',onclick:()=>{delete LSTAGE[it.row_id];render()}},icon('x')):
-          h('button',{class:'btn sm',onclick:()=>lstage(it.row_id,{list,active:on?'No':'Yes'}),'data-tip':on?'Hide from the booking form (old bookings keep it)':'Show in the booking form again'},on?'Retire':'Restore')))};
+          h('button',{class:'btn sm',onclick:()=>lstage(it.row_id,{list,active:on?'No':'Yes'}),'data-tip':on?'Hide from the form':'Show in the form'},on?'Retire':'Restore')))};
     const items_=[...items].sort((a,b)=>act(b)-act(a));
     return h('section',{class:'ls-col card'},h('div',{class:'ls-h'},h('h3',null,LIST_L[list]),h('span',null,`${items.filter(act).length} in the form`)),
       h('div',{class:'ls-list'},items_.length?items_.map(row):h('div',{class:'empty'},'Nothing yet.')),
