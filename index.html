@@ -1576,15 +1576,45 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .mt-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.mt-sp{flex:1}
 .mt-nights{display:flex;flex-wrap:wrap;gap:6px}.mt-nights .chip-s{cursor:pointer;border:1px solid var(--hair-2)}.mt-nights .chip-s.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .mt-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.mt-strip-w{overflow:hidden}.mk-strip{width:100%;height:auto;display:block}
-.mk-grid{stroke:var(--hair);stroke-width:1}.mk-tick{fill:var(--muted);font-size:10px;font-family:inherit}
-.mk-band{fill:rgba(42,120,214,0.14);fill:color-mix(in srgb,#2a78d6 14%,transparent)}.mk-med{stroke:#2a78d6;stroke-width:2;stroke-linecap:round}
-.mk-dot{stroke:var(--surface);stroke-width:2;cursor:pointer}.mk-dot.in{fill:#2a78d6}.mk-dot.out{fill:#b9b8b3}.mk-dot:hover,.mk-dot:focus{r:7;outline:none}
-.mk-you{fill:var(--ink);stroke:var(--surface);stroke-width:2;cursor:pointer}.mk-you-l{fill:var(--ink);font-size:11px;font-weight:650;font-family:inherit}
+.ml{display:grid;gap:4px}.ml-head{margin:0 0 8px;font-size:14px;line-height:1.55;color:var(--ink)}.ml-head b{font-weight:700}
+.ml-v{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:650;white-space:nowrap}.ml-v.ok{background:rgba(18,128,76,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}.ml-v.warn{background:rgba(237,161,0,0.18);background:color-mix(in srgb,#eda100 18%,transparent);color:#8a5a00}.ml-v.acc{background:var(--accent-soft);color:var(--accent)}
+.ml-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(90px,2fr) 58px;gap:12px;align-items:center;padding:6px 8px;border-radius:10px}.ml-row:hover{background:var(--surface-2)}.ml-row.you{background:var(--accent-soft)}
+.ml-name{min-width:0;display:grid;gap:1px}.ml-name>a,.ml-name>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:inherit;text-decoration:none}.ml-name>a:hover{text-decoration:underline}
+.ml-name small{color:var(--muted);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-track{position:relative;height:10px;border-radius:99px;background:var(--hair-2)}.ml-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:#b9b8b3}.ml-fill.in{background:#2a78d6}.ml-fill.you{background:var(--ink)}
+.ml-oth{display:grid;grid-template-columns:minmax(0,1fr) auto 52px;gap:10px;align-items:center;padding:5px 8px;font-size:12.5px;color:var(--muted)}.ml-oth span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ml-oth b{text-align:right;color:var(--ink);font-weight:500}
+.ml-fill.over{-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent)}
+.ml-typ{position:absolute;top:-5px;bottom:-5px;border-left:2px dashed var(--ink);opacity:.5}
+.ml-price{text-align:right;font-size:13px}.ml-more summary{cursor:pointer;font-size:12.5px;color:var(--accent);padding:6px 8px}
+.ml-foot{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12px;color:var(--muted)}.ml-foot span{display:inline-flex;align-items:center;gap:6px}
+.ml-foot i{width:14px;height:8px;border-radius:99px;display:inline-block}.ml-foot .lg-in{background:#2a78d6}.ml-foot .lg-out{background:#b9b8b3}.ml-foot .lg-you{background:var(--ink)}.ml-foot .lg-typ{width:0;height:12px;border-left:2px dashed var(--ink);opacity:.6;border-radius:0}
+@media(max-width:560px){.ml-row{grid-template-columns:minmax(0,1fr) 58px;gap:4px 10px}.ml-track{grid-column:1/-1;order:3}.ml-v{display:table;margin:6px 0 0}}
 .mt-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:12px;color:var(--muted)}.mt-lg span{display:inline-flex;align-items:center;gap:6px}
 .mt-lg i{width:10px;height:10px;border-radius:50%;display:inline-block}.mt-lg .lg-in{background:#2a78d6}.mt-lg .lg-out{background:#b9b8b3}.mt-lg .lg-you{background:var(--ink);border-radius:2px;transform:rotate(45deg);width:8px;height:8px}
 .mt-lg .lg-band{background:rgba(42,120,214,0.22);background:color-mix(in srgb,#2a78d6 22%,transparent);border-radius:3px;width:16px}
-.mt-stays{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.sd-pick{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:thin}
+.sd-pk{flex:none;display:grid;gap:5px;justify-items:start;padding:9px 12px;border-radius:14px;border:1px solid var(--hair-2);background:var(--surface);cursor:pointer;font:inherit;color:inherit;text-align:left}
+.sd-pk:hover{border-color:var(--accent)}.sd-pk.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(29,91,216,0.25);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}.sd-pkn{font-size:13px;font-weight:650;white-space:nowrap;max-width:190px;overflow:hidden;text-overflow:ellipsis}
+.sd{display:grid;gap:14px;padding:18px;border-radius:20px;background:var(--surface);border:1px solid var(--hair-2);min-width:0}
+.sd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.sd-head h3{margin:0;font-size:18px}.sd-head small{color:var(--muted);font-size:12.5px}
+.sd-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.sd-fig{display:grid;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface-2);min-width:0}
+.sd-fig span{font-size:12px;color:var(--muted)}.sd-fig b{font-size:20px;letter-spacing:-.01em}.sd-fig small{font-size:12px;color:var(--muted)}
+.sd-fig.t-acc small{color:var(--accent);font-weight:600}.sd-fig.t-warn small{color:#8a5a00;font-weight:600}.sd-fig.t-ok small{color:var(--ok);font-weight:600}.sd-fig.t-sug{background:var(--accent-soft)}.sd-fig.t-sug b{color:var(--accent)}
+.sd-bar{position:relative;height:12px;margin:14px 6px 0;border-radius:99px;background:var(--hair-2)}.sd-bar i{position:absolute;top:0;bottom:0;display:block}
+.sd-band{background:rgba(42,120,214,0.32);background:color-mix(in srgb,#2a78d6 32%,transparent);border-radius:99px}.sd-med{width:2px;margin-left:-1px;background:#2a78d6;top:-3px!important;bottom:-3px!important}
+.sd-you{width:14px;height:14px;top:-1px!important;margin-left:-7px;border-radius:50%;background:var(--ink);border:3px solid var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sd-you em{position:absolute;bottom:17px;left:50%;transform:translateX(-50%);font-style:normal;font-size:11px;font-weight:700;color:var(--ink)}
+.sd-scale{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted);margin:-6px 0 0}
+.sd-conf{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}.sd-conf i{width:8px;height:8px;border-radius:50%;background:#eda100}.sd-conf.c-high i{background:var(--ok)}.sd-conf.c-medium i{background:#2a78d6}
+.sd-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}.sd-col{display:grid;gap:7px;align-content:start;min-width:0}.sd-col h4{margin:4px 0 0;font-size:12px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.sd-m{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 11px;border-radius:12px;background:var(--surface-2);color:inherit;text-decoration:none;min-width:0}.sd-m:hover{outline:1px solid var(--accent)}
+.sd-m>span{display:grid;min-width:0}.sd-m>span b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sd-m small{font-size:11.5px;color:var(--muted)}
+.sd-ams{display:flex;flex-wrap:wrap;gap:6px}.sd-am{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:99px;font-size:12.5px;background:rgba(18,128,76,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ink)}
+.sd-am i{font-style:normal;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--surface);font-size:13px}.sd-ams.mute .sd-am{background:var(--surface-2);color:var(--muted)}
+.sd-facts{display:flex;flex-wrap:wrap;gap:8px}.sd-facts:empty{display:none}.sd-fact{font-size:12.5px;padding:5px 11px;border-radius:99px;background:var(--surface-2)}.sd-fact.hot{background:rgba(235,104,52,0.13);background:color-mix(in srgb,#eb6834 13%,transparent);color:#a8441a;font-weight:600}
+.sd-empty{display:grid;gap:4px;padding:16px;border-radius:14px;background:var(--surface-2);font-size:13px}.sd-empty span{color:var(--muted)}
+.sd-empty.hot{background:rgba(235,104,52,0.1);background:color-mix(in srgb,#eb6834 10%,transparent)}.sd-empty.hot b{color:#a8441a}
+@media(max-width:620px){.sd{padding:14px}.sd-figs{grid-template-columns:1fr 1fr}.sd-fig.t-sug{grid-column:1/-1}.sd-fig b{font-size:18px}.sd-cols{grid-template-columns:1fr}.sd-scale span:nth-child(2){display:none}}
 .mt-stay{min-width:0;display:grid;gap:8px;padding:14px 16px;border-radius:18px;background:var(--surface);border:1px solid var(--hair-2);box-shadow:0 1px 2px rgba(12,26,61,.04)}
 .mt-sh{display:flex;justify-content:space-between;align-items:center;gap:8px}.mt-sh b{font-size:14.5px}
 .mt-lv{font-size:12px;color:var(--muted)}.mt-lv.lv-high{color:var(--ok)}.mt-lv.lv-low{color:#9a6b00}
@@ -2609,7 +2639,7 @@ function progBar(kind){const p=PROG[kind],req=kind==='market'?tms(aiVal('ai.mark
 /* what one market check costs here: the average of this account's own checks, else about ₹3.5 a stay */
 function marketCharge(n){const bs=rowsOf('botstats').filter(r=>+r.market_scans>0),sc=sum(bs,r=>+r.market_scans),inrT=sum(bs,r=>+r.market_cost_inr||0);return Math.max(1,Math.round(sc?inrT/sc:usdInr(n*0.05)))}
 /* ---- AI › Market: Google holiday-rental prices around each stay (SerpApi, no AI) ---- */
-const RK=r=>({...r,name:String(r.name||'').replace(/\n/g,' ').replace(/\s+/g,' ').trim(),price:+r.price||null,bedrooms:r.bedrooms===''||r.bedrooms==null?null:+r.bedrooms,lat:+r.lat,lng:+r.lng,rating:+r.rating||null,reviews:+r.reviews||null,night:String(r.night).slice(0,10)});
+const RK=r=>({...r,name:String(r.name||'').replace(/\\n|\n/g,' ').replace(/\s+/g,' ').trim(),price:+r.price||null,bedrooms:r.bedrooms===''||r.bedrooms==null?null:+r.bedrooms,lat:+r.lat,lng:+r.lng,rating:+r.rating||null,reviews:+r.reviews||null,night:String(r.night).slice(0,10)});
 const kmB=(a,b)=>{const R=Math.PI/180,x=Math.sin((b[0]-a[0])*R/2)**2+Math.cos(a[0]*R)*Math.cos(b[0]*R)*Math.sin((b[1]-a[1])*R/2)**2;return 12742*Math.asin(Math.sqrt(x))};
 const kindOfT=t=>/apartment|flat|condo|serviced|penthouse|studio/i.test(t)?'apartment':/villa|house|cottage|bungalow|home|farm|chalet|cabin/i.test(t)?'house':/room/i.test(t)?'room':'other';
 function pinFromText(s){s=(()=>{try{return decodeURIComponent(String(s||''))}catch(e){return String(s||'')}})();let m=[...s.matchAll(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/g)].pop();if(m)return[+m[1],+m[2]];
@@ -2617,6 +2647,7 @@ function pinFromText(s){s=(()=>{try{return decodeURIComponent(String(s||''))}cat
 function stayPin(p){const la=+p.lat,lo=+p.lng;return la&&lo&&isFinite(la)&&isFinite(lo)?[la,lo]:pinFromText(p.map_pin)||pinFromText(p.maps_url)}
 const stayMap=p=>p.maps_url||(stayPin(p)?`https://www.google.com/maps/search/?api=1&query=${stayPin(p).join(',')}`:null);
 const famKey=p=>{const b=Math.min(+p.bedrooms||0,5);return `${String(p.area||p.city||'').replace(/[^A-Za-z]/g,'').slice(0,12)}-${b}${b>=5?'+':''}BR`};
+const AMI={'Air conditioning':'❄️','Kitchen':'🍳','Wi-Fi':'📶','Parking':'🅿️','TV':'📺','Washer':'🧺','Lift':'🛗','Balcony':'🌿','Heating':'🔥','Bathtub / hot tub':'🛁','Pool':'🏊','Pets allowed':'🐾','Microwave':'🍲','Barbecue':'🍖','Fireplace':'🪵','Gym':'🏋️'};
 const AMC=[['Air conditioning',/air ?condition|\bac\b/i],['Kitchen',/kitchen/i],['Wi-Fi',/wi-?fi|internet/i],['Parking',/parking/i],['TV',/\btv\b|netflix|prime|cable/i],
   ['Washer',/washer|washing/i],['Lift',/elevator|lift/i],['Balcony',/balcony|terrace|patio/i],['Heating',/heating|heater/i],['Bathtub / hot tub',/bath ?tub|hot ?tub|jacuzzi/i],
   ['Pool',/pool/i],['Pets allowed',/pet/i],['Microwave',/microwave/i],['Barbecue',/barbecue|bbq|grill/i],['Fireplace',/fireplace|bonfire/i],['Gym',/fitness|gym/i]];
@@ -2627,30 +2658,74 @@ function mktCompare(p,rows){const pin=stayPin(p),br=+p.bedrooms||0,kind=kindOfT(
   const rs=rows.filter(r=>isFinite(r.lat)&&isFinite(r.lng)).map(r=>({...r,km:Math.round(kmB(pin,[r.lat,r.lng])*10)/10}));
   const same=r=>r.bedrooms===br&&r.kind===kind,diffs=r=>(r.bedrooms!==br)+(r.kind!==kind)+(r.km>3);
   const L=[['close',`same size & kind within 3 km`,r=>same(r)&&r.km<=3,'high'],['near',`same size & kind within 6 km`,r=>same(r)&&r.km<=6,'medium'],
-    ['similar',`similar: ±1 bedroom, other kind or 3–8 km`,r=>r.km<=8&&r.bedrooms!=null&&Math.abs(r.bedrooms-br)<=1&&diffs(r)<=1,'low'],['market','the local market within 8 km',r=>r.km<=8,'low']];
+    ['similar',`similar: ±1 bedroom, other kind or 3–8 km`,r=>r.km<=8&&r.bedrooms!=null&&Math.abs(r.bedrooms-br)<=1&&diffs(r)<=1,'low'],['market','the local market within 8 km (±2 bedrooms)',r=>r.km<=8&&(r.bedrooms==null||Math.abs(r.bedrooms-br)<=2),'low']];
   for(const [level,label,fn,conf] of L){const set=rs.filter(fn),pr=set.filter(r=>r.price);if(pr.length>=3){const ps=pr.map(r=>r.price),m0=pctl(ps,.5),tier=ps.filter(v_=>v_>=m0/2&&v_<=m0*2);
     /* the stay's own tier: a premium cluster (2x the median and up, e.g. river-facing) is shown apart, not averaged in */
     return{level,label,conf:level==='close'&&pr.length<5?'medium':conf,set,n:set.length,priced:pr.length,median:pctl(tier,.5),p25:pctl(tier,.25),p75:pctl(tier,.75),low:Math.min(...ps),high:Math.max(...ps),
       prem:set.filter(r=>r.price>m0*2),
       busy:set.length?Math.round((set.length-pr.length)/set.length*100):0,nearest:pr.slice().sort((a,b)=>a.km-b.km).slice(0,2),all:rs}}}
   return{level:'none',why:rs.length?`only ${rs.filter(r=>r.price).length} priced listings nearby`:'no listings found yet',all:rs}}
-/* a price strip: listings as dots on a log price scale, the comparison band, your stays as labelled diamonds */
-function priceStrip(rows,stays,cmp){const W=innerWidth<700?360:640,Hh=104,pad=14,ps=[...rows.filter(r=>r.price).map(r=>r.price),...stays.map(p=>+p.base_rate||0)].filter(Boolean);if(!ps.length)return null;
-  const lo=Math.min(...ps)*0.9,hi=Math.max(...ps)*1.1,x=v=>pad+(Math.log(v)-Math.log(lo))/(Math.log(hi)-Math.log(lo))*(W-2*pad);
-  const NS='http://www.w3.org/2000/svg',el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
-  const svg=el('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'mk-strip',role:'img','aria-label':'Prices of listings around your stays'});
-  const ticks=[1000,2000,3000,5000,7500,10000,15000,20000,30000,50000].filter(t=>t>=lo&&t<=hi);
-  (W<400?ticks.filter((t,i)=>i%2===0):ticks).forEach(t=>{svg.append(el('line',{x1:x(t),x2:x(t),y1:18,y2:Hh-20,class:'mk-grid'}));const tx=el('text',{x:x(t),y:Hh-6,class:'mk-tick','text-anchor':'middle'});tx.textContent=t>=1000?`₹${t/1000}k`:`₹${t}`;svg.append(tx)});
-  if(cmp&&cmp.p25&&cmp.p75){svg.append(el('rect',{x:x(cmp.p25),y:30,width:Math.max(2,x(cmp.p75)-x(cmp.p25)),height:28,rx:6,class:'mk-band'}));svg.append(el('line',{x1:x(cmp.median),x2:x(cmp.median),y1:26,y2:62,class:'mk-med'}))}
-  const inCmp=new Set((cmp&&cmp.set||[]).map(r=>r.name));
-  rows.filter(r=>r.price).forEach((r,i)=>{const c=el('circle',{cx:x(r.price),cy:44+((i%3)-1)*7,r:5,class:'mk-dot '+(inCmp.has(r.name)?'in':'out'),tabindex:0,
-    'data-tip':`${r.name}\n₹${r.price.toLocaleString('en-IN')} · ${r.bedrooms??'?'} BR ${r.kind}${r.km!=null?` · ${r.km} km`:''}${r.rating?` · ★${r.rating} (${r.reviews||0})`:''}`});svg.append(c)});
-  /* your stays as diamonds; stays close on the scale share one label so labels never collide */
-  const clusters=[];stays.filter(p=>+p.base_rate>0).sort((a,b)=>a.base_rate-b.base_rate).forEach(p=>{const cx=x(+p.base_rate),c=clusters[clusters.length-1];if(c&&cx-c.x1<90){c.ps.push(p);c.x1=cx}else clusters.push({x0:cx,x1:cx,ps:[p]})});
-  clusters.forEach(c=>{c.ps.forEach(p=>{const cx=x(+p.base_rate);svg.append(el('path',{d:`M${cx} 6 l6 6 l-6 6 l-6 -6 z`,class:'mk-you',tabindex:0,'data-tip':`${short(p.property)}\nyour base ₹${(+p.base_rate).toLocaleString('en-IN')}`}))});
-    const mid=(c.x0+c.x1)/2,t=el('text',{x:mid,y:Hh-28,class:'mk-you-l','text-anchor':mid>W-90?'end':mid<90?'start':'middle'});t.textContent=c.ps.length>1?`${c.ps.length} of yours`:short(c.ps[0].property).slice(0,20);svg.append(t)});
-  return svg}
-function aiMarket(v){const all=rowsOf('rentals').map(RK),props=D.props.filter(p=>!isStopped(p)&&+p.base_rate>0),pinned=props.filter(stayPin);
+const kR=n=>{n=Math.round(n/100)*100;return n>=1e4?`₹${Math.round(n/1e3)}k`:n>=1e3?`₹${(n/1e3).toFixed(1).replace(/\.0$/,'')}k`:`₹${n}`},rgK=(a,b)=>kR(a)===kR(b)||Math.abs(a-b)<=Math.max(a,b)*.04?kR((a+b)/2):`${kR(Math.min(a,b))}–${kR(Math.max(a,b))}`;
+/* a price ladder: every priced listing and your stays as one ranked list of bars (linear ₹, a dashed line at the typical price) */
+function priceLadder(all,stays,cmp,night,fam){const m=/(\d)(\+?)BR$/.exec(fam||''),br=m?+m[1]:null,plus=m&&m[2];
+  /* the search's bedrooms filter is a minimum: compare like with like (±1 bedroom), other sizes go below */
+  const fits=r=>br==null||(r.bedrooms!=null&&(plus?r.bedrooms>=br-1:Math.abs(r.bedrooms-br)<=1)),rows=all.filter(fits),others=all.filter(r=>!fits(r)&&r.price),
+    otherLine=others.length?h('details',{class:'ml-more'},h('summary',null,`Other sizes in this search: ${others.length} priced, ${rgK(Math.min(...others.map(r=>r.price)),Math.max(...others.map(r=>r.price)))} (not compared)`),
+      others.sort((a,b)=>b.price-a.price).map(r=>h('div',{class:'ml-oth'},h('span',null,r.name),h('small',null,`${r.bedrooms??'?'} BR ${r.kind||''}${r.km!=null?` · ${r.km} km`:''}`),h('b',{class:'num'},kR(r.price))))):null;
+  const priced=rows.filter(r=>r.price),yours=stays.filter(p=>+p.base_rate>0),unpriced=rows.length-priced.length,dLab=fmtD(night,{day:'numeric',month:'short'});
+  const yTxt=yours.length?[`Your ${yours.length>1?yours.length+' stays list':'stay lists'} at `,h('b',null,rgK(Math.min(...yours.map(p=>+p.base_rate)),Math.max(...yours.map(p=>+p.base_rate)))),'. ']:null;
+  if(!priced.length)return h('div',{class:'ml'},h('p',{class:'ml-head'},yTxt,unpriced?[unpriced>1?`None of the ${unpriced} listings here shows a price for ${dLab}: `:`The one listing here shows no price for ${dLab}: `,h('b',null,unpriced>1?'likely all booked':'likely booked'),'.']:`No listings found for ${dLab}.`,
+    unpriced?h('span',{class:'ml-v ok'},'Demand is strong: hold or raise'):null),otherLine);
+  const typ=priced.length>=3?pctl(priced.map(r=>r.price),.5):null,inCmp=new Set((cmp&&cmp.set||[]).map(r=>r.name)),rng=xs=>{const a=Math.min(...xs),b=Math.max(...xs);return a===b?inrK(a):`${inrK(a)}–${inrK(b)}`};
+  const items=[...priced.map(r=>({r,v:r.price})),...yours.map(p=>({p,v:+p.base_rate}))].sort((a,b)=>b.v-a.v),max=Math.max(...items.map(i=>i.v)),scale=typ?Math.min(max,Math.max(typ*2.5,...yours.map(p=>+p.base_rate*1.1))):max,X=v_=>Math.max(2,Math.min(100,v_/scale*100)),ov=v_=>v_>scale?' over':'',typL=()=>typ?h('i',{class:'ml-typ',style:{left:X(typ)+'%'}}):null;
+  const avgY=yours.length?yours.reduce((s_,p)=>s_+ +p.base_rate,0)/yours.length:null,ratio=avgY&&typ?avgY/typ:null,pct=ratio?Math.round((ratio-1)*100):null;
+  const verdict=ratio==null?null:Math.abs(pct)<=10?['in line with them','ok']:ratio>=1.5?[`${ratio.toFixed(1)}× the typical price`,'warn']:pct>0?[`${pct}% above typical`,'warn']:[`${-pct}% below typical`,'acc'];
+  const row=it=>{if(it.p){const p=it.p;return h('div',{class:'ml-row you','data-tip':`${short(p.property)}\nyour base price ₹${it.v.toLocaleString('en-IN')}`},
+      h('div',{class:'ml-name'},h('span',null,h('b',null,short(p.property))),h('small',null,`yours · ${p.bedrooms||'?'} BR · base price`)),
+      h('div',{class:'ml-track'},h('i',{class:'ml-fill you'+ov(it.v),style:{width:X(it.v)+'%'}}),typL()),h('b',{class:'ml-price num'},inrK(it.v)))}
+    const r=it.r,meta=[`${r.bedrooms??'?'} BR ${r.kind||''}`.trim(),r.km!=null?`${r.km} km`:null,r.rating?`★${r.rating}`:null].filter(Boolean).join(' · ');
+    return h('div',{class:'ml-row','data-tip':`${r.name}\n₹${r.price.toLocaleString('en-IN')} for ${dLab} · ${meta}`},
+      h('div',{class:'ml-name'},r.link?h('a',{href:r.link,target:'_blank',rel:'noopener'},r.name):h('span',null,r.name),h('small',null,meta)),
+      h('div',{class:'ml-track'},h('i',{class:'ml-fill'+(inCmp.has(r.name)?' in':'')+ov(it.v),style:{width:X(it.v)+'%'}}),typL()),h('span',{class:'ml-price num'},inrK(it.v)))};
+  const SHOW=8,first=items.filter((it,i)=>i<SHOW||it.p),rest=items.filter((it,i)=>i>=SHOW&&!it.p);
+  return h('div',{class:'ml'},
+    h('p',{class:'ml-head'},yTxt,`${priced.length===1?'One similar-size listing asks':`${priced.length} similar-size listings ask`} `,h('b',null,rgK(Math.min(...priced.map(r=>r.price)),Math.max(...priced.map(r=>r.price)))),` for ${dLab}`,
+      typ?[', typically ',h('b',null,kR(typ)),'.']:' (too few for a typical price).',unpriced>=priced.length?` ${unpriced} more show no price: likely booked.`:'',verdict?h('span',{class:'ml-v '+verdict[1]},'Yours: '+verdict[0]):null),
+    first.map(row),rest.length?h('details',{class:'ml-more'},h('summary',null,`Show ${rest.length} more`),rest.map(row)):null,
+    h('div',{class:'ml-foot'},h('span',null,h('i',{class:'lg-you'}),'your stays'),h('span',null,h('i',{class:'lg-in'}),'same size & kind nearby'),h('span',null,h('i',{class:'lg-out'}),'other listings'),
+      typ?h('span',null,h('i',{class:'lg-typ'}),`typical ${kR(typ)}`):null,unpriced?h('span',null,`${unpriced} more show no price: likely booked`):null),otherLine)}
+/* a big guesthouse priced per room (under ₹600 a bedroom) is not a whole-place price: leave it out of comparisons */
+const perRoom=r=>r.price&&r.bedrooms>=4&&r.price/r.bedrooms<600;
+/* similar stays within 3 km (±1 bedroom) and how many of them show a price: most unpriced = likely booked */
+const nearBusy=(p,c)=>{const n=(c&&c.all||[]).filter(r=>r.km<=3&&r.bedrooms!=null&&Math.abs(r.bedrooms-(+p.bedrooms||0))<=1);return [n.length,n.filter(r=>r.price).length]};
+/* one stay against its matches: three figures, a range bar, the closest matches, its edge in amenities, one thing to do */
+function stayDetail(p,c,share,night){const base=+p.base_rate,mine=amSet(p.amenities),dLab=fmtD(night,{day:'numeric',month:'short'}),am=l=>h('span',{class:'sd-am'},h('i',null,AMI[l]||'•'),l);
+  const head=h('div',{class:'sd-head'},h('div',null,h('h3',null,short(p.property)),h('small',null,[p.area,`${p.bedrooms||'?'} BR ${String(p.type||'').toLowerCase()}`,mine.size?`${mine.size} amenities`:null].filter(Boolean).join(' · '))),
+    stayMap(p)?h('a',{class:'btn sm',href:stayMap(p),target:'_blank',rel:'noopener'},'📍 Map'):null);
+  if(!c||c.level==='none'){const [near,np]=nearBusy(p,c);
+    return h('div',{class:'sd'},head,near>=3&&np<=1?h('div',{class:'sd-empty hot'},h('b',null,`🔥 ${near-np} of ${near} similar stays nearby show no price for ${dLab}`),h('span',null,'They look booked, so demand is strong. Hold your price or raise it a little for this night.')):
+      h('div',{class:'sd-empty'},h('b',null,'Not enough prices to compare'),h('span',null,`${c&&c.why||'no data'} for ${dLab}. Try another night above.`)))}
+  const d=Math.round((base/c.median-1)*100),rare=[...mine].filter(a=>share[a]!=null&&share[a]<.3);
+  const top=c.set.filter(r=>r.price&&r.price>=(c.p75||Infinity)),topAm=AMC.map(([l])=>l).filter(l=>!mine.has(l)&&top.length>=2&&top.filter(r=>amSet(r.amenities).has(l)).length/top.length>=.5).sort((a,b)=>(share[a]||0)-(share[b]||0)).slice(0,3);
+  const sug=rare.length>=2?[c.median,c.p75]:rare.length?[c.p25,c.p75]:[c.p25,c.median],rg=rgK;
+  const lo=Math.min(c.low,base),hi=Math.max(c.p75*1.6,base*1.1,c.median*1.3),X=v_=>Math.max(0,Math.min(100,(v_-lo)/(hi-lo)*100));
+  const tone=Math.abs(d)<=10?'ok':d>10?'warn':'acc',conf={high:'High',medium:'Medium',low:'Low'}[c.conf];
+  const fig=(l,val,sub,cls)=>h('div',{class:'sd-fig'+(cls?' '+cls:'')},h('span',null,l),h('b',{class:'num'},val),sub?h('small',null,sub):null);
+  return h('div',{class:'sd'},head,
+    h('div',{class:'sd-figs'},fig('Your base price',inr(base),Math.abs(d)<=10?'in line':d>0?`${d}% above typical`:`${-d}% below typical`,'t-'+tone),fig('Typical nearby',inr(c.median),`most ${rg(c.p25,c.p75)}`),fig('Suggested',rg(sug[0],sug[1]),'for this night','t-sug')),
+    h('div',{class:'sd-bar','aria-hidden':'true'},h('i',{class:'sd-band',style:{left:X(c.p25)+'%',width:Math.max(1.5,X(c.p75)-X(c.p25))+'%'}}),h('i',{class:'sd-med',style:{left:X(c.median)+'%'}}),h('i',{class:'sd-you t-'+tone,style:{left:X(base)+'%'}},h('em',null,'you'))),
+    h('div',{class:'sd-scale'},h('span',null,inrK(lo)),h('span',null,`most listings ${rg(c.p25,c.p75)}`),h('span',null,inrK(hi)+'+')),
+    h('div',{class:'sd-conf c-'+c.conf},h('i'),`${conf} confidence · ${c.priced} priced listings · ${c.label}`),
+    h('div',{class:'sd-cols'},
+      h('div',{class:'sd-col'},h('h4',null,'Closest matches'),c.nearest.length?c.nearest.map(r=>h('a',{class:'sd-m',href:r.link||null,target:'_blank',rel:'noopener'},h('span',null,h('b',null,r.name),h('small',null,`${r.bedrooms??'?'} BR · ${r.km} km${r.rating?` · ★${r.rating}`:''}`)),h('b',{class:'num'},inrK(r.price)))):h('small',{class:'hint'},'none priced')),
+      h('div',{class:'sd-col'},rare.length?[h('h4',null,'Your edge (few nearby have it)'),h('div',{class:'sd-ams'},rare.slice(0,5).map(am))]:null,
+        topAm.length?[h('h4',null,'Pricier listings add'),h('div',{class:'sd-ams mute'},topAm.map(am))]:null,!rare.length&&!topAm.length?h('small',{class:'hint'},'Amenities match the area.'):null)),
+    h('div',{class:'sd-facts'},c.busy>=30?h('span',{class:'sd-fact hot'},`🔥 ${c.busy}% booked for ${dLab}`):null,
+      c.prem.length>=2?h('span',{class:'sd-fact','data-tip':'A separate premium cluster (2× typical and up): not your direct competition'},`💎 ${c.prem.length} premium at ${rg(Math.min(...c.prem.map(r=>r.price)),Math.max(...c.prem.map(r=>r.price)))}`):null),
+    h('div',{class:'mt-do'},icon('bulb'),h('span',null,d>25&&rare.length<2?`Well above lookalikes: try ${rg(sug[0],sug[1])}, or lead with what makes it special in the title and first photo.`:
+      d>10?`Above typical${rare.length?`, and your ${rare.slice(0,2).join(' and ').toLowerCase()} can carry it: say so in the title`:''}.`:
+      d<-10?`Room to raise towards ${rg(sug[0],sug[1])}${c.busy>=30?': nearby is filling up':''}.`:'Priced right for this night.')))}
+function aiMarket(v){const all=rowsOf('rentals').map(RK).filter(r=>!perRoom(r)),props=D.props.filter(p=>!isStopped(p)&&+p.base_rate>0),pinned=props.filter(stayPin);
   const cities=[...new Set(pinned.map(p=>p.city))].sort();if(!S.mkCity||!cities.includes(S.mkCity))S.mkCity=cities[0];
   const inCity=all.filter(r=>r.city===S.mkCity&&r.night>=TODAY),nights=[...new Set(inCity.map(r=>r.night))].sort(),lab=n=>(inCity.find(r=>r.night===n)||{}).label||'';
   const pref=nights.find(n=>lab(n)==='sat')||nights[0];if(!S.mkNight||!nights.includes(S.mkNight))S.mkNight=pref;const night=S.mkNight;
@@ -2679,33 +2754,18 @@ function aiMarket(v){const all=rowsOf('rentals').map(RK),props=D.props.filter(p=
     tile('Likely booked',rows.length?`${Math.round((rows.length-priced.length)/rows.length*100)}%`:'–','show no price for this night','Listings with no price for the night are usually booked'),
     tile('Weekend premium',wk!=null?`${wk>0?'+':''}${wk}%`:'–',wk!=null?`Saturday vs Tuesday · yours +${prVal('weekend_markup_pct')}%`:'needs a Saturday and a Tuesday')));
   // a price map per search area
-  fams.forEach(f=>{const fr=nightRows.filter(r=>r.family===f),fs=stays.filter(p=>famKey(p)===f),c0=fs.length?cmpOf.get(fs[0].property_id):null;const sv=priceStrip(fr.map(r=>({...r,km:fs[0]&&stayPin(fs[0])?Math.round(kmB(stayPin(fs[0]),[r.lat,r.lng])*10)/10:null})),fs,c0&&c0.level!=='none'?c0:null);
-    v.append(card('s12 mt-fam',`${fr[0].area} · ${f.replace(/^.*-/,'')}`,{hint:`${fr.length} listings · ${fr.filter(r=>r.price).length} priced for ${fmtD(night,{day:'numeric',month:'short'})}`},
-      sv?h('div',{class:'mt-strip-w'},sv):h('div',{class:'empty'},'No prices for this night.'),
-      h('div',{class:'mt-lg'},h('span',null,h('i',{class:'lg-in'}),'compared with your stay'),h('span',null,h('i',{class:'lg-out'}),'other listings'),h('span',null,h('i',{class:'lg-you'}),'your stays'),h('span',null,h('i',{class:'lg-band'}),'middle half'))))});
+  fams.forEach(f=>{const fr=nightRows.filter(r=>r.family===f),seen=new Set(),fs=stays.filter(p=>famKey(p)===f),c0=fs.length?cmpOf.get(fs[0].property_id):null,pin0=fs[0]&&stayPin(fs[0]);
+    const fr1=fr.filter(r=>{const k=r.name+'|'+r.price;if(seen.has(k))return false;seen.add(k);return true}).map(r=>({...r,km:pin0&&isFinite(r.lat)?Math.round(kmB(pin0,[r.lat,r.lng])*10)/10:null}));
+    v.append(card('s12 mt-fam',`${fr[0].area} · ${f.replace(/^.*-/,'')}`,{hint:`${fr1.length} listings found · compared with similar sizes (±1 bedroom) · ${fmtD(night,{day:'numeric',month:'short'})}`},
+      priceLadder(fr1,fs,c0&&c0.level!=='none'?c0:null,night,f)))});
   // stay cards with smart fallbacks and what to do
   const mkAm=amSet(rows.flatMap(r=>String(r.amenities||'').split(','))),share={};AMC.forEach(([l])=>{share[l]=rows.length?rows.filter(r=>amSet(r.amenities).has(l)).length/rows.length:0});
-  v.append(h('div',{class:'s12 mt-stays'},stays.map(p=>{const c=cmpOf.get(p.property_id),base=+p.base_rate,mine=amSet(p.amenities);
-    const rare=[...mine].filter(a=>share[a]!=null&&share[a]<.3),top=c.set?c.set.filter(r=>r.price&&r.price>=(c.p75||Infinity)):[],topAm=AMC.map(([l])=>l).filter(l=>!mine.has(l)&&top.length>=2&&top.filter(r=>amSet(r.amenities).has(l)).length/top.length>=.5)
-      .sort((a,b)=>(share[a]||0)-(share[b]||0)).slice(0,3);
-    if(c.level==='none')return h('div',{class:'mt-stay'},h('div',{class:'mt-sh'},h('b',null,short(p.property)),h('span',{class:'pill p-mute'},'Not enough data')),h('p',{class:'hint'},`${c.why} for ${fmtD(night)} · try another night, or add your own price checks below`));
-    const d=Math.round((base/c.median-1)*100),prem=c.prem,sug=rare.length>=2?[c.median,c.p75]:rare.length?[c.p25,c.p75]:[c.p25,c.median];
-    const premAm=prem.length>=2?AMC.map(([l])=>l).filter(l=>prem.filter(r=>amSet(r.amenities).has(l)).length/prem.length>=.5&&(share[l]||0)<.5).slice(0,3):[];
-    const verdict=Math.abs(d)<=10?['In line','p-ok']:d>10?[`${d}% above`,'p-warn']:[`${-d}% below`,'p-acc'];
-    const span=Math.max(c.high,base)*1.05,X=v_=>Math.max(0,Math.min(100,v_/span*100));
-    return h('div',{class:'mt-stay'},
-      h('div',{class:'mt-sh'},h('b',null,short(p.property)),h('span',{class:'pill '+verdict[1],'data-tip':`your base ₹${base.toLocaleString('en-IN')} vs median ₹${c.median.toLocaleString('en-IN')}`},verdict[0])),
-      h('small',{class:'mt-lv lv-'+c.conf},`${c.priced} ${c.label} · ${c.conf} confidence`),
-      h('div',{class:'mt-bar','aria-hidden':'true'},h('i',{class:'mt-band',style:{left:X(c.p25)+'%',width:Math.max(1,X(c.p75)-X(c.p25))+'%'}}),h('i',{class:'mt-medl',style:{left:X(c.median)+'%'}}),h('i',{class:'mt-youm',style:{left:X(base)+'%'}})),
-      h('div',{class:'mt-nums'},h('span',null,'median ',h('b',{class:'num'},inr(c.median))),h('span',null,'range ',h('b',{class:'num'},`${inrK(c.low)}–${inrK(c.high)}`)),h('span',null,'you ',h('b',{class:'num'},inr(base)))),
-      c.nearest.length?h('div',{class:'mt-near'},c.nearest.map(r=>h('a',{href:r.link,target:'_blank',rel:'noopener'},h('span',null,r.name),h('small',null,`${r.km} km · ${r.bedrooms??'?'} BR · ${inr(r.price)}${r.rating?` · ★${r.rating}`:''}`)))):null,
-      rare.length?h('div',{class:'mt-chips'},h('small',null,'You have, few nearby do:'),rare.map(a=>h('span',{class:'chip-s good'},a))):null,
-      topAm.length?h('div',{class:'mt-chips'},h('small',null,'Pricier listings here have:'),topAm.map(a=>h('span',{class:'chip-s'},a))):null,
-      prem.length>=2?h('small',{class:'mt-prem'},`A premium tier at ${inrK(Math.min(...prem.map(r=>r.price)))}–${inrK(Math.max(...prem.map(r=>r.price)))} (${prem.length} listings${premAm.length?': '+premAm.join(', ').toLowerCase():''}) - not your direct competition`):null,
-      c.busy>=30?h('small',{class:'mt-busy'},`${c.busy}% of these show no price for ${fmtD(night)}: likely booked, demand is up`):null,
-      h('div',{class:'mt-do'},icon('bulb'),h('span',null,d>25&&rare.length<2?`Priced well above lookalikes without many standouts: consider ${inrK(sug[0])}–${inrK(sug[1])}, or show what makes it special in your title and first photos.`:
-        d>10?`Above the median${rare.length?` - your ${rare.slice(0,2).join(' and ').toLowerCase()} can carry it; say so in the title`:''}. Suggested ${inrK(sug[0])}–${inrK(sug[1])}.`:
-        d<-10?`Below lookalikes: room to raise towards ${inrK(sug[0])}–${inrK(sug[1])}, especially on busy nights.`:`In line with the market (${inrK(sug[0])}–${inrK(sug[1])}).`)))})));
+  const cmpD=p=>{const c=cmpOf.get(p.property_id);return c&&c.median?Math.round((+p.base_rate/c.median-1)*100):null},vOf=(d,p)=>d==null?(()=>{const [n,np]=nearBusy(p,cmpOf.get(p.property_id));return n>=3&&np<=1?['🔥 Nearby booked','p-warn']:['Not enough data','p-mute']})():Math.abs(d)<=10?['In line','p-ok']:d>10?[`${d}% above`,'p-warn']:[`${-d}% below`,'p-acc'];
+  if(!S.mkStay||!stays.some(p=>p.property_id===S.mkStay))S.mkStay=stays[0]&&stays[0].property_id;
+  v.append(card('s12 mt-stays','Your stays vs the market',{hint:`pick a stay · ${fmtD(night,{weekday:'short',day:'numeric',month:'short'})}`},
+    h('div',{class:'sd-pick',role:'group','aria-label':'Stay'},stays.map(p=>{const d=cmpD(p),vv=vOf(d,p);return h('button',{class:'sd-pk'+(p.property_id===S.mkStay?' on':''),'aria-pressed':p.property_id===S.mkStay?'true':'false',onclick:()=>{S.mkStay=p.property_id;render()}},
+      h('span',{class:'sd-pkn'},short(p.property)),h('span',{class:'pill '+vv[1]},vv[0]))})),
+    stays.length?stayDetail(stays.find(p=>p.property_id===S.mkStay),cmpOf.get(S.mkStay),share,night):null));
   // the price ahead: each area's median by night
   const famsAll=[...new Set(inCity.map(r=>r.family))];
   if(nights.length>1)v.append(card('s12','The price ahead',{hint:'median listed price by night · compare next week with 4 and 8 weeks out and festival nights'},
