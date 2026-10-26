@@ -1534,6 +1534,47 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .mkc-ai{display:inline-flex;gap:8px;align-items:center;border:0;background:var(--surface);border-radius:99px;padding:5px 10px;cursor:pointer;font:inherit;font-size:12.5px;color:var(--ink)}.mkc-ai svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
 @media(max-width:480px){.ex-orow{flex-wrap:wrap}.ex-orow .pr-num{flex:1 1 100%;justify-content:flex-end}}
 .free30{font-weight:700}.free30.mid{color:var(--warn)}.free30.hi{color:var(--bad)}
+/* Manage › Costs */
+.cs-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}
+.cs-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.cs-tile{display:grid;gap:2px;padding:12px 14px;border-radius:16px;background:var(--surface-2);border:1px solid var(--hair)}
+.cs-tile span{font-size:12px;color:var(--muted);font-weight:600}.cs-tile b{font-size:20px;letter-spacing:-.01em}.cs-tile small{font-size:11.5px;color:var(--muted)}
+.cs-tile:first-child{background:var(--accent-soft);border-color:rgba(175,197,238,1.0);border-color:color-mix(in srgb,var(--accent) 30%,var(--hair))}
+.cs-kv{display:grid;gap:0}.cs-kv>div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:13.5px}.cs-kv>div:last-child{border-bottom:0}
+.cs-kv span{color:var(--muted)}
+.cs-sws{display:grid;gap:8px}.cs-sws h4{margin:8px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cs-sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;border:1px solid var(--hair-2);border-radius:14px}
+.cs-sw>div{display:grid;gap:2px}.cs-sw b{font-size:14px}.cs-sw small{color:var(--muted);font-size:12px;line-height:1.4}.cs-sw.off{background:rgba(191,42,32,0.05);background:color-mix(in srgb,var(--bad) 5%,transparent)}
+.tgl{flex:none;width:50px;height:30px;border-radius:99px;border:0;background:var(--hair-2);position:relative;cursor:pointer;transition:background .2s}
+.tgl i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.tgl[aria-checked=true]{background:var(--ok)}.tgl[aria-checked=true] i{transform:translateX(20px)}
+.cs-rates{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+@media(max-width:560px){.cs-tiles{grid-template-columns:1fr 1fr;gap:8px}.cs-tile:first-child{grid-column:1/-1}.cs-tile b{font-size:18px}}
+/* Manager app setup: tick-box lists */
+.ie-wrap{display:grid;gap:14px;padding:6px 24px 16px}.ie-wrap .form{padding:0}.ie-pane{min-width:0}
+@media(max-width:560px){.ie-wrap{padding:4px 16px 14px}}.ie-tabs{width:100%}.ie-hint{margin:0 0 10px}.ie{display:grid;gap:10px}
+.ie-list{display:grid;gap:6px}.ie-count{color:var(--muted);font-size:12px}
+.ie-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 10px;border:1px solid var(--hair-2);border-radius:14px;background:var(--surface)}
+.ie-row:not(.on){background:transparent;border-style:dashed}.ie-row:not(.on) .ie-name{color:var(--muted)}
+.ie-main{display:flex;align-items:center;gap:10px;flex:1 1 220px;min-width:0;margin:0}
+.ie-main input[type=checkbox]{width:20px;height:20px;flex:none;accent-color:var(--accent);margin:0}
+.ie-name{flex:1;min-width:0;border:0;background:transparent;padding:6px 4px;font:inherit;font-size:14px;color:var(--ink);border-radius:8px}
+.ie-name:focus{outline:2px solid rgba(29,91,216,0.4);outline:2px solid color-mix(in srgb,var(--accent) 40%,transparent);background:var(--surface-2)}
+.ie-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-left:auto}
+.ie-seg{display:inline-flex;background:var(--seg);border-radius:99px;padding:2px}
+.ie-seg button{border:0;background:none;border-radius:99px;padding:6px 11px;font-size:12px;font-weight:600;color:var(--muted);min-height:30px}
+.ie-seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ie-num{display:inline-flex;align-items:center;gap:5px;margin:0;font-size:12px;color:var(--muted)}.ie-num input{width:58px;padding:6px 8px;min-height:32px}
+.ie-cam{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--hair-2);background:none;border-radius:99px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--muted);min-height:32px}
+.ie-cam svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+.ie-cam[aria-pressed=true]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.ie-del{border:0;background:none;color:var(--muted);font-size:18px;line-height:1;width:32px;height:32px;border-radius:50%}.ie-del:hover{background:var(--surface-2);color:var(--bad)}
+.ie-more{margin-top:4px}.ie-more>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);padding:6px 2px}.ie-more[open]>summary{margin-bottom:6px}.ie-more .ie-row{margin-bottom:6px}
+.ie-add{display:flex;gap:8px}.ie-add input{flex:1;min-width:0}
+.ie-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.ie-chip{display:inline-flex;align-items:center;gap:4px}
+.ie-chip button{border:0;background:none;color:var(--muted);font-size:15px;line-height:1;padding:0 2px}
+.ie-pick{display:grid;gap:4px;margin:0 0 12px;min-width:0}.ie-pick select{width:100%;min-width:0;max-width:100%;text-overflow:ellipsis}.ie-stay h4{margin:14px 0 8px;font-size:13px}
+@media(max-width:560px){.ie-ctl{margin-left:30px}}
 /* monthly reports */
 .rp-list{display:grid;gap:6px}.rp-row{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--hair-2);border-radius:14px;color:inherit;text-decoration:none;background:var(--surface)}
 .rp-row:hover{border-color:var(--accent)}.rp-row>div{display:grid;gap:1px;flex:1}.rp-row small{color:var(--muted);font-size:12px}.rp-row>svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:2}
@@ -1734,6 +1775,21 @@ const OPS=(()=>{
     'Fresh towels out','Toiletries refilled','AC, fans and lights off','Doors and windows locked','Damage or missing items checked'];
   const DEF_STOCK=[{name:'Bedsheets'},{name:'Pillow covers'},{name:'Towels'},{name:'Toiletry kits'},{name:'Toilet rolls'},
     {name:'TV working',type:'ok'},{name:'Wi-Fi working',type:'ok'},{name:'Geyser working',type:'ok'},{name:'First-aid kit',type:'ok'}];
+  /* suggestions shown unticked in Manager app setup (the admin ticks what applies, or adds their own) */
+  const PRESET_CHECK=[...DEF_CHECK,'Fridge emptied and wiped','Geyser and heaters off','Gas knob closed','Keys and remotes in place','Bin liners replaced',
+    'Mirrors and glass wiped','Balcony swept','Water bottles refilled','Mattress and pillows checked for stains'];
+  const PRESET_STOCK=[...DEF_STOCK,{name:'Hand wash'},{name:'Dishwash liquid'},{name:'Garbage bags'},{name:'Drinking water bottles'},{name:'Tea and coffee kits'},
+    {name:'Spare gas cylinder full',type:'ok'},{name:'Inverter working',type:'ok'},{name:'AC remote working',type:'ok'},{name:'Iron working',type:'ok'},{name:'Hair dryer working',type:'ok'}];
+  const DEF_REQ=['Extra towels','Extra blankets','Room cleaning','Drinking water','Toiletries refill','Gas cylinder','Extra mattress'];
+  const PRESET_REQ=[...DEF_REQ,'Extra pillows','Iron','Hair dryer','Room heater','Kettle','Hot water bottle','Firewood'];
+  /* an item: {name, type, expect|min, photo, off}. Checklist type tick|count (expect = the number there should be);
+     stock type count|ok (min = buy more below it). Old lists of plain text still work. */
+  const normCheck=x=>typeof x==='string'?{name:x.trim(),type:'tick'}:{...x,name:String((x&&x.name)||'').trim(),type:x&&x.type==='count'?'count':'tick'};
+  const normStock=x=>typeof x==='string'?parseItem(x):{...x,name:String((x&&x.name)||'').trim()};
+  const normReq=x=>typeof x==='string'?{name:x.trim()}:{...x,name:String((x&&x.name)||'').trim()};
+  const active=(arr,norm)=>{const out=[];arr.map(norm).forEach(it=>{if(it.name&&!it.off&&!out.some(o=>o.name===it.name))out.push(it)});return out};
+  /* is a checklist item done: ticked, or counted (and at least the expected number when one is set) */
+  const checkDone=(it,v)=>it.type==='count'?v!=null&&v!==''&&!isNaN(+v)&&(!it.expect||+v>=it.expect):v===true;
   /* settings: Settings rows ops.* / reviews.* over the client's defaults */
   function cfg(rows,client){const m={};(rows||[]).forEach(r=>{m[String(r.key)]=r.value});client=client||{};
     const num=(k,d)=>{const v=+m[k];return isFinite(v)&&m[k]!==''&&m[k]!=null?v:d};
@@ -1742,14 +1798,15 @@ const OPS=(()=>{
     return{start:String(m['ops.start_date']||client.ops_start||'2026-10-27').slice(0,10),grace:num('ops.checklist_grace_days',1),
       every:num('ops.stock_every_days',14),checkItems:items('ops.checkout_items')||DEF_CHECK,stockItems:items('ops.stock_items')||DEF_STOCK,
       stayItems:si&&typeof si==='object'&&!Array.isArray(si)?si:{},photoSlots:items('ops.photo_slots')||[],
+      reqItems:items('ops.guest_requests')||DEF_REQ,reqOpenMax:num('ops.guest_request_open_max',3),
       checkinTime:String(m['ops.checkin_time']||client.check_in_time||'13:00'),twoAdmin:num('ops.claim_two_admin_above',5000),
       cities:(()=>{const v=js(m['ops.cities']);return Array.isArray(v)?v.filter(x=>x&&x.name):[]})(),
       channels:list(m['reviews.channels']||'Airbnb'),window:num('reviews.window_days',14),lowAt:num('reviews.low_at',3)}}
   /* the common list plus what this stay (or the whole place it belongs to) adds */
   const parentOf=(pid,props)=>((props||[]).find(p=>list(p.includes).includes(pid))||{}).property_id||null;
   const extra=(c,pid,props,k)=>[...((c.stayItems[parentOf(pid,props)]||{})[k]||[]),...((c.stayItems[pid]||{})[k]||[])];
-  function checkItemsFor(c,pid,props){return[...new Set([...c.checkItems,...extra(c,pid,props,'check')])]}
-  function stockItemsFor(c,pid,props){const out=c.stockItems.slice();extra(c,pid,props,'stock').forEach(x=>{const it=typeof x==='string'?parseItem(x):x;if(!out.some(o=>o.name===it.name))out.push(it)});return out}
+  function checkItemsFor(c,pid,props){return active([...c.checkItems,...extra(c,pid,props,'check')],normCheck)}
+  function stockItemsFor(c,pid,props){return active([...c.stockItems,...extra(c,pid,props,'stock')],normStock)}
   /* "Bedsheets (min 12)" / "TV working (ok)" -> {name, min} / {name, type:'ok'} */
   function parseItem(x){x=String(x).trim();if(/\(ok\)$/i.test(x))return{name:x.replace(/\s*\(ok\)$/i,''),type:'ok'};const m=/^(.*?)\s*\(min\s*(\d+)\)$/i.exec(x);return m?{name:m[1],min:+m[2]}:{name:x}}
   const itemText=it=>it.name+(it.type==='ok'?' (ok)':it.min?` (min ${it.min})`:'');
@@ -1841,7 +1898,7 @@ const OPS=(()=>{
     return cats}
   /* arrival steps for a city (a local registration, say), from Manage › Properties › Cities */
   const cityStepsOf=(c,city)=>((c.cities||[]).find(x=>x.name===city)||{}).steps||[];
-  return{cityStepsOf,cfg,scope,checklists,stock,reviews,scorecards,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
+  return{cityStepsOf,cfg,scope,checklists,stock,reviews,scorecards,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,DEF_REQ,PRESET_CHECK,PRESET_STOCK,PRESET_REQ,normCheck,normStock,normReq,checkDone,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
 
 const EMPTY_DATA=()=>Object.fromEntries(Object.entries(SEED).map(([k,v])=>[k,Array.isArray(v)?[]:v]));  // the shape of the data, no rows
 </script>
@@ -2264,7 +2321,7 @@ function insights(v){
           return mine.length?h('small',{class:'ins-spend'},`${mLong(mk)}: ${mine.length} run${mine.length>1?'s':''} · ₹${sp.toFixed(2)} on AI`):null})()))),
     h('div',{class:'ins-run'},h('div',{class:'seg',role:'group','aria-label':'AI model'},INS_MODELS.map(([k,l])=>h('button',{'aria-pressed':pick===k,onclick:()=>{S.insModel=k;render()}},l))),
       h('small',{class:'ins-cost'},(INS_MODELS.find(x=>x[0]===pick)||[])[2]||''),
-      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},'Run new analysis'))));
+      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):!swOn('ai.insights')?h('span',{class:'pill p-mute',title:'Turn it on in Manage › Costs'},'AI insights are off'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},'Run new analysis'))));
   if(!M.generated_at){v.append(card('s12','AI insights',{},h('div',{class:'empty'},'Your first analysis will appear here: where prices can go up, which festivals to charge more for, and what to fix.')));return}
   /* what changed since the run before this one */
   {const idx=RUNS.findIndex(r=>r.id===I._runId),prev=idx>0?RUNS[idx-1].I:null;if(prev&&A.moves){const pm=new Set(((prev._ai||{}).moves||[]).map(m=>m.id||m.title)),nw=(A.moves||[]).filter(m=>!pm.has(m.id||m.title)).length;
@@ -3447,24 +3504,65 @@ function mgrPassword(u){const gen=()=>{const w='bcdfghjkmnpqrstvwxyz',v='aeiou',
     [h('button',{class:'btn',onclick:closeLayer},'Later'),h('button',{class:'btn primary',onclick:async ev=>{if(pw.value.length<8){err.hidden=false;err.textContent='Use at least 8 characters.';return}
       if(!live()){closeLayer();return toast('Passwords are set on the live sheet only')}ev.currentTarget.disabled=true;
       try{const r=await apiPost({action:'staff_password',match:{login:u.login},password:pw.value});closeLayer();toast(`Password set ✓${r.signed_out?' · signed out of '+r.signed_out+' device'+(r.signed_out>1?'s':''):''}`)}catch(e){ev.currentTarget.disabled=false;err.hidden=false;err.textContent='Not set: '+e.message}}},'Set password')])}
-function opsItemsEdit(){const c=OPSC(),lines=t=>t.value.split('\n').map(x=>x.trim()).filter(Boolean),ck=h('textarea',{rows:8,value:c.checkItems.join('\n')}),stk=h('textarea',{rows:8,value:c.stockItems.map(OPS.itemText).join('\n')}),
-    slots=h('textarea',{rows:4,value:c.photoSlots.join('\n'),placeholder:'e.g.\nBedroom\nBathroom\nKitchen'}),
-    every=h('input',{type:'number',min:7,max:60,value:c.every}),win=h('input',{type:'number',min:1,max:60,value:c.window}),chs=h('input',{value:c.channels.join(', ')}),start=h('input',{type:'date',value:c.start}),
-    two=h('input',{type:'number',min:0,step:500,value:c.twoAdmin}),cin=h('input',{type:'time',value:c.checkinTime});
+/* A tick-box list for Manager app setup: suggestions shown unticked, the admin's own items with ×; checklist and stock
+   items can ask for a count and a photo. kind: check | stock | req */
+function itemsEditor(kind,saved,presets){const norm=kind==='check'?OPS.normCheck:kind==='stock'?OPS.normStock:OPS.normReq;
+  const L=(saved||[]).map(norm).filter(x=>x.name),pre=new Set((presets||[]).map(p=>norm(p).name.toLowerCase()));
+  (presets||[]).map(norm).forEach(p=>{if(!L.some(x=>x.name.toLowerCase()===p.name.toLowerCase()))L.push({...p,off:true})});
+  const TYPES=kind==='check'?[['tick','Tick'],['count','Count']]:kind==='stock'?[['count','Count'],['ok','Yes / no']]:null;
+  const typeOf=it=>kind==='check'?(it.type==='count'?'count':'tick'):(it.type==='ok'?'ok':'count');
+  const box=h('div',{class:'ie-list'}),add=h('input',{placeholder:kind==='req'?'Add something guests can ask for':'Add your own item',maxlength:60,'aria-label':'New item'});
+  const row=it=>{const on=!it.off,ctl=[];
+    if(TYPES&&on){ctl.push(h('div',{class:'ie-seg',role:'group','aria-label':'How it is checked'},TYPES.map(([k,l])=>h('button',{type:'button','aria-pressed':typeOf(it)===k?'true':'false',onclick:()=>{it.type=kind==='check'?k:k==='ok'?'ok':undefined;draw()}},l))));
+      if(typeOf(it)==='count'){const key=kind==='check'?'expect':'min';
+        ctl.push(h('label',{class:'ie-num'},h('span',null,kind==='check'?'Should be':'Min'),h('input',{type:'number',inputmode:'numeric',min:0,max:999,value:it[key]??'',placeholder:'–','aria-label':(kind==='check'?'Expected number of ':'Minimum ')+it.name,
+          onchange:e=>{const v=e.target.value===''?null:Math.max(0,Math.round(+e.target.value));if(v==null)delete it[key];else it[key]=v}})))}
+      ctl.push(h('button',{type:'button',class:'ie-cam','aria-pressed':it.photo?'true':'false',title:'The manager must add a photo of this',onclick:()=>{it.photo=it.photo?undefined:true;draw()}},icon('img'),it.photo?'Photo needed':'Photo'))}
+    if(!pre.has(it.name.toLowerCase()))ctl.push(h('button',{type:'button',class:'ie-del','aria-label':'Remove '+it.name,onclick:()=>{L.splice(L.indexOf(it),1);draw()}},'×'));
+    return h('div',{class:'ie-row'+(on?' on':'')},h('label',{class:'ie-main'},h('input',{type:'checkbox',checked:on||null,onchange:e=>{it.off=e.target.checked?undefined:true;draw()}}),
+      h('input',{class:'ie-name',value:it.name,maxlength:60,'aria-label':'Item name',onchange:e=>{const v=e.target.value.trim();if(v&&!L.some(x=>x!==it&&x.name.toLowerCase()===v.toLowerCase()))it.name=v;else e.target.value=it.name}})),
+      ctl.length?h('div',{class:'ie-ctl'},...ctl):null)};
+  const draw=()=>{const n=L.filter(x=>!x.off).length;box.replaceChildren(...[h('small',{class:'ie-count'},`${n} in use · tick to use, untick to hide`),...L.filter(x=>!x.off).map(row),
+    L.some(x=>x.off)?h('details',{class:'ie-more',open:box.querySelector('.ie-more[open]')?true:null},h('summary',null,`Suggestions and hidden items (${L.filter(x=>x.off).length})`),...L.filter(x=>x.off).map(row)):null].filter(Boolean))};
+  const doAdd=()=>{const v=add.value.trim();if(!v)return;const dup=L.find(x=>x.name.toLowerCase()===v.toLowerCase());
+    if(dup){if(dup.off){dup.off=undefined;add.value='';draw()}else toast('Already in the list');return}L.push(norm(kind==='check'?v:{name:v}));add.value='';draw()};
+  add.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doAdd()}});draw();
+  return{el:h('div',{class:'ie'},box,h('div',{class:'ie-add'},add,h('button',{type:'button',class:'btn sm',onclick:doAdd},icon('plus'),'Add'))),
+    value:()=>L.filter(x=>x.name).map(x=>{const o={...x};Object.keys(o).forEach(k=>{if(o[k]===undefined)delete o[k]});return o})}}
+/* chips with × and an add box (photo rooms) */
+function chipEditor(saved,placeholder){const L=[...(saved||[])],box=h('div',{class:'ie-chips'}),add=h('input',{placeholder,maxlength:40,'aria-label':placeholder});
+  const draw=()=>box.replaceChildren(...L.map((x,i)=>h('span',{class:'chip-s ie-chip'},x,h('button',{type:'button','aria-label':'Remove '+x,onclick:()=>{L.splice(i,1);draw()}},'×'))),...(L.length?[]:[h('small',{class:'hint'},'None: any photos will do')]));
+  const doAdd=()=>{const v=add.value.trim();if(v&&!L.some(x=>x.toLowerCase()===v.toLowerCase()))L.push(v);add.value='';draw()};
+  add.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doAdd()}});draw();
+  return{el:h('div',{class:'ie'},box,h('div',{class:'ie-add'},add,h('button',{type:'button',class:'btn sm',onclick:doAdd},icon('plus'),'Add'))),value:()=>L.slice()}}
+function opsItemsEdit(){const c=OPSC();
+  const E={check:itemsEditor('check',c.checkItems,OPS.PRESET_CHECK),stock:itemsEditor('stock',c.stockItems,OPS.PRESET_STOCK),req:itemsEditor('req',c.reqItems,OPS.PRESET_REQ)};
   /* what one stay adds on top of the common lists (a whole place's extras apply to its flats too) */
   const SI=JSON.parse(JSON.stringify(c.stayItems)),props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>short(a.property).localeCompare(short(b.property)));
-  const sp=h('select',null,props.map(p=>h('option',{value:p.property_id},short(p.property)+(kidsOf(p.property_id).length?' (whole place)':'')))),sck=h('textarea',{rows:3,placeholder:'e.g. Pool cover on\nBonfire area cleared'}),sst=h('textarea',{rows:3,placeholder:'e.g. Pool towels (min 8)\nPool pump working (ok)'});
-  let cur=null;const keep=()=>{if(cur){const a=lines(sck),b=lines(sst);if(a.length||b.length)SI[cur]={check:a,stock:b};else delete SI[cur]}},show=()=>{keep();cur=sp.value;sck.value=((SI[cur]||{}).check||[]).join('\n');sst.value=((SI[cur]||{}).stock||[]).join('\n');cnt.textContent=Object.keys(SI).length?`${Object.keys(SI).length} stay${Object.keys(SI).length>1?'s':''} with extras`:''};
-  const cnt=h('small',{class:'pr-hint'});sp.addEventListener('change',show);show();
-  modal('Checklists, stock and reviews',h('div',{class:'form'},fld('Checkout checklist · every stay (one item per line)',ck,1),fld('Stock items · every stay (one per line; "(ok)" = yes / no; "(min 12)" = buy more below 12)',stk,1),
-      h('div',{class:'full oi-stay'},h('span',{class:'pr-lab'},'Extra items for one stay'),sp,fld('Checklist extras',sck,1),fld('Stock extras',sst,1),cnt),
-      fld('Photos asked for at each checklist (one room per line; empty = any photos)',slots,1),
+  const sp=h('select',{'aria-label':'Stay'},props.map(p=>h('option',{value:p.property_id},short(p.property)+(kidsOf(p.property_id).length?' (whole place)':'')+(SI[p.property_id]?' ·  has extras':'')))),stayBox=h('div',{class:'ie-stay'});
+  let cur=null,se=null,ss=null;const keep=()=>{if(cur&&se){const a=se.value().filter(x=>!x.off),b=ss.value().filter(x=>!x.off);if(a.length||b.length)SI[cur]={check:a,stock:b};else delete SI[cur]}};
+  const show=()=>{keep();cur=sp.value;se=itemsEditor('check',(SI[cur]||{}).check||[],[]);ss=itemsEditor('stock',(SI[cur]||{}).stock||[],[]);
+    stayBox.replaceChildren(h('h4',null,'Checklist extras'),se.el,h('h4',null,'Stock extras'),ss.el)};sp.addEventListener('change',show);show();
+  const rooms=chipEditor(c.photoSlots,'Add a room, e.g. Bathroom');
+  const every=h('input',{type:'number',min:7,max:60,value:c.every}),win=h('input',{type:'number',min:1,max:60,value:c.window}),chs=h('input',{value:c.channels.join(', ')}),start=h('input',{type:'date',value:c.start}),
+    two=h('input',{type:'number',min:0,step:500,value:c.twoAdmin}),cin=h('input',{type:'time',value:c.checkinTime}),rmax=h('input',{type:'number',min:1,max:10,value:c.reqOpenMax});
+  const P=t=>h('p',{class:'hint ie-hint'},t);
+  const panes={check:h('div',null,P('What the manager ticks after every check-out. Count: they type a number (e.g. towels, should be 6). Photo: they must add a photo of that item.'),E.check.el),
+    stock:h('div',null,P('What the manager counts at each stock check. Count with a Min: shows on To buy below it. Yes / no: anything “no” becomes an issue.'),E.stock.el),
+    req:h('div',null,P('The only things guests can ask for on WhatsApp during a stay. Each becomes a task for the stay’s manager. Anything else, the bot kindly says no and offers to pass a message to the team.'),E.req.el,
+      h('div',{class:'form'},fld('Open requests per stay at a time',rmax))),
+    stay:h('div',null,P('Extra items for one stay, on top of the lists above. A whole place’s extras apply to its flats too.'),h('label',{class:'ie-pick'},h('span',null,'Stay'),sp),stayBox),
+    more:h('div',{class:'form'},h('div',{class:'full'},h('span',{class:'pr-lab'},'Room photos at each checklist'),rooms.el),
       fld('Stock check every (days)',every),fld('Review window (days after check-out)',win),fld('Review platforms',chs),fld('Count from (date)',start),
-      fld('Claims above this (₹) need two admins',two),fld('Next guest’s check-in time (same-day cleanings)',cin)),
+      fld('Claims above this (₹) need two admins',two),fld('Next guest’s check-in time (same-day cleanings)',cin))};
+  let tab='check';const seg=h('div',{class:'seg ie-tabs',role:'tablist','aria-label':'Sections'}),pane=h('div',{class:'ie-pane'});
+  const drawTabs=()=>{seg.replaceChildren(...[['check','Checklist'],['stock','Stock'],['req','Guest requests'],['stay','One stay'],['more','Photos & timing']].map(([k,l])=>
+    h('button',{role:'tab','aria-selected':tab===k?'true':'false','aria-pressed':tab===k?'true':'false',onclick:()=>{tab=k;drawTabs()}},l)));pane.replaceChildren(panes[tab])};drawTabs();
+  modal('Manager app setup',h('div',{class:'ie-wrap'},seg,pane),
     [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:async()=>{keep();closeLayer();
-      const items=lines(ck),stock=lines(stk).map(OPS.parseItem);
-      await setSetting('ops.checkout_items',JSON.stringify(items),'Checklist saved');await setSetting('ops.stock_items',JSON.stringify(stock),'Stock items saved');
-      await setSetting('ops.stay_items',JSON.stringify(SI),'Stay extras saved');await setSetting('ops.photo_slots',JSON.stringify(lines(slots)),'Photo list saved');
+      await setSetting('ops.checkout_items',JSON.stringify(E.check.value()),'Checklist saved');await setSetting('ops.stock_items',JSON.stringify(E.stock.value()),'Stock items saved');
+      await setSetting('ops.guest_requests',JSON.stringify(E.req.value()),'Guest requests saved');await setSetting('ops.guest_request_open_max',String(Math.max(1,+rmax.value||3)),'Saved');
+      await setSetting('ops.stay_items',JSON.stringify(SI),'Stay extras saved');await setSetting('ops.photo_slots',JSON.stringify(rooms.value()),'Photo rooms saved');
       await setSetting('ops.stock_every_days',String(+every.value||14),'Saved');await setSetting('reviews.window_days',String(+win.value||14),'Saved');await setSetting('reviews.channels',chs.value,'Saved');await setSetting('ops.start_date',start.value,'Saved');
       await setSetting('ops.claim_two_admin_above',String(+two.value>=0?+two.value:5000),'Saved');await setSetting('ops.checkin_time',cin.value||'13:00','Saved')}},'Save')])}
 function opsTeam(v){const c=OPSC(),staff=rowsOf('staff'),mgrs=staff.filter(u=>String(u.role||'').toLowerCase()==='manager'),sc=OPS.scorecards(mgrs.filter(u=>String(u.active||'Yes').toLowerCase()!=='no'),{...S.data,props:S.data.props},TODAY,c);
@@ -3472,7 +3570,7 @@ function opsTeam(v){const c=OPSC(),staff=rowsOf('staff'),mgrs=staff.filter(u=>St
     return h('div',{class:'mg-card'+(off?' off':'')},h('div',{class:'mg-ch'},h('span',{class:'av',style:{background:avc(u.name||'M')}},ini(u.name||'M')),h('div',{class:'mg-cn'},h('b',null,u.name||'Manager'),h('small',null,[u.login?'login '+u.login:'no login yet',u.phone?phoneNice(u.phone):'no WhatsApp number',off?'switched off':null].filter(Boolean).join(' · ')))),
       h('div',{class:'mg-st'},st.length?st.map(x=>h('span',{class:'chip-s'},x)):h('span',{class:'hint'},'No stays assigned')),
       h('div',{class:'mg-ca'},h('button',{class:'btn sm',onclick:()=>mgrEdit(u)},icon('edit'),'Edit'),u.login?h('button',{class:'btn sm',onclick:()=>mgrPassword(u)},icon('key'),'Password'):null))};
-  v.append(card('s12','Managers',{hint:'they use the manager app only · never this dashboard',acts:[h('button',{class:'btn sm',onclick:opsItemsEdit},icon('list'),'Checklist & stock items'),h('button',{class:'btn sm primary',onclick:()=>mgrEdit(null)},icon('plus'),'Add manager')]},
+  v.append(card('s12','Managers',{hint:'they use the manager app only · never this dashboard',acts:[h('button',{class:'btn sm',onclick:opsItemsEdit},icon('list'),'Manager app setup'),h('button',{class:'btn sm primary',onclick:()=>mgrEdit(null)},icon('plus'),'Add manager')]},
     h('div',{class:'mg-link'},icon('info'),h('span',null,'Manager app link: ',h('b',null,MGR_URL()),' · they sign in with their login id and the password you set.'),h('button',{class:'btn sm ghost',onclick:async()=>{try{await navigator.clipboard.writeText(MGR_URL());toast('Link copied ✓')}catch(e){toast(MGR_URL())}}},icon('copy'),'Copy')),
     mgrs.length?h('div',{class:'mg-grid'},mgrs.map(card_)):h('div',{class:'empty'},'No managers yet. Add one, assign their stays and set a password; they get their check-ins, check-outs, checklists, stock checks, reviews and guest alerts on their phone.')));
   if(sc.length){const cell=(a,b,c_)=>h('td',{class:'r'},h('span',{class:'sc-ok num'},a),' / ',h('span',{class:'sc-bad num'},b),c_!=null?h('small',{class:'hint'},` · ${c_} due`):null);
@@ -3494,7 +3592,8 @@ function opsTeam(v){const c=OPSC(),staff=rowsOf('staff'),mgrs=staff.filter(u=>St
             return h('td',{class:'r num'+(it.min&&+v_<it.min?' sc-bad':'')},v_==null?'–':v_,nx!=null&&v_!=null&&+v_!==+nx?h('small',{class:'hint'},+v_>+nx?' ↑':' ↓'):null)})))))}))):null))}
   const recentC=sortBy(rowsOf('checklists').filter(r=>fP(D.P[r.property_id])),['done_at',-1]).slice(0,12);
   if(recentC.length)v.append(card('s12','Latest checklists',{hint:'from the manager app'},h('div',{class:'cl-list'},recentC.map(r=>{const items=OPS.js(r.items)||{},n=Object.keys(items).length,ok=Object.values(items).filter(Boolean).length;
-    return h('div',{class:'cl-row'},h('div',{class:'cl-t'},h('b',null,`${short((D.P[r.property_id]||{}).property||r.property_id)} · ${r.booking_id||''}`),h('span',null,`${r.by_name||r.by||'manager'} · ${r.done_at?whenL(r.done_at):''} · ${ok}/${n} ticked`),r.notes?h('small',null,r.notes):null),
+    return h('div',{class:'cl-row'},h('div',{class:'cl-t'},h('b',null,`${short((D.P[r.property_id]||{}).property||r.property_id)} · ${r.booking_id||''}`),h('span',null,`${r.by_name||r.by||'manager'} · ${r.done_at?whenL(r.done_at):''} · ${ok}/${n} done`),r.notes?h('small',null,r.notes):null,
+      (()=>{const cm=Object.entries(OPS.js(r.item_notes)||{});return cm.length?h('small',{class:'cl-cm'},cm.map(([k,v])=>`${k}: ${v}`).join(' · ')):null})()),
       h('div',{class:'cl-pics'},...OPS.list(OPS.js(r.photos)||r.photos).slice(0,4).map(u=>h('a',{href:u,target:'_blank',rel:'noopener',class:'cl-pic'},h('img',{src:u,alt:'Photo',loading:'lazy'})))),h('span'))}))))}
 /* ============ BOOKINGS ============ */
 function bookings(v){
@@ -3706,7 +3805,7 @@ const rowsOf=k=>(S.data&&S.data[k])||[];
 /* checklist / stock / review rules (Settings ops.* and reviews.*) */
 const OPSC=()=>OPS.cfg(rowsOf('ops'),CLIENT);
 /* one Settings row that admins may change (ai.* ops.* reviews.* pricing.*): update it, or add it */
-async function setSetting(key,value,msg){const grp=/^ai\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),row=arr.find(r=>r.key===key),old=row?row.value:undefined;
+async function setSetting(key,value,msg){const grp=/^(ai|msgs|costs)\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),row=arr.find(r=>r.key===key),old=row?row.value:undefined;
   if(row)row.value=value;else arr.push({key,value});render();
   if(!live()){toast((msg||'Saved')+' · demo only');return true}
   try{let r=await apiPost({action:'update',tab:'settings',match:{key},fields:{value}});if(!r.updated)await apiPost({action:'append',tab:'settings',row:{key,value}});toast((msg||'Saved')+' ✓');return true}
@@ -5289,11 +5388,65 @@ function manageHistory(v,tabs){hiLoad();
       h('button',{class:'btn icon sm','aria-label':'Refresh history',onclick:()=>{HI.rows=null;hiLoad(true);render()}},icon('repeat')))),
     body));
   return pendingBar(v)}
+/* ---- Manage › Costs: AI and WhatsApp spend, and the switches that stop each one ---- */
+const aiVal=k=>{const r=(S.data.ai||[]).find(x=>x.key===k);return r?String(r.value??'').trim():''};
+const swOn=k=>!/^(off|no|false|0)$/i.test(aiVal(k));
+const COST_SW=[['ai.guest_replies','AI replies to guests on WhatsApp','Off: guests get “someone from our team will reply shortly” and you get their message to answer yourself. Buttons and menus keep working.','ai'],
+  ['ai.insights','AI insights','The daily analysis and the Run new analysis button, on every dashboard and login.','ai'],
+  ['msgs.manager_alerts','WhatsApp alerts to managers','Guest issues, requests and add-ons for their stays. Off: they see them in the manager app only.','wa'],
+  ['msgs.guest_reminders','Reminders to guests','Before arrival, the evening before check-out, the review ask. The check-in door code always goes.','wa'],
+  ['msgs.owner_digest','Morning summary to owners','The 8 am WhatsApp summary.','wa']];
+const COST_RATES=[['costs.wa_rate','WhatsApp ₹ per message (after the free ones)',0.115],['costs.wa_free','Free messages a month',1000],['costs.wa_tpl_rate','WhatsApp ₹ per template message',0.145],
+  ['costs.gst_pct','GST on WhatsApp %',18],['costs.hosting','Hosting ₹ a month',650],['costs.markup_pct','Markup on the total %',5]];
+const rate=k=>{const d=COST_RATES.find(x=>x[0]===k)[2],v=aiVal(k);return v!==''&&isFinite(+v)?+v:d};
+function costMonth(mk){const bs=rowsOf('botstats').filter(r=>String(r.day).slice(0,7)===mk),t=k=>sum(bs,r=>+r[k]||0),mu=1+rate('costs.markup_pct')/100;
+  const runs=insRuns().runs.map(r=>r.I._meta||{}).filter(m=>String(m.generated_at||'').slice(0,7)===mk&&m.cost_inr!=null);
+  const ai={replies:t('ai_replies'),calls:t('ai_calls'),tin:t('ai_in_tok'),tout:t('ai_out_tok'),inr:t('ai_cost_inr')},ins={runs,inr:sum(runs,m=>+m.cost_inr||0)};
+  const who=['guest','owner','manager'].map(k=>({k,all:t('wa_'+k),tpl:t('wa_tpl_'+k)})),all=sum(who,x=>x.all),tpl=sum(who,x=>x.tpl),free=all-tpl;
+  const waBase=Math.max(0,free-rate('costs.wa_free'))*rate('costs.wa_rate')+tpl*rate('costs.wa_tpl_rate'),wa=waBase*(1+rate('costs.gst_pct')/100)*mu;
+  const host=rate('costs.hosting')*mu,days=new Set(bs.map(r=>String(r.day).slice(0,10))).size;
+  return{bs,days,ai,ins,who,all,tpl,free,wa,host,total:ai.inr+ins.inr+wa+host}}
+function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.costM,c=costMonth(mk),ms=[];for(let k=TODAY.slice(0,7),i=0;i<12;i++,k=prevM(k))ms.push(k);
+  const r2=n=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const pick=h('select',{class:'mg-pick','aria-label':'Month',onchange:e=>{S.costM=e.target.value;render()}},ms.map(k=>h('option',{value:k,selected:k===mk||null},mLong(k)+(k===TODAY.slice(0,7)?' (so far)':''))));
+  const tile=(l,val,sub)=>h('div',{class:'cs-tile'},h('span',null,l),h('b',{class:'num'},val),sub?h('small',null,sub):null);
+  v.append(card('s12','Costs',{hint:`what the AI and WhatsApp cost · AI at the day’s dollar rate · ${rate('costs.markup_pct')}% markup on everything`,acts:[tabs]},
+    h('div',{class:'cs-head'},pick,c.days?h('small',{class:'hint'},`${c.days} day${c.days>1?'s':''} of bot counters`):h('small',{class:'hint'},'No bot counters for this month yet')),
+    h('div',{class:'cs-tiles'},tile('Total',r2(c.total),'AI + WhatsApp + hosting'),
+      tile('AI replies to guests',r2(c.ai.inr),c.ai.replies?`${c.ai.replies.toLocaleString('en-IN')} replies · ${r2(c.ai.inr/c.ai.replies)} each`:'no AI replies'),
+      tile('AI insights',r2(c.ins.inr),`${c.ins.runs.length} run${c.ins.runs.length===1?'':'s'}`),
+      tile('WhatsApp',r2(c.wa),`${c.all.toLocaleString('en-IN')} messages · estimate`),tile('Hosting',r2(c.host),'fixed'))));
+  /* AI */
+  v.append(card('s6','AI chatbot',{hint:'Claude answers typed messages; buttons and menus use no AI'},h('div',{class:'cs-kv'},
+    ...[['Replies sent',c.ai.replies.toLocaleString('en-IN')],['AI calls (a reply can use a few)',c.ai.calls.toLocaleString('en-IN')],['Tokens read · written',`${c.ai.tin.toLocaleString('en-IN')} · ${c.ai.tout.toLocaleString('en-IN')}`],
+      ['Cost',r2(c.ai.inr)],['Per reply',c.ai.replies?r2(c.ai.inr/c.ai.replies):'–'],['Per day',c.days?r2(c.ai.inr/c.days):'–']].map(([k,x])=>h('div',null,h('span',null,k),h('b',{class:'num'},x)))),
+    h('p',{class:'hint',style:{margin:'10px 0 0'}},'The monthly report PDF uses no AI.')));
+  v.append(card('s6','AI insights runs',{hint:'each analysis, its model and cost'},c.ins.runs.length?h('div',{class:'cs-kv'},
+    c.ins.runs.slice().reverse().map(m=>h('div',null,h('span',null,`${m.generated_at?whenL(m.generated_at):'Run'} · ${insName(m.model)}${m.batch?' · batch':''}`),h('b',{class:'num'},r2(m.cost_inr))))):h('div',{class:'empty'},'No runs this month.')));
+  /* WhatsApp */
+  const wl={guest:'Guests',owner:'Owners',manager:'Managers'};
+  v.append(card('s12','WhatsApp messages',{hint:`counted as the bot sends them · Meta bills your WhatsApp account; check the figures on its bill`},
+    h('div',{class:'tbl-wrap'},h('table',{class:'tbl cs-t'},h('thead',null,h('tr',null,h('th',null,'To'),h('th',{class:'r'},'Messages'),h('th',{class:'r'},'of which templates'))),
+      h('tbody',null,c.who.map(x=>h('tr',null,h('td',null,wl[x.k]),h('td',{class:'r num'},x.all.toLocaleString('en-IN')),h('td',{class:'r num'},x.tpl.toLocaleString('en-IN')))),
+        h('tr',{class:'hl'},h('td',null,'All'),h('td',{class:'r num'},c.all.toLocaleString('en-IN')),h('td',{class:'r num'},c.tpl.toLocaleString('en-IN')))))),
+    h('p',{class:'hint',style:{margin:'10px 0 0'}},`${Math.min(c.free,rate('costs.wa_free')).toLocaleString('en-IN')} of ${rate('costs.wa_free').toLocaleString('en-IN')} free messages used · then ₹${rate('costs.wa_rate')} each, templates ₹${rate('costs.wa_tpl_rate')}, plus ${rate('costs.gst_pct')}% GST · estimate ${r2(c.wa)}`)));
+  /* switches */
+  const swRow=([k,l,d,grp])=>{const on=swOn(k);return h('div',{class:'cs-sw'+(on?'':' off')},h('div',null,h('b',null,l),h('small',null,d)),
+    h('button',{class:'tgl',role:'switch','aria-checked':on?'true':'false','aria-label':l,onclick:()=>{const go=()=>setSetting(k,on?'off':'on',`${l}: ${on?'off':'on'}`);
+      if(on&&k==='ai.guest_replies')confirmBox('Turn off AI replies?','Guests who type a question get a holding line, and you get their message to answer yourself on WhatsApp. Turn it back on here any time.','Turn off',true,go);else go()}},h('i')))};
+  v.append(card('s12','Switches',{hint:'stop a cost at once · applies to every dashboard, login and the bot'},h('div',{class:'cs-sws'},
+    h('h4',null,'AI'),...COST_SW.filter(x=>x[3]==='ai').map(swRow),h('h4',null,'WhatsApp messages'),...COST_SW.filter(x=>x[3]==='wa').map(swRow))));
+  /* rates */
+  const inputs=COST_RATES.map(([k,l])=>[k,h('input',{type:'number',step:'any',min:0,value:rate(k),'aria-label':l})]);
+  v.append(card('s12','Rates',{hint:'used for the WhatsApp estimate, hosting and the markup · the AI uses Anthropic’s prices at the day’s dollar rate',
+    acts:[h('button',{class:'btn sm primary',onclick:async()=>{for(const [k,i] of inputs)if(String(+i.value)!==String(rate(k)))await setSetting(k,String(+i.value||0),'Rates saved')}},'Save rates')]},
+    h('div',{class:'form cs-rates'},inputs.map(([k,i])=>fld(COST_RATES.find(x=>x[0]===k)[1],i)))));
+  return pendingBar(v)}
 function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at),trashE=(S.data.expenses||[]).map(e=>ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e).filter(e=>e.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['costs','Costs',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();pushHash();render();requestAnimationFrame(()=>document.querySelector('.mg-tabs [aria-selected=true]')?.scrollIntoView({block:'nearest',inline:'center'}))}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
@@ -5302,6 +5455,7 @@ function manage(v){
   if(MG.sec==='pricing')return managePricing(v,tabs);
   if(MG.sec==='expenses')return manageExpenses(v,tabs);
   if(MG.sec==='history')return manageHistory(v,tabs);
+  if(MG.sec==='costs')return manageCosts(v,tabs);
   if(MG.sec==='trash'){
     const list=sortBy(trash,['deleted_at',-1]);
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);

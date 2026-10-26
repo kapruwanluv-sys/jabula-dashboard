@@ -70,7 +70,36 @@ main{display:grid;gap:14px;padding:14px max(16px,env(safe-area-inset-right,0px))
 @keyframes sp{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.spin{animation:none}}
 /* round 2: urgent card, outbox, ratings, check-in info, language */
 .card.urgent{border-color:rgba(218,158,158,1.0);border-color:color-mix(in srgb,var(--bad) 45%,var(--hair));background:rgba(253,247,247,1.0);background:color-mix(in srgb,var(--bad) 4%,#fff)}.card.urgent h2 svg{width:18px;height:18px;fill:none;stroke:var(--bad);stroke-width:2}
-.badge.warn{background:var(--warn)}.card.tasks{border-color:rgba(165,189,237,1.0);border-color:color-mix(in srgb,var(--accent) 35%,var(--hair))}.card.tasks .t span{white-space:normal;overflow:visible}.card.tasks h2 svg{width:18px;height:18px;fill:none;stroke:var(--accent);stroke-width:2}.row .acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.badge.warn{background:var(--warn)}
+/* checklist / stock: one card per item */
+.prog{display:grid;gap:5px}.prog-b{height:8px;border-radius:99px;background:var(--hair-2);overflow:hidden}.prog-b i{display:block;height:100%;width:0;border-radius:99px;background:var(--ok);transition:width .25s}
+.prog small{color:var(--muted);font-size:12px;font-weight:600}
+.ci-list{display:grid;gap:8px}
+.ci{display:grid;gap:8px;padding:10px 12px;border-radius:16px;border:1px solid var(--hair-2);background:var(--surface);transition:border-color .2s,background .2s}
+.ci.on{border-color:rgba(128,188,174,1.0);border-color:color-mix(in srgb,var(--ok) 45%,var(--hair-2));background:rgba(241,248,245,1.0);background:color-mix(in srgb,var(--ok) 6%,#fff)}
+.ci.bad{border-color:rgba(201,163,108,1.0);border-color:color-mix(in srgb,var(--warn) 55%,var(--hair-2));background:rgba(250,245,237,1.0);background:color-mix(in srgb,var(--warn) 7%,#fff)}
+.ci.need{box-shadow:inset 3px 0 0 var(--warn)}
+.ci-top{display:flex;align-items:center;gap:12px}.ci-t{flex:1;min-width:0;display:grid;gap:1px}.ci-t b{font-size:14.5px;font-weight:600;line-height:1.3}
+.ci-t small{color:var(--muted);font-size:11.5px}.ci-t .ci-req{color:var(--warn);font-weight:650}
+.ci.count .ci-top,.ci.yesno .ci-top{flex-wrap:wrap}.ci.count .ci-t,.ci.yesno .ci-t{order:-1;flex-basis:calc(100% - 100px)}
+.ci-acts{display:flex;gap:6px;flex:none}
+.ci-b{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid var(--hair-2);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+.ci-b svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+.ci-b.has{color:var(--accent);border-color:var(--accent)}.ci-b b{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;display:grid;place-items:center;padding:0 4px}
+.ci.need .ci-b:first-of-type+.ci-b{border-color:var(--warn);color:var(--warn)}
+.tk{width:44px;height:44px;flex:none;border-radius:50%;border:2px solid var(--hair-2);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:transparent;transition:all .15s}
+.tk svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.tk[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#fff}
+.stp{display:inline-flex;align-items:center;border:1px solid var(--hair-2);border-radius:14px;overflow:hidden;background:var(--surface)}
+.stp button{width:44px;height:44px;border:0;background:var(--surface-2);font-size:22px;font-weight:600;cursor:pointer;color:var(--ink)}
+.stp input{width:58px;height:44px;border:0;text-align:center;font-size:17px;font-weight:650;padding:0;-moz-appearance:textfield;background:transparent}
+.stp input::-webkit-inner-spin-button{-webkit-appearance:none}
+.ci .yn button{min-height:44px;min-width:58px}
+.ci-note{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--hair-2);font:inherit;font-size:14px}
+.ci-pics{display:flex;gap:6px;flex-wrap:wrap}.ci-pics:empty{display:none}
+.ci-th{position:relative}.ci-th img{width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid var(--hair-2);display:block}
+.ci-th button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}
+h4.sub{margin:6px 0 0;font-size:14px}.card.tasks{border-color:rgba(165,189,237,1.0);border-color:color-mix(in srgb,var(--accent) 35%,var(--hair))}.card.tasks .t span{white-space:normal;overflow:visible}.card.tasks h2 svg{width:18px;height:18px;fill:none;stroke:var(--accent);stroke-width:2}.row .acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .info{margin:0 0 6px;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-size:12.5px}.info summary{cursor:pointer;font-weight:650;color:var(--accent)}.info p{margin:6px 0 0}
 .stars{display:flex;gap:6px}.stars button{border:0;background:none;font-size:36px;line-height:1;color:var(--hair-2);cursor:pointer;padding:2px}.stars button[aria-pressed=true]{color:#f5a623}
 .stats.two{grid-template-columns:repeat(2,1fr)}.cnt span small{display:block;color:var(--muted);font-size:11.5px;font-weight:500}.cnt .lowm{color:var(--warn);font-weight:650}
@@ -94,6 +123,21 @@ const OPS=(()=>{
     'Fresh towels out','Toiletries refilled','AC, fans and lights off','Doors and windows locked','Damage or missing items checked'];
   const DEF_STOCK=[{name:'Bedsheets'},{name:'Pillow covers'},{name:'Towels'},{name:'Toiletry kits'},{name:'Toilet rolls'},
     {name:'TV working',type:'ok'},{name:'Wi-Fi working',type:'ok'},{name:'Geyser working',type:'ok'},{name:'First-aid kit',type:'ok'}];
+  /* suggestions shown unticked in Manager app setup (the admin ticks what applies, or adds their own) */
+  const PRESET_CHECK=[...DEF_CHECK,'Fridge emptied and wiped','Geyser and heaters off','Gas knob closed','Keys and remotes in place','Bin liners replaced',
+    'Mirrors and glass wiped','Balcony swept','Water bottles refilled','Mattress and pillows checked for stains'];
+  const PRESET_STOCK=[...DEF_STOCK,{name:'Hand wash'},{name:'Dishwash liquid'},{name:'Garbage bags'},{name:'Drinking water bottles'},{name:'Tea and coffee kits'},
+    {name:'Spare gas cylinder full',type:'ok'},{name:'Inverter working',type:'ok'},{name:'AC remote working',type:'ok'},{name:'Iron working',type:'ok'},{name:'Hair dryer working',type:'ok'}];
+  const DEF_REQ=['Extra towels','Extra blankets','Room cleaning','Drinking water','Toiletries refill','Gas cylinder','Extra mattress'];
+  const PRESET_REQ=[...DEF_REQ,'Extra pillows','Iron','Hair dryer','Room heater','Kettle','Hot water bottle','Firewood'];
+  /* an item: {name, type, expect|min, photo, off}. Checklist type tick|count (expect = the number there should be);
+     stock type count|ok (min = buy more below it). Old lists of plain text still work. */
+  const normCheck=x=>typeof x==='string'?{name:x.trim(),type:'tick'}:{...x,name:String((x&&x.name)||'').trim(),type:x&&x.type==='count'?'count':'tick'};
+  const normStock=x=>typeof x==='string'?parseItem(x):{...x,name:String((x&&x.name)||'').trim()};
+  const normReq=x=>typeof x==='string'?{name:x.trim()}:{...x,name:String((x&&x.name)||'').trim()};
+  const active=(arr,norm)=>{const out=[];arr.map(norm).forEach(it=>{if(it.name&&!it.off&&!out.some(o=>o.name===it.name))out.push(it)});return out};
+  /* is a checklist item done: ticked, or counted (and at least the expected number when one is set) */
+  const checkDone=(it,v)=>it.type==='count'?v!=null&&v!==''&&!isNaN(+v)&&(!it.expect||+v>=it.expect):v===true;
   /* settings: Settings rows ops.* / reviews.* over the client's defaults */
   function cfg(rows,client){const m={};(rows||[]).forEach(r=>{m[String(r.key)]=r.value});client=client||{};
     const num=(k,d)=>{const v=+m[k];return isFinite(v)&&m[k]!==''&&m[k]!=null?v:d};
@@ -102,14 +146,15 @@ const OPS=(()=>{
     return{start:String(m['ops.start_date']||client.ops_start||'2026-10-27').slice(0,10),grace:num('ops.checklist_grace_days',1),
       every:num('ops.stock_every_days',14),checkItems:items('ops.checkout_items')||DEF_CHECK,stockItems:items('ops.stock_items')||DEF_STOCK,
       stayItems:si&&typeof si==='object'&&!Array.isArray(si)?si:{},photoSlots:items('ops.photo_slots')||[],
+      reqItems:items('ops.guest_requests')||DEF_REQ,reqOpenMax:num('ops.guest_request_open_max',3),
       checkinTime:String(m['ops.checkin_time']||client.check_in_time||'13:00'),twoAdmin:num('ops.claim_two_admin_above',5000),
       cities:(()=>{const v=js(m['ops.cities']);return Array.isArray(v)?v.filter(x=>x&&x.name):[]})(),
       channels:list(m['reviews.channels']||'Airbnb'),window:num('reviews.window_days',14),lowAt:num('reviews.low_at',3)}}
   /* the common list plus what this stay (or the whole place it belongs to) adds */
   const parentOf=(pid,props)=>((props||[]).find(p=>list(p.includes).includes(pid))||{}).property_id||null;
   const extra=(c,pid,props,k)=>[...((c.stayItems[parentOf(pid,props)]||{})[k]||[]),...((c.stayItems[pid]||{})[k]||[])];
-  function checkItemsFor(c,pid,props){return[...new Set([...c.checkItems,...extra(c,pid,props,'check')])]}
-  function stockItemsFor(c,pid,props){const out=c.stockItems.slice();extra(c,pid,props,'stock').forEach(x=>{const it=typeof x==='string'?parseItem(x):x;if(!out.some(o=>o.name===it.name))out.push(it)});return out}
+  function checkItemsFor(c,pid,props){return active([...c.checkItems,...extra(c,pid,props,'check')],normCheck)}
+  function stockItemsFor(c,pid,props){return active([...c.stockItems,...extra(c,pid,props,'stock')],normStock)}
   /* "Bedsheets (min 12)" / "TV working (ok)" -> {name, min} / {name, type:'ok'} */
   function parseItem(x){x=String(x).trim();if(/\(ok\)$/i.test(x))return{name:x.replace(/\s*\(ok\)$/i,''),type:'ok'};const m=/^(.*?)\s*\(min\s*(\d+)\)$/i.exec(x);return m?{name:m[1],min:+m[2]}:{name:x}}
   const itemText=it=>it.name+(it.type==='ok'?' (ok)':it.min?` (min ${it.min})`:'');
@@ -201,7 +246,7 @@ const OPS=(()=>{
     return cats}
   /* arrival steps for a city (a local registration, say), from Manage › Properties › Cities */
   const cityStepsOf=(c,city)=>((c.cities||[]).find(x=>x.name===city)||{}).steps||[];
-  return{cityStepsOf,cfg,scope,checklists,stock,reviews,scorecards,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
+  return{cityStepsOf,cfg,scope,checklists,stock,reviews,scorecards,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,DEF_REQ,PRESET_CHECK,PRESET_STOCK,PRESET_REQ,normCheck,normStock,normReq,checkDone,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
 
 /* ============ basics ============ */
 const $=s=>document.querySelector(s);
@@ -209,7 +254,7 @@ function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Obj
   k.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)))});return e}
 const NS='http://www.w3.org/2000/svg';
 const ICO={today:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4',check:'M5 12.5l4.5 4.5L19 7.5',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',
-  wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',bell:'M6 16V11a6 6 0 1112 0v5l1.5 2h-15zM10 20a2 2 0 004 0',menu:'M4 7h16M4 12h16M4 17h16',sync:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',
+  wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',bell:'M6 16V11a6 6 0 1112 0v5l1.5 2h-15zM10 20a2 2 0 004 0',menu:'M4 7h16M4 12h16M4 17h16',cam:'M4 8h3l2-3h6l2 3h3v11H4zM12 16.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z',note:'M4 5h16v11H9l-5 4z',tick:'M5 12.5l4.5 4.5L19 7.5',sync:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',
   cloud:'M7 18h10a4 4 0 00.5-8 6 6 0 00-11.5 1.5A3.3 3.3 0 007 18z',clock:'M12 7v5l3 2M12 21a9 9 0 110-18 9 9 0 010 18z',key:'M14 10a4 4 0 11-4-4M14 10l7 7-2 2-2-2-1 1-2-2'};
 const icon=k=>{const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');const p=document.createElementNS(NS,'path');p.setAttribute('d',ICO[k]);s.append(p);return s};
 const store={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -231,10 +276,14 @@ const HI={'Today':'आज','Checklists':'चेकलिस्ट','Stock':'स�
   "What's new":'नया क्या है','Mark all seen':'सब देख लिया','Nothing new since you last looked.':'पिछली बार के बाद कुछ नया नहीं।','My expense claims':'मेरे खर्च क्लेम','My money':'मेरा पैसा','Waiting':'प्रतीक्षा में',
   'Paid back this month':'इस महीने वापस मिला','Not approved':'मंज़ूर नहीं','Approved':'मंज़ूर','Settled':'चुकता','Issues at your stays':'आपकी प्रॉपर्टी की समस्याएँ','waiting to send':'भेजना बाकी',
   'Saved on the phone · sends when online':'फ़ोन में सेव · नेटवर्क आने पर भेजेंगे','Language':'भाषा','Rating':'रेटिंग','What the guest wrote (optional)':'मेहमान ने क्या लिखा (वैकल्पिक)','Save rating':'रेटिंग सेव करें',
-  'Stock checks':'स्टॉक जाँच','Guest requests':'मेहमान की माँगें','On it':'कर रहे हैं','Checkout checklists':'चेकआउट चेकलिस्ट','Loading your stays…':'आपकी प्रॉपर्टी लोड हो रही है…','min':'कम से कम','last':'पिछली बार'};
+  'Stock checks':'स्टॉक जाँच','Add a comment':'टिप्पणी जोड़ें','Add a photo':'फ़ोटो जोड़ें','Photo needed':'फ़ोटो ज़रूरी','Remove photo':'फ़ोटो हटाएँ','of':'में से','done':'पूरा',
+  'should be':'होना चाहिए','Room photos':'कमरों की फ़ोटो','not done':'नहीं हुआ','Add a photo of':'इसकी फ़ोटो जोड़ें','Fill in':'भरें','Other photos (optional)':'अन्य फ़ोटो (वैकल्पिक)','Guest requests':'मेहमान की माँगें','On it':'कर रहे हैं','Checkout checklists':'चेकआउट चेकलिस्ट','Loading your stays…':'आपकी प्रॉपर्टी लोड हो रही है…','min':'कम से कम','last':'पिछली बार'};
 let LANG=store.get('mg_lang')||'en';const T=s=>LANG==='hi'&&HI[s]||s;
 /* ============ the Register (same Google Sheet as the dashboard and the WhatsApp bot) ============ */
 const S={key:store.get('mg_session')||'',me:store.get('mg_me')||null,d:store.get('mg_cache')||null,tab:'today',busy:false,q:0};
+/* a WhatsApp alert links straight to a tab: .../manager/#issues */
+const hashTab=()=>{const k=location.hash.slice(1);return['today','check','stock','reviews','issues'].includes(k)?k:null};
+if(hashTab())S.tab=hashTab();addEventListener('hashchange',()=>{const k=hashTab();if(k&&k!==S.tab){S.tab=k;render();scrollTo(0,0)}});
 async function api(body){let r;try{r=await fetch(CLIENT.api_url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.key,device:'Manager app',...body})})}
   catch(e){const x=new Error('offline');x.offline=true;throw x}
   let j;try{j=await r.json()}catch(e){const x=new Error('offline');x.offline=true;throw x}if(j.error){const x=new Error(j.error);x.server=true;throw x}return j}
@@ -275,7 +324,7 @@ function loginScreen(msg){const id=h('input',{autocomplete:'username',autocapita
   const f=h('form',{class:'form',onsubmit:async e=>{e.preventDefault();if(!id.value.trim()||!pw.value){err.hidden=false;err.textContent='Enter your login id and password.';return}go.disabled=true;go.textContent=T('Checking…');
     try{const r=await fetch(CLIENT.api_url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login_pw',login:id.value.trim(),password:pw.value,device:'Manager app · '+(navigator.platform||'phone')})}),j=await r.json();
       if(!j.ok){go.disabled=false;go.textContent=T('Sign in');err.hidden=false;err.textContent=j.error==='locked'?`Too many tries. Try again in ${j.wait_min||15} minutes.`:j.error==='wrong_login'?'Login id or password is wrong.':j.error||'Sign-in failed.';return}
-      S.key=j.session;S.me=j.user;store.set('mg_session',j.session);store.set('mg_me',j.user);S.tab='today';await load()}
+      S.key=j.session;S.me=j.user;store.set('mg_session',j.session);store.set('mg_me',j.user);S.tab=hashTab()||'today';await load()}
     catch(x){go.disabled=false;go.textContent=T('Sign in');err.hidden=false;err.textContent='Couldn’t reach the sheet. Check the connection.'}}},h('label',null,T('Login id'),id),h('label',null,T('Password'),pw),err,go);
   $('#app').replaceChildren(h('div',{class:'login'},h('div',{class:'card'},CLIENT.logo?h('img',{src:'../'+CLIENT.logo.dark,alt:CLIENT.brand,style:{height:'34px',justifySelf:'start'},onerror:e=>e.target.remove()}):null,
     h('h1',null,'Manager ',h('em',null,'app')),h('p',{class:'hint'},`${CLIENT.brand||''} · your stays, check-ins, checklists and reviews. Your admin gives you the login id and password.`),f,langBtn())))}
@@ -383,34 +432,61 @@ function picker(list,label,slot){const box=h('div',{class:'pics'}),fi=h('input',
   const draw=()=>box.replaceChildren(...mine().map(x=>h('img',{src:x.preview,alt:'Photo'})),h('button',{type:'button',class:'addpic','aria-label':label||'Add photo',onclick:()=>fi.click()},'+'),fi);
   fi.addEventListener('change',async()=>{for(const f of fi.files){try{const b64=await shrink(f);list.push({b64,preview:'data:image/jpeg;base64,'+b64,slot:slot||null})}catch(e){toast('That file isn’t a photo')}}fi.value='';draw()});draw();return box}
 const strip=list=>list.map(x=>({b64:x.b64,slot:x.slot||null}));
-function checklistForm(b){const c=C(),items=OPS.checkItemsFor(c,b.property_id,S.d.props),slots=c.photoSlots,state={},photos=[],notes=h('textarea',{rows:3,placeholder:'Anything to report? (optional)'}),err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Submit checklist'));
-  const rows=items.map(it=>{const cb=h('input',{type:'checkbox',onchange:e=>{state[it]=e.target.checked;lab.classList.toggle('on',e.target.checked)}}),lab=h('label',{class:'ck'},cb,it);return lab});
-  const pics=slots.length?slots.map(sl=>h('label',null,sl,picker(photos,'Add a photo of '+sl,sl))):[h('label',null,T('Photos (at least one)'),picker(photos,'Add a photo'))];
-  const close=sheet(T('Checklist')+' · '+nm(b.property_id),h('p',{class:'hint'},`${b.guest||'Guest'} checked out ${fmtD(b.check_out)}. Tick each item and add photos${slots.length?' of each room below':' of the rooms'}.`),h('div',{class:'form'},...rows,...pics,h('label',null,T('Notes'),notes),err,save_));
-  save_.addEventListener('click',async()=>{const noPic=slots.length?slots.filter(sl=>!photos.some(p=>p.slot===sl)):photos.length?[]:['the rooms'];
-    if(noPic.length){err.hidden=false;err.textContent='Add a photo of: '+noPic.join(', ');return}const missing=items.filter(i=>!state[i]);
-    if(missing.length&&!save_.dataset.ok){save_.dataset.ok='1';err.hidden=false;err.textContent=`${missing.length} item${missing.length>1?'s':''} not ticked. They go to your admin as an issue. Tap Submit again to send it like this.`;return}
+/* one item on the checklist / stock screens: the control, a camera (photos kept with the item's name as their slot)
+   and a comment. need = a photo is required for it. */
+function itemCard(it,ctl,photos,notes,need,sub){const fi=h('input',{type:'file',accept:'image/*',capture:'environment',multiple:true,hidden:true}),thumbs=h('div',{class:'ci-pics'});
+  const mine=()=>photos.filter(p=>p.slot===it.name),note=h('input',{class:'ci-note',placeholder:T('Add a comment'),maxlength:200,value:notes[it.name]||'',hidden:!notes[it.name]||null,oninput:e=>{notes[it.name]=e.target.value}});
+  const cam=h('button',{type:'button',class:'ci-b','aria-label':T('Add a photo')+' · '+it.name,onclick:()=>fi.click()},icon('cam')),cm=h('button',{type:'button',class:'ci-b','aria-label':T('Add a comment')+' · '+it.name,onclick:()=>{note.hidden=false;note.focus()}},icon('note'));
+  const draw=()=>{const ps=mine();thumbs.replaceChildren(...ps.map(p=>h('span',{class:'ci-th'},h('img',{src:p.preview,alt:''}),h('button',{type:'button','aria-label':T('Remove photo'),onclick:()=>{photos.splice(photos.indexOf(p),1);draw()}},'×'))));
+    cam.classList.toggle('has',ps.length>0);cam.replaceChildren(...[icon('cam'),ps.length?h('b',null,String(ps.length)):null].filter(Boolean));card.classList.toggle('need',!!need&&!ps.length)};
+  fi.addEventListener('change',async()=>{for(const f of fi.files){try{const b64=await shrink(f);photos.push({b64,preview:'data:image/jpeg;base64,'+b64,slot:it.name})}catch(e){toast(T('That file isn’t a photo'))}}fi.value='';draw()});
+  const card=h('div',{class:'ci'},h('div',{class:'ci-top'},ctl,h('div',{class:'ci-t'},h('b',null,it.name),sub?h('small',null,sub):null,need?h('small',{class:'ci-req'},T('Photo needed')):null),h('div',{class:'ci-acts'},cm,cam,fi)),note,thumbs);
+  card._draw=draw;draw();return card}
+function stepper(v0,onv,label){let v=v0;const inp=h('input',{type:'number',inputmode:'numeric',min:0,placeholder:'–',value:v??'','aria-label':label,oninput:e=>{v=e.target.value===''?null:Math.max(0,+e.target.value);onv(v)}});
+  const step=d=>{v=Math.max(0,(v??0)+d);inp.value=v;onv(v)};
+  return h('div',{class:'stp'},h('button',{type:'button','aria-label':'−1',onclick:()=>step(-1)},'−'),inp,h('button',{type:'button','aria-label':'+1',onclick:()=>step(1)},'+'))}
+function progress(){const bar=h('i'),txt=h('small');return{el:h('div',{class:'prog'},h('div',{class:'prog-b'},bar),txt),set:(n,t)=>{bar.style.width=(t?Math.round(n/t*100):0)+'%';txt.textContent=`${n} ${T('of')} ${t} ${T('done')}`}}}
+function checklistForm(b){const c=C(),items=OPS.checkItemsFor(c,b.property_id,S.d.props),slots=c.photoSlots,state={},photos=[],inotes={},notes=h('textarea',{rows:3,placeholder:T('Anything else to report? (optional)')}),err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Submit checklist'));
+  const pr=progress(),upd=()=>pr.set(items.filter(it=>OPS.checkDone(it,state[it.name])).length,items.length);
+  const cards=items.map(it=>{let card;
+    const ctl=it.type==='count'?stepper(null,v=>{state[it.name]=v;card.classList.toggle('on',OPS.checkDone(it,v));upd()},it.name)
+      :h('button',{type:'button',class:'tk','aria-pressed':'false','aria-label':it.name,onclick:e=>{state[it.name]=!state[it.name];e.currentTarget.setAttribute('aria-pressed',state[it.name]?'true':'false');card.classList.toggle('on',state[it.name]);upd()}},icon('tick'));
+    card=itemCard(it,ctl,photos,inotes,it.photo,it.type==='count'&&it.expect?`${T('should be')} ${it.expect}`:null);if(it.type==='count')card.classList.add('count');return card});upd();
+  const rooms=slots.length?h('div',{class:'form'},h('h4',{class:'sub'},T('Room photos')),...slots.map(sl=>h('label',null,sl,picker(photos,'Add a photo of '+sl,sl)))):null;
+  const anyPic=!slots.length&&!items.some(i=>i.photo)?h('div',{class:'form'},h('label',null,T('Photos (at least one)'),picker(photos,'Add a photo'))):null;
+  const close=sheet(T('Checklist')+' · '+nm(b.property_id),h('p',{class:'hint'},`${b.guest||'Guest'} ${T('checked out')} ${fmtD(b.check_out)}. ${T('Tick or count each item. Tap the camera for a photo, the speech bubble for a comment.')}`),
+    pr.el,h('div',{class:'ci-list'},...cards),rooms,anyPic,h('div',{class:'form'},h('label',null,T('Notes'),notes),err,save_));
+  save_.addEventListener('click',async()=>{const needItem=items.filter(i=>i.photo&&!photos.some(p=>p.slot===i.name)).map(i=>i.name),noRoom=slots.filter(sl=>!photos.some(p=>p.slot===sl));
+    const noPic=[...needItem,...noRoom,...(!slots.length&&!items.some(i=>i.photo)&&!photos.length?[T('the rooms')]:[])];
+    if(noPic.length){err.hidden=false;err.textContent=T('Add a photo of')+': '+noPic.join(', ');cards.forEach(c_=>c_._draw());return}
+    const missing=items.filter(i=>!OPS.checkDone(i,state[i.name])).map(i=>i.type==='count'&&state[i.name]!=null?`${i.name} (${state[i.name]}${i.expect?' of '+i.expect:''})`:i.name);
+    if(missing.length&&!save_.dataset.ok){save_.dataset.ok='1';err.hidden=false;err.textContent=`${missing.length} ${T('not done')}: ${missing.join(', ')}. ${T('They go to your admin as an issue. Tap Submit again to send it like this.')}`;return}
     save_.disabled=true;save_.textContent='Saving…';
-    const ok=await write('append','checklists',{row:{check_id:'CK'+Date.now().toString(36),booking_id:b.booking_id,property_id:b.property_id,items:JSON.stringify(Object.fromEntries(items.map(i=>[i,!!state[i]]))),notes:notes.value.trim()||null,done_at:nowIso()}},'Checklist sent',
+    const vals=Object.fromEntries(items.map(i=>[i.name,i.type==='count'?(state[i.name]??null):!!state[i.name]])),cm=Object.fromEntries(Object.entries(inotes).map(([k,v])=>[k,String(v||'').trim()]).filter(([,v])=>v));
+    const ok=await write('append','checklists',{row:{check_id:'CK'+Date.now().toString(36),booking_id:b.booking_id,property_id:b.property_id,items:JSON.stringify(vals),item_notes:Object.keys(cm).length?JSON.stringify(cm):null,notes:notes.value.trim()||null,done_at:nowIso()}},'Checklist sent',
       {photos:strip(photos),kind:'checklist',name:nm(b.property_id)+' '+b.booking_id});
     if(!ok){save_.disabled=false;save_.textContent=T('Submit checklist');return}
     /* what wasn't done becomes an issue for the admin to approve */
     if(missing.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:b.property_id,issue:'Checklist not done: '+missing.join(', ').slice(0,180),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),booking_id:b.booking_id}},'Issue sent to admin');
     if(!(S.d.turnovers||[]).some(t=>String(t.booking_id)===b.booking_id))write('append','turnovers',{row:{booking_id:b.booking_id,status:'Done',done_at:nowIso(),done_by:S.me&&S.me.name||''}},'Marked clean');
     close();ok==='sent'?load():render()})}
-function stockForm(pid){const c=C(),items=OPS.stockItemsFor(c,pid,S.d.props),last=OPS.stockTrend(S.d.stock,pid,4),vals={},err=h('div',{class:'err',hidden:true}),issues=h('textarea',{rows:2,placeholder:'Anything broken, missing or running low?'}),photos=[],save_=h('button',{class:'btn primary full'},T('Submit stock check'));
-  const rows=items.map(it=>{if(it.type==='ok'){const yn=h('div',{class:'yn'});const draw=()=>yn.replaceChildren(...[['Yes',true],['No',false]].map(([l,v])=>h('button',{type:'button','aria-pressed':vals[it.name]===v,onclick:()=>{vals[it.name]=v;draw()}},l)));draw();return h('div',{class:'cnt'},h('span',null,it.name),yn)}
-    const hist=last.map(r=>r.counts[it.name]).filter(x=>x!=null),low=h('small',{class:'lowm',hidden:true},`below ${T('min')} ${it.min}`);
-    const inp=h('input',{type:'number',inputmode:'numeric',min:0,placeholder:'0',oninput:e=>{vals[it.name]=e.target.value===''?null:+e.target.value;low.hidden=!(it.min&&vals[it.name]!=null&&vals[it.name]<it.min)}});
-    return h('div',{class:'cnt'},h('span',null,it.name,h('small',null,[it.min?`${T('min')} ${it.min}`:null,hist.length?`${T('last')}: ${hist.join(' · ')}`:null].filter(Boolean).join(' · ')),low),inp)});
-  const close=sheet('Stock check · '+nm(pid),h('p',{class:'hint'},'Count what is there now. Mark anything not working; it goes to your admin as an issue.'),h('div',{class:'form'},h('div',null,...rows),h('label',null,T('Issues found'),issues),h('label',null,'Photos (optional)',picker(photos)),err,save_));
-  save_.addEventListener('click',async()=>{const miss=items.filter(i=>vals[i.name]==null);if(miss.length){err.hidden=false;err.textContent='Fill in: '+miss.map(i=>i.name).join(', ');return}
+function stockForm(pid){const c=C(),items=OPS.stockItemsFor(c,pid,S.d.props),last=OPS.stockTrend(S.d.stock,pid,4),vals={},photos=[],inotes={},err=h('div',{class:'err',hidden:true}),issues=h('textarea',{rows:2,placeholder:T('Anything else broken, missing or running low?')}),save_=h('button',{class:'btn primary full'},T('Submit stock check'));
+  const pr=progress(),upd=()=>pr.set(items.filter(i=>vals[i.name]!=null).length,items.length);
+  const cards=items.map(it=>{let card;const hist=last.map(r=>r.counts[it.name]).filter(x=>x!=null);
+    const sub=[it.type!=='ok'&&it.min?`${T('min')} ${it.min}`:null,hist.length?`${T('last')}: ${hist.join(' · ')}`:null].filter(Boolean).join(' · ')||null;
+    let ctl;if(it.type==='ok'){const yn=h('div',{class:'yn'}),draw=()=>yn.replaceChildren(...[['Yes',true],['No',false]].map(([l,v])=>h('button',{type:'button','aria-pressed':vals[it.name]===v?'true':'false',onclick:()=>{vals[it.name]=v;draw();card.classList.toggle('on',v===true);card.classList.toggle('bad',v===false);upd()}},T(l))));draw();ctl=yn}
+    else ctl=stepper(null,v=>{vals[it.name]=v;const low=it.min&&v!=null&&v<it.min;card.classList.toggle('on',v!=null&&!low);card.classList.toggle('bad',!!low);upd()},it.name);
+    card=itemCard(it,ctl,photos,inotes,it.photo,sub);card.classList.add(it.type==='ok'?'yesno':'count');return card});upd();
+  const close=sheet(T('Stock check')+' · '+nm(pid),h('p',{class:'hint'},T('Count what is there now. Anything “No” or below its minimum goes to your admin.')),pr.el,h('div',{class:'ci-list'},...cards),
+    h('div',{class:'form'},h('label',null,T('Issues found'),issues),h('label',null,T('Other photos (optional)'),picker(photos)),err,save_));
+  save_.addEventListener('click',async()=>{const miss=items.filter(i=>vals[i.name]==null);if(miss.length){err.hidden=false;err.textContent=T('Fill in')+': '+miss.map(i=>i.name).join(', ');return}
+    const needItem=items.filter(i=>i.photo&&!photos.some(p=>p.slot===i.name)).map(i=>i.name);if(needItem.length){err.hidden=false;err.textContent=T('Add a photo of')+': '+needItem.join(', ');cards.forEach(c_=>c_._draw());return}
     save_.disabled=true;save_.textContent='Saving…';
-    const bad=items.filter(i=>i.type==='ok'&&vals[i.name]===false).map(i=>i.name);
-    const ok=await write('append','stock',{row:{stock_id:'SK'+Date.now().toString(36),property_id:pid,counts:JSON.stringify(vals),issues:[bad.length?'Not working: '+bad.join(', '):null,issues.value.trim()||null].filter(Boolean).join(' · ')||null,done_at:nowIso()}},'Stock check sent',
+    const bad=items.filter(i=>i.type==='ok'&&vals[i.name]===false).map(i=>i.name),cm=Object.fromEntries(Object.entries(inotes).map(([k,v])=>[k,String(v||'').trim()]).filter(([,v])=>v));
+    const ok=await write('append','stock',{row:{stock_id:'SK'+Date.now().toString(36),property_id:pid,counts:JSON.stringify(vals),item_notes:Object.keys(cm).length?JSON.stringify(cm):null,issues:[bad.length?'Not working: '+bad.join(', '):null,issues.value.trim()||null].filter(Boolean).join(' · ')||null,done_at:nowIso()}},'Stock check sent',
       photos.length?{photos:strip(photos),kind:'checklist',name:nm(pid)+' stock'}:null);
     if(!ok){save_.disabled=false;save_.textContent=T('Submit stock check');return}
-    if(bad.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:pid,issue:'Not working: '+bad.join(', '),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000)}},'Issue sent to admin');
+    if(bad.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:pid,issue:'Not working: '+bad.join(', ')+(bad.some(x=>cm[x])?' ('+bad.filter(x=>cm[x]).map(x=>x+': '+cm[x]).join('; ')+')':''),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000)}},'Issue sent to admin');
     close();ok==='sent'?load():render()})}
 async function askedReview(x){const ok=x.row?await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked')
   :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked');if(ok==='sent')load();else if(ok)render()}
