@@ -70,7 +70,7 @@ main{display:grid;gap:14px;padding:14px max(16px,env(safe-area-inset-right,0px))
 @keyframes sp{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.spin{animation:none}}
 /* round 2: urgent card, outbox, ratings, check-in info, language */
 .card.urgent{border-color:rgba(218,158,158,1.0);border-color:color-mix(in srgb,var(--bad) 45%,var(--hair));background:rgba(253,247,247,1.0);background:color-mix(in srgb,var(--bad) 4%,#fff)}.card.urgent h2 svg{width:18px;height:18px;fill:none;stroke:var(--bad);stroke-width:2}
-.badge.warn{background:var(--warn)}.row .acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.badge.warn{background:var(--warn)}.card.tasks{border-color:rgba(165,189,237,1.0);border-color:color-mix(in srgb,var(--accent) 35%,var(--hair))}.card.tasks .t span{white-space:normal;overflow:visible}.card.tasks h2 svg{width:18px;height:18px;fill:none;stroke:var(--accent);stroke-width:2}.row .acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .info{margin:0 0 6px;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-size:12.5px}.info summary{cursor:pointer;font-weight:650;color:var(--accent)}.info p{margin:6px 0 0}
 .stars{display:flex;gap:6px}.stars button{border:0;background:none;font-size:36px;line-height:1;color:var(--hair-2);cursor:pointer;padding:2px}.stars button[aria-pressed=true]{color:#f5a623}
 .stats.two{grid-template-columns:repeat(2,1fr)}.cnt span small{display:block;color:var(--muted);font-size:11.5px;font-weight:500}.cnt .lowm{color:var(--warn);font-weight:650}
@@ -231,7 +231,7 @@ const HI={'Today':'आज','Checklists':'चेकलिस्ट','Stock':'स�
   "What's new":'नया क्या है','Mark all seen':'सब देख लिया','Nothing new since you last looked.':'पिछली बार के बाद कुछ नया नहीं।','My expense claims':'मेरे खर्च क्लेम','My money':'मेरा पैसा','Waiting':'प्रतीक्षा में',
   'Paid back this month':'इस महीने वापस मिला','Not approved':'मंज़ूर नहीं','Approved':'मंज़ूर','Settled':'चुकता','Issues at your stays':'आपकी प्रॉपर्टी की समस्याएँ','waiting to send':'भेजना बाकी',
   'Saved on the phone · sends when online':'फ़ोन में सेव · नेटवर्क आने पर भेजेंगे','Language':'भाषा','Rating':'रेटिंग','What the guest wrote (optional)':'मेहमान ने क्या लिखा (वैकल्पिक)','Save rating':'रेटिंग सेव करें',
-  'Stock checks':'स्टॉक जाँच','Checkout checklists':'चेकआउट चेकलिस्ट','Loading your stays…':'आपकी प्रॉपर्टी लोड हो रही है…','min':'कम से कम','last':'पिछली बार'};
+  'Stock checks':'स्टॉक जाँच','Guest requests':'मेहमान की माँगें','On it':'कर रहे हैं','Checkout checklists':'चेकआउट चेकलिस्ट','Loading your stays…':'आपकी प्रॉपर्टी लोड हो रही है…','min':'कम से कम','last':'पिछली बार'};
 let LANG=store.get('mg_lang')||'en';const T=s=>LANG==='hi'&&HI[s]||s;
 /* ============ the Register (same Google Sheet as the dashboard and the WhatsApp bot) ============ */
 const S={key:store.get('mg_session')||'',me:store.get('mg_me')||null,d:store.get('mg_cache')||null,tab:'today',busy:false,q:0};
@@ -240,7 +240,7 @@ async function api(body){let r;try{r=await fetch(CLIENT.api_url,{method:'POST',h
   let j;try{j=await r.json()}catch(e){const x=new Error('offline');x.offline=true;throw x}if(j.error){const x=new Error(j.error);x.server=true;throw x}return j}
 async function load(){S.busy=true;try{const d=await api({action:'read',format:'dashboard'});
     S.d={props:d.props||[],bookings:(d.bookings||[]).map(b=>({...b,booking_id:String(b.booking_id),check_in:String(b.check_in).slice(0,10),check_out:String(b.check_out).slice(0,10)})),maint:d.maint||[],reviews:d.reviews||[],
-      checklists:d.checklists||[],stock:d.stock||[],turnovers:d.turnovers||[],claims:d.claims||[],movements:d.movements||[],ops:d.ops||[],checkin_info:d.checkin_info||[],at:Date.now()};
+      checklists:d.checklists||[],requests:d.requests||[],stock:d.stock||[],turnovers:d.turnovers||[],claims:d.claims||[],movements:d.movements||[],ops:d.ops||[],checkin_info:d.checkin_info||[],at:Date.now()};
     if(d.me){S.me=d.me;store.set('mg_me',d.me)}store.set('mg_cache',S.d);await queued()}
   catch(e){if(/unauthorized/.test(e.message)){try{await api({action:'me'})}catch(x){if(/unauthorized/.test(x.message))return signOut('Your sign-in ended. Sign in again.')}}
     toast(S.d?'Couldn’t refresh just now · showing the last data':'Couldn’t reach the sheet. Check the connection.')}finally{S.busy=false;render()}}
@@ -295,7 +295,7 @@ const toRate=u=>u.rev.filter(x=>x.status==='received'&&!(x.row&&+x.row.rating>0)
 /* ============ screens ============ */
 const TABS=[['today','Today','today'],['check','Checklists','check'],['stock','Stock','box'],['reviews','Reviews','star'],['issues','Issues','wrench']];
 function render(){if(!S.key)return loginScreen();if(!S.d){$('#app').replaceChildren(h('div',{class:'loading'},h('span',{class:'spin'}),T('Loading your stays…')));return}
-  const u=due(),nc=news().reduce((t,c)=>t+c.items.length,0),cnt={check:u.check.filter(x=>x.status!=='done').length,stock:u.stock.filter(x=>x.current&&x.current.status==='due').length,reviews:u.rev.filter(x=>x.status==='open').length+toRate(u).length,
+  const u=due(),nc=news().reduce((t,c)=>t+c.items.length,0),cnt={today:openTasks().length,check:u.check.filter(x=>x.status!=='done').length,stock:u.stock.filter(x=>x.current&&x.current.status==='due').length,reviews:u.rev.filter(x=>x.status==='open').length+toRate(u).length,
     issues:S.d.maint.filter(m=>inS(m.property_id)&&/whatsapp/i.test(m.source||'')&&!/^(closed|rejected)$/i.test(m.status||'')).length};
   const top=h('header',{class:'top'},h('div',{class:'who'},h('b',null,(S.me&&S.me.name||'Manager').split(' ')[0]),h('small',null,`${myStays().size} stay${myStays().size===1?'':'s'} · ${fmtD(TODAY,{weekday:'long',day:'numeric',month:'short'})}`)),
     S.q?h('button',{class:'ic q','aria-label':`${S.q} ${T('waiting to send')}`,onclick:()=>{toast(`${S.q} ${T('waiting to send')}`);flush()}},icon('cloud'),h('span',{class:'badge warn'},S.q)):null,
@@ -305,6 +305,10 @@ function render(){if(!S.key)return loginScreen();if(!S.d){$('#app').replaceChild
   const tabs=h('nav',{class:'tabs','aria-label':'Sections'},TABS.map(([k,l,ic])=>h('button',{'aria-current':S.tab===k?'page':null,onclick:()=>{S.tab=k;render();scrollTo(0,0)}},icon(ic),T(l),cnt[k]?h('span',{class:'badge'},cnt[k]):null)));
   $('#app').replaceChildren(top,main,tabs)}
 function card(title,right,...body){return h('section',{class:'card'},h('h2',null,T(title),right?h('small',null,right):null),...body)}
+/* guest requests for my stays that aren't done (towels, gas cylinder, cleaning...): the bot tells the guest when done */
+const openTasks=()=>((S.d||{}).requests||[]).filter(r=>String(r.type||'')==='task'&&inS(r.property_id)&&!/^done$/i.test(r.status||'')).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
+const ago=t=>{const m=Math.max(0,Math.round((Date.now()-new Date(String(t).replace(' ','T')).getTime())/6e4));return isNaN(m)?'':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
+function taskSet(r,status){write('update','requests',{match:{request_id:r.request_id},fields:{status}},status==='Done'?'Done · the guest is told':'Marked on it').then(ok=>{if(ok==='sent')load();else render()})}
 const moved=(b,kind)=>(S.d.movements||[]).filter(x=>String(x.booking_id)===b.booking_id&&x.kind===kind).pop();
 function moveMark(b,kind,steps){const st_=kind==='arrived'?OPS.cityStepsOf(C(),P(b.property_id).city):[];
   /* the city's arrival steps (a local registration, say) are ticked first */
@@ -332,6 +336,9 @@ function today(m,u){const B=S.d.bookings.filter(b=>live(b)&&inS(b.property_id)),
   m.append(card('Leaving today',outs.length?String(outs.length):'',outs.length?outs.map(b=>bk(b,'out')):h('div',{class:'empty'},T('No check-outs today.'))));
   m.append(card('Arriving tomorrow',tom.length?String(tom.length):'',tom.length?tom.map(b=>bk(b,'tom')):h('div',{class:'empty'},T('Nobody tomorrow.'))));
   const al=S.d.maint.filter(x=>inS(x.property_id)&&/whatsapp/i.test(x.source||'')&&!/^(closed|rejected)$/i.test(x.status||''));
+  {const ts=openTasks();if(ts.length)m.append(h('section',{class:'card tasks'},h('h2',null,icon('bell'),T('Guest requests'),h('small',null,String(ts.length))),
+    ts.map(r=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,r.addon),h('span',null,[nm(r.property_id),r.details||null,'asked '+ago(r.created_at),r.status==='In progress'?'on it':null].filter(Boolean).join(' · '))),
+      h('div',{class:'acts'},r.status==='In progress'?null:h('button',{class:'btn sm',onclick:()=>taskSet(r,'In progress')},T('On it')),h('button',{class:'btn sm primary',onclick:()=>taskSet(r,'Done')},T('Done')))))))}
   if(al.length)m.append(card('Guest alerts',String(al.length),al.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,x.issue),h('span',null,`${nm(x.property_id)} · ${x.ticket_id} · ${x.status||'Open'}`)),h('span',{class:'pill '+(x.priority==='High'?'p-bad':'p-warn')},T(x.priority==='High'?'Urgent':'Soon'))))));
   if(sc)m.append(card('My score',`since ${fmtD(C().start)}`,h('div',{class:'stats'},[['Reviews',sc.reviews.received,sc.reviews.missed],['Checklists',sc.checklists.done,sc.checklists.missed],['Stock checks',sc.stock.done,sc.stock.missed]].map(([l,a,b])=>h('div',{class:'stat'},h('b',null,h('span',{class:'ok'},a),' / ',h('span',{class:'bad'},b)),h('span',null,T(l)+' done / missed')))),
     sc.reviews.avg!=null?h('p',{class:'hint'},`Average rating of the reviews you asked for: ${sc.reviews.avg} ★`):null,
