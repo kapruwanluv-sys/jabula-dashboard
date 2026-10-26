@@ -1549,6 +1549,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .tgl i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
 .tgl[aria-checked=true]{background:var(--ok)}.tgl[aria-checked=true] i{transform:translateX(20px)}
 .cs-rates{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.rp-auto{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted);margin:0}
+.cs-amt{font-weight:600;color:var(--muted);font-size:12.5px}
 @media(max-width:560px){.cs-tiles{grid-template-columns:1fr 1fr;gap:8px}.cs-tile:first-child{grid-column:1/-1}.cs-tile b{font-size:18px}}
 /* Manager app setup: tick-box lists */
 .ie-wrap{display:grid;gap:14px;padding:6px 24px 16px}.ie-wrap .form{padding:0}.ie-pane{min-width:0}
@@ -2267,6 +2269,10 @@ function waterfall(w,{steps,hh=250}){
 const SPARK='M12 2.5l2.1 5.6 5.9 1.9-5.9 1.9L12 17.5l-2.1-5.6L4 10l5.9-1.9zM19 15.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z';
 const INS_MODELS=[['claude-haiku-5-5','Haiku 5.5','about ₹0.5 a run'],['claude-sonnet-5-5','Sonnet 5.5','about ₹9 a run'],['claude-opus-5-5','Opus 5.5','about ₹18 a run']];
 const insName=m=>(INS_MODELS.find(x=>x[0]===m)||[0,m||'AI'])[1];
+/* what one analysis with this model costs here: the average of this account's own runs, else the typical figure */
+function insCharge(model){const own=insRuns().runs.map(r=>r.I._meta||{}).filter(m=>m.model===model&&m.cost_inr!=null&&!m.batch).slice(-5);
+  if(own.length)return{inr:sum(own,m=>+m.cost_inr)/own.length,basis:`average of your last ${own.length} run${own.length>1?'s':''}`};
+  const t=+(((INS_MODELS.find(x=>x[0]===model)||[])[2]||'').match(/[\d.]+/)||[0])[0];return{inr:t,basis:'typical run'}}
 /* Insights tab rows: run_id | section | data. Runs oldest first (the last 12 are kept); _request / _batch are control rows.
    A tab from before runs reads as one run, "legacy". */
 function insRuns(){const runs=[],by={},ctl={};((S.data&&S.data.insights)||[]).forEach(r=>{let x=r.data;if(typeof x==='string'){try{x=JSON.parse(x)}catch(e){x=null}}
@@ -2309,7 +2315,7 @@ function insights(v){
   const ask=async btn=>{btn.disabled=true;
     try{await apiPost({action:'insights_refresh',model:pick});
       S.data.insights=[...(S.data.insights||[]).filter(r=>r.section!=='_request'),{section:'_request',data:{requested_at:new Date().toISOString(),model:pick}}];
-      toast(`New analysis asked for with ${insName(pick)} · usually ready in about 5 minutes`);render()}
+      toast(`New analysis asked for with ${insName(pick)} · about ₹${(v=>v<1?v.toFixed(2):Math.round(v))(insCharge(pick).inr)} · usually ready in about 5 minutes`);render()}
     catch(e){btn.disabled=false;toast('Couldn’t ask for it: '+e.message)}};
   const runPick=RUNS.length>1?h('select',{class:'mg-pick ins-runs','aria-label':'Analysis run',onchange:e=>{S.insRun=e.target.value===RUNS[RUNS.length-1].id?null:e.target.value;render()}},
     [...RUNS].reverse().map(r=>{const m=r.I._meta||{};return h('option',{value:r.id,selected:r.id===I._runId||null},`${m.generated_at?whenL(m.generated_at):'Earlier run'} · ${insName(m.model)}${m.cost_inr!=null?' · ₹'+(+m.cost_inr).toFixed(2):''}${m.status==='waiting'?' · words on the way':''}`)})):null;
@@ -2320,8 +2326,8 @@ function insights(v){
         (()=>{const mk=TODAY.slice(0,7),mine=RUNS.filter(r=>String((r.I._meta||{}).generated_at||'').slice(0,7)===mk),sp=sum(mine,r=>+(r.I._meta||{}).cost_inr||0);
           return mine.length?h('small',{class:'ins-spend'},`${mLong(mk)}: ${mine.length} run${mine.length>1?'s':''} · ₹${sp.toFixed(2)} on AI`):null})()))),
     h('div',{class:'ins-run'},h('div',{class:'seg',role:'group','aria-label':'AI model'},INS_MODELS.map(([k,l])=>h('button',{'aria-pressed':pick===k,onclick:()=>{S.insModel=k;render()}},l))),
-      h('small',{class:'ins-cost'},(INS_MODELS.find(x=>x[0]===pick)||[])[2]||''),
-      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):!swOn('ai.insights')?h('span',{class:'pill p-mute',title:'Turn it on in Manage › Costs'},'AI insights are off'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},'Run new analysis'))));
+      (()=>{const ch=insCharge(pick);return h('small',{class:'ins-cost'},`about ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)} a run · ${ch.basis}`)})(),
+      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):!swOn('ai.insights')?h('span',{class:'pill p-mute',title:'Turn it on in Manage › Costs'},'AI insights are off'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},(()=>{const ch=insCharge(pick);return `Run new analysis · ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)}`})()))));
   if(!M.generated_at){v.append(card('s12','AI insights',{},h('div',{class:'empty'},'Your first analysis will appear here: where prices can go up, which festivals to charge more for, and what to fix.')));return}
   /* what changed since the run before this one */
   {const idx=RUNS.findIndex(r=>r.id===I._runId),prev=idx>0?RUNS[idx-1].I:null;if(prev&&A.moves){const pm=new Set(((prev._ai||{}).moves||[]).map(m=>m.id||m.title)),nw=(A.moves||[]).filter(m=>!pm.has(m.id||m.title)).length;
@@ -3325,8 +3331,11 @@ function reportsCard(){if(!S.admin)return null;const rs=rowsOf('reports').slice(
   const req=String((rowsOf('ops').find(r=>r.key==='ops.report_request')||{}).value||''),waiting=req&&!rs.some(r=>r.month===req.slice(0,7)&&String(r.made_at)>req.slice(8,24).replace('Z',''));
   const ms=[];for(let k=prevM(TODAY.slice(0,7)),i=0;i<13;i++,k=prevM(k))ms.push(k);
   const sel=h('select',{class:'mg-pick','aria-label':'Month'},[TODAY.slice(0,7),...ms].map(k=>h('option',{value:k,selected:k===prevM(TODAY.slice(0,7))||null},mLong(k)+(k===TODAY.slice(0,7)?' (so far)':''))));
-  return card('s12','Monthly reports',{hint:'a PDF with the month at a glance, city by city and stay by stay · made on the 2nd and sent to admins on WhatsApp',
-      acts:[sel,h('button',{class:'btn sm primary',disabled:!live()||null,onclick:()=>setSetting('ops.report_request',`${sel.value}|${new Date().toISOString().slice(0,16)}`,'Asked the bot · the report appears here in a few minutes')},icon('plus'),'Make report')]},
+  const auto=swOn('msgs.monthly_report');
+  return card('s12','Monthly reports',{hint:auto?'a PDF with the month at a glance, city by city and stay by stay · made on the 2nd and sent to admins on WhatsApp':'a PDF with the month at a glance · automatic report and WhatsApp sending are off · make one here any time',
+      acts:[h('label',{class:'rp-auto',title:'Made on the 2nd and sent to admins on WhatsApp. Off: not made automatically and not sent; you can still make one here.'},h('span',null,'Auto on the 2nd'),
+        h('button',{class:'tgl',role:'switch','aria-checked':auto?'true':'false','aria-label':'Make the report on the 2nd and send it on WhatsApp',onclick:()=>setSetting('msgs.monthly_report',auto?'off':'on',auto?'Automatic report off · not sent on WhatsApp':'Automatic report on')},h('i'))),
+        sel,h('button',{class:'btn sm primary',disabled:!live()||null,onclick:()=>setSetting('ops.report_request',`${sel.value}|${new Date().toISOString().slice(0,16)}`,'Asked the bot · the report appears here in a few minutes')},icon('plus'),'Make report')]},
     waiting?h('p',{class:'hint'},`Making ${mLong(req.slice(0,7))}… it appears here when ready.`):null,
     rs.length?h('div',{class:'rp-list'},rs.slice(0,12).map(r=>h('a',{class:'rp-row',href:r.url,target:'_blank',rel:'noopener'},h('span',{class:'rp-ic'},icon('dl')),
       h('div',null,h('b',null,mLong(String(r.month).slice(0,7))),h('small',null,`made ${whenL(r.made_at)}${r.size_kb?' · '+r.size_kb+' KB':''}`)),icon('chev')))):
@@ -3805,7 +3814,7 @@ const rowsOf=k=>(S.data&&S.data[k])||[];
 /* checklist / stock / review rules (Settings ops.* and reviews.*) */
 const OPSC=()=>OPS.cfg(rowsOf('ops'),CLIENT);
 /* one Settings row that admins may change (ai.* ops.* reviews.* pricing.*): update it, or add it */
-async function setSetting(key,value,msg){const grp=/^(ai|msgs|costs)\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),row=arr.find(r=>r.key===key),old=row?row.value:undefined;
+async function setSetting(key,value,msg){const grp=/^(ai|msgs)\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),row=arr.find(r=>r.key===key),old=row?row.value:undefined;
   if(row)row.value=value;else arr.push({key,value});render();
   if(!live()){toast((msg||'Saved')+' · demo only');return true}
   try{let r=await apiPost({action:'update',tab:'settings',match:{key},fields:{value}});if(!r.updated)await apiPost({action:'append',tab:'settings',row:{key,value}});toast((msg||'Saved')+' ✓');return true}
@@ -5410,7 +5419,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
   const r2=n=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pick=h('select',{class:'mg-pick','aria-label':'Month',onchange:e=>{S.costM=e.target.value;render()}},ms.map(k=>h('option',{value:k,selected:k===mk||null},mLong(k)+(k===TODAY.slice(0,7)?' (so far)':''))));
   const tile=(l,val,sub)=>h('div',{class:'cs-tile'},h('span',null,l),h('b',{class:'num'},val),sub?h('small',null,sub):null);
-  v.append(card('s12','Costs',{hint:`what the AI and WhatsApp cost · AI at the day’s dollar rate · ${rate('costs.markup_pct')}% markup on everything`,acts:[tabs]},
+  v.append(card('s12','Costs',{hint:'what the AI and WhatsApp cost, all charges included',acts:[tabs]},
     h('div',{class:'cs-head'},pick,c.days?h('small',{class:'hint'},`${c.days} day${c.days>1?'s':''} of bot counters`):h('small',{class:'hint'},'No bot counters for this month yet')),
     h('div',{class:'cs-tiles'},tile('Total',r2(c.total),'AI + WhatsApp + hosting'),
       tile('AI replies to guests',r2(c.ai.inr),c.ai.replies?`${c.ai.replies.toLocaleString('en-IN')} replies · ${r2(c.ai.inr/c.ai.replies)} each`:'no AI replies'),
@@ -5425,22 +5434,18 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
     c.ins.runs.slice().reverse().map(m=>h('div',null,h('span',null,`${m.generated_at?whenL(m.generated_at):'Run'} · ${insName(m.model)}${m.batch?' · batch':''}`),h('b',{class:'num'},r2(m.cost_inr))))):h('div',{class:'empty'},'No runs this month.')));
   /* WhatsApp */
   const wl={guest:'Guests',owner:'Owners',manager:'Managers'};
-  v.append(card('s12','WhatsApp messages',{hint:`counted as the bot sends them · Meta bills your WhatsApp account; check the figures on its bill`},
+  v.append(card('s12','WhatsApp messages',{hint:'counted as the bot sends them'},
     h('div',{class:'tbl-wrap'},h('table',{class:'tbl cs-t'},h('thead',null,h('tr',null,h('th',null,'To'),h('th',{class:'r'},'Messages'),h('th',{class:'r'},'of which templates'))),
       h('tbody',null,c.who.map(x=>h('tr',null,h('td',null,wl[x.k]),h('td',{class:'r num'},x.all.toLocaleString('en-IN')),h('td',{class:'r num'},x.tpl.toLocaleString('en-IN')))),
         h('tr',{class:'hl'},h('td',null,'All'),h('td',{class:'r num'},c.all.toLocaleString('en-IN')),h('td',{class:'r num'},c.tpl.toLocaleString('en-IN')))))),
-    h('p',{class:'hint',style:{margin:'10px 0 0'}},`${Math.min(c.free,rate('costs.wa_free')).toLocaleString('en-IN')} of ${rate('costs.wa_free').toLocaleString('en-IN')} free messages used · then ₹${rate('costs.wa_rate')} each, templates ₹${rate('costs.wa_tpl_rate')}, plus ${rate('costs.gst_pct')}% GST · estimate ${r2(c.wa)}`)));
+    h('p',{class:'hint',style:{margin:'10px 0 0'}},`estimate for these messages: ${r2(c.wa)}`)));
   /* switches */
-  const swRow=([k,l,d,grp])=>{const on=swOn(k);return h('div',{class:'cs-sw'+(on?'':' off')},h('div',null,h('b',null,l),h('small',null,d)),
+  const spent={'ai.guest_replies':c.ai.inr,'ai.insights':c.ins.inr};
+  const swRow=([k,l,d,grp])=>{const on=swOn(k);return h('div',{class:'cs-sw'+(on?'':' off')},h('div',null,h('b',null,l,spent[k]!=null?h('span',{class:'cs-amt num'},` · ${r2(spent[k])} this month`):null),h('small',null,d)),
     h('button',{class:'tgl',role:'switch','aria-checked':on?'true':'false','aria-label':l,onclick:()=>{const go=()=>setSetting(k,on?'off':'on',`${l}: ${on?'off':'on'}`);
       if(on&&k==='ai.guest_replies')confirmBox('Turn off AI replies?','Guests who type a question get a holding line, and you get their message to answer yourself on WhatsApp. Turn it back on here any time.','Turn off',true,go);else go()}},h('i')))};
   v.append(card('s12','Switches',{hint:'stop a cost at once · applies to every dashboard, login and the bot'},h('div',{class:'cs-sws'},
     h('h4',null,'AI'),...COST_SW.filter(x=>x[3]==='ai').map(swRow),h('h4',null,'WhatsApp messages'),...COST_SW.filter(x=>x[3]==='wa').map(swRow))));
-  /* rates */
-  const inputs=COST_RATES.map(([k,l])=>[k,h('input',{type:'number',step:'any',min:0,value:rate(k),'aria-label':l})]);
-  v.append(card('s12','Rates',{hint:'used for the WhatsApp estimate, hosting and the markup · the AI uses Anthropic’s prices at the day’s dollar rate',
-    acts:[h('button',{class:'btn sm primary',onclick:async()=>{for(const [k,i] of inputs)if(String(+i.value)!==String(rate(k)))await setSetting(k,String(+i.value||0),'Rates saved')}},'Save rates')]},
-    h('div',{class:'form cs-rates'},inputs.map(([k,i])=>fld(COST_RATES.find(x=>x[0]===k)[1],i)))));
   return pendingBar(v)}
 function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
