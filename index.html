@@ -1567,6 +1567,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cs-l ul{margin:0;padding-left:16px;display:grid;gap:3px;font-size:12.5px;line-height:1.4;color:var(--ink-2,var(--ink))}
 .cs-bot.off .cs-l.off{opacity:.75}
 @media(max-width:900px){.cs-bot{grid-template-columns:1fr}}
+.pg{display:grid;gap:5px;margin-top:12px;width:100%}.pg-h{display:flex;justify-content:space-between;gap:10px;font-size:13px}.pg-h span{color:var(--muted);font-weight:650}
+.pg-b{height:8px;border-radius:99px;background:var(--hair-2);overflow:hidden}.pg-b i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(108,148,230,1.0),var(--accent));background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 65%,#fff),var(--accent));transition:width .6s ease}
+.pg small{color:var(--muted);font-size:12px}.pg.done .pg-b i{background:var(--ok)}.pg.bad .pg-b i{background:var(--bad)}
+.pg.wait .pg-b i{width:30%!important;animation:pgwait 1.6s ease-in-out infinite}@keyframes pgwait{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
+@media (prefers-reduced-motion:reduce){.pg.wait .pg-b i{animation:none}}
 .mk-ai{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.mk-ai>div{display:grid;gap:2px}.mk-ai small{color:var(--muted);font-size:12.5px}
 .mk-aip{margin-left:6px;font-size:10.5px;vertical-align:2px}
 .cs-amt{font-weight:600;color:var(--muted);font-size:12.5px}
@@ -1702,7 +1707,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .ins-spark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff;background:linear-gradient(140deg,#8b6cff,#1d5bd8);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -10px rgba(76,60,220,.8)}
 .ins-spark svg{width:18px;height:18px;fill:currentColor;stroke:none}
 .ins-spark.sm{width:22px;height:22px;border-radius:7px;box-shadow:none}.ins-spark.sm svg{width:12px;height:12px}
-.ins-run{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ins-cost{color:var(--muted);font-size:12px}
+.ins-run{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ins-cost{color:var(--muted);font-size:12px;flex-basis:100%;order:3}
+.ins-run .pg{order:4}.tgl[disabled]{opacity:.55;cursor:progress}
 .ins-ai{display:flex;gap:10px;align-items:flex-start;margin:0;padding:11px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;color:var(--ink-2);
   background:linear-gradient(135deg,rgba(139,108,255,0.09),rgba(29,91,216,0.06));background:linear-gradient(135deg,color-mix(in srgb,#8b6cff 9%,transparent),color-mix(in srgb,var(--accent) 6%,transparent))}
 .ins-moves{display:grid;gap:10px}
@@ -2286,12 +2292,16 @@ function waterfall(w,{steps,hh=250}){
 /* ============ AI insights: exact numbers computed by the bot server from the register, suggestions written by Claude
    (engine wa_engine/insights.py). Saved in the register's Insights tab; admins only (money inside). ============ */
 const SPARK='M12 2.5l2.1 5.6 5.9 1.9-5.9 1.9L12 17.5l-2.1-5.6L4 10l5.9-1.9zM19 15.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z';
-const INS_MODELS=[['claude-haiku-5-5','Haiku 5.5','about ₹0.5 a run'],['claude-sonnet-5-5','Sonnet 5.5','about ₹9 a run'],['claude-opus-5-5','Opus 5.5','about ₹18 a run']];
+/* a typical analysis in dollars (rupees at today's rate) - used until this account has its own runs of a model */
+const INS_MODELS=[['claude-haiku-5-5','Haiku 5.5',0.006],['claude-sonnet-5-5','Sonnet 5.5',0.10],['claude-opus-5-5','Opus 5.5',0.20]];
+/* today's USD->INR rate: the bot saves it hourly in BotStats (usd_inr); 88 until it has */
+const fxNow=()=>{const r=rowsOf('botstats').filter(x=>+x.usd_inr>0).sort((a,b)=>String(b.day).localeCompare(String(a.day)))[0];return r?+r.usd_inr:88};
+const usdInr=usd=>usd*fxNow()*1.05;
 const insName=m=>(INS_MODELS.find(x=>x[0]===m)||[0,m||'AI'])[1];
 /* what one analysis with this model costs here: the average of this account's own runs, else the typical figure */
 function insCharge(model){const own=insRuns().runs.map(r=>r.I._meta||{}).filter(m=>m.model===model&&m.cost_inr!=null&&!m.batch).slice(-5);
   if(own.length)return{inr:sum(own,m=>+m.cost_inr)/own.length,basis:`average of your last ${own.length} run${own.length>1?'s':''}`};
-  const t=+(((INS_MODELS.find(x=>x[0]===model)||[])[2]||'').match(/[\d.]+/)||[0])[0];return{inr:t,basis:'typical run'}}
+  return{inr:usdInr(+(INS_MODELS.find(x=>x[0]===model)||[])[2]||0),basis:'typical run'}}
 /* Insights tab rows: run_id | section | data. Runs oldest first (the last 12 are kept); _request / _batch are control rows.
    A tab from before runs reads as one run, "legacy". */
 function insRuns(){const runs=[],by={},ctl={};((S.data&&S.data.insights)||[]).forEach(r=>{let x=r.data;if(typeof x==='string'){try{x=JSON.parse(x)}catch(e){x=null}}
@@ -2319,6 +2329,7 @@ function insights(v){
   const AI_TABS=[['insights','Insights',SPARK],['pricing','Pricing','M20 13l-7 7-9-9V4h7zM7.5 7.5h.01'],['market','Market','M4 19V9M9 19V5M14 19v-7M19 19V11'],['ideas','Ideas','M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z']];
   const tab=S.aiTab||'insights',open=rowsOf('ideas').filter(i=>!/^(implemented|dropped)$/i.test(String(i.status||''))).length;
   v.append(h('div',{class:'s12 ai-tabs seg',role:'tablist'},AI_TABS.map(([k,l,d])=>h('button',{role:'tab','aria-pressed':tab===k,onclick:()=>{S.aiTab=k;render()}},navIcon(d),l,k==='ideas'&&open?h('b',{class:'num'},open):null))));
+  if(live()&&!PROG.t&&!PROG.busy&&!PROG.seen){PROG.seen=1;setTimeout(pollProgress,300)}
   if(tab==='pricing')return aiPricing(v);if(tab==='market')return aiMarket(v);if(tab==='ideas')return aiIdeas(v);
   const I=insData(),A=I._ai||{},M=I._meta||{},R=I._request||{},stays=I.stays||[],nm=id=>(stays.find(x=>x.stay_id===id)||{}).stay||id,RUNS=insRuns().runs;
   const asked=R.requested_at&&(!M.generated_at||new Date(R.requested_at)>new Date(M.generated_at));
@@ -2333,7 +2344,7 @@ function insights(v){
   const td=(x,r)=>h('td',{class:r?'r num':null},x);
   const ask=async btn=>{btn.disabled=true;
     try{await apiPost({action:'insights_refresh',model:pick});
-      S.data.insights=[...(S.data.insights||[]).filter(r=>r.section!=='_request'),{section:'_request',data:{requested_at:new Date().toISOString(),model:pick}}];
+      S.data.insights=[...(S.data.insights||[]).filter(r=>r.section!=='_request'),{section:'_request',data:{requested_at:new Date().toISOString(),model:pick}}];setTimeout(pollProgress,500);
       toast(`New analysis asked for with ${insName(pick)} · about ₹${(v=>v<1?v.toFixed(2):Math.round(v))(insCharge(pick).inr)} · usually ready in about 5 minutes`);render()}
     catch(e){btn.disabled=false;toast('Couldn’t ask for it: '+e.message)}};
   const runPick=RUNS.length>1?h('select',{class:'mg-pick ins-runs','aria-label':'Analysis run',onchange:e=>{S.insRun=e.target.value===RUNS[RUNS.length-1].id?null:e.target.value;render()}},
@@ -2345,8 +2356,9 @@ function insights(v){
         (()=>{const mk=TODAY.slice(0,7),mine=RUNS.filter(r=>String((r.I._meta||{}).generated_at||'').slice(0,7)===mk),sp=sum(mine,r=>+(r.I._meta||{}).cost_inr||0);
           return mine.length?h('small',{class:'ins-spend'},`${mLong(mk)}: ${mine.length} run${mine.length>1?'s':''} · ₹${sp.toFixed(2)} on AI`):null})()))),
     h('div',{class:'ins-run'},h('div',{class:'seg',role:'group','aria-label':'AI model'},INS_MODELS.map(([k,l])=>h('button',{'aria-pressed':pick===k,onclick:()=>{S.insModel=k;render()}},l))),
+      progBar('ai'),
       (()=>{const ch=insCharge(pick);return h('small',{class:'ins-cost'},`about ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)} a run · ${ch.basis}`)})(),
-      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):!swOn('ai.insights')?h('span',{class:'pill p-mute',title:'Turn it on in Manage › AI Expenses'},'AI insights are off'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},(()=>{const ch=insCharge(pick);return `Run new analysis · ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)}`})()))));
+      asked&&!progBar('ai')?h('span',{class:'pill p-acc'},'New analysis on its way'):asked?null:!swOn('ai.insights')?h('span',{class:'pill p-mute',title:'Turn it on in Manage › AI Expenses'},'AI insights are off'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},(()=>{const ch=insCharge(pick);return `Run new analysis · ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)}`})()))));
   if(!M.generated_at){v.append(card('s12','AI insights',{},h('div',{class:'empty'},'Your first analysis will appear here: where prices can go up, which festivals to charge more for, and what to fix.')));return}
   /* what changed since the run before this one */
   {const idx=RUNS.findIndex(r=>r.id===I._runId),prev=idx>0?RUNS[idx-1].I:null;if(prev&&A.moves){const pm=new Set(((prev._ai||{}).moves||[]).map(m=>m.id||m.title)),nw=(A.moves||[]).filter(m=>!pm.has(m.id||m.title)).length;
@@ -2525,8 +2537,38 @@ function mkEditOld(pid){const props=D.props.filter(p=>!isStopped(p)),sel=h('sele
     [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!cn.value.trim()){err.hidden=false;err.textContent='Name the comparable listing.';return}if(!(+pr.value>0)){err.hidden=false;err.textContent='Add the price.';return}
       closeLayer();save('market','append',{row:{obs_id:'MK'+Date.now().toString(36),property_id:sel.value,comp_name:cn.value.trim(),comp_url:url.value.trim()||null,platform:plat.value,bedrooms:+br.value||null,night:night.value,price:+pr.value,observed_on:TODAY,notes:nt.value.trim()||null,by:(LIVE.me||{}).email||'admin'}},'Market price added')}},'Add')])}
 const mkAI=r=>String(r.source||'')==='AI web search';
+/* live progress of the AI jobs (the bot keeps it in the Register script; reading it touches no sheet) */
+const PROG={market:null,ai:null,t:null,busy:false};
+const tms=x=>{const d=new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(String(x))?x:String(x)+'Z');return isNaN(d)?0:d.getTime()};
+async function pollProgress(){clearTimeout(PROG.t);if(!live()||PROG.busy)return;PROG.busy=true;let again=false;
+  try{const was={m:(PROG.market||{}).state,a:(PROG.ai||{}).state};const r=await apiPost({action:'progress'});PROG.market=r.market||null;PROG.ai=r.ai||null;
+    const fin=k=>was[k]&&was[k]!=='done'&&['done','skipped','queued','failed'].includes(((k==='m'?PROG.market:PROG.ai)||{}).state);
+    if(fin('m')||fin('a'))await load();else if(S.view==='insights')render();
+    again=progActive()}catch(e){again=progActive()}finally{PROG.busy=false}
+  if(again&&!document.hidden)PROG.t=setTimeout(pollProgress,8000)}
+/* a job is waiting or running: keep polling */
+function progActive(){const m=PROG.market,a=PROG.ai,mReq=tms(aiVal('ai.market_request')),aReq=tms((insRuns().ctl._request||{}).requested_at);
+  const fresh=(p,req)=>req&&Date.now()-req<20*6e4&&(!p||tms(p.started_at)<req-6e4);
+  return (m&&m.state==='running')||(a&&a.state==='running')||fresh(m,mReq)||fresh(a,aReq)}
+/* the bar: market = stays done of total; ai = stages, writing paced by past runs */
+function progBar(kind){const p=PROG[kind],req=kind==='market'?tms(aiVal('ai.market_request')):tms((insRuns().ctl._request||{}).requested_at);
+  const bar=(pct,label,sub,cls)=>h('div',{class:'pg'+(cls?' '+cls:''),role:'progressbar','aria-valuemin':0,'aria-valuemax':100,'aria-valuenow':Math.round(pct),'aria-label':label},
+    h('div',{class:'pg-h'},h('b',null,label),h('span',{class:'num'},Math.round(pct)+'%')),h('div',{class:'pg-b'},h('i',{style:{width:Math.max(3,Math.min(100,pct))+'%'}})),sub?h('small',null,sub):null);
+  const mins=s_=>s_<60?`about ${Math.max(5,Math.round(s_/5)*5)} s left`:`about ${Math.round(s_/60)} min left`;
+  if(req&&Date.now()-req<20*6e4&&(!p||tms(p.started_at)<req-6e4))return bar(2,'Waiting for the bot to start',kind==='market'?'it picks this up within a minute':'it picks this up within 5 minutes','wait');
+  if(!p)return null;
+  if(kind==='market'){if(p.state==='running'){const left=(p.total-p.done)*(p.secs_each||20);return bar(p.total?p.done/p.total*100:0,`Checking market prices · ${p.done} of ${p.total} stays`,p.done?mins(left):'starting…')}
+    if(p.state==='done'&&Date.now()-tms(p.finished_at)<30*6e4)return bar(100,`Done · ${p.priced} of ${p.total} stays priced`,`${p.searches} searches · ₹${(+p.cost_inr||0).toFixed(2)} · took ${Math.round((p.seconds||0)/60)||'under 1'} min`,'done');return null}
+  if(p.state==='running'){const st=p.stage;if(st==='gather')return bar(6,'Gathering your numbers','next: the AI writes the analysis');
+    if(st==='writing'){const el=(Date.now()-tms(p.writing_at))/1000,ex=p.expect_secs||60;return bar(10+85*Math.min(el/ex,.95),`AI writing the analysis · ${insName(p.model)}`,el<ex?mins(ex-el):'taking a little longer than usual')}
+    if(st==='saving')return bar(97,'Saving the analysis','');}
+  if(p.state==='queued'&&Date.now()-tms(p.started_at)<30*36e5)return bar(15,'Queued at half price','the words arrive within 24 hours','wait');
+  if(p.state==='done'&&Date.now()-tms(p.finished_at)<30*6e4)return bar(100,'Analysis ready',`₹${(+p.cost_inr||0).toFixed(2)} · took ${p.seconds||'?'} s`,'done');
+  if(p.state==='skipped'&&Date.now()-tms(p.started_at)<30*6e4)return bar(100,'No new analysis',p.why||'','done');
+  if(p.state==='failed'&&Date.now()-tms(p.started_at)<30*6e4)return bar(100,'The analysis didn’t finish','try again in a few minutes','bad');
+  return null}
 /* what one market check costs here: the average of this account's own checks, else about ₹3.5 a stay */
-function marketCharge(n){const bs=rowsOf('botstats').filter(r=>+r.market_scans>0),sc=sum(bs,r=>+r.market_scans),inrT=sum(bs,r=>+r.market_cost_inr||0);return Math.max(1,Math.round(sc?inrT/sc:n*3.5))}
+function marketCharge(n){const bs=rowsOf('botstats').filter(r=>+r.market_scans>0),sc=sum(bs,r=>+r.market_scans),inrT=sum(bs,r=>+r.market_cost_inr||0);return Math.max(1,Math.round(sc?inrT/sc:usdInr(n*0.05)))}
 function aiMarket(v){prLoad();const props=D.props.filter(p=>!isStopped(p)&&+p.base_rate>0).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
   const wn=prVal('weekend_nights'),isW=d=>wn.includes(DOW[(pd(d).getDay()+6)%7]),all=rowsOf('market');
   /* your listed price on the same nights the comparables were checked (next 4 months): like for like */
@@ -2534,17 +2576,18 @@ function aiMarket(v){prLoad();const props=D.props.filter(p=>!isStopped(p)&&+p.ba
   const pos=(you,b)=>!b||!you?h('span',{class:'hint'},'–'):h('span',{class:'mk-pos '+(you>b.high?'mk-hi':you<b.low?'mk-lo':'mk-in')},`${inrK(you)} vs ${inrK(b.mid)} · ${you>=b.mid?'+':''}${Math.round((you/b.mid-1)*100)}%`);
   /* the AI's weekly look at lookalike listings (Haiku, 3 web searches a stay) */
   {const ai=all.filter(mkAI),last=ai.map(r=>String(r.observed_on||'')).sort().pop(),priced=new Set(ai.map(r=>r.property_id)),on=swOn('ai.market_scan'),
-    asked=aiVal('ai.market_request'),waiting=asked&&(!last||last<asked.slice(0,10)),ch=marketCharge(props.length);
+    ch=marketCharge(props.length);
     v.append(card('s12','AI market check',{hint:on?`weekly: the AI looks up 3-5 lookalike listings per stay (same area, type, size, amenities) and notes what they ask · approximate`:'turned off in Manage › AI Expenses'},
       h('div',{class:'mk-ai'},h('div',null,h('b',null,last?`Last checked ${fmtD(last)}`:'Not checked yet'),h('small',null,last?`${priced.size} of ${props.length} stays priced · next check within a week`:'The first check runs within a week, or check now')),
-        !on?h('span',{class:'pill p-mute'},'Off'):waiting?h('span',{class:'pill p-acc'},'Checking… usually ready in about 10 minutes'):
-        h('button',{class:'btn sm primary',disabled:!live()||null,onclick:()=>setSetting('ai.market_request',new Date().toISOString().slice(0,16),`Asked the AI to check market prices · about ₹${ch} · ready in about 10 minutes`)},`Check now · ₹${ch}`))))}
+        !on?h('span',{class:'pill p-mute'},'Off'):progActive()?null:
+        h('button',{class:'btn sm primary',disabled:!live()||null,onclick:async()=>{await setSetting('ai.market_request',new Date().toISOString().slice(0,16),`Asked the AI to check market prices · about ₹${ch}`);pollProgress()}},`Check now · ₹${ch}`)),progBar('market')))}
   if(!all.length)v.append(h('section',{class:'card glass s12 ins-wait'},icon('info'),h('div',null,h('b',null,'No market prices yet'),h('span',null,'The AI fills this in with its first market check (weekly, or tap Check now above). You can also add your own price checks.'))));
   v.append(card('s12','You vs the market',{hint:'your listed price vs comparable listings on the nights checked (next 4 months) · weekdays and weekends',acts:[...uplBtns('market'),h('button',{class:'btn sm primary',onclick:()=>mkEdit()},icon('plus'),'Price check')]},
     h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Stay'),h('th',{class:'r'},'Weekdays'),h('th',{class:'r'},'Weekends'),h('th',{class:'r'},'Comparables sold out'),h('th',{class:'r'},'Listings'),h('th',{class:'r'},'Last checked'))),
-      h('tbody',null,props.map(p=>{const b=mkBand(p.property_id,'recent'),allR=all.filter(r=>r.property_id===p.property_id),last=allR.map(r=>String(r.observed_on||'')).sort().pop();
+      h('tbody',null,props.map(p=>{const b=mkBand(p.property_id,'recent'),allR=all.filter(r=>r.property_id===p.property_id),last=allR.map(r=>String(r.observed_on||'')).sort().pop(),
+        lowOnly=allR.length&&allR.every(r=>mkAI(r)&&String(r.confidence||'').toLowerCase()==='low'),lo=n=>lowOnly?h('span',{class:'hint',title:'The AI found only rough matches: shown in the list below, not compared'},'low confidence only'):pos(n,null);
         return h('tr',{class:p.property_id===S.mkPid?'hl':'',onclick:()=>{S.mkPid=p.property_id;render()},style:{cursor:'pointer'}},h('td',null,short(p.property)),
-          h('td',{class:'r'},pos(listedOn(p,false),b.wd)),h('td',{class:'r'},pos(listedOn(p,true),b.we)),
+          h('td',{class:'r'},b.wd?pos(listedOn(p,false),b.wd):lo()),h('td',{class:'r'},b.we?pos(listedOn(p,true),b.we):lo()),
           h('td',{class:'r'},b.sold==null?h('span',{class:'hint'},'–'):h('span',{class:'mk-pos '+(b.sold>=60?'mk-in':'')},b.sold+'%')),
           h('td',{class:'r num'},b.comps||'–'),h('td',{class:'r'},last?h('span',{class:'chip-s'+(diff(last,TODAY)>14?' late':'')},fmtD(last)):h('span',{class:'hint'},'never')))}))))));
   const pid=S.mkPid||(props[0]||{}).property_id;if(!pid)return;const p=D.P[pid],rs=rowsOf('market').filter(r=>r.property_id===pid);
@@ -3803,10 +3846,12 @@ const rowsOf=k=>(S.data&&S.data[k])||[];
 /* checklist / stock / review rules (Settings ops.* and reviews.*) */
 const OPSC=()=>OPS.cfg(rowsOf('ops'),CLIENT);
 /* one Settings row that admins may change (ai.* ops.* reviews.* pricing.*): update it, or add it */
-async function setSetting(key,value,msg){const grp=/^(ai|msgs)\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),row=arr.find(r=>r.key===key),old=row?row.value:undefined;
-  if(row)row.value=value;else arr.push({key,value});render();
+async function setSetting(key,value,msg){const grp=/^(ai|msgs)\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),rows=arr.filter(r=>r.key===key),row=rows[rows.length-1],old=row?row.value:undefined;
+  if(rows.length)rows.forEach(r=>{r.value=value});else arr.push({key,value});render();
   if(!live()){toast((msg||'Saved')+' · demo only');return true}
-  try{let r=await apiPost({action:'update',tab:'settings',match:{key},fields:{value}});if(!r.updated)await apiPost({action:'append',tab:'settings',row:{key,value}});toast((msg||'Saved')+' ✓');return true}
+  try{let r=await apiPost({action:'setting_put',name:key,value}).catch(e=>/not allowed|unknown/i.test(e.message)?null:Promise.reject(e));
+    if(!r){r=await apiPost({action:'update',tab:'settings',match:{key},fields:{value}});if(!r.updated)await apiPost({action:'append',tab:'settings',row:{key,value}})}   // a Register from before setting_put
+    toast((msg||'Saved')+' ✓');return true}
   catch(e){if(row)row.value=old;else S.data[grp]=arr.filter(r=>r.key!==key);render();toast('Couldn’t save: '+e.message);return false}}
 function applyLocal(tab,op,a){const k=TABKEY[tab],arr=S.data[k]||(S.data[k]=[]);
   if(op==='append'){arr.push(a.row);return 1}
@@ -5392,8 +5437,9 @@ function manageHistory(v,tabs){hiLoad();
     body));
   return pendingBar(v)}
 /* ---- Manage › Costs: AI and WhatsApp spend, and the switches that stop each one ---- */
-const aiVal=k=>{const r=(S.data.ai||[]).find(x=>x.key===k);return r?String(r.value??'').trim():''};
+const aiVal=k=>{const r=(S.data.ai||[]).filter(x=>x.key===k).pop();return r?String(r.value??'').trim():''};   // the newest row wins
 const swOn=k=>!/^(off|no|false|0)$/i.test(aiVal(k));
+const SW_BUSY=new Set();   /* a switch being saved can't be tapped again until the save is back */
 const COST_SW=[['ai.guest_replies','AI WhatsApp bot','Writes the replies to messages people type. Menus and buttons keep working.','ai'],
   ['ai.insights','AI insights','The daily analysis and the Run new analysis button, on every dashboard and login.','ai'],
   ['ai.market_scan','AI market check','Weekly, and when asked: the AI looks up 3-5 lookalike listings per stay on the web (3 searches each) for AI › Market.','ai'],
@@ -5401,14 +5447,14 @@ const COST_SW=[['ai.guest_replies','AI WhatsApp bot','Writes the replies to mess
   ['msgs.to_owners','Owners','Off: the bot sends owners nothing and ignores what they write, # commands included.','wa'],
   ['msgs.to_managers','Managers','Off: the bot sends managers nothing and ignores what they write. They still see everything in the manager app.','wa']];
 const COST_RATES=[['costs.wa_rate','WhatsApp ₹ per message (after the free ones)',0.115],['costs.wa_free','Free messages a month',1000],['costs.wa_tpl_rate','WhatsApp ₹ per template message',0.145],
-  ['costs.gst_pct','GST on WhatsApp %',18],['costs.hosting','Hosting ₹ a month',650],['costs.markup_pct','Markup on the total %',5]];
+  ['costs.gst_pct','GST on WhatsApp %',18],['costs.hosting_usd','Hosting $ a month (Render)',7.25],['costs.markup_pct','Markup on the total %',5]];
 const rate=k=>{const d=COST_RATES.find(x=>x[0]===k)[2],v=aiVal(k);return v!==''&&isFinite(+v)?+v:d};
 function costMonth(mk){const bs=rowsOf('botstats').filter(r=>String(r.day).slice(0,7)===mk),t=k=>sum(bs,r=>+r[k]||0),mu=1+rate('costs.markup_pct')/100;
   const runs=insRuns().runs.map(r=>r.I._meta||{}).filter(m=>String(m.generated_at||'').slice(0,7)===mk&&m.cost_inr!=null);
   const ai={replies:t('ai_replies'),calls:t('ai_calls'),tin:t('ai_in_tok'),tout:t('ai_out_tok'),inr:t('ai_cost_inr')},ins={runs,inr:sum(runs,m=>+m.cost_inr||0)},mkc={scans:t('market_scans'),searches:t('market_searches'),inr:t('market_cost_inr')};
   const who=['guest','owner','manager'].map(k=>({k,all:t('wa_'+k),tpl:t('wa_tpl_'+k)})),all=sum(who,x=>x.all),tpl=sum(who,x=>x.tpl),free=all-tpl;
   const waBase=Math.max(0,free-rate('costs.wa_free'))*rate('costs.wa_rate')+tpl*rate('costs.wa_tpl_rate'),wa=waBase*(1+rate('costs.gst_pct')/100)*mu;
-  const host=rate('costs.hosting')*mu,days=new Set(bs.map(r=>String(r.day).slice(0,10))).size;
+  const host=rate('costs.hosting_usd')*fxNow()*mu,days=new Set(bs.map(r=>String(r.day).slice(0,10))).size;
   return{bs,days,ai,ins,mk:mkc,who,all,tpl,free,wa,host,total:ai.inr+ins.inr+mkc.inr+wa+host}}
 function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.costM,c=costMonth(mk),ms=[];for(let k=TODAY.slice(0,7),i=0;i<12;i++,k=prevM(k))ms.push(k);
   const r2=n=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -5438,7 +5484,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
   /* switches */
   const spent={'ai.guest_replies':c.ai.inr,'ai.insights':c.ins.inr,'ai.market_scan':c.mk.inr};
   const swRow=([k,l,d,grp])=>{const on=swOn(k);return h('div',{class:'cs-sw'+(on?'':' off')},h('div',null,h('b',null,l,spent[k]!=null?h('span',{class:'cs-amt num'},` · ${r2(spent[k])} this month`):null),h('small',null,d)),
-    h('button',{class:'tgl',role:'switch','aria-checked':on?'true':'false','aria-label':l,onclick:()=>{const go=()=>setSetting(k,on?'off':'on',`${l}: ${on?'off':'on'}`);
+    h('button',{class:'tgl',role:'switch','aria-checked':on?'true':'false','aria-label':l,disabled:SW_BUSY.has(k)||null,onclick:()=>{if(SW_BUSY.has(k))return;const go=()=>{SW_BUSY.add(k);return setSetting(k,on?'off':'on',`${l}: ${on?'off':'on'}`).finally(()=>{SW_BUSY.delete(k);render()})};
       const sure={'ai.guest_replies':['Turn off AI replies?','Guests who type a question get a holding line, and you get their message to answer yourself on WhatsApp. Menus and buttons keep working.'],
         'msgs.to_guests':['Stop all messages to guests?','The bot goes silent for guests: no replies, reminders or door codes. Reply to them yourself from the WhatsApp Business app.'],
         'msgs.to_owners':['Stop all messages to owners?','No alerts, morning summary or replies to # commands until you turn it back on.'],
@@ -5621,7 +5667,7 @@ load();
 /* Live data: hourly while open, plus on return to the tab if the data is older than the refresh window. */
 setInterval(load,CONFIG.REFRESH_MINUTES*6e4);
 setInterval(()=>{if(live()&&S.view==='whatsapp'&&!document.hidden)load()},12e4);
-setInterval(checkBot,12e4);setInterval(paintStatus,3e4);setTimeout(checkBot,1500);
+setInterval(checkBot,12e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&progActive())pollProgress()});setInterval(paintStatus,3e4);setTimeout(checkBot,1500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkBot();paintStatus()}});
 $('#liveBadge').addEventListener('click',()=>{const s=liveState();s==='demo'?connectModal():s==='offline'?manualRefresh():go('whatsapp')});
 $('#connectBtn').addEventListener('click',()=>{setMenu(false);live()?confirmBox(SIGNIN?'Sign out of this device?':'Disconnect this device?',SIGNIN?'You will need to sign in with Google again on this device.':'The access key is removed from this device. Connect again any time with the key.',SIGNIN?'Sign out':'Disconnect',false,disconnect):connectModal()});
