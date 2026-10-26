@@ -128,6 +128,7 @@ button{cursor:pointer}
 .hero-photo{position:absolute;inset:0;overflow:hidden;background:var(--bg)}
 .hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 72%;display:block;opacity:0;transition:opacity 1.2s ease}
 .hero-photo img.nx{z-index:1}
+.hero-photo::after{z-index:2}/* the soft edges stay above every photo, also the one fading in */
 .hero-photo img.ld{opacity:1}
 .hero-photo::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0%,var(--bg) 3%,rgba(246,248,252,0.82) 15%,rgba(246,248,252,0.35) 32%,transparent 52%),
   linear-gradient(0deg,var(--bg) 0%,rgba(246,248,252,0.55) 14%,transparent 34%),
@@ -970,7 +971,15 @@ body:not(.is-admin) .admin{display:none!important}
 @media (max-height:500px){.fwrap{position:static}}
 /* header: the actions never leave the screen - the section links shrink and scroll first (UI-01) */
 .topbar{min-width:0}.brand,.top-r{flex:0 0 auto}
-.nav{min-width:0;flex:0 1 auto;overflow-x:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+.nav{min-width:0;flex:1 1 auto;overflow:hidden;justify-content:center}
+.nav button[hidden]{display:none}
+.nav-more{position:relative;border:0;background:none;padding:9px 11px 13px;font:inherit;font-size:13px;font-weight:600;color:var(--ink-2);border-radius:12px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer}
+.nav-more:hover,.nav-more[aria-expanded=true]{color:var(--ink)}.nav-more .nm-chev{font-size:10px;opacity:.7}
+.nav-pop{position:absolute;z-index:80;min-width:220px;padding:6px;border-radius:16px;background:var(--surface);border:1px solid var(--hair-2);box-shadow:var(--shadow-lg);display:grid;gap:2px}
+.nav-pop button{display:flex;gap:10px;align-items:center;padding:10px 12px;border:0;background:none;border-radius:10px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left}
+.nav-pop button:hover{background:var(--surface-2)}.nav-pop svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;flex:none}.nav-pop .badge{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--muted);background:var(--hair);border-radius:99px;padding:0 6px;line-height:17px}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}.pagehead .ph-new{flex:none}
+@media (max-width:640px){.pagehead{flex-wrap:wrap}.pagehead .ph-new{width:100%;justify-content:center}}
 @media (min-width:981px) and (max-width:1440px){.live-badge .lb-t{display:none}.live-badge{padding:0 11px}.brand-logo{height:36px}}
 @media (min-width:981px) and (max-width:1340px){.top-r .btn.primary{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}.top-r .btn.primary .lbl{display:none}.brand-logo{height:30px}}
 .offline-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;border-left:4px solid var(--bad)}.offline-note span{flex:1 1 260px;color:var(--muted)}
@@ -1663,7 +1672,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       <span class="status-pill" id="modePill" hidden></span>
       <button class="live-badge demo" id="liveBadge" type="button"><span class="lb-dot"></span><span class="lb-t">Demo · Connect</span></button>
       <div class="seg" role="group" aria-label="View as"><button class="role-btn" data-role="admin" aria-pressed="true">Admin</button><button class="role-btn" data-role="viewer" aria-pressed="false">Viewer</button></div>
-      <button class="btn primary admin" data-new="booking" aria-label="New booking"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span class="lbl">New booking</span></button>
       <button class="circle bell" id="bellBtn" aria-label="What's new" hidden><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15zM10 20a2 2 0 004 0"/></svg><span class="bell-n" hidden></span></button>
       <button class="circle" id="menuBtn" aria-label="Data and settings" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
@@ -2611,11 +2619,30 @@ function tabEdges(){const tb=$('#tabbar'),w=$('#tabwrap');if(!tb||!w)return;cons
 function tabPeek(){const tb=$('#tabbar');if(!tb||!PHONE()||calm()||store.get('jg_tb_peek'))return;if(tb.scrollWidth-tb.clientWidth<8)return;store.set('jg_tb_peek',1);
   setTimeout(()=>{tb.scrollTo({left:tb.scrollLeft+110,behavior:'smooth'});setTimeout(()=>tb.scrollTo({left:Math.max(0,tb.scrollLeft-110),behavior:'smooth'}),850)},1100)}
 function navIcon(d){const s=sv('svg',{viewBox:'0 0 24 24'});s.append(sv('path',{d}));return s}
+/* The top menu shows what fits; the rest goes under "More" (the current page is never hidden). Re-fitted when the
+   window resizes, when the right side changes width (Live -> Updating), and so new menu items never get cut. */
+function fitNav(){const nav=$('#nav');if(!nav||!nav.offsetParent)return;nav.querySelector('.nav-more')?.remove();const bs=[...nav.querySelectorAll('button[data-k]')];bs.forEach(b=>b.hidden=false);
+  if(nav.scrollWidth<=nav.clientWidth+1)return;
+  const more=h('button',{class:'nav-more','aria-haspopup':'menu','aria-expanded':'false',onclick:e=>{e.stopPropagation();navMore(more)}},'More',h('span',{class:'nm-chev'},'▾'));nav.append(more);
+  const order=bs.slice().reverse().filter(b=>b.getAttribute('aria-current')!=='page');
+  for(const b of order){if(nav.scrollWidth<=nav.clientWidth+1)break;b.hidden=true}
+  const hid=bs.filter(b=>b.hidden);if(!hid.length){more.remove();return}
+  const cnt=hid.reduce((t,b)=>t+(+(b.querySelector('.badge')||{}).textContent||0),0);if(cnt)more.append(h('span',{class:'badge'},cnt))}
+function navMore(btn){const old=document.querySelector('.nav-pop');if(old){old.remove();btn.setAttribute('aria-expanded','false');return}
+  const hid=[...$('#nav').querySelectorAll('button[data-k][hidden]')],r=btn.getBoundingClientRect();
+  const pop=h('div',{class:'nav-pop',role:'menu',style:{top:(r.bottom+8+scrollY)+'px',left:Math.max(8,Math.min(r.left,innerWidth-232))+'px'}},
+    hid.map(b=>h('button',{role:'menuitem',onclick:()=>{pop.remove();go(b.dataset.k)}},b.querySelector('svg')?.cloneNode(true),b.dataset.l,b.querySelector('.badge')?.cloneNode(true))));
+  document.body.append(pop);btn.setAttribute('aria-expanded','true');
+  setTimeout(()=>document.addEventListener('click',function off(e){if(!pop.contains(e.target)){pop.remove();btn.setAttribute('aria-expanded','false');document.removeEventListener('click',off)}}),0)}
+let navRO=null;function navWatch(){if(navRO||!window.ResizeObserver)return;let t=0;navRO=new ResizeObserver(()=>{cancelAnimationFrame(t);t=requestAnimationFrame(fitNav)});
+  ['.topbar','.top-r'].forEach(sel=>{const el=document.querySelector(sel);if(el)navRO.observe(el)})}
 function renderChrome(){
   const openIss=D.M.filter(m=>m.status!=='Closed'&&fP(D.P[m.property_id])).length,urgent=D.M.filter(m=>m.status!=='Closed'&&m.priority==='High'&&fP(D.P[m.property_id])).length;
   const arrT=D.B.filter(b=>fB(b)&&b.check_in===TODAY).length,depT=D.B.filter(b=>fB(b)&&b.check_out===TODAY).length;
   const cur=S.view==='property'?'properties':S.view;
-  $('#nav').replaceChildren(...navViews().map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),l,k==='desk'?h('span',{class:'badge'},arrT+depT):k==='ops'&&openIss?h('span',{class:'badge'+(urgent?' hot':''),'data-tip':`${openIss} open issues, ${urgent} urgent`},urgent||openIss):null)));
+  document.querySelector('.nav-pop')?.remove();
+  $('#nav').replaceChildren(...navViews().map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,'data-k':k,'data-l':l,onclick:()=>go(k)},navIcon(d),l,k==='desk'?h('span',{class:'badge'},arrT+depT):k==='ops'&&openIss?h('span',{class:'badge'+(urgent?' hot':''),'data-tip':`${openIss} open issues, ${urgent} urgent`},urgent||openIss):null)));
+  fitNav();navWatch();
   {const tb=$('#tabbar'),keep=tb.scrollLeft;tb.replaceChildren(...navViews().map(([k,l,d])=>h('button',{'aria-current':cur===k?'page':null,onclick:()=>go(k)},navIcon(d),{desk:'Desk',ops:'Ops'}[k]||l)));
    tb.scrollLeft=keep;const on=tb.querySelector('[aria-current=page]');if(on){const r=on.offsetLeft+on.offsetWidth/2-tb.clientWidth/2;if(on.offsetLeft<tb.scrollLeft+8||on.offsetLeft+on.offsetWidth>tb.scrollLeft+tb.clientWidth-8)tb.scrollTo({left:r,behavior:calm()?'auto':'smooth'})}tabEdges()}
   document.body.classList.toggle('is-admin',S.admin);
@@ -2696,7 +2723,8 @@ function renderLead(){
   if(S.view==='overview'){L.replaceChildren(hero());return}
   if(S.view==='property'){L.replaceChildren();return}
   const [a,b]=HEAD[S.view]||['',''];
-  L.replaceChildren(h('header',{class:'pagehead'},h('div',null,h('div',{class:'eyebrow'},mtn(),(VIEWS.find(v=>v[0]===S.view)||[0,''])[1]),h('h1',null,a+' ',h('em',null,b)),h('div',{class:'sub'},S.view==='manage'&&SUB_MG[MG.sec]||SUB[S.view]))));
+  L.replaceChildren(h('header',{class:'pagehead'},h('div',null,h('div',{class:'eyebrow'},mtn(),(VIEWS.find(v=>v[0]===S.view)||[0,''])[1]),h('h1',null,a+' ',h('em',null,b)),h('div',{class:'sub'},S.view==='manage'&&SUB_MG[MG.sec]||SUB[S.view])),
+    h('button',{class:'btn primary admin ph-new',onclick:()=>openForm('booking')},icon('plus'),h('span',null,'New booking'))));
 }
 function hero(){
   const f=S.f,s=stats(f.from,f.to);
@@ -2708,8 +2736,7 @@ function hero(){
     h('div',{class:'hero-copy'},
       h('div',{class:'eyebrow'},mtn(),(D?liveCities().join(' · '):CLIENT.region||CITIES.join(' · ')),swoosh()),
       h('h1',null,hello,h('em',null,`${pct(s.occ)} booked ${bookedWhen()}.`)),
-      h('p',null,h('b',{class:'num'},inrK(s.net)),` net payout from ${s.count} bookings in ${rangeLabel()}, with ${s.nights.toLocaleString('en-IN')} of ${s.avail.toLocaleString('en-IN')} nights filled. Today: ${arr.length} check-in${arr.length===1?'':'s'}, ${dep.length} check-out${dep.length===1?'':'s'}${tc?`, ${tc} same day check-in & check-out${tc>1?'s':''}`:''}.`),
-      h('div',{class:'hero-acts'},h('button',{class:'btn primary cta',onclick:()=>{S.desk.mode='today';go('desk')}},'Open check-in desk',h('span',{class:'arr'},icon('chev'))),h('button',{class:'btn ghost admin',onclick:()=>openForm('booking')},icon('plus'),'New booking'))),
+      h('div',{class:'hero-acts'},h('button',{class:'btn primary cta',onclick:()=>{S.desk.mode='today';go('desk')}},'Open check-in desk',h('span',{class:'arr'},icon('chev'))),h('button',{class:'btn ghost admin hero-new',onclick:()=>openForm('booking')},icon('plus'),'New booking'))),
     h('div',{class:'hero-media'},h('div',{class:'hero-photo'},heroImg),
       h('button',{class:'float-card',onclick:()=>{S.desk.mode='today';go('desk')},'aria-label':`${arr.length} checking in today. Open the check-in desk.`},
         h('div',{class:'top'},h('div',{class:'avs'},arr.length?arr.slice(0,3).map(b=>h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest))):h('span',{class:'av',style:{background:'#9aa4ba'}},'–')),h('span',{class:'n num'},arr.length)),
