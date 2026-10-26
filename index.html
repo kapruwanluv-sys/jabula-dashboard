@@ -1153,6 +1153,9 @@ body:not(.is-admin) .admin{display:none!important}
 .live-badge .lb-dot,.light i{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
 .live-badge.live .lb-dot,.light.live i{background:var(--ok);animation:wapulse 2s infinite}
 .live-badge.offline .lb-dot,.light.offline i{background:var(--warn)}
+.light.partial i{background:#e0a100;box-shadow:0 0 0 3px rgba(224,161,0,.18)}.light.partial b{color:#9a6b00}
+.bot-off-note{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(224,161,0,.45);background:rgba(224,161,0,.1);color:#7a5600;border-radius:99px;padding:5px 10px 5px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.bot-off-note svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
 .light.down i{background:var(--bad,#d93a2b)}
 .live-badge.live{color:var(--ok);border-color:rgba(18,128,76,0.4);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
 .live-badge.offline{color:var(--warn)}
@@ -2341,7 +2344,7 @@ function insights(v){
           return mine.length?h('small',{class:'ins-spend'},`${mLong(mk)}: ${mine.length} run${mine.length>1?'s':''} · ₹${sp.toFixed(2)} on AI`):null})()))),
     h('div',{class:'ins-run'},h('div',{class:'seg',role:'group','aria-label':'AI model'},INS_MODELS.map(([k,l])=>h('button',{'aria-pressed':pick===k,onclick:()=>{S.insModel=k;render()}},l))),
       (()=>{const ch=insCharge(pick);return h('small',{class:'ins-cost'},`about ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)} a run · ${ch.basis}`)})(),
-      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):!swOn('ai.insights')?h('span',{class:'pill p-mute',title:'Turn it on in Manage › Costs'},'AI insights are off'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},(()=>{const ch=insCharge(pick);return `Run new analysis · ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)}`})()))));
+      asked?h('span',{class:'pill p-acc'},'New analysis on its way'):!swOn('ai.insights')?h('span',{class:'pill p-mute',title:'Turn it on in Manage › AI Expenses'},'AI insights are off'):h('button',{class:'btn primary sm',onclick:e=>ask(e.currentTarget)},(()=>{const ch=insCharge(pick);return `Run new analysis · ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)}`})()))));
   if(!M.generated_at){v.append(card('s12','AI insights',{},h('div',{class:'empty'},'Your first analysis will appear here: where prices can go up, which festivals to charge more for, and what to fix.')));return}
   /* what changed since the run before this one */
   {const idx=RUNS.findIndex(r=>r.id===I._runId),prev=idx>0?RUNS[idx-1].I:null;if(prev&&A.moves){const pm=new Set(((prev._ai||{}).moves||[]).map(m=>m.id||m.title)),nw=(A.moves||[]).filter(m=>!pm.has(m.id||m.title)).length;
@@ -3929,20 +3932,25 @@ function lastBotActivity(){if(!live())return null;const ts=[];
   (S.data.maint||[]).filter(m=>m.source==='WhatsApp').forEach(m=>ts.push(m.reported_at?new Date(+m.reported_at*1000).toISOString().slice(0,16):m.reported_on));
   const now=new Date(),v=ts.filter(Boolean).map(String).map(x=>new Date(x.length<=10?x+'T12:00':x)).filter(d=>!isNaN(d)&&d<=now).sort((a,b)=>a-b).pop();return v||null}
 const agoTxt=d=>{if(!d)return'–';const m=Math.round((Date.now()-d)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
+/* what an admin has switched off on the bot (Manage › AI Expenses) */
+function botOffParts(){const p=[];if(!swOn('ai.guest_replies'))p.push('AI replies');[['msgs.to_guests','guests'],['msgs.to_owners','owners'],['msgs.to_managers','managers']].forEach(([k,l])=>{if(!swOn(k))p.push('messages to '+l)});return p}
 function statusBits(){const s=liveState(),hm=d=>d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
   const sheet={syncing:['demo','Updating…',`Showing this device’s copy from ${LIVE.cachedAt?hm(new Date(LIVE.cachedAt)):'earlier'} · fetching the latest from the sheet`],live:['live','Live',`Live sheet · updated ${agoTxt(LIVE.okAt)}`],offline:['offline','Offline',`Can’t reach the sheet${LIVE.err?' ('+LIVE.err+')':''} · showing data from ${hm(S.loadedAt)}`],demo:['demo','Demo · Connect','Demo data on this device · tap to connect']}[s];
   const bot={up:['live','Bot online','The WhatsApp bot answered its health check '+agoTxt(BOT.at)],stuck:['offline','Bot restarting','The bot reported a problem and is being restarted automatically'],down:['down','Bot not responding','The WhatsApp bot did not answer its health check '+agoTxt(BOT.at)],checking:['demo','Checking bot…','Checking the WhatsApp bot'],none:['demo','Bot status n/a','']}[BOT.state];
-  return{s,sheet,bot}}
+  const off=botOffParts();
+  if(BOT.state==='up'&&off.length)return{s,sheet,bot:['partial','Bot partly on',`Online · turned off: ${off.join(', ')} (Manage › AI Expenses)`],off};
+  return{s,sheet,bot,off}}
 function paintStatus(){const b=$('#liveBadge');if(!b||!D)return;const{s,sheet}=statusBits();
   b.className='live-badge '+sheet[0];b.setAttribute('data-tip',sheet[2]);b.setAttribute('aria-label',sheet[2]);b.querySelector('.lb-t').textContent=sheet[1];
   const w=$('#waStatus');if(w)w.replaceChildren(...waStatusKids())}
-function waStatusKids(){const{s,sheet,bot}=statusBits(),act=lastBotActivity();
+function waStatusKids(){const{s,sheet,bot,off}=statusBits(),act=lastBotActivity();
   const light=(cls,label,tip,onclick)=>h(onclick?'button':'span',{class:'light '+cls,'data-tip':tip,onclick:onclick||null},h('i'),h('b',null,label));
   const ff=S.f,act2=[...ff.cities,...ff.props.map(id=>D.P[id]?short(D.P[id].property):id)];
   const hm=d=>d.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
   const win=h('div',{class:'seg',role:'group','aria-label':'Activity window'},WAWIN.map(([k,l])=>h('button',{'aria-pressed':(S.wa&&S.wa.win||'30')===k,onclick:()=>{(S.wa||(S.wa={})).win=k;render()}},l.replace('Last ',''))));
   return[light(sheet[0],'Sheet: '+(s==='live'?'live':s==='offline'?'offline':s==='syncing'?'updating…':'demo'),sheet[2],s==='demo'?connectModal:s==='offline'?()=>manualRefresh():null),
     light(bot[0],bot[1],bot[2],()=>{BOT.state='checking';paintStatus();checkBot()}),
+    off&&off.length?h('button',{class:'bot-off-note',onclick:()=>{MG.sec='costs';go('manage')}},`${off.join(' · ')} turned off in Manage › AI Expenses`,icon('chev')):null,
     s==='live'?h('span',{class:'light-note'},`Data as of ${hm(new Date(LIVE.okAt))} · last bot activity ${agoTxt(act)} · auto-refresh every 2 min`):h('span',{class:'light-note'},s==='demo'?'Showing sample enquiries. Connect to see the real bot.':'Showing the last data until the sheet answers again.'),
     h('div',{class:'wa-row'},h('span',{class:'light-note'},'Showing activity:'),win,act2.length?h('span',{class:'chip-s'},'Filtered: '+act2.join(', ')):h('span',{class:'light-note'},'All stays'),act2.length?h('button',{class:'btn sm',onclick:()=>setF({cities:[],props:[]})},'Clear filters'):null),
     h('span',{class:'grow'}),s==='demo'?h('button',{class:'btn sm primary',onclick:connectModal},'Connect live data'):h('button',{class:'btn sm',onclick:()=>{manualRefresh();BOT.state='checking';checkBot()}},'Refresh')]}
@@ -5416,9 +5424,9 @@ const aiVal=k=>{const r=(S.data.ai||[]).find(x=>x.key===k);return r?String(r.val
 const swOn=k=>!/^(off|no|false|0)$/i.test(aiVal(k));
 const COST_SW=[['ai.guest_replies','AI WhatsApp bot','Writes the replies to messages people type. Menus and buttons keep working.','ai'],
   ['ai.insights','AI insights','The daily analysis and the Run new analysis button, on every dashboard and login.','ai'],
-  ['msgs.manager_alerts','WhatsApp alerts to managers','Guest issues, requests and add-ons for their stays. Off: they see them in the manager app only.','wa'],
-  ['msgs.guest_reminders','Reminders to guests','Before arrival, the evening before check-out, the review ask. The check-in door code always goes.','wa'],
-  ['msgs.owner_digest','Morning summary to owners','The 8 am WhatsApp summary.','wa']];
+  ['msgs.to_guests','Guests','Off: the bot sends guests nothing and ignores what they write. Your team can still reply from the WhatsApp Business app.','wa'],
+  ['msgs.to_owners','Owners','Off: the bot sends owners nothing and ignores what they write, # commands included.','wa'],
+  ['msgs.to_managers','Managers','Off: the bot sends managers nothing and ignores what they write. They still see everything in the manager app.','wa']];
 const COST_RATES=[['costs.wa_rate','WhatsApp ₹ per message (after the free ones)',0.115],['costs.wa_free','Free messages a month',1000],['costs.wa_tpl_rate','WhatsApp ₹ per template message',0.145],
   ['costs.gst_pct','GST on WhatsApp %',18],['costs.hosting','Hosting ₹ a month',650],['costs.markup_pct','Markup on the total %',5]];
 const rate=k=>{const d=COST_RATES.find(x=>x[0]===k)[2],v=aiVal(k);return v!==''&&isFinite(+v)?+v:d};
@@ -5433,7 +5441,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
   const r2=n=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pick=h('select',{class:'mg-pick','aria-label':'Month',onchange:e=>{S.costM=e.target.value;render()}},ms.map(k=>h('option',{value:k,selected:k===mk||null},mLong(k)+(k===TODAY.slice(0,7)?' (so far)':''))));
   const tile=(l,val,sub)=>h('div',{class:'cs-tile'},h('span',null,l),h('b',{class:'num'},val),sub?h('small',null,sub):null);
-  v.append(card('s12','Costs',{hint:'what the AI and WhatsApp cost, all charges included',acts:[tabs]},
+  v.append(card('s12','AI Expenses',{hint:'what the AI and WhatsApp cost, all charges included',acts:[tabs]},
     h('div',{class:'cs-head'},pick,c.days?h('small',{class:'hint'},`${c.days} day${c.days>1?'s':''} of bot counters`):h('small',{class:'hint'},'No bot counters for this month yet')),
     h('div',{class:'cs-tiles'},tile('Total',r2(c.total),'AI + WhatsApp + hosting'),
       tile('AI WhatsApp bot',r2(c.ai.inr),c.ai.replies?`${c.ai.replies.toLocaleString('en-IN')} replies · ${r2(c.ai.inr/c.ai.replies)} each`:'no AI replies'),
@@ -5448,7 +5456,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
     c.ins.runs.slice().reverse().map(m=>h('div',null,h('span',null,`${m.generated_at?whenL(m.generated_at):'Run'} · ${insName(m.model)}${m.batch?' · batch':''}`),h('b',{class:'num'},r2(m.cost_inr))))):h('div',{class:'empty'},'No runs this month.')));
   /* WhatsApp */
   const wl={guest:'Guests',owner:'Owners',manager:'Managers'};
-  v.append(card('s12','WhatsApp messages',{hint:'counted as the bot sends them'},
+  v.append(card('s12','WhatsApp messages sent',{hint:'counted as the bot sends them'},
     h('div',{class:'tbl-wrap'},h('table',{class:'tbl cs-t'},h('thead',null,h('tr',null,h('th',null,'To'),h('th',{class:'r'},'Messages'),h('th',{class:'r'},'of which templates'))),
       h('tbody',null,c.who.map(x=>h('tr',null,h('td',null,wl[x.k]),h('td',{class:'r num'},x.all.toLocaleString('en-IN')),h('td',{class:'r num'},x.tpl.toLocaleString('en-IN')))),
         h('tr',{class:'hl'},h('td',null,'All'),h('td',{class:'r num'},c.all.toLocaleString('en-IN')),h('td',{class:'r num'},c.tpl.toLocaleString('en-IN')))))),
@@ -5457,7 +5465,11 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
   const spent={'ai.guest_replies':c.ai.inr,'ai.insights':c.ins.inr};
   const swRow=([k,l,d,grp])=>{const on=swOn(k);return h('div',{class:'cs-sw'+(on?'':' off')},h('div',null,h('b',null,l,spent[k]!=null?h('span',{class:'cs-amt num'},` · ${r2(spent[k])} this month`):null),h('small',null,d)),
     h('button',{class:'tgl',role:'switch','aria-checked':on?'true':'false','aria-label':l,onclick:()=>{const go=()=>setSetting(k,on?'off':'on',`${l}: ${on?'off':'on'}`);
-      if(on&&k==='ai.guest_replies')confirmBox('Turn off AI replies?','Guests who type a question get a holding line, and you get their message to answer yourself on WhatsApp. Turn it back on here any time.','Turn off',true,go);else go()}},h('i')))};
+      const sure={'ai.guest_replies':['Turn off AI replies?','Guests who type a question get a holding line, and you get their message to answer yourself on WhatsApp. Menus and buttons keep working.'],
+        'msgs.to_guests':['Stop all messages to guests?','The bot goes silent for guests: no replies, reminders or door codes. Reply to them yourself from the WhatsApp Business app.'],
+        'msgs.to_owners':['Stop all messages to owners?','No alerts, morning summary or replies to # commands until you turn it back on.'],
+        'msgs.to_managers':['Stop all messages to managers?','No WhatsApp alerts; they work from the manager app only.']}[k];
+      if(on&&sure)confirmBox(sure[0],sure[1]+' Turn it back on here any time.','Turn off',true,go);else go()}},h('i')))};
   /* what the AI WhatsApp bot switch turns off, for each kind of person */
   const AIBOT=[['Guests',['AI answers to typed questions: prices, dates, the stays, check-in, local tips','Requests, issues, add-ons and cancellations typed in chat'],
       ['Menus and buttons: booking, My booking, Need help, Ask for something, Add-ons','Reminders and the check-in door code','A typed message gets “our team will reply shortly”']],
@@ -5466,14 +5478,16 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
   const aiOn=swOn('ai.guest_replies'),bot=h('div',{class:'cs-bot'+(aiOn?'':' off')},...AIBOT.map(([who,offL,keepL,keepT])=>h('div',{class:'cs-who'},h('b',null,who),
     h('div',{class:'cs-l off'},h('small',null,aiOn?'Turning off stops':'Stopped now'),h('ul',null,offL.map(x=>h('li',null,x)))),
     h('div',{class:'cs-l keep'+(keepT?' chg':'')},h('small',null,keepT||'Keeps working'),h('ul',null,keepL.map(x=>h('li',null,x)))))));
-  v.append(card('s12','Switches',{hint:'stop a cost at once · applies to every dashboard, login and the bot'},h('div',{class:'cs-sws'},
-    h('h4',null,'AI'),swRow(COST_SW[0]),bot,swRow(COST_SW[1]),h('h4',null,'WhatsApp messages'),...COST_SW.filter(x=>x[3]==='wa').map(swRow))));
+  v.append(card('s12','AI switches',{hint:'stop an AI cost at once · applies to every dashboard, login and the bot'},h('div',{class:'cs-sws'},
+    swRow(COST_SW[0]),bot,swRow(COST_SW[1]))));
+  v.append(card('s12','WhatsApp messages by group',{hint:'each switch stops every WhatsApp message to that group, both ways · not AI'},h('div',{class:'cs-sws'},
+    ...COST_SW.filter(x=>x[3]==='wa').map(swRow))));
   return pendingBar(v)}
 function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at),trashE=(S.data.expenses||[]).map(e=>ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e).filter(e=>e.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['costs','Costs',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['costs','AI Expenses',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();pushHash();render();requestAnimationFrame(()=>document.querySelector('.mg-tabs [aria-selected=true]')?.scrollIntoView({block:'nearest',inline:'center'}))}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
