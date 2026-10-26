@@ -1567,6 +1567,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cs-l ul{margin:0;padding-left:16px;display:grid;gap:3px;font-size:12.5px;line-height:1.4;color:var(--ink-2,var(--ink))}
 .cs-bot.off .cs-l.off{opacity:.75}
 @media(max-width:900px){.cs-bot{grid-template-columns:1fr}}
+.mk-ai{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.mk-ai>div{display:grid;gap:2px}.mk-ai small{color:var(--muted);font-size:12.5px}
+.mk-aip{margin-left:6px;font-size:10.5px;vertical-align:2px}
 .cs-amt{font-weight:600;color:var(--muted);font-size:12.5px}
 @media(max-width:560px){.cs-tiles{grid-template-columns:1fr 1fr;gap:8px}.cs-tile:first-child{grid-column:1/-1}.cs-tile b{font-size:18px}}
 /* Manager app setup: tick-box lists */
@@ -2365,7 +2367,7 @@ function insights(v){
   const up=[...(I.underpriced||[])].sort((a,b)=>b.month.localeCompare(a.month));
   v.append(card('s12','Underpriced seasons',{hint:'months a stay was 85%+ full'},say((A.underpriced||{}).summary),
     list(((A.underpriced||{}).items||[]).map(x=>[h('b',null,`${nm(x.stay_id)} · ${x.period}: `),x.suggestion])),
-    up.length?tbl([['Stay'],['Month'],['Booked',1],['Paid a night',1],['Usual',1]],up.map(x=>h('tr',null,td(x.stay),td(ymL(x.month)),td(x.occ+'%',1),td(inrK(x.rate),1),td(inrK(x.usual_rate),1)))):h('div',{class:'empty'},'No month was 85% full yet.')));
+    up.length||((A.underpriced||{}).items||[]).length?null:h('div',{class:'empty'},'No month was 85% full yet.')));
   // 3 festivals and local events
   const F=I.festivals||{},cityL=r=>(r||[]).map(x=>x.booked_now!=null?`${x.city} ${x.booked_now}% booked so far`:`${x.city} ${x.occ}% at ${inrK(x.rate)} (rest of month ${x.month_occ}% at ${inrK(x.month_rate)})`).join(' · ');
   v.append(card('s12','Festivals and local events',{hint:'price vs fill'},say((A.festivals||{}).summary),
@@ -2416,7 +2418,7 @@ function insights(v){
    Suggested prices are worked out by the bot from your data and the market (numbers in code); the AI writes the why. ---- */
 const LEVEL_L={raise:['Raise','p-ok'],hold:['Hold','p-mute'],lower:['Lower','p-warn']};
 const mkSold=r=>/^(no|booked|sold|sold out|false)$/i.test(String(r.available||''));
-function mkRows(pid,k){return rowsOf('market').filter(r=>r.property_id===pid&&(k==='recent'?String(r.night)>=add(TODAY,-14)&&String(r.night)<=add(TODAY,120):String(r.night).slice(0,7)===k))}
+function mkRows(pid,k){return rowsOf('market').filter(r=>!(String(r.source||'')==='AI web search'&&String(r.confidence||'').toLowerCase()==='low')&&r.property_id===pid&&(k==='recent'?String(r.night)>=add(TODAY,-14)&&String(r.night)<=add(TODAY,120):String(r.night).slice(0,7)===k))}
 function mkBand(pid,k){const wn=prVal('weekend_nights'),isW=d=>wn.includes(DOW[(pd(d).getDay()+6)%7]),all_=mkRows(pid,k),rs=all_.filter(r=>!mkSold(r)&&+r.price>0);
   const band=xs=>{xs=xs.filter(x=>x>0).sort((a,b)=>a-b);if(!xs.length)return null;const q=f=>xs[Math.min(xs.length-1,Math.max(0,Math.round(f*(xs.length-1))))];return{low:Math.round(q(.25)),mid:Math.round(xs.length%2?xs[(xs.length-1)/2]:(xs[xs.length/2-1]+xs[xs.length/2])/2),high:Math.round(q(.75)),n:xs.length}};
   return{wd:band(rs.filter(r=>!isW(r.night)).map(r=>+r.price)),we:band(rs.filter(r=>isW(r.night)).map(r=>+r.price)),comps:new Set(all_.map(r=>r.comp_name)).size,
@@ -2476,46 +2478,12 @@ function pricingActions(I){const acts=(I.pricing_actions||[]).filter(a=>a.to>=TO
           done?h('span',{class:'pill p-ok'},'Applied'):h('button',{class:'btn sm primary',onclick:()=>applyPrices(a.stay_id,a.dates,a.suggested,{id:key,title:`${short(a.stay)} ${rng(a)}: ${inr(a.suggested)} a night`,detail:(w.why||[]).join(' · '),stay_id:a.stay_id})},'Apply'),
           done?null:h('button',{class:'btn sm ghost',disabled:hasIdea(key)||null,onclick:()=>saveIdea({id:key,title:`${short(a.stay)} ${rng(a)}: ${inr(a.suggested)} a night`,detail:(w.why||[]).join(' · '),stay_id:a.stay_id,category:'pricing',run:I._runId})},hasIdea(key)?'Saved':'Save')))})),
     shown.length>12?h('button',{class:'btn sm',onclick:()=>{S.actAll=!S.actAll;render()}},S.actAll?'Show fewer':`Show all ${shown.length}`):null)}
-/* how many days before arrival guests book: tells when an empty date is normal and when it is late */
-function leadCard(I){const bd=b=>String(b.booking_date||b.submitted_at||'').slice(0,10),L=D.B.filter(b=>b.ok&&fP(D.P[b.property_id])&&/^\d{4}-\d{2}-\d{2}$/.test(bd(b))&&bd(b)<=b.check_in).map(b=>({b,d:diff(bd(b),b.check_in)}));
-  if(L.length<5)return null;const BK=[[0,3,'0-3 days'],[4,14,'4-14'],[15,45,'15-45'],[46,9999,'46+']],med=xs=>{const s_=xs.slice().sort((a,b)=>a-b);return s_.length?s_[Math.floor(s_.length/2)]:null};
-  const row=(label,xs,sub)=>{const n=xs.length;return h('tr',null,h('td',null,h('b',null,label),sub?h('small',{class:'hint'},' '+sub):null),h('td',{class:'r num'},n),h('td',{class:'r num'},med(xs)!=null?med(xs)+' d':'–'),
-    BK.map(([a,z])=>{const k=xs.filter(x=>x>=a&&x<=z).length,pc=n?Math.round(k/n*100):0;return h('td',{class:'r'},h('div',{class:'ld-c'},h('i',{style:{width:pc+'%'}}),h('span',{class:'num'},pc+'%')))}))};
-  const stays=[...new Set(L.map(x=>x.b.property_id))].map(id=>({id,xs:L.filter(x=>x.b.property_id===id).map(x=>x.d)})).sort((a,b)=>b.xs.length-a.xs.length);
-  const fests=((I.festivals||{}).past||[]).map(f=>({f,xs:L.filter(x=>x.b.check_in<=String(f.to).slice(0,10)&&x.b.check_out>String(f.from).slice(0,10)).map(x=>x.d)})).filter(x=>x.xs.length);
-  const months=[...new Set(L.map(x=>x.b.check_in.slice(5,7)))].sort().map(m=>({m,xs:L.filter(x=>x.b.check_in.slice(5,7)===m).map(x=>x.d)}));
-  const head=h('thead',null,h('tr',null,h('th',null,''),h('th',{class:'r'},'Bookings'),h('th',{class:'r'},'Typical'),BK.map(([,,l])=>h('th',{class:'r'},l+(l==='0-3 days'?'':' days')))));
-  const tab=S.ldTab||'stay';
-  return card('s12','How far ahead guests book',{hint:'days between booking and arrival · if most guests book within 2 weeks, an empty date 2 months away is normal',acts:[h('div',{class:'seg sm'},[['stay','By stay'],['month','By month'],['fest','Festivals']].map(([k,l])=>h('button',{'aria-pressed':tab===k,onclick:()=>{S.ldTab=k;render()}},l)))]},
-    h('div',{class:'tbl-wrap'},h('table',{class:'tbl ld-t'},head,h('tbody',null,
-      tab==='stay'?stays.slice(0,30).map(x=>row(short((D.P[x.id]||{}).property||x.id),x.xs,(D.P[x.id]||{}).city)):
-      tab==='month'?months.map(x=>row(mLabel('2026-'+x.m).split(' ')[0],x.xs,'arrivals')):
-      (fests.length?fests.map(x=>row(x.f.name,x.xs,fmtD(x.f.from))):[h('tr',null,h('td',{colspan:7,class:'hint'},'No festival bookings found yet.'))])))))}
-function paceCard(){const bd=b=>String(b.booking_date||b.submitted_at||'').slice(0,10),ok=D.B.filter(b=>b.ok&&/^\d{4}-\d{2}-\d{2}$/.test(bd(b)));if(ok.length<5)return null;
-  const ms=[TODAY.slice(0,7),nextM(TODAY.slice(0,7)),nextM(nextM(TODAY.slice(0,7)))],lyDay=add(TODAY,-364);
-  const nights=(b,k)=>{let n=0;for(let d=b.check_in;d<b.check_out;d=add(d,1))if(d.slice(0,7)===k)n++;return n};
-  const tops=D.props.filter(p=>!isStopped(p)&&!parentOf(p.property_id)&&fP(p));
-  const cell=(pid,k)=>{const mine=ok.filter(b=>pid==null?true:samePlace(b.property_id,pid)),lk=(+k.slice(0,4)-1)+k.slice(4);
-    const now=sum(mine.filter(b=>bd(b)<=TODAY),b=>nights(b,k)),ly=sum(mine.filter(b=>bd(b)<=lyDay),b=>nights(b,lk)),wk=sum(mine.filter(b=>bd(b)>add(TODAY,-7)),b=>nights(b,k)),lyAny=mine.some(b=>b.check_in.slice(0,7)===lk);
-    return{now,ly:lyAny?ly:null,wk}};
-  const fmt=c=>h('td',{class:'r'},h('div',{class:'pc-c'},h('b',{class:'num'},c.now),c.ly==null?h('small',{class:'hint'},'no last year'):h('small',{class:c.now>=c.ly?'up':'dn'},`${c.now>=c.ly?'▲':'▼'} vs ${c.ly}`),c.wk?h('small',{class:'pc-wk'},`+${c.wk} this week`):null));
-  const tot=ms.map(k=>cell(null,k));
-  return card('s12','Booking speed',{hint:'nights booked so far for each month vs the same day last year · "this week" = booked in the last 7 days'},
-    h('div',{class:'tbl-wrap'},h('table',{class:'tbl pc-t'},h('thead',null,h('tr',null,h('th',null,'Stay'),ms.map(k=>h('th',{class:'r'},mLabel(k))))),
-      h('tbody',null,h('tr',{class:'pc-all'},h('td',null,h('b',null,'All stays')),tot.map(fmt)),tops.map(p=>h('tr',null,h('td',null,short(p.property),h('small',{class:'hint'},p.city)),ms.map(k=>fmt(cell(p.property_id,k)))))))))}
 function aiPricing(v){prLoad();const I=insData(),items=I.pricing||[],verdict=Object.fromEntries(((I._ai||{}).pricing||[]).map(x=>[x.stay_id+'|'+x.month,x]));
   {const pa=pricingActions(I);if(pa)v.append(pa)}
-  {const pc=paceCard();if(pc)v.append(pc)}
-  {const lc=leadCard(I);if(lc)v.append(lc)}
   if(!items.length){v.append(card('s12','Pricing',{},h('div',{class:'empty'},'Pricing suggestions arrive with the next analysis (they need this month and the next two). Add market prices in AI › Market to sharpen them.')));return}
   const stays=[...new Set(items.map(x=>x.stay_id))];if(!S.apid||!stays.includes(S.apid))S.apid=stays[0];
   const mine=items.filter(x=>x.stay_id===S.apid),months=mine.map(x=>x.month);if(!S.am||!months.includes(S.am))S.am=months[0];
   const it=mine.find(x=>x.month===S.am),p=D.P[S.apid],vd=verdict[S.apid+'|'+S.am]||{},lv=LEVEL_L[it.level]||LEVEL_L.hold;
-  /* the price check: every stay x month at a glance */
-  const ms=[...new Set(items.map(x=>x.month))];
-  v.append(card('s12','Price check',{hint:'suggested change per stay and month · tap one to see the nights'},h('div',{class:'tbl-wrap'},h('table',{class:'tbl ap-grid'},h('thead',null,h('tr',null,h('th',null,'Stay'),ms.map(k=>h('th',{class:'r'},mLabel(k))))),
-    h('tbody',null,stays.map(id=>h('tr',{class:id===S.apid?'hl':''},h('td',null,short((D.P[id]||{}).property||id)),ms.map(k=>{const x=items.find(y=>y.stay_id===id&&y.month===k);if(!x)return h('td',{class:'r'},'–');const L=LEVEL_L[x.level]||LEVEL_L.hold,cur=x.listed.we||x.listed.wd,sg=x.suggested.we||x.suggested.wd;
-      return h('td',{class:'r'},h('button',{class:'ap-cell',onclick:()=>{S.apid=id;S.am=k;render()}},h('span',{class:'pill '+L[1]},L[0]),cur&&sg&&x.level!=='hold'?h('small',{class:'num'},`${x.level==='raise'?'+':''}${Math.round((sg/cur-1)*100)}%`):null))}))))))));
   /* one stay, one month */
   const pick=h('select',{class:'mg-pick','aria-label':'Stay',onchange:e=>{S.apid=e.target.value;render()}},stays.map(id=>h('option',{value:id,selected:id===S.apid||null},short((D.P[id]||{}).property||id))));
   const mseg=h('div',{class:'seg sm'},months.map(k=>h('button',{'aria-pressed':k===S.am,onclick:()=>{S.am=k;render()}},mLong(k))));
@@ -2556,18 +2524,22 @@ function mkEditOld(pid){const props=D.props.filter(p=>!isStopped(p)),sel=h('sele
   modal('Add a market price',h('div',{class:'form'},fld('Our stay',sel,1),fld('Comparable listing',cn,1),dl,fld('Link',url,1),fld('Platform',plat),fld('Bedrooms',br),fld('Night',night),fld('Price shown for that night (₹)',pr),fld('Note',nt,1),err),
     [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!cn.value.trim()){err.hidden=false;err.textContent='Name the comparable listing.';return}if(!(+pr.value>0)){err.hidden=false;err.textContent='Add the price.';return}
       closeLayer();save('market','append',{row:{obs_id:'MK'+Date.now().toString(36),property_id:sel.value,comp_name:cn.value.trim(),comp_url:url.value.trim()||null,platform:plat.value,bedrooms:+br.value||null,night:night.value,price:+pr.value,observed_on:TODAY,notes:nt.value.trim()||null,by:(LIVE.me||{}).email||'admin'}},'Market price added')}},'Add')])}
+const mkAI=r=>String(r.source||'')==='AI web search';
+/* what one market check costs here: the average of this account's own checks, else about ₹3.5 a stay */
+function marketCharge(n){const bs=rowsOf('botstats').filter(r=>+r.market_scans>0),sc=sum(bs,r=>+r.market_scans),inrT=sum(bs,r=>+r.market_cost_inr||0);return Math.max(1,Math.round(sc?inrT/sc:n*3.5))}
 function aiMarket(v){prLoad();const props=D.props.filter(p=>!isStopped(p)&&+p.base_rate>0).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
   const wn=prVal('weekend_nights'),isW=d=>wn.includes(DOW[(pd(d).getDay()+6)%7]),all=rowsOf('market');
   /* your listed price on the same nights the comparables were checked (next 4 months): like for like */
   const listedOn=(p,we)=>{const ds=[...new Set(mkRows(p.property_id,'recent').map(r=>String(r.night).slice(0,10)))].filter(d=>isW(d)===we);const xs=ds.length?ds:Array.from({length:60},(_,i)=>add(TODAY,i+1)).filter(d=>isW(d)===we);return Math.round(sum(xs,d=>nightPrice(p,d).price)/xs.length)};
   const pos=(you,b)=>!b||!you?h('span',{class:'hint'},'–'):h('span',{class:'mk-pos '+(you>b.high?'mk-hi':you<b.low?'mk-lo':'mk-in')},`${inrK(you)} vs ${inrK(b.mid)} · ${you>=b.mid?'+':''}${Math.round((you/b.mid-1)*100)}%`);
-  /* this week's price check */
-  const wk=mkWeekNights(),done=(pid,d)=>all.some(r=>r.property_id===pid&&String(r.night).slice(0,10)===d&&String(r.observed_on||'')>=add(TODAY,-7));
-  const prog=props.map(p=>({p,n:wk.filter(d=>done(p.property_id,d)).length})),tot=sum(prog,x=>x.n),max=props.length*wk.length;
-  v.append(card('s12','This week’s price check',{hint:`${tot} of ${max} stay-nights checked · nights: ${wk.map(d=>fmtD(d,{weekday:'short',day:'numeric'})).join(', ')}`},
-    h('p',{class:'hint',style:{margin:'0 0 8px'}},'For each stay, open 3-5 lookalike listings (same area, size, amenities) and note what they ask on these nights, or that they are sold out. About 15 minutes a week keeps the pricing advice sharp.'),
-    h('div',{class:'mk-week'},prog.map(({p,n})=>h('button',{class:'mk-wk'+(n>=wk.length?' ok':n?' part':''),onclick:()=>mkEdit(p.property_id)},h('b',null,short(p.property)),h('span',null,n>=wk.length?'done':`${n}/${wk.length} nights`))))));
-  if(!all.length)v.append(h('section',{class:'card glass s12 ins-wait'},icon('info'),h('div',null,h('b',null,'No market prices yet'),h('span',null,'The comparison and the pricing advice need a few comparable listings per stay. Start with this week’s price check above, or upload many at once with Upload Excel.'))));
+  /* the AI's weekly look at lookalike listings (Haiku, 3 web searches a stay) */
+  {const ai=all.filter(mkAI),last=ai.map(r=>String(r.observed_on||'')).sort().pop(),priced=new Set(ai.map(r=>r.property_id)),on=swOn('ai.market_scan'),
+    asked=aiVal('ai.market_request'),waiting=asked&&(!last||last<asked.slice(0,10)),ch=marketCharge(props.length);
+    v.append(card('s12','AI market check',{hint:on?`weekly: the AI looks up 3-5 lookalike listings per stay (same area, type, size, amenities) and notes what they ask · approximate`:'turned off in Manage › AI Expenses'},
+      h('div',{class:'mk-ai'},h('div',null,h('b',null,last?`Last checked ${fmtD(last)}`:'Not checked yet'),h('small',null,last?`${priced.size} of ${props.length} stays priced · next check within a week`:'The first check runs within a week, or check now')),
+        !on?h('span',{class:'pill p-mute'},'Off'):waiting?h('span',{class:'pill p-acc'},'Checking… usually ready in about 10 minutes'):
+        h('button',{class:'btn sm primary',disabled:!live()||null,onclick:()=>setSetting('ai.market_request',new Date().toISOString().slice(0,16),`Asked the AI to check market prices · about ₹${ch} · ready in about 10 minutes`)},`Check now · ₹${ch}`))))}
+  if(!all.length)v.append(h('section',{class:'card glass s12 ins-wait'},icon('info'),h('div',null,h('b',null,'No market prices yet'),h('span',null,'The AI fills this in with its first market check (weekly, or tap Check now above). You can also add your own price checks.'))));
   v.append(card('s12','You vs the market',{hint:'your listed price vs comparable listings on the nights checked (next 4 months) · weekdays and weekends',acts:[...uplBtns('market'),h('button',{class:'btn sm primary',onclick:()=>mkEdit()},icon('plus'),'Price check')]},
     h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Stay'),h('th',{class:'r'},'Weekdays'),h('th',{class:'r'},'Weekends'),h('th',{class:'r'},'Comparables sold out'),h('th',{class:'r'},'Listings'),h('th',{class:'r'},'Last checked'))),
       h('tbody',null,props.map(p=>{const b=mkBand(p.property_id,'recent'),allR=all.filter(r=>r.property_id===p.property_id),last=allR.map(r=>String(r.observed_on||'')).sort().pop();
@@ -2579,7 +2551,7 @@ function aiMarket(v){prLoad();const props=D.props.filter(p=>!isStopped(p)&&+p.ba
   const comps=[...new Set(rs.map(r=>r.comp_name))].map(c=>{const mine=rs.filter(r=>r.comp_name===c).sort((a,b)=>String(b.observed_on).localeCompare(String(a.observed_on))||String(b.night).localeCompare(String(a.night))),r=mine.find(x=>+x.price>0)||mine[0],det=mine.find(x=>x.rating||x.amenities)||{};
     return{c,r,det,n:mine.length,sold:mine.filter(mkSold).length,url:mine.find(x=>x.comp_url)?.comp_url}});
   v.append(card('s12','Comparable listings · '+short(p.property),{hint:`${comps.length} listing${comps.length===1?'':'s'} · aim for 5-8, checked weekly`,acts:[h('button',{class:'btn sm',onclick:()=>mkEdit(pid)},icon('plus'),'Price check')]},
-    comps.length?h('div',{class:'mk-list'},comps.map(x=>h('div',{class:'mk-row'},h('div',{class:'mk-t'},h('b',null,x.c),h('span',null,[x.r.platform,x.r.bedrooms?x.r.bedrooms+' BR':null,x.det.rating?'★ '+x.det.rating+(x.det.reviews?' ('+x.det.reviews+')':''):null,`${x.n} night${x.n>1?'s':''} noted${x.sold?' · '+x.sold+' sold out':''}`].filter(Boolean).join(' · ')),x.det.amenities?h('small',null,x.det.amenities):null),
+    comps.length?h('div',{class:'mk-list'},comps.map(x=>h('div',{class:'mk-row'},h('div',{class:'mk-t'},h('b',null,x.c,mkAI(x.r)?h('span',{class:'pill p-acc mk-aip',title:'Found by the AI on the web · approximate'},`AI · ${x.r.confidence||'approx'}`):null),h('span',null,[x.r.platform,x.r.bedrooms?x.r.bedrooms+' BR':null,x.det.rating?'★ '+x.det.rating+(x.det.reviews?' ('+x.det.reviews+')':''):null,`${x.n} night${x.n>1?'s':''} noted${x.sold?' · '+x.sold+' sold out':''}`].filter(Boolean).join(' · ')),x.det.amenities?h('small',null,x.det.amenities):null),
       h('div',{class:'mk-p'},+x.r.price?h('b',{class:'num'},inr(+x.r.price)):h('b',null,'Sold out'),h('small',null,`for ${fmtD(x.r.night)} · checked ${fmtD(String(x.r.observed_on||TODAY).slice(0,10))}`)),
       h('div',{class:'mk-ra'},h('button',{class:'btn sm ghost',onclick:()=>mkEdit(pid,x.c)},'Check again'),x.url?h('a',{class:'btn sm ghost',href:x.url,target:'_blank',rel:'noopener'},'Open'):null)))):
       h('div',{class:'empty'},'No comparable listings yet. Add 5-8 lookalikes (same area, size and amenities) with the prices they show for a few weekdays and weekends.')))}
@@ -5424,6 +5396,7 @@ const aiVal=k=>{const r=(S.data.ai||[]).find(x=>x.key===k);return r?String(r.val
 const swOn=k=>!/^(off|no|false|0)$/i.test(aiVal(k));
 const COST_SW=[['ai.guest_replies','AI WhatsApp bot','Writes the replies to messages people type. Menus and buttons keep working.','ai'],
   ['ai.insights','AI insights','The daily analysis and the Run new analysis button, on every dashboard and login.','ai'],
+  ['ai.market_scan','AI market check','Weekly, and when asked: the AI looks up 3-5 lookalike listings per stay on the web (3 searches each) for AI › Market.','ai'],
   ['msgs.to_guests','Guests','Off: the bot sends guests nothing and ignores what they write. Your team can still reply from the WhatsApp Business app.','wa'],
   ['msgs.to_owners','Owners','Off: the bot sends owners nothing and ignores what they write, # commands included.','wa'],
   ['msgs.to_managers','Managers','Off: the bot sends managers nothing and ignores what they write. They still see everything in the manager app.','wa']];
@@ -5432,11 +5405,11 @@ const COST_RATES=[['costs.wa_rate','WhatsApp ₹ per message (after the free one
 const rate=k=>{const d=COST_RATES.find(x=>x[0]===k)[2],v=aiVal(k);return v!==''&&isFinite(+v)?+v:d};
 function costMonth(mk){const bs=rowsOf('botstats').filter(r=>String(r.day).slice(0,7)===mk),t=k=>sum(bs,r=>+r[k]||0),mu=1+rate('costs.markup_pct')/100;
   const runs=insRuns().runs.map(r=>r.I._meta||{}).filter(m=>String(m.generated_at||'').slice(0,7)===mk&&m.cost_inr!=null);
-  const ai={replies:t('ai_replies'),calls:t('ai_calls'),tin:t('ai_in_tok'),tout:t('ai_out_tok'),inr:t('ai_cost_inr')},ins={runs,inr:sum(runs,m=>+m.cost_inr||0)};
+  const ai={replies:t('ai_replies'),calls:t('ai_calls'),tin:t('ai_in_tok'),tout:t('ai_out_tok'),inr:t('ai_cost_inr')},ins={runs,inr:sum(runs,m=>+m.cost_inr||0)},mkc={scans:t('market_scans'),searches:t('market_searches'),inr:t('market_cost_inr')};
   const who=['guest','owner','manager'].map(k=>({k,all:t('wa_'+k),tpl:t('wa_tpl_'+k)})),all=sum(who,x=>x.all),tpl=sum(who,x=>x.tpl),free=all-tpl;
   const waBase=Math.max(0,free-rate('costs.wa_free'))*rate('costs.wa_rate')+tpl*rate('costs.wa_tpl_rate'),wa=waBase*(1+rate('costs.gst_pct')/100)*mu;
   const host=rate('costs.hosting')*mu,days=new Set(bs.map(r=>String(r.day).slice(0,10))).size;
-  return{bs,days,ai,ins,who,all,tpl,free,wa,host,total:ai.inr+ins.inr+wa+host}}
+  return{bs,days,ai,ins,mk:mkc,who,all,tpl,free,wa,host,total:ai.inr+ins.inr+mkc.inr+wa+host}}
 function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.costM,c=costMonth(mk),ms=[];for(let k=TODAY.slice(0,7),i=0;i<12;i++,k=prevM(k))ms.push(k);
   const r2=n=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pick=h('select',{class:'mg-pick','aria-label':'Month',onchange:e=>{S.costM=e.target.value;render()}},ms.map(k=>h('option',{value:k,selected:k===mk||null},mLong(k)+(k===TODAY.slice(0,7)?' (so far)':''))));
@@ -5446,6 +5419,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
     h('div',{class:'cs-tiles'},tile('Total',r2(c.total),'AI + WhatsApp + hosting'),
       tile('AI WhatsApp bot',r2(c.ai.inr),c.ai.replies?`${c.ai.replies.toLocaleString('en-IN')} replies · ${r2(c.ai.inr/c.ai.replies)} each`:'no AI replies'),
       tile('AI insights',r2(c.ins.inr),`${c.ins.runs.length} run${c.ins.runs.length===1?'':'s'}`),
+      tile('AI market check',r2(c.mk.inr),`${c.mk.scans} check${c.mk.scans===1?'':'s'} · ${c.mk.searches} searches`),
       tile('WhatsApp',r2(c.wa),`${c.all.toLocaleString('en-IN')} messages · estimate`),tile('Hosting',r2(c.host),'fixed'))));
   /* AI */
   v.append(card('s6','AI WhatsApp bot',{hint:'AI answers typed messages; menus and buttons use no AI'},h('div',{class:'cs-kv'},
@@ -5462,7 +5436,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
         h('tr',{class:'hl'},h('td',null,'All'),h('td',{class:'r num'},c.all.toLocaleString('en-IN')),h('td',{class:'r num'},c.tpl.toLocaleString('en-IN')))))),
     h('p',{class:'hint',style:{margin:'10px 0 0'}},`estimate for these messages: ${r2(c.wa)}`)));
   /* switches */
-  const spent={'ai.guest_replies':c.ai.inr,'ai.insights':c.ins.inr};
+  const spent={'ai.guest_replies':c.ai.inr,'ai.insights':c.ins.inr,'ai.market_scan':c.mk.inr};
   const swRow=([k,l,d,grp])=>{const on=swOn(k);return h('div',{class:'cs-sw'+(on?'':' off')},h('div',null,h('b',null,l,spent[k]!=null?h('span',{class:'cs-amt num'},` · ${r2(spent[k])} this month`):null),h('small',null,d)),
     h('button',{class:'tgl',role:'switch','aria-checked':on?'true':'false','aria-label':l,onclick:()=>{const go=()=>setSetting(k,on?'off':'on',`${l}: ${on?'off':'on'}`);
       const sure={'ai.guest_replies':['Turn off AI replies?','Guests who type a question get a holding line, and you get their message to answer yourself on WhatsApp. Menus and buttons keep working.'],
@@ -5479,7 +5453,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
     h('div',{class:'cs-l off'},h('small',null,aiOn?'Turning off stops':'Stopped now'),h('ul',null,offL.map(x=>h('li',null,x)))),
     h('div',{class:'cs-l keep'+(keepT?' chg':'')},h('small',null,keepT||'Keeps working'),h('ul',null,keepL.map(x=>h('li',null,x)))))));
   v.append(card('s12','AI switches',{hint:'stop an AI cost at once · applies to every dashboard, login and the bot'},h('div',{class:'cs-sws'},
-    swRow(COST_SW[0]),bot,swRow(COST_SW[1]))));
+    swRow(COST_SW[0]),bot,swRow(COST_SW[1]),swRow(COST_SW[2]))));
   v.append(card('s12','WhatsApp messages by group',{hint:'each switch stops every WhatsApp message to that group, both ways · not AI'},h('div',{class:'cs-sws'},
     ...COST_SW.filter(x=>x[3]==='wa').map(swRow))));
   return pendingBar(v)}
