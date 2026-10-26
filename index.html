@@ -1707,7 +1707,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .ins-spark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff;background:linear-gradient(140deg,#8b6cff,#1d5bd8);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -10px rgba(76,60,220,.8)}
 .ins-spark svg{width:18px;height:18px;fill:currentColor;stroke:none}
 .ins-spark.sm{width:22px;height:22px;border-radius:7px;box-shadow:none}.ins-spark.sm svg{width:12px;height:12px}
-.ins-run{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ins-cost{color:var(--muted);font-size:12px;flex-basis:100%;order:3}
+.ins-run{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;width:min(100%,540px)}
+.ins-run>.btn,.ins-run>.pill{min-width:214px;justify-content:center;text-align:center;font-variant-numeric:tabular-nums}
+.ins-cost{color:var(--muted);font-size:12px;flex-basis:100%;order:3;text-align:right}
+@media (max-width:640px){.ins-run{justify-content:flex-start;width:100%}.ins-cost{text-align:left}.ins-run>.btn,.ins-run>.pill{min-width:0}}
 .ins-run .pg{order:4}.tgl[disabled]{opacity:.55;cursor:progress}
 .ins-ai{display:flex;gap:10px;align-items:flex-start;margin:0;padding:11px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;color:var(--ink-2);
   background:linear-gradient(135deg,rgba(139,108,255,0.09),rgba(29,91,216,0.06));background:linear-gradient(135deg,color-mix(in srgb,#8b6cff 9%,transparent),color-mix(in srgb,var(--accent) 6%,transparent))}
