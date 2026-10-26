@@ -250,6 +250,8 @@ const OPS=(()=>{
 
 /* ============ basics ============ */
 const $=s=>document.querySelector(s);
+/* null-safe inserts: a helper that has nothing to show returns null; the DOM would print it as text (B-110) */
+for(const P_ of [Element.prototype,DocumentFragment.prototype])for(const m_ of ['append','prepend','replaceChildren','before','after']){const f_=P_[m_];if(f_)P_[m_]=function(...a){return f_.apply(this,a.filter(x=>x!=null&&x!==false))}}
 function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(v==null||v===false)continue;if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else if(x==='class')e.className=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x in e&&typeof v!=='string')e[x]=v;else e.setAttribute(x,v===true?'':v)}
   k.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)))});return e}
 const NS='http://www.w3.org/2000/svg';
@@ -396,7 +398,7 @@ function today(m,u){const B=S.d.bookings.filter(b=>live(b)&&inS(b.property_id)),
   if(sc)m.append(card('My score',`since ${fmtD(C().start)}`,h('div',{class:'stats'},[['Reviews',sc.reviews.received,sc.reviews.missed],['Checklists',sc.checklists.done,sc.checklists.missed],['Stock checks',sc.stock.done,sc.stock.missed]].map(([l,a,b])=>h('div',{class:'stat'},h('b',null,h('span',{class:'ok'},a),' / ',h('span',{class:'bad'},b)),h('span',null,T(l)+' done / missed')))),
     sc.reviews.avg!=null?h('p',{class:'hint'},`Average rating of the reviews you asked for: ${sc.reviews.avg} ★`):null,
     h('p',{class:'hint'},'Reviews count once your admin confirms they arrived.')));
-  m.append(moneyCard())}
+  m.append(moneyCard())}  // null-safe: nothing when there's no money card
 /* what the manager paid and got back */
 function moneyCard(){const cl=S.d.claims||[],mk=TODAY.slice(0,7),wait=cl.filter(c=>String(c.status||'pending')==='pending'),back=cl.filter(c=>c.status==='approved'&&String(c.settled_on||c.decided_at||'').slice(0,7)===mk);
   if(!cl.length)return null;return card('My money',null,h('div',{class:'stats two'},h('div',{class:'stat'},h('b',null,inr(wait.reduce((t,c)=>t+(+c.amount||0),0))),h('span',null,`${T('Waiting')} · ${wait.length}`)),
