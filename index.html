@@ -135,8 +135,13 @@ button{cursor:pointer}
   linear-gradient(180deg,rgba(246,248,252,0.7) 0%,transparent 22%);background:linear-gradient(90deg,var(--bg) 0%,var(--bg) 3%,color-mix(in srgb,var(--bg) 82%,transparent) 15%,color-mix(in srgb,var(--bg) 35%,transparent) 32%,transparent 52%),
   linear-gradient(0deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 55%,transparent) 14%,transparent 34%),
   linear-gradient(180deg,color-mix(in srgb,var(--bg) 70%,transparent) 0%,transparent 22%)}
-.float-card{position:absolute;right:max(28px,env(safe-area-inset-right,0px));top:92px;z-index:3;width:200px;border-radius:22px;padding:14px 16px;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:var(--shadow-lg);color:#0c1a3d;display:flex;flex-direction:column;gap:10px;border:0;text-align:left}
+.float-card{position:relative;width:200px;border-radius:22px;padding:14px 16px;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:var(--shadow-lg);color:#0c1a3d;display:flex;flex-direction:column;gap:10px;border:0;text-align:left}
 .float-card .top{display:flex;align-items:center;gap:8px}
+/* the round blue + beside the check-in card: a new booking from the hero */
+.hero-float{position:absolute;right:max(28px,env(safe-area-inset-right,0px));top:92px;z-index:3;display:flex;align-items:flex-start;gap:12px}
+.hero-plus{flex:none;margin-top:6px;width:48px;height:48px;border-radius:50%;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -8px rgba(29,91,216,0.7);box-shadow:0 10px 24px -8px color-mix(in srgb,var(--accent) 70%,transparent)}
+.hero-plus svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2}.hero-plus:hover{background:var(--accent-ink)}
+body:not(.is-admin) .hero-plus{display:none}
 .float-card .n{margin-left:auto;width:42px;height:42px;border-radius:50%;background:#1d5bd8;color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .float-card b{font-size:13.5px;font-weight:700;display:block}
 .float-card small{font-size:12px;color:#5a6681}
@@ -1053,7 +1058,9 @@ body:not(.is-admin) .admin{display:none!important}
   .hero{flex-direction:column;align-items:stretch;min-height:0}
   .hero-media{position:relative;top:auto;left:auto;right:auto;height:340px;margin:-68px -28px 0;order:-1}
   .hero-photo::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(246,248,252,0.4) 22%,transparent 50%),linear-gradient(180deg,rgba(246,248,252,0.7) 0%,transparent 30%);background:linear-gradient(0deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 40%,transparent) 22%,transparent 50%),linear-gradient(180deg,color-mix(in srgb,var(--bg) 70%,transparent) 0%,transparent 30%)}
-  .float-card{right:16px;top:auto;bottom:18px;width:190px;padding:11px 13px;gap:7px}
+  .hero-float{right:16px;top:auto;bottom:18px;gap:10px}
+  .float-card{width:190px;padding:11px 13px;gap:7px}
+  .hero-plus{width:44px;height:44px}
   .float-card .line{display:none}
   .hero-copy{width:auto;padding:4px 2px 24px;gap:16px}
   .hero + .fwrap{margin-top:0}
@@ -1073,7 +1080,7 @@ body:not(.is-admin) .admin{display:none!important}
   .hero-media{margin:-68px -16px 0;height:260px}
   .hero-photo img{object-position:50% 78%}
   .hero-photo::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(246,248,252,0.2) 12%,transparent 24%),linear-gradient(180deg,rgba(246,248,252,0.45) 0%,transparent 24%);background:linear-gradient(0deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 20%,transparent) 12%,transparent 24%),linear-gradient(180deg,color-mix(in srgb,var(--bg) 45%,transparent) 0%,transparent 24%)}
-  .float-card{top:80px;bottom:auto;right:16px}
+  .hero-float{top:80px;bottom:auto;right:16px}
   .eyebrow{letter-spacing:.14em;font-size:10.5px}
   .eyebrow svg:last-child{display:none}
   .hero h1{font-size:36px}
@@ -2736,12 +2743,13 @@ function hero(){
     h('div',{class:'hero-copy'},
       h('div',{class:'eyebrow'},mtn(),(D?liveCities().join(' · '):CLIENT.region||CITIES.join(' · ')),swoosh()),
       h('h1',null,hello,h('em',null,`${pct(s.occ)} booked ${bookedWhen()}.`)),
-      h('div',{class:'hero-acts'},h('button',{class:'btn primary cta',onclick:()=>{S.desk.mode='today';go('desk')}},'Open check-in desk',h('span',{class:'arr'},icon('chev'))),h('button',{class:'btn ghost admin hero-new',onclick:()=>openForm('booking')},icon('plus'),'New booking'))),
+      h('div',{class:'hero-acts'},h('button',{class:'btn primary cta',onclick:()=>{S.desk.mode='today';go('desk')}},'Open check-in desk',h('span',{class:'arr'},icon('chev'))),h('button',{class:'btn primary cta admin hero-new',onclick:()=>openForm('booking')},'New booking',h('span',{class:'arr'},icon('plus'))))),
     h('div',{class:'hero-media'},h('div',{class:'hero-photo'},heroImg),
+      h('div',{class:'hero-float'},h('button',{class:'hero-plus admin','aria-label':'New booking','data-tip':'New booking',onclick:()=>openForm('booking')},icon('plus')),
       h('button',{class:'float-card',onclick:()=>{S.desk.mode='today';go('desk')},'aria-label':`${arr.length} checking in today. Open the check-in desk.`},
         h('div',{class:'top'},h('div',{class:'avs'},arr.length?arr.slice(0,3).map(b=>h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest))):h('span',{class:'av',style:{background:'#9aa4ba'}},'–')),h('span',{class:'n num'},arr.length)),
         h('div',null,h('b',null,'Checking in today'),h('small',null,arr.length?(arr[0].arrival_time?`First at ${arr[0].arrival_time} · ${short(arr[0].pname)}`:`First: ${short(arr[0].pname)} · time not set`):'No check-ins today')),
-        h('div',{class:'line'},`${dep.length} check-outs by 11:00`))));
+        h('div',{class:'line'},`${dep.length} check-outs by 11:00`)))));
   return el;
 }
 
