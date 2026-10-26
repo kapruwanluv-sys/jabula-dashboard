@@ -1572,6 +1572,38 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .pg small{color:var(--muted);font-size:12px}.pg.done .pg-b i{background:var(--ok)}.pg.bad .pg-b i{background:var(--bad)}
 .pg.wait .pg-b i{width:30%!important;animation:pgwait 1.6s ease-in-out infinite}@keyframes pgwait{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
 @media (prefers-reduced-motion:reduce){.pg.wait .pg-b i{animation:none}}
+/* Market trends */
+.mt-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.mt-sp{flex:1}
+.mt-nights{display:flex;flex-wrap:wrap;gap:6px}.mt-nights .chip-s{cursor:pointer;border:1px solid var(--hair-2)}.mt-nights .chip-s.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mt-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.mt-strip-w{overflow:hidden}.mk-strip{width:100%;height:auto;display:block}
+.mk-grid{stroke:var(--hair);stroke-width:1}.mk-tick{fill:var(--muted);font-size:10px;font-family:inherit}
+.mk-band{fill:rgba(42,120,214,0.14);fill:color-mix(in srgb,#2a78d6 14%,transparent)}.mk-med{stroke:#2a78d6;stroke-width:2;stroke-linecap:round}
+.mk-dot{stroke:var(--surface);stroke-width:2;cursor:pointer}.mk-dot.in{fill:#2a78d6}.mk-dot.out{fill:#b9b8b3}.mk-dot:hover,.mk-dot:focus{r:7;outline:none}
+.mk-you{fill:var(--ink);stroke:var(--surface);stroke-width:2;cursor:pointer}.mk-you-l{fill:var(--ink);font-size:11px;font-weight:650;font-family:inherit}
+.mt-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:12px;color:var(--muted)}.mt-lg span{display:inline-flex;align-items:center;gap:6px}
+.mt-lg i{width:10px;height:10px;border-radius:50%;display:inline-block}.mt-lg .lg-in{background:#2a78d6}.mt-lg .lg-out{background:#b9b8b3}.mt-lg .lg-you{background:var(--ink);border-radius:2px;transform:rotate(45deg);width:8px;height:8px}
+.mt-lg .lg-band{background:rgba(42,120,214,0.22);background:color-mix(in srgb,#2a78d6 22%,transparent);border-radius:3px;width:16px}
+.mt-stays{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.mt-stay{min-width:0;display:grid;gap:8px;padding:14px 16px;border-radius:18px;background:var(--surface);border:1px solid var(--hair-2);box-shadow:0 1px 2px rgba(12,26,61,.04)}
+.mt-sh{display:flex;justify-content:space-between;align-items:center;gap:8px}.mt-sh b{font-size:14.5px}
+.mt-lv{font-size:12px;color:var(--muted)}.mt-lv.lv-high{color:var(--ok)}.mt-lv.lv-low{color:#9a6b00}
+.mt-bar{position:relative;height:10px;border-radius:99px;background:var(--hair-2)}.mt-bar i{position:absolute;top:0;bottom:0;display:block}
+.mt-band{background:rgba(42,120,214,0.3);background:color-mix(in srgb,#2a78d6 30%,transparent);border-radius:99px}.mt-medl{width:2px;margin-left:-1px;background:#2a78d6}
+.mt-youm{width:12px;height:12px!important;top:-1px!important;margin-left:-6px;background:var(--ink);border:2px solid var(--surface);border-radius:3px;transform:rotate(45deg)}
+.mt-nums{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted)}.mt-nums b{color:var(--ink)}
+.mt-near{display:grid;gap:4px}.mt-near a{min-width:0;display:flex;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:10px;background:var(--surface-2);color:inherit;text-decoration:none;font-size:12.5px}
+.mt-near a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.mt-near a small{color:var(--muted);white-space:nowrap}.mt-near a:hover{outline:1px solid var(--accent)}
+.mt-chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.mt-chips>small{color:var(--muted);font-size:12px;margin-right:2px}.chip-s.good{background:rgba(18,128,76,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.mt-busy{color:#9a6b00;font-weight:600;font-size:12px}.mt-prem{color:var(--muted);font-size:12px;line-height:1.4}
+.mt-do{display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:12px;background:var(--accent-soft);font-size:12.5px;line-height:1.45}.mt-do svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--accent);stroke-width:2;margin-top:1px}
+.mt-trend{width:100%;height:auto;display:block}
+.mt-am{display:grid;gap:7px}.mt-amr{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(60px,1fr) 38px minmax(84px,auto);gap:8px;align-items:center;font-size:12.5px}
+.mt-amb{height:8px;border-radius:99px;background:var(--hair-2);overflow:hidden}.mt-amb i{display:block;height:100%;border-radius:99px;background:#b9b8b3}.mt-amb i.must{background:#2a78d6}.mt-amb i.rare{background:#1baf7a}
+.mt-amr .have{color:var(--ok);font-weight:600}.mt-amr .miss{color:var(--muted)}
+.mk-own>summary{cursor:pointer;font-weight:650;padding:4px 0}.mk-own[open]>summary{margin-bottom:10px}
+th.on{color:var(--accent)}
+@media(max-width:560px){.mt-amr{grid-template-columns:minmax(0,1fr) 60px 34px;}.mt-amr>small:last-child{grid-column:1/-1;margin-top:-4px}}
 .mk-ai{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.mk-ai>div{display:grid;gap:2px}.mk-ai small{color:var(--muted);font-size:12.5px}
 .mk-aip{margin-left:6px;font-size:10.5px;vertical-align:2px}
 .cs-amt{font-weight:600;color:var(--muted);font-size:12.5px}
@@ -2540,26 +2572,30 @@ function mkEditOld(pid){const props=D.props.filter(p=>!isStopped(p)),sel=h('sele
     [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!cn.value.trim()){err.hidden=false;err.textContent='Name the comparable listing.';return}if(!(+pr.value>0)){err.hidden=false;err.textContent='Add the price.';return}
       closeLayer();save('market','append',{row:{obs_id:'MK'+Date.now().toString(36),property_id:sel.value,comp_name:cn.value.trim(),comp_url:url.value.trim()||null,platform:plat.value,bedrooms:+br.value||null,night:night.value,price:+pr.value,observed_on:TODAY,notes:nt.value.trim()||null,by:(LIVE.me||{}).email||'admin'}},'Market price added')}},'Add')])}
 const mkAI=r=>String(r.source||'')==='AI web search';
+addEventListener('resize',(()=>{let w=innerWidth<700,t;return()=>{clearTimeout(t);t=setTimeout(()=>{const n=innerWidth<700;if(n!==w&&S.view==='insights'){w=n;render()}},200)}})());
 /* live progress of the AI jobs (the bot keeps it in the Register script; reading it touches no sheet) */
-const PROG={market:null,ai:null,t:null,busy:false};
+const PROG={market:null,ai:null,rentals:null,t:null,busy:false};
 const tms=x=>{const d=new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(String(x))?x:String(x)+'Z');return isNaN(d)?0:d.getTime()};
 async function pollProgress(){clearTimeout(PROG.t);if(!live()||PROG.busy)return;PROG.busy=true;let again=false;
-  try{const was={m:(PROG.market||{}).state,a:(PROG.ai||{}).state};const r=await apiPost({action:'progress'});PROG.market=r.market||null;PROG.ai=r.ai||null;
-    const fin=k=>was[k]&&was[k]!=='done'&&['done','skipped','queued','failed'].includes(((k==='m'?PROG.market:PROG.ai)||{}).state);
-    if(fin('m')||fin('a'))await load();else if(S.view==='insights')render();
+  try{const was={m:(PROG.market||{}).state,a:(PROG.ai||{}).state,r:(PROG.rentals||{}).state};const r=await apiPost({action:'progress'});PROG.market=r.market||null;PROG.ai=r.ai||null;PROG.rentals=r.rentals||null;
+    const fin=k=>was[k]&&was[k]!=='done'&&['done','skipped','queued','failed'].includes(((k==='m'?PROG.market:k==='a'?PROG.ai:PROG.rentals)||{}).state);
+    if(fin('m')||fin('a')||fin('r'))await load();else if(S.view==='insights'||S.view==='manage')render();
     again=progActive()}catch(e){again=progActive()}finally{PROG.busy=false}
   if(again&&!document.hidden)PROG.t=setTimeout(pollProgress,8000)}
 /* a job is waiting or running: keep polling */
-function progActive(){const m=PROG.market,a=PROG.ai,mReq=tms(aiVal('ai.market_request')),aReq=tms((insRuns().ctl._request||{}).requested_at);
+function progActive(){const m=PROG.market,a=PROG.ai,rr=PROG.rentals,mReq=tms(aiVal('ai.market_request')),aReq=tms((insRuns().ctl._request||{}).requested_at),rReq=tms(aiVal('ai.rentals_request'));
   const fresh=(p,req)=>req&&Date.now()-req<20*6e4&&(!p||tms(p.started_at)<req-6e4);
-  return (m&&m.state==='running')||(a&&a.state==='running')||fresh(m,mReq)||fresh(a,aReq)}
+  return (m&&m.state==='running')||(a&&a.state==='running')||(rr&&rr.state==='running')||fresh(m,mReq)||fresh(a,aReq)||fresh(rr,rReq)}
 /* the bar: market = stays done of total; ai = stages, writing paced by past runs */
-function progBar(kind){const p=PROG[kind],req=kind==='market'?tms(aiVal('ai.market_request')):tms((insRuns().ctl._request||{}).requested_at);
+function progBar(kind){const p=PROG[kind],req=kind==='market'?tms(aiVal('ai.market_request')):kind==='rentals'?tms(aiVal('ai.rentals_request')):tms((insRuns().ctl._request||{}).requested_at);
   const bar=(pct,label,sub,cls)=>h('div',{class:'pg'+(cls?' '+cls:''),role:'progressbar','aria-valuemin':0,'aria-valuemax':100,'aria-valuenow':Math.round(pct),'aria-label':label},
     h('div',{class:'pg-h'},h('b',null,label),h('span',{class:'num'},Math.round(pct)+'%')),h('div',{class:'pg-b'},h('i',{style:{width:Math.max(3,Math.min(100,pct))+'%'}})),sub?h('small',null,sub):null);
   const mins=s_=>s_<60?`about ${Math.max(5,Math.round(s_/5)*5)} s left`:`about ${Math.round(s_/60)} min left`;
   if(req&&Date.now()-req<20*6e4&&(!p||tms(p.started_at)<req-6e4))return bar(2,'Waiting for the bot to start',kind==='market'?'it picks this up within a minute':'it picks this up within 5 minutes','wait');
   if(!p)return null;
+  if(kind==='rentals'){if(p.state==='running')return bar(p.total?p.done/p.total*100:0,`Checking Google rental prices · ${p.done} of ${p.total} searches`,'about 5 s each');
+    if(p.state==='done'&&Date.now()-tms(p.finished_at)<30*6e4)return bar(100,`Done · ${p.listings} listings around your stays`,`${p.families} areas × ${(p.nights||[]).length} nights · ${(p.account||{}).left??'–'} free searches left`,'done');
+    if(p.state==='skipped'&&Date.now()-tms(p.started_at||0)<30*6e4)return bar(100,'Not checked',p.why||'','bad');return null}
   if(kind==='market'){if(p.state==='running'){const left=(p.total-p.done)*(p.secs_each||20);return bar(p.total?p.done/p.total*100:0,`Checking market prices · ${p.done} of ${p.total} stays`,p.done?mins(left):'starting…')}
     if(p.state==='done'&&Date.now()-tms(p.finished_at)<30*6e4)return bar(100,`Done · ${p.priced} of ${p.total} stays priced`,`${p.searches} searches · ₹${(+p.cost_inr||0).toFixed(2)} · took ${Math.round((p.seconds||0)/60)||'under 1'} min`,'done');return null}
   if(p.state==='running'){const st=p.stage;if(st==='gather')return bar(6,'Gathering your numbers','next: the AI writes the analysis');
@@ -2572,19 +2608,135 @@ function progBar(kind){const p=PROG[kind],req=kind==='market'?tms(aiVal('ai.mark
   return null}
 /* what one market check costs here: the average of this account's own checks, else about ₹3.5 a stay */
 function marketCharge(n){const bs=rowsOf('botstats').filter(r=>+r.market_scans>0),sc=sum(bs,r=>+r.market_scans),inrT=sum(bs,r=>+r.market_cost_inr||0);return Math.max(1,Math.round(sc?inrT/sc:usdInr(n*0.05)))}
-function aiMarket(v){prLoad();const props=D.props.filter(p=>!isStopped(p)&&+p.base_rate>0).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
+/* ---- AI › Market: Google holiday-rental prices around each stay (SerpApi, no AI) ---- */
+const RK=r=>({...r,name:String(r.name||'').replace(/\n/g,' ').replace(/\s+/g,' ').trim(),price:+r.price||null,bedrooms:r.bedrooms===''||r.bedrooms==null?null:+r.bedrooms,lat:+r.lat,lng:+r.lng,rating:+r.rating||null,reviews:+r.reviews||null,night:String(r.night).slice(0,10)});
+const kmB=(a,b)=>{const R=Math.PI/180,x=Math.sin((b[0]-a[0])*R/2)**2+Math.cos(a[0]*R)*Math.cos(b[0]*R)*Math.sin((b[1]-a[1])*R/2)**2;return 12742*Math.asin(Math.sqrt(x))};
+const kindOfT=t=>/apartment|flat|condo|serviced|penthouse|studio/i.test(t)?'apartment':/villa|house|cottage|bungalow|home|farm|chalet|cabin/i.test(t)?'house':/room/i.test(t)?'room':'other';
+function pinFromText(s){s=(()=>{try{return decodeURIComponent(String(s||''))}catch(e){return String(s||'')}})();let m=[...s.matchAll(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/g)].pop();if(m)return[+m[1],+m[2]];
+  m=s.match(/[?&](?:q|query|ll|destination)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/)||s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)||s.match(/^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/);return m?[+m[1],+m[2]]:null}
+function stayPin(p){const la=+p.lat,lo=+p.lng;return la&&lo&&isFinite(la)&&isFinite(lo)?[la,lo]:pinFromText(p.map_pin)||pinFromText(p.maps_url)}
+const stayMap=p=>p.maps_url||(stayPin(p)?`https://www.google.com/maps/search/?api=1&query=${stayPin(p).join(',')}`:null);
+const famKey=p=>{const b=Math.min(+p.bedrooms||0,5);return `${String(p.area||p.city||'').replace(/[^A-Za-z]/g,'').slice(0,12)}-${b}${b>=5?'+':''}BR`};
+const AMC=[['Air conditioning',/air ?condition|\bac\b/i],['Kitchen',/kitchen/i],['Wi-Fi',/wi-?fi|internet/i],['Parking',/parking/i],['TV',/\btv\b|netflix|prime|cable/i],
+  ['Washer',/washer|washing/i],['Lift',/elevator|lift/i],['Balcony',/balcony|terrace|patio/i],['Heating',/heating|heater/i],['Bathtub / hot tub',/bath ?tub|hot ?tub|jacuzzi/i],
+  ['Pool',/pool/i],['Pets allowed',/pet/i],['Microwave',/microwave/i],['Barbecue',/barbecue|bbq|grill/i],['Fireplace',/fireplace|bonfire/i],['Gym',/fitness|gym/i]];
+const amSet=list=>{const s_=new Set(),xs=Array.isArray(list)?list:String(list||'').split(',');xs.forEach(a=>AMC.forEach(([l,re])=>{if(re.test(a))s_.add(l)}));return s_};
+const pctl=(xs,q)=>{xs=xs.filter(x=>x>0).sort((a,b)=>a-b);if(!xs.length)return null;const k=(xs.length-1)*q,lo=Math.floor(k),hi=Math.ceil(k);return Math.round(xs[lo]+(xs[hi]-xs[lo])*(k-lo))};
+/* one stay against the listings of one night: the closest level with 3+ prices, always labelled (smart fallback) */
+function mktCompare(p,rows){const pin=stayPin(p),br=+p.bedrooms||0,kind=kindOfT(p.type);if(!pin)return{level:'none',why:'no map pin'};
+  const rs=rows.filter(r=>isFinite(r.lat)&&isFinite(r.lng)).map(r=>({...r,km:Math.round(kmB(pin,[r.lat,r.lng])*10)/10}));
+  const same=r=>r.bedrooms===br&&r.kind===kind,diffs=r=>(r.bedrooms!==br)+(r.kind!==kind)+(r.km>3);
+  const L=[['close',`same size & kind within 3 km`,r=>same(r)&&r.km<=3,'high'],['near',`same size & kind within 6 km`,r=>same(r)&&r.km<=6,'medium'],
+    ['similar',`similar: ±1 bedroom, other kind or 3–8 km`,r=>r.km<=8&&r.bedrooms!=null&&Math.abs(r.bedrooms-br)<=1&&diffs(r)<=1,'low'],['market','the local market within 8 km',r=>r.km<=8,'low']];
+  for(const [level,label,fn,conf] of L){const set=rs.filter(fn),pr=set.filter(r=>r.price);if(pr.length>=3){const ps=pr.map(r=>r.price),m0=pctl(ps,.5),tier=ps.filter(v_=>v_>=m0/2&&v_<=m0*2);
+    /* the stay's own tier: a premium cluster (2x the median and up, e.g. river-facing) is shown apart, not averaged in */
+    return{level,label,conf:level==='close'&&pr.length<5?'medium':conf,set,n:set.length,priced:pr.length,median:pctl(tier,.5),p25:pctl(tier,.25),p75:pctl(tier,.75),low:Math.min(...ps),high:Math.max(...ps),
+      prem:set.filter(r=>r.price>m0*2),
+      busy:set.length?Math.round((set.length-pr.length)/set.length*100):0,nearest:pr.slice().sort((a,b)=>a.km-b.km).slice(0,2),all:rs}}}
+  return{level:'none',why:rs.length?`only ${rs.filter(r=>r.price).length} priced listings nearby`:'no listings found yet',all:rs}}
+/* a price strip: listings as dots on a log price scale, the comparison band, your stays as labelled diamonds */
+function priceStrip(rows,stays,cmp){const W=innerWidth<700?360:640,Hh=104,pad=14,ps=[...rows.filter(r=>r.price).map(r=>r.price),...stays.map(p=>+p.base_rate||0)].filter(Boolean);if(!ps.length)return null;
+  const lo=Math.min(...ps)*0.9,hi=Math.max(...ps)*1.1,x=v=>pad+(Math.log(v)-Math.log(lo))/(Math.log(hi)-Math.log(lo))*(W-2*pad);
+  const NS='http://www.w3.org/2000/svg',el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+  const svg=el('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'mk-strip',role:'img','aria-label':'Prices of listings around your stays'});
+  const ticks=[1000,2000,3000,5000,7500,10000,15000,20000,30000,50000].filter(t=>t>=lo&&t<=hi);
+  (W<400?ticks.filter((t,i)=>i%2===0):ticks).forEach(t=>{svg.append(el('line',{x1:x(t),x2:x(t),y1:18,y2:Hh-20,class:'mk-grid'}));const tx=el('text',{x:x(t),y:Hh-6,class:'mk-tick','text-anchor':'middle'});tx.textContent=t>=1000?`₹${t/1000}k`:`₹${t}`;svg.append(tx)});
+  if(cmp&&cmp.p25&&cmp.p75){svg.append(el('rect',{x:x(cmp.p25),y:30,width:Math.max(2,x(cmp.p75)-x(cmp.p25)),height:28,rx:6,class:'mk-band'}));svg.append(el('line',{x1:x(cmp.median),x2:x(cmp.median),y1:26,y2:62,class:'mk-med'}))}
+  const inCmp=new Set((cmp&&cmp.set||[]).map(r=>r.name));
+  rows.filter(r=>r.price).forEach((r,i)=>{const c=el('circle',{cx:x(r.price),cy:44+((i%3)-1)*7,r:5,class:'mk-dot '+(inCmp.has(r.name)?'in':'out'),tabindex:0,
+    'data-tip':`${r.name}\n₹${r.price.toLocaleString('en-IN')} · ${r.bedrooms??'?'} BR ${r.kind}${r.km!=null?` · ${r.km} km`:''}${r.rating?` · ★${r.rating} (${r.reviews||0})`:''}`});svg.append(c)});
+  /* your stays as diamonds; stays close on the scale share one label so labels never collide */
+  const clusters=[];stays.filter(p=>+p.base_rate>0).sort((a,b)=>a.base_rate-b.base_rate).forEach(p=>{const cx=x(+p.base_rate),c=clusters[clusters.length-1];if(c&&cx-c.x1<90){c.ps.push(p);c.x1=cx}else clusters.push({x0:cx,x1:cx,ps:[p]})});
+  clusters.forEach(c=>{c.ps.forEach(p=>{const cx=x(+p.base_rate);svg.append(el('path',{d:`M${cx} 6 l6 6 l-6 6 l-6 -6 z`,class:'mk-you',tabindex:0,'data-tip':`${short(p.property)}\nyour base ₹${(+p.base_rate).toLocaleString('en-IN')}`}))});
+    const mid=(c.x0+c.x1)/2,t=el('text',{x:mid,y:Hh-28,class:'mk-you-l','text-anchor':mid>W-90?'end':mid<90?'start':'middle'});t.textContent=c.ps.length>1?`${c.ps.length} of yours`:short(c.ps[0].property).slice(0,20);svg.append(t)});
+  return svg}
+function aiMarket(v){const all=rowsOf('rentals').map(RK),props=D.props.filter(p=>!isStopped(p)&&+p.base_rate>0),pinned=props.filter(stayPin);
+  const cities=[...new Set(pinned.map(p=>p.city))].sort();if(!S.mkCity||!cities.includes(S.mkCity))S.mkCity=cities[0];
+  const inCity=all.filter(r=>r.city===S.mkCity&&r.night>=TODAY),nights=[...new Set(inCity.map(r=>r.night))].sort(),lab=n=>(inCity.find(r=>r.night===n)||{}).label||'';
+  const pref=nights.find(n=>lab(n)==='sat')||nights[0];if(!S.mkNight||!nights.includes(S.mkNight))S.mkNight=pref;const night=S.mkNight;
+  const on=swOn('ai.market_rentals'),ac=(PROG.rentals||{}).account,lastC=all.map(r=>String(r.checked_on||'')).sort().pop();
+  const nLab=n=>{const l=lab(n);return `${fmtD(n,{weekday:'short',day:'numeric',month:'short'})}${l==='sat+4w'?' · 4 wks':l==='sat+8w'?' · 8 wks':/^festival/.test(l)?' · '+l.replace(/^festival: /,''):''}`};
+  // header: what this is, where, which night, free searches, check now
+  v.append(card('s12','Market trends',{hint:on?`Google holiday-rental prices around your stays · same size, kind and amenities first · checked weekly · free, no AI`:'turned off in Manage › AI Expenses'},
+    h('div',{class:'mt-ctl'},cities.length>1?h('div',{class:'seg',role:'group','aria-label':'City'},cities.map(c=>h('button',{'aria-pressed':c===S.mkCity,onclick:()=>{S.mkCity=c;S.mkNight=null;render()}},c))):null,
+      nights.length?h('div',{class:'mt-nights',role:'group','aria-label':'Night'},nights.map(n=>h('button',{class:'chip-s'+(n===night?' on':''),'aria-pressed':n===night?'true':'false',onclick:()=>{S.mkNight=n;render()}},nLab(n)))):null,
+      h('span',{class:'mt-sp'}),h('small',{class:'hint'},lastC?`checked ${fmtD(lastC)}`:'not checked yet',ac&&ac.per_month?` · ${ac.used} of ${ac.per_month} free searches used · renews ${fmtD(ac.renews)}`:''),
+      on&&!progActive()?h('button',{class:'btn sm primary',disabled:!live()||null,onclick:async()=>{await setSetting('ai.rentals_request',new Date().toISOString().slice(0,16),'Checking Google rental prices · about 1 minute');pollProgress()}},icon('repeat'),'Check now'):null),
+    progBar('rentals'),
+    !pinned.length?h('p',{class:'hint'},'Add a map pin to your stays (Manage › Properties › Map pin) so prices can be compared around each one.'):null));
+  if(!inCity.length){v.append(h('section',{class:'card glass s12 ins-wait'},icon('info'),h('div',null,h('b',null,'No market prices yet'),h('span',null,on?'The first check runs this week, or tap Check now. It searches Google’s holiday rentals around each stay: about 15 free searches.':'Turn Google rental prices on in Manage › AI Expenses.'))));
+    const det=h('details',{class:'card glass s12 mk-own'},h('summary',null,'Your own price checks'));v.append(det);aiMarketChecks(det);return}
+  const nightRows=inCity.filter(r=>r.night===night),seenL=new Set(),rows=nightRows.slice().sort((a,b)=>!a.price-!b.price).filter(r=>{const k=r.name+'|'+(+r.lat).toFixed(4)+'|'+(+r.lng).toFixed(4);if(seenL.has(k))return false;seenL.add(k);return true}),stays=pinned.filter(p=>p.city===S.mkCity),fams=[...new Set(nightRows.map(r=>r.family))];
+  const cmpOf=new Map(stays.map(p=>[p.property_id,mktCompare(p,rows)]));
+  // tiles
+  const priced=rows.filter(r=>r.price),satN=nights.find(n=>lab(n)==='sat'),tueN=nights.find(n=>lab(n)==='tue');
+  const med=n=>pctl(inCity.filter(r=>r.night===n&&r.price).map(r=>r.price),.5),wk=satN&&tueN&&med(satN)&&med(tueN)?Math.round((med(satN)/med(tueN)-1)*100):null;
+  const pos=stays.map(p=>{const c=cmpOf.get(p.property_id);return c.median?(+p.base_rate/c.median-1)*100:null}).filter(x=>x!=null);
+  const tile=(l,val,sub,tip)=>h('div',{class:'cs-tile','data-tip':tip||null},h('span',null,l),h('b',{class:'num'},val),sub?h('small',null,sub):null);
+  v.append(h('div',{class:'s12 mt-tiles'},tile('Listings around your stays',String(new Set(rows.map(r=>r.name)).size),`${fams.length} search area${fams.length>1?'s':''} · ${fmtD(night)}`),
+    tile('Market median',priced.length?inr(pctl(priced.map(r=>r.price),.5)):'–',priced.length?`middle half ${inrK(pctl(priced.map(r=>r.price),.25))}–${inrK(pctl(priced.map(r=>r.price),.75))}`:''),
+    tile('Your stays vs their matches',pos.length?`${Math.round(pos.reduce((a,b)=>a+b,0)/pos.length)>0?'+':''}${Math.round(pos.reduce((a,b)=>a+b,0)/pos.length)}%`:'–','your listed base vs listed prices nearby'),
+    tile('Likely booked',rows.length?`${Math.round((rows.length-priced.length)/rows.length*100)}%`:'–','show no price for this night','Listings with no price for the night are usually booked'),
+    tile('Weekend premium',wk!=null?`${wk>0?'+':''}${wk}%`:'–',wk!=null?`Saturday vs Tuesday · yours +${prVal('weekend_markup_pct')}%`:'needs a Saturday and a Tuesday')));
+  // a price map per search area
+  fams.forEach(f=>{const fr=nightRows.filter(r=>r.family===f),fs=stays.filter(p=>famKey(p)===f),c0=fs.length?cmpOf.get(fs[0].property_id):null;const sv=priceStrip(fr.map(r=>({...r,km:fs[0]&&stayPin(fs[0])?Math.round(kmB(stayPin(fs[0]),[r.lat,r.lng])*10)/10:null})),fs,c0&&c0.level!=='none'?c0:null);
+    v.append(card('s12 mt-fam',`${fr[0].area} · ${f.replace(/^.*-/,'')}`,{hint:`${fr.length} listings · ${fr.filter(r=>r.price).length} priced for ${fmtD(night,{day:'numeric',month:'short'})}`},
+      sv?h('div',{class:'mt-strip-w'},sv):h('div',{class:'empty'},'No prices for this night.'),
+      h('div',{class:'mt-lg'},h('span',null,h('i',{class:'lg-in'}),'compared with your stay'),h('span',null,h('i',{class:'lg-out'}),'other listings'),h('span',null,h('i',{class:'lg-you'}),'your stays'),h('span',null,h('i',{class:'lg-band'}),'middle half'))))});
+  // stay cards with smart fallbacks and what to do
+  const mkAm=amSet(rows.flatMap(r=>String(r.amenities||'').split(','))),share={};AMC.forEach(([l])=>{share[l]=rows.length?rows.filter(r=>amSet(r.amenities).has(l)).length/rows.length:0});
+  v.append(h('div',{class:'s12 mt-stays'},stays.map(p=>{const c=cmpOf.get(p.property_id),base=+p.base_rate,mine=amSet(p.amenities);
+    const rare=[...mine].filter(a=>share[a]!=null&&share[a]<.3),top=c.set?c.set.filter(r=>r.price&&r.price>=(c.p75||Infinity)):[],topAm=AMC.map(([l])=>l).filter(l=>!mine.has(l)&&top.length>=2&&top.filter(r=>amSet(r.amenities).has(l)).length/top.length>=.5)
+      .sort((a,b)=>(share[a]||0)-(share[b]||0)).slice(0,3);
+    if(c.level==='none')return h('div',{class:'mt-stay'},h('div',{class:'mt-sh'},h('b',null,short(p.property)),h('span',{class:'pill p-mute'},'Not enough data')),h('p',{class:'hint'},`${c.why} for ${fmtD(night)} · try another night, or add your own price checks below`));
+    const d=Math.round((base/c.median-1)*100),prem=c.prem,sug=rare.length>=2?[c.median,c.p75]:rare.length?[c.p25,c.p75]:[c.p25,c.median];
+    const premAm=prem.length>=2?AMC.map(([l])=>l).filter(l=>prem.filter(r=>amSet(r.amenities).has(l)).length/prem.length>=.5&&(share[l]||0)<.5).slice(0,3):[];
+    const verdict=Math.abs(d)<=10?['In line','p-ok']:d>10?[`${d}% above`,'p-warn']:[`${-d}% below`,'p-acc'];
+    const span=Math.max(c.high,base)*1.05,X=v_=>Math.max(0,Math.min(100,v_/span*100));
+    return h('div',{class:'mt-stay'},
+      h('div',{class:'mt-sh'},h('b',null,short(p.property)),h('span',{class:'pill '+verdict[1],'data-tip':`your base ₹${base.toLocaleString('en-IN')} vs median ₹${c.median.toLocaleString('en-IN')}`},verdict[0])),
+      h('small',{class:'mt-lv lv-'+c.conf},`${c.priced} ${c.label} · ${c.conf} confidence`),
+      h('div',{class:'mt-bar','aria-hidden':'true'},h('i',{class:'mt-band',style:{left:X(c.p25)+'%',width:Math.max(1,X(c.p75)-X(c.p25))+'%'}}),h('i',{class:'mt-medl',style:{left:X(c.median)+'%'}}),h('i',{class:'mt-youm',style:{left:X(base)+'%'}})),
+      h('div',{class:'mt-nums'},h('span',null,'median ',h('b',{class:'num'},inr(c.median))),h('span',null,'range ',h('b',{class:'num'},`${inrK(c.low)}–${inrK(c.high)}`)),h('span',null,'you ',h('b',{class:'num'},inr(base)))),
+      c.nearest.length?h('div',{class:'mt-near'},c.nearest.map(r=>h('a',{href:r.link,target:'_blank',rel:'noopener'},h('span',null,r.name),h('small',null,`${r.km} km · ${r.bedrooms??'?'} BR · ${inr(r.price)}${r.rating?` · ★${r.rating}`:''}`)))):null,
+      rare.length?h('div',{class:'mt-chips'},h('small',null,'You have, few nearby do:'),rare.map(a=>h('span',{class:'chip-s good'},a))):null,
+      topAm.length?h('div',{class:'mt-chips'},h('small',null,'Pricier listings here have:'),topAm.map(a=>h('span',{class:'chip-s'},a))):null,
+      prem.length>=2?h('small',{class:'mt-prem'},`A premium tier at ${inrK(Math.min(...prem.map(r=>r.price)))}–${inrK(Math.max(...prem.map(r=>r.price)))} (${prem.length} listings${premAm.length?': '+premAm.join(', ').toLowerCase():''}) - not your direct competition`):null,
+      c.busy>=30?h('small',{class:'mt-busy'},`${c.busy}% of these show no price for ${fmtD(night)}: likely booked, demand is up`):null,
+      h('div',{class:'mt-do'},icon('bulb'),h('span',null,d>25&&rare.length<2?`Priced well above lookalikes without many standouts: consider ${inrK(sug[0])}–${inrK(sug[1])}, or show what makes it special in your title and first photos.`:
+        d>10?`Above the median${rare.length?` - your ${rare.slice(0,2).join(' and ').toLowerCase()} can carry it; say so in the title`:''}. Suggested ${inrK(sug[0])}–${inrK(sug[1])}.`:
+        d<-10?`Below lookalikes: room to raise towards ${inrK(sug[0])}–${inrK(sug[1])}, especially on busy nights.`:`In line with the market (${inrK(sug[0])}–${inrK(sug[1])}).`)))})));
+  // the price ahead: each area's median by night
+  const famsAll=[...new Set(inCity.map(r=>r.family))];
+  if(nights.length>1)v.append(card('s12','The price ahead',{hint:'median listed price by night · compare next week with 4 and 8 weeks out and festival nights'},
+    h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Area'),nights.map(n=>h('th',{class:'r'+(n===night?' on':'')},nLab(n))))),
+      h('tbody',null,famsAll.map(f=>{const fr=inCity.filter(r=>r.family===f),base=pctl(fr.filter(r=>r.night===(tueN||nights[0])&&r.price).map(r=>r.price),.5);
+        return h('tr',null,h('td',null,`${fr[0].area} · ${f.replace(/^.*-/,'')}`),nights.map(n=>{const m=pctl(fr.filter(r=>r.night===n&&r.price).map(r=>r.price),.5),dd=m&&base&&n!==(tueN||nights[0])?Math.round((m/base-1)*100):null;
+          return h('td',{class:'r num'},m?inrK(m):'–',dd!=null?h('small',{class:dd>=0?'up':'dn'},` ${dd>=0?'+':''}${dd}%`):null)}))}))))));
+  // the weekly trend (MarketTrend)
+  const tr=rowsOf('rentaltrend').filter(r=>r.city===S.mkCity&&String(r.label)==='sat'),dates=[...new Set(tr.map(r=>String(r.checked_on).slice(0,10)))].sort();
+  v.append(card('s6','Weekly trend',{hint:'median Saturday price per area, check by check'},dates.length<2?h('div',{class:'empty'},'The trend starts after the second weekly check.'):trendChart(tr,dates)));
+  // amenities: must-haves vs standouts
+  const rowsAm=AMC.map(([l])=>[l,share[l]]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+  v.append(card('s6','Amenities around your stays',{hint:'share of listings that have each · must-haves (most have them) vs standouts (few do)'},
+    h('div',{class:'mt-am'},rowsAm.map(([l,sh])=>{const have=stays.filter(p=>amSet(p.amenities).has(l)).length;return h('div',{class:'mt-amr'},h('span',null,l),h('div',{class:'mt-amb'},h('i',{style:{width:Math.round(sh*100)+'%'},class:sh>=.6?'must':sh<.3?'rare':''})),h('small',{class:'num'},Math.round(sh*100)+'%'),
+      h('small',{class:have?'have':'miss'},have?`✓ ${have} of yours`:'none of yours'))}))));
+  const det=h('details',{class:'card glass s12 mk-own'},h('summary',null,'Your own price checks'));v.append(det);aiMarketChecks(det)}
+function trendChart(tr,dates){const W=320,Hh=150,pl=38,pb=22,fams=[...new Set(tr.map(r=>r.family))].slice(0,4),COL=['#2a78d6','#eb6834','#1baf7a','#eda100'];
+  const ys=tr.map(r=>+r.median).filter(Boolean),lo=Math.min(...ys)*0.9,hi=Math.max(...ys)*1.1,x=i=>pl+i/(dates.length-1)*(W-pl-10),y=v_=>Hh-pb-(v_-lo)/(hi-lo||1)*(Hh-pb-10);
+  const NS='http://www.w3.org/2000/svg',el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e},svg=el('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'mt-trend',role:'img','aria-label':'Weekly median price trend'});
+  [lo,(lo+hi)/2,hi].forEach(t=>{svg.append(el('line',{x1:pl,x2:W-10,y1:y(t),y2:y(t),class:'mk-grid'}));const tx=el('text',{x:pl-4,y:y(t)+3,class:'mk-tick','text-anchor':'end'});tx.textContent=inrK(t);svg.append(tx)});
+  dates.forEach((d,i)=>{const tx=el('text',{x:x(i),y:Hh-6,class:'mk-tick','text-anchor':'middle'});tx.textContent=fmtD(d,{day:'numeric',month:'short'});svg.append(tx)});
+  fams.forEach((f,k)=>{const pts=dates.map((d,i)=>{const r=tr.filter(z=>z.family===f&&String(z.checked_on).slice(0,10)===d).pop();return r&&+r.median?[x(i),y(+r.median),+r.median,d]:null}).filter(Boolean);
+    if(pts.length>1)svg.append(el('path',{d:'M'+pts.map(p=>p[0]+' '+p[1]).join(' L'),fill:'none',stroke:COL[k],'stroke-width':2,'stroke-linejoin':'round'}));
+    pts.forEach(p=>svg.append(el('circle',{cx:p[0],cy:p[1],r:4,fill:COL[k],stroke:'#fff','stroke-width':2,'data-tip':`${f}\n${fmtD(p[3])}: median ₹${p[2].toLocaleString('en-IN')}`})))});
+  return h('div',null,svg,h('div',{class:'mt-lg'},fams.map((f,k)=>h('span',null,h('i',{style:{background:COL[k]}}),f))))}
+function aiMarketChecks(v){prLoad();const props=D.props.filter(p=>!isStopped(p)&&+p.base_rate>0).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
   const wn=prVal('weekend_nights'),isW=d=>wn.includes(DOW[(pd(d).getDay()+6)%7]),all=rowsOf('market');
   /* your listed price on the same nights the comparables were checked (next 4 months): like for like */
   const listedOn=(p,we)=>{const ds=[...new Set(mkRows(p.property_id,'recent').map(r=>String(r.night).slice(0,10)))].filter(d=>isW(d)===we);const xs=ds.length?ds:Array.from({length:60},(_,i)=>add(TODAY,i+1)).filter(d=>isW(d)===we);return Math.round(sum(xs,d=>nightPrice(p,d).price)/xs.length)};
   const pos=(you,b)=>!b||!you?h('span',{class:'hint'},'–'):h('span',{class:'mk-pos '+(you>b.high?'mk-hi':you<b.low?'mk-lo':'mk-in')},`${inrK(you)} vs ${inrK(b.mid)} · ${you>=b.mid?'+':''}${Math.round((you/b.mid-1)*100)}%`);
-  /* the AI's weekly look at lookalike listings (Haiku, 3 web searches a stay) */
-  {const ai=all.filter(mkAI),last=ai.map(r=>String(r.observed_on||'')).sort().pop(),priced=new Set(ai.map(r=>r.property_id)),on=swOn('ai.market_scan'),
-    ch=marketCharge(props.length);
-    v.append(card('s12','AI market check',{hint:on?`weekly: the AI looks up 3-5 lookalike listings per stay (same area, type, size, amenities) and notes what they ask · approximate`:'turned off in Manage › AI Expenses'},
-      h('div',{class:'mk-ai'},h('div',null,h('b',null,last?`Last checked ${fmtD(last)}`:'Not checked yet'),h('small',null,last?`${priced.size} of ${props.length} stays priced · next check within a week`:'The first check runs within a week, or check now')),
-        !on?h('span',{class:'pill p-mute'},'Off'):progActive()?null:
-        h('button',{class:'btn sm primary',disabled:!live()||null,onclick:async()=>{await setSetting('ai.market_request',new Date().toISOString().slice(0,16),`Asked the AI to check market prices · about ₹${ch}`);pollProgress()}},`Check now · ₹${ch}`)),progBar('market')))}
-  if(!all.length)v.append(h('section',{class:'card glass s12 ins-wait'},icon('info'),h('div',null,h('b',null,'No market prices yet'),h('span',null,'The AI fills this in with its first market check (weekly, or tap Check now above). You can also add your own price checks.'))));
+
   v.append(card('s12','You vs the market',{hint:'your listed price vs comparable listings on the nights checked (next 4 months) · weekdays and weekends',acts:[...uplBtns('market'),h('button',{class:'btn sm primary',onclick:()=>mkEdit()},icon('plus'),'Price check')]},
     h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Stay'),h('th',{class:'r'},'Weekdays'),h('th',{class:'r'},'Weekends'),h('th',{class:'r'},'Comparables sold out'),h('th',{class:'r'},'Listings'),h('th',{class:'r'},'Last checked'))),
       h('tbody',null,props.map(p=>{const b=mkBand(p.property_id,'recent'),allR=all.filter(r=>r.property_id===p.property_id),last=allR.map(r=>String(r.observed_on||'')).sort().pop(),
@@ -3315,7 +3467,7 @@ function property(v){
   v.append(h('div',{class:'s12'},h('button',{class:'back',onclick:()=>go('properties')},icon('back'),'All properties')));
   v.append(h('section',{class:'card glass s12'},h('div',{class:'phero'},h('div',{class:'img'},scene(p,960,600)),
     h('div',{style:{display:'flex',flexDirection:'column',gap:'12px'}},h('div',{class:'tags'},h('span',{class:'pill p-acc'},p.city),p.type?h('span',{class:'pill p-mute'},p.type):null,p.bedrooms?h('span',{class:'pill p-mute'},p.bedrooms+' BR'):null,p.ownership?h('span',{class:'pill '+(p.ownership==='Managed'?'p-warn':'p-ok')},p.ownership+(p.owner_share?` · owner ${Math.round(p.owner_share*100)}%`:'')):null,isStopped(p)?h('span',{class:'pill p-bad'},'Stopped'):null,cur?h('span',{class:'pill p-ok'},'Occupied now'):tonight(p.property_id)?h('span',{class:'pill p-warn'},tonight(p.property_id).kind==='block'?`Blocked tonight · ${tonight(p.property_id).via}`:`Unavailable tonight · ${tonight(p.property_id).via} booked`):h('span',{class:'pill p-mute'},'Vacant tonight')),
-      h('h2',null,short(p.property)),h('div',{style:{color:'var(--muted)'}},`${p.area}, ${p.city}${p.base_rate?' · base '+inr(p.base_rate)+'/night':''}${p.cleaning_fee?' · cleaning '+inr(p.cleaning_fee):''}${p.cleaner?' · housekeeping: '+p.cleaner:''}`),
+      h('h2',null,short(p.property)),stayMap(p)?h('a',{class:'btn sm',href:stayMap(p),target:'_blank',rel:'noopener',style:{alignSelf:'flex-start'}},'📍 Open in Maps'):null,h('div',{style:{color:'var(--muted)'}},`${p.area}, ${p.city}${p.base_rate?' · base '+inr(p.base_rate)+'/night':''}${p.cleaning_fee?' · cleaning '+inr(p.cleaning_fee):''}${p.cleaner?' · housekeeping: '+p.cleaner:''}`),
       h('div',{class:'kv'},h('div',null,h('span',null,cur?'Staying now':'Last guest'),h('b',null,cur?`${cur.guest} · checks out ${fmtD(cur.check_out)}`:'—')),h('div',null,h('span',null,'Next check-in'),h('b',null,nx?`${nx.guest} · ${fmtD(nx.check_in)} ${nx.arrival_time||''}`:'None booked')),h('div',null,h('span',null,'Guest rating'),h('b',null,rated.length?`★ ${(sum(rated,b=>b.rating)/rated.length).toFixed(2)} from ${rated.length} stays`:'No ratings yet')),h('div',null,h('span',null,'Open issues'),h('b',null,String(D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length)))),
       h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap'}},h('button',{class:'btn primary admin',onclick:()=>openForm('booking',p.property_id)},icon('plus'),'Booking'),h('button',{class:'btn admin',onclick:()=>expEditor(null,{property_id:p.property_id})},icon('plus'),'Expense'),h('button',{class:'btn admin',onclick:()=>openForm('issue',p.property_id)},icon('plus'),'Issue'),h('button',{class:'btn',onclick:()=>{S.calM=TODAY.slice(0,7);setF({props:[p.property_id]});go('calendar')}},'Open in calendar'),S.admin?h('button',{class:'btn admin',onclick:()=>openPropInManage(p.property_id)},'Edit in Manage'):null)))));
   const t=(l,val,d)=>h('div',{class:'kpi glass s2'},h('div',{class:'l'},l),h('div',{class:'v num'},val),h('div',{class:'foot'},d));
@@ -3834,10 +3986,10 @@ function normLive(d){const n=v=>v==null||v===''?0:+v||0;
   d.maint=(d.maint||[]).filter(m=>m.ticket_id).map(m=>({...m,ticket_id:String(m.ticket_id)}));
   d.turnovers=(d.turnovers||[]).map(t=>({...t,booking_id:String(t.booking_id)}));
   d.leads=d.leads||[];d.requests=d.requests||[];d.blocks=d.blocks||[];d.lists=d.lists||[];d.fee_pct=d.fee_pct&&Object.keys(d.fee_pct).length?d.fee_pct:SEED.fee_pct;
-  ['ideas','market','reviews','checklists','stock','staff','claims','ops','ai','movements','botstats','reports'].forEach(k=>{d[k]=d[k]||[]});
+  ['ideas','market','reviews','checklists','stock','staff','claims','ops','ai','movements','botstats','reports','rentals','rentaltrend'].forEach(k=>{d[k]=d[k]||[]});
   d.market=d.market.map(r=>({...r,price:n(r.price),night:String(r.night||'').slice(0,10)}));d.claims=d.claims.map(c=>({...c,amount:n(c.amount)}));return d}
 const TABKEY={lists:'lists',properties:'props',bookings:'bookings',payouts:'payouts',expenses:'expenses',maintenance:'maint',turnovers:'turnovers',leads:'leads',requests:'requests',blocks:'blocks',
-  ideas:'ideas',market:'market',reviews:'reviews',checklists:'checklists',stock:'stock',claims:'claims',users:'staff',movements:'movements',botstats:'botstats',reports:'reports'};
+  ideas:'ideas',market:'market',reviews:'reviews',checklists:'checklists',stock:'stock',claims:'claims',users:'staff',movements:'movements',botstats:'botstats',reports:'reports',rentals:'rentals',rentaltrend:'rentaltrend'};
 /* (requests is already a core tab: TABKEY.requests) */
 /* returning guests, matched by the last 10 digits of the phone: earlier stays before a date */
 const ph10=v=>String(v||'').replace(/\D/g,'').slice(-10);
@@ -4603,6 +4755,8 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
   const inp=(v,o={})=>h('input',{value:v??'',autocomplete:'off',...o}),num=(v,o)=>inp(v,{type:'number',inputmode:'decimal',min:0,step:'1',...o});
   const lk=Object.fromEntries(LINKS.map(([k,l])=>[k,inp(p[k],{type:'url',placeholder:`https://… your ${l} listing`})]));
   const nm=inp(p.property,{placeholder:'e.g. Blue Petals (D 401)'}),ar=inp(p.area,{placeholder:'e.g. Tapovan'}),ws=inp(p.website_url,{type:'url',placeholder:'https://…'});
+  const pinIn=inp(p.map_pin||(p.lat&&p.lng?`${p.lat}, ${p.lng}`:''),{placeholder:'Paste a Google Maps link (or lat, lng)'}),pinNote=h('small',{class:'pe-hint'});
+  const pinShow=()=>{const x=pinFromText(pinIn.value);pinNote.textContent=!pinIn.value.trim()?'Used for guest directions, the manager app and market prices nearby.':x?`📍 ${x[0].toFixed(5)}, ${x[1].toFixed(5)} ✓`:/goo\.gl|maps\.app/.test(pinIn.value)?'Short link: open it, then copy the full address from the browser':'No location found in this link'};pinIn.addEventListener('input',pinShow);pinShow();
   const ct=h('select',null,[...new Set([...CITIES,p.city].filter(Boolean))].map(c=>h('option',{selected:c===p.city||null},c)),h('option',{value:'__new'},'+ New city…'));
   const ctNew=h('input',{placeholder:'New city name',autocomplete:'off',hidden:true});ct.addEventListener('change',()=>{ctNew.hidden=ct.value!=='__new';if(!ctNew.hidden)ctNew.focus()});
   const ty=h('select',null,p.type?null:h('option',{value:''},'—'),[...new Set([...PTYPES,p.type].filter(Boolean))].map(c=>h('option',{selected:c===p.type||null},c)));
@@ -4633,7 +4787,7 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
     sec('Size & price'),fld('Bedrooms',bd),fld('Bathrooms',ba),fld('Guests included in price',bg),fld('Max guests',mg),fld('Base price / night (₹)',br),fld('Extra guest / night (₹)',eg),fld('Pet fee / stay (₹)',pf),
     sec('Check-in'),fld('Check-in from',tIn),fld('Check-out by',tOut),
     sec('Combo listing'),h('p',{class:'full pe-hint'},'Tick the properties this listing is made of (e.g. a 4BHK let as two 2BHKs together). Booking one blocks the others.'),h('div',{class:'full'},incBox),
-    sec('For guests'),fld('About',ds,1),fld('House rules',rl,1),h('div',{class:'full pe-am'},h('span',{class:'pe-lab'},'Amenities'),amBox,amNew),h('div',{class:'full pe-am-combo'},h('span',{class:'pe-lab'},'Amenities (from its parts)'),h('div',{class:'pe-chips ro'})),fld('Website listing link',ws,1),
+    sec('For guests'),fld('About',ds,1),fld('House rules',rl,1),h('div',{class:'full pe-am'},h('span',{class:'pe-lab'},'Amenities'),amBox,amNew),h('div',{class:'full pe-am-combo'},h('span',{class:'pe-lab'},'Amenities (from its parts)'),h('div',{class:'pe-chips ro'})),fld('Website listing link',ws,1),fld('Map pin',h('div',null,pinIn,pinNote),1),
     sec('Listing links'),h('p',{class:'full pe-hint'},'Your own listing on each platform (kept for reference and quick checks).'),LINKS.map(([k,l])=>fld(l,lk[k],1)),
     sec(`Photos${photos.length?' · '+photos.length:''}`),h('p',{class:'full pe-hint'},'The cover (★) shows on cards, WhatsApp and the brochure; the bot remakes the brochure after you save.'),
     h('div',{class:'full'},phBox,upIn,h('div',{class:'pe-drive'},driveLogo(),h('div',null,h('b',null,'Saved to Google Drive'),h('span',null,`Photos you add from your phone go to the "${CLIENT.brand||'Register'} photos" folder in the Register's Google Drive. You can also paste a Google Drive share link or any https image link below.`))),phNew),err),
@@ -4647,7 +4801,7 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
       if(ct.value==='__new'&&!CITIES.some(c=>c.toLowerCase()===cityV.toLowerCase()))setSetting('ops.cities',JSON.stringify([...cityExtra(),{name:cityV,scene:'hills',color:CITY_MORE[Math.max(0,CITIES.length-3)%CITY_MORE.length],steps:/mussoorie/i.test(cityV)?[MUSSOORIE_STEP]:[],events:[]}]),cityV+' added to cities');
       const f={property:nm.value.trim(),city:cityV,area:ar.value.trim()||null,type:ty.value||null,status:p0&&!p0.status&&stt.value==='Active'?null:stt.value,bedrooms:v(bd),bathrooms:v(ba),base_guests:v(bg),max_guests:v(mg),
         base_rate:v(br),extra_guest_fee:v(eg),pet_fee:v(pf),check_in_time:tIn.value||null,check_out_time:tOut.value||null,includes:inc.size?[...inc]:null,
-        description:ds.value.trim()||null,rules:rl.value.trim()||null,amenities:inc.size?(comboAmenities({includes:[...inc]}).length?comboAmenities({includes:[...inc]}):null):am.size?[...am]:null,website_url:ws.value.trim()||null,
+        description:ds.value.trim()||null,rules:rl.value.trim()||null,amenities:inc.size?(comboAmenities({includes:[...inc]}).length?comboAmenities({includes:[...inc]}):null):am.size?[...am]:null,website_url:ws.value.trim()||null,...(()=>{const x=pinFromText(pinIn.value);return pinIn.value.trim()?(x?{map_pin:pinIn.value.trim(),lat:x[0],lng:x[1]}:{map_pin:pinIn.value.trim()}):{map_pin:null,lat:null,lng:null}})(),
         ...Object.fromEntries(LINKS.map(([k])=>[k,lk[k].value.trim()||null])),
         photos:photos.length?photos:null,photo_thumbs:thumbs.length?thumbs:null,photo:cover||null};
       const bad=LINKS.find(([k])=>f[k]&&!/^https:\/\//.test(f[k]));if(bad)return fail(`The ${bad[1]} link must start with https://`);
@@ -5445,7 +5599,7 @@ const swOn=k=>!/^(off|no|false|0)$/i.test(aiVal(k));
 const SW_BUSY=new Set();   /* a switch being saved can't be tapped again until the save is back */
 const COST_SW=[['ai.guest_replies','AI WhatsApp bot','Writes the replies to messages people type. Menus and buttons keep working.','ai'],
   ['ai.insights','AI insights','The daily analysis and the Run new analysis button, on every dashboard and login.','ai'],
-  ['ai.market_scan','AI market check','Weekly, and when asked: the AI looks up 3-5 lookalike listings per stay on the web (3 searches each) for AI › Market.','ai'],
+  ['ai.market_rentals','Google rental prices','Weekly, and when asked: Google’s holiday-rental prices around each stay for AI › Market. No AI, free searches (counted below).','ai'],
   ['msgs.to_guests','Guests','Off: the bot sends guests nothing and ignores what they write. Your team can still reply from the WhatsApp Business app.','wa'],
   ['msgs.to_owners','Owners','Off: the bot sends owners nothing and ignores what they write, # commands included.','wa'],
   ['msgs.to_managers','Managers','Off: the bot sends managers nothing and ignores what they write. They still see everything in the manager app.','wa']];
@@ -5468,7 +5622,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
     h('div',{class:'cs-tiles'},tile('Total',r2(c.total),'AI + WhatsApp + hosting'),
       tile('AI WhatsApp bot',r2(c.ai.inr),c.ai.replies?`${c.ai.replies.toLocaleString('en-IN')} replies · ${r2(c.ai.inr/c.ai.replies)} each`:'no AI replies'),
       tile('AI insights',r2(c.ins.inr),`${c.ins.runs.length} run${c.ins.runs.length===1?'':'s'}`),
-      tile('AI market check',r2(c.mk.inr),`${c.mk.scans} check${c.mk.scans===1?'':'s'} · ${c.mk.searches} searches`),
+      (()=>{const ac=((PROG.rentals||{}).account)||null;return tile('Google rental prices','₹0',ac&&ac.per_month?`${ac.used} of ${ac.per_month} free searches used · renews ${fmtD(ac.renews)}`:'free plan · no AI')})(),
       tile('WhatsApp',r2(c.wa),`${c.all.toLocaleString('en-IN')} messages · estimate`),tile('Hosting',r2(c.host),'fixed'))));
   /* AI */
   v.append(card('s6','AI WhatsApp bot',{hint:'AI answers typed messages; menus and buttons use no AI'},h('div',{class:'cs-kv'},
@@ -5485,7 +5639,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
         h('tr',{class:'hl'},h('td',null,'All'),h('td',{class:'r num'},c.all.toLocaleString('en-IN')),h('td',{class:'r num'},c.tpl.toLocaleString('en-IN')))))),
     h('p',{class:'hint',style:{margin:'10px 0 0'}},`estimate for these messages: ${r2(c.wa)}`)));
   /* switches */
-  const spent={'ai.guest_replies':c.ai.inr,'ai.insights':c.ins.inr,'ai.market_scan':c.mk.inr};
+  const spent={'ai.guest_replies':c.ai.inr,'ai.insights':c.ins.inr};
   const swRow=([k,l,d,grp])=>{const on=swOn(k);return h('div',{class:'cs-sw'+(on?'':' off')},h('div',null,h('b',null,l,spent[k]!=null?h('span',{class:'cs-amt num'},` · ${r2(spent[k])} this month`):null),h('small',null,d)),
     h('button',{class:'tgl',role:'switch','aria-checked':on?'true':'false','aria-label':l,disabled:SW_BUSY.has(k)||null,onclick:()=>{if(SW_BUSY.has(k))return;const go=()=>{SW_BUSY.add(k);return setSetting(k,on?'off':'on',`${l}: ${on?'off':'on'}`).finally(()=>{SW_BUSY.delete(k);render()})};
       const sure={'ai.guest_replies':['Turn off AI replies?','Guests who type a question get a holding line, and you get their message to answer yourself on WhatsApp. Menus and buttons keep working.'],

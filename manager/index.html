@@ -276,7 +276,7 @@ const HI={'Today':'आज','Checklists':'चेकलिस्ट','Stock':'स�
   "What's new":'नया क्या है','Mark all seen':'सब देख लिया','Nothing new since you last looked.':'पिछली बार के बाद कुछ नया नहीं।','My expense claims':'मेरे खर्च क्लेम','My money':'मेरा पैसा','Waiting':'प्रतीक्षा में',
   'Paid back this month':'इस महीने वापस मिला','Not approved':'मंज़ूर नहीं','Approved':'मंज़ूर','Settled':'चुकता','Issues at your stays':'आपकी प्रॉपर्टी की समस्याएँ','waiting to send':'भेजना बाकी',
   'Saved on the phone · sends when online':'फ़ोन में सेव · नेटवर्क आने पर भेजेंगे','Language':'भाषा','Rating':'रेटिंग','What the guest wrote (optional)':'मेहमान ने क्या लिखा (वैकल्पिक)','Save rating':'रेटिंग सेव करें',
-  'Stock checks':'स्टॉक जाँच','Add a comment':'टिप्पणी जोड़ें','Add a photo':'फ़ोटो जोड़ें','Photo needed':'फ़ोटो ज़रूरी','Remove photo':'फ़ोटो हटाएँ','of':'में से','done':'पूरा',
+  'Stock checks':'स्टॉक जाँच','Map':'नक्शा','Add a comment':'टिप्पणी जोड़ें','Add a photo':'फ़ोटो जोड़ें','Photo needed':'फ़ोटो ज़रूरी','Remove photo':'फ़ोटो हटाएँ','of':'में से','done':'पूरा',
   'should be':'होना चाहिए','Room photos':'कमरों की फ़ोटो','not done':'नहीं हुआ','Add a photo of':'इसकी फ़ोटो जोड़ें','Fill in':'भरें','Other photos (optional)':'अन्य फ़ोटो (वैकल्पिक)','Guest requests':'मेहमान की माँगें','On it':'कर रहे हैं','Checkout checklists':'चेकआउट चेकलिस्ट','Loading your stays…':'आपकी प्रॉपर्टी लोड हो रही है…','min':'कम से कम','last':'पिछली बार'};
 let LANG=store.get('mg_lang')||'en';const T=s=>LANG==='hi'&&HI[s]||s;
 /* ============ the Register (same Google Sheet as the dashboard and the WhatsApp bot) ============ */
@@ -358,6 +358,9 @@ function card(title,right,...body){return h('section',{class:'card'},h('h2',null
 const openTasks=()=>((S.d||{}).requests||[]).filter(r=>String(r.type||'')==='task'&&inS(r.property_id)&&!/^done$/i.test(r.status||'')).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
 const ago=t=>{const m=Math.max(0,Math.round((Date.now()-new Date(String(t).replace(' ','T')).getTime())/6e4));return isNaN(m)?'':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
 function taskSet(r,status){write('update','requests',{match:{request_id:r.request_id},fields:{status}},status==='Done'?'Done · the guest is told':'Marked on it').then(ok=>{if(ok==='sent')load();else render()})}
+/* the stay's map link: its own maps_url, else one from its pin (lat/lng, or a pasted Google Maps link) */
+const mapOf=p=>{if(!p)return null;if(p.maps_url)return p.maps_url;let la=+p.lat,lo=+p.lng;if(!(la&&lo)){const s=String(p.map_pin||''),m=[...s.matchAll(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/g)].pop()||s.match(/[?&](?:q|query|ll)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/)||s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);if(m){la=+m[1];lo=+m[2]}}
+  return la&&lo?`https://www.google.com/maps/search/?api=1&query=${la},${lo}`:null};
 const moved=(b,kind)=>(S.d.movements||[]).filter(x=>String(x.booking_id)===b.booking_id&&x.kind===kind).pop();
 function moveMark(b,kind,steps){const st_=kind==='arrived'?OPS.cityStepsOf(C(),P(b.property_id).city):[];
   /* the city's arrival steps (a local registration, say) are ticked first */
@@ -379,6 +382,7 @@ function today(m,u){const B=S.d.bookings.filter(b=>live(b)&&inS(b.property_id)),
     const r=h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${b.guest||'Guest'} · ${b.guests||''} guest${+b.guests===1?'':'s'}`),h('span',null,`${nm(b.property_id)} · ${kind==='in'?(b.arrival_time?'arriving '+b.arrival_time:'arrival time not set'):'check-out by 11:00'} · ${b.channel||''}`)),
       h('div',{class:'acts'},mv?h('span',{class:'pill p-ok'},`${T(kind==='in'?'Arrived':'Checked out')} ${String(mv.at||'').slice(11,16)}`):kind!=='tom'?h('button',{class:'btn sm',onclick:()=>moveMark(b,kind==='in'?'arrived':'left')},T(kind==='in'?'Arrived':'Checked out')):null,
         kind==='out'?(cl?h('span',{class:'pill p-ok'},T('Checklist done')):h('button',{class:'btn sm primary',onclick:()=>checklistForm(b)},T('Checklist'))):done&&kind==='in'?h('span',{class:'pill p-ok'},T('Ready')):null,
+        mapOf(P(b.property_id))?h('a',{class:'btn sm',href:mapOf(P(b.property_id)),target:'_blank',rel:'noopener','aria-label':T('Map')},'📍 '+T('Map')):null,
         kind!=='out'&&OPS.cityStepsOf(C(),P(b.property_id).city).length&&!mv?h('span',{class:'pill p-warn'},`${OPS.cityStepsOf(C(),P(b.property_id).city).length} arrival step${OPS.cityStepsOf(C(),P(b.property_id).city).length>1?'s':''}`):null));
     return info?h('div',null,r,h('details',{class:'info'},h('summary',null,T('Check-in info')),[['Check-in steps','checkin_steps'],['Parking','parking'],['House rules','house_rules'],['Directions','directions'],['Check-out','checkout_note']].filter(([,k])=>info[k]).map(([l,k])=>h('p',null,h('b',null,l+': '),String(info[k]))))):r};
   m.append(card('Arriving today',ins.length?String(ins.length):'',ins.length?ins.map(b=>bk(b,'in')):h('div',{class:'empty'},T('No check-ins today.'))));
