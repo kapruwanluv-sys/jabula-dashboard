@@ -10,6 +10,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" href="../icons/favicon-64.png">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Manager · Jabula Getaways</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,6 +67,13 @@ main{display:grid;gap:14px;padding:14px max(16px,env(safe-area-inset-right,0px))
 .news-i{display:grid;gap:1px;padding:6px 0;border-top:1px solid var(--hair);font-size:12.5px}.news-i:first-of-type{border-top:0}.news-i small{color:var(--muted)}
 .loading{display:grid;place-items:center;gap:10px;padding:40px 0;color:var(--muted)}.spin{width:28px;height:28px;border-radius:50%;border:3px solid var(--hair-2);border-top-color:var(--accent);animation:sp 0.9s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+/* round 2: urgent card, outbox, ratings, check-in info, language */
+.card.urgent{border-color:color-mix(in srgb,var(--bad) 45%,var(--hair));background:color-mix(in srgb,var(--bad) 4%,#fff)}.card.urgent h2 svg{width:18px;height:18px;fill:none;stroke:var(--bad);stroke-width:2}
+.badge.warn{background:var(--warn)}.row .acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.info{margin:0 0 6px;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-size:12.5px}.info summary{cursor:pointer;font-weight:650;color:var(--accent)}.info p{margin:6px 0 0}
+.stars{display:flex;gap:6px}.stars button{border:0;background:none;font-size:36px;line-height:1;color:var(--hair-2);cursor:pointer;padding:2px}.stars button[aria-pressed=true]{color:#f5a623}
+.stats.two{grid-template-columns:repeat(2,1fr)}.cnt span small{display:block;color:var(--muted);font-size:11.5px;font-weight:500}.cnt .lowm{color:var(--warn);font-weight:650}
+.lang{display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}button.pill{border:0;cursor:pointer}
 </style>
 </head>
 <body>
@@ -89,19 +97,36 @@ const OPS=(()=>{
   function cfg(rows,client){const m={};(rows||[]).forEach(r=>{m[String(r.key)]=r.value});client=client||{};
     const num=(k,d)=>{const v=+m[k];return isFinite(v)&&m[k]!==''&&m[k]!=null?v:d};
     const items=k=>{const v=js(m[k]);return Array.isArray(v)&&v.length?v:null};
+    const si=js(m['ops.stay_items']);
     return{start:String(m['ops.start_date']||client.ops_start||'2026-10-27').slice(0,10),grace:num('ops.checklist_grace_days',1),
       every:num('ops.stock_every_days',14),checkItems:items('ops.checkout_items')||DEF_CHECK,stockItems:items('ops.stock_items')||DEF_STOCK,
-      channels:list(m['reviews.channels']||'Airbnb'),window:num('reviews.window_days',14)}}
+      stayItems:si&&typeof si==='object'&&!Array.isArray(si)?si:{},photoSlots:items('ops.photo_slots')||[],
+      checkinTime:String(m['ops.checkin_time']||client.check_in_time||'13:00'),twoAdmin:num('ops.claim_two_admin_above',5000),
+      channels:list(m['reviews.channels']||'Airbnb'),window:num('reviews.window_days',14),lowAt:num('reviews.low_at',3)}}
+  /* the common list plus what this stay (or the whole place it belongs to) adds */
+  const parentOf=(pid,props)=>((props||[]).find(p=>list(p.includes).includes(pid))||{}).property_id||null;
+  const extra=(c,pid,props,k)=>[...((c.stayItems[parentOf(pid,props)]||{})[k]||[]),...((c.stayItems[pid]||{})[k]||[])];
+  function checkItemsFor(c,pid,props){return[...new Set([...c.checkItems,...extra(c,pid,props,'check')])]}
+  function stockItemsFor(c,pid,props){const out=c.stockItems.slice();extra(c,pid,props,'stock').forEach(x=>{const it=typeof x==='string'?parseItem(x):x;if(!out.some(o=>o.name===it.name))out.push(it)});return out}
+  /* "Bedsheets (min 12)" / "TV working (ok)" -> {name, min} / {name, type:'ok'} */
+  function parseItem(x){x=String(x).trim();if(/\(ok\)$/i.test(x))return{name:x.replace(/\s*\(ok\)$/i,''),type:'ok'};const m=/^(.*?)\s*\(min\s*(\d+)\)$/i.exec(x);return m?{name:m[1],min:+m[2]}:{name:x}}
+  const itemText=it=>it.name+(it.type==='ok'?' (ok)':it.min?` (min ${it.min})`:'');
+  /* two stays share nights when they are the same place, or one is the whole place over the other */
+  const overlap=(a,b,props)=>a===b||parentOf(a,props)===b||parentOf(b,props)===a; /* two flats of one place are separate */
   const live=b=>b&&!b.deleted_at&&String(b.booking_status||'Confirmed')!=='Cancelled'&&b.check_in&&b.check_out;
   /* a manager's stays: their list plus the whole place over their flats and the flats of a whole place they manage */
   function scope(ids,props){ids=list(ids);const set=new Set(ids);(props||[]).forEach(p=>{const inc=list(p.includes);
     if(inc.some(k=>set.has(k)))set.add(p.property_id);if(ids.includes(p.property_id))inc.forEach(k=>set.add(k))});return set}
   /* checkout checklists: one per stay that ended since the start date */
-  function checklists(bookings,rows,today,c,inScope){const byB={};(rows||[]).forEach(r=>{if(r.booking_id)byB[String(r.booking_id)]=r});
-    return(bookings||[]).filter(b=>live(b)&&String(b.check_out).slice(0,10)>=c.start&&String(b.check_out).slice(0,10)<=today&&(!inScope||inScope(b.property_id)))
+  /* a same-day turnover (the next guest checks in the day this one leaves) must be ready by check-in time: urgent */
+  function checklists(bookings,rows,today,c,inScope,props){const byB={};(rows||[]).forEach(r=>{if(r.booking_id)byB[String(r.booking_id)]=r});
+    const L=(bookings||[]).filter(live);
+    return L.filter(b=>String(b.check_out).slice(0,10)>=c.start&&String(b.check_out).slice(0,10)<=today&&(!inScope||inScope(b.property_id)))
       .map(b=>{const co=String(b.check_out).slice(0,10),r=byB[String(b.booking_id)],due=addD(co,c.grace);
-        return{booking:b,property_id:b.property_id,check_out:co,due,row:r||null,status:r?'done':today>due?'missed':'due',missedAt:r?null:due}})
-      .sort((a,b)=>b.check_out.localeCompare(a.check_out))}
+        const next=L.find(x=>x!==b&&String(x.check_in).slice(0,10)===co&&overlap(x.property_id,b.property_id,props));
+        return{booking:b,property_id:b.property_id,check_out:co,due,row:r||null,status:r?'done':today>due?'missed':'due',missedAt:r?null:due,
+          sameDay:!!next,next:next||null,urgent:!!next&&!r&&co===today,dueTime:next?String(next.arrival_time||c.checkinTime||'13:00').slice(0,5):null}})
+      .sort((a,b)=>(b.urgent-a.urgent)||b.check_out.localeCompare(a.check_out))}
   /* stock checks: every N days per real place (a whole place is its flats) */
   function stock(props,rows,today,c,inScope){const out=[];
     (props||[]).filter(p=>!list(p.includes).length&&!/^(stopped|inactive)$/i.test(String(p.status||''))&&(!inScope||inScope(p.property_id))).forEach(p=>{
@@ -112,6 +137,13 @@ const OPS=(()=>{
         if(hit)done++;else{missed++;missedAt.push(z)}a=z}
       const last=mine.sort((x,y)=>y.day.localeCompare(x.day))[0]||null;
       out.push({property_id:p.property_id,current:cur,done,missed,missedAt,last})});return out}
+  /* the last n counts for a place, newest first: [{day, counts, by}] */
+  function stockTrend(rows,pid,n){return(rows||[]).filter(r=>r.property_id===pid).map(r=>({day:String(r.done_at||r.submitted_at||'').slice(0,10),counts:js(r.counts)||{},by:r.by_name||r.by||''}))
+    .filter(r=>r.day).sort((a,b)=>b.day.localeCompare(a.day)).slice(0,n||4)}
+  /* below the minimum at the latest count, per place: what to buy */
+  function shopping(props,rows,c){const out=[];(props||[]).filter(p=>!list(p.includes).length&&!/^(stopped|inactive)$/i.test(String(p.status||''))).forEach(p=>{
+    const last=stockTrend(rows,p.property_id,1)[0];if(!last)return;stockItemsFor(c,p.property_id,props).filter(it=>it.min&&it.type!=='ok').forEach(it=>{const have=+last.counts[it.name];
+      if(isFinite(have)&&have<it.min)out.push({property_id:p.property_id,city:p.city||'',item:it.name,have,min:it.min,need:it.min-have,day:last.day})})});return out}
   /* guest reviews: platform stays (Airbnb by default) have a window after check-out to be reviewed */
   function reviews(bookings,rows,today,c,inScope){const byB={};(rows||[]).forEach(r=>{if(r.booking_id)byB[String(r.booking_id)]=r});
     return(bookings||[]).filter(b=>live(b)&&c.channels.includes(String(b.channel))&&String(b.check_out).slice(0,10)>=c.start&&String(b.check_out).slice(0,10)<=today&&(!inScope||inScope(b.property_id)))
@@ -119,14 +151,20 @@ const OPS=(()=>{
         const status=st==='received'?'received':st==='missed'||(left<0&&st!=='received')?'missed':st==='asked'?'asked':'open';
         return{booking:b,property_id:b.property_id,check_out:co,ends:end,left,row:r,status,missedAt:status==='missed'?(r&&r.decided_at)||end:null}})
       .sort((a,b)=>a.ends.localeCompare(b.ends))}
-  /* per manager (their stays as assigned now): reviews, checklists and stock checks done vs missed */
+  /* who a manager is in the rows the server writes: their email, else login:<id> */
+  const idOf=u=>String(u.email||(u.login?'login:'+u.login:'')).toLowerCase();
+  /* per manager: work done is credited to whoever did it (even at a stay they no longer have); missed and due follow
+     the stays they have now. Rows from before credit was recorded fall back to the name. */
   function scorecards(staff,data,today,c){return(staff||[]).filter(u=>String(u.role||'').toLowerCase()==='manager').map(u=>{
-    const set=scope(u.properties,data.props),inS=pid=>set.has(pid);
-    const cl=checklists(data.bookings,data.checklists,today,c,inS),rv=reviews(data.bookings,data.reviews,today,c,inS),sk=stock(data.props,data.stock,today,c,inS);
-    const cnt=(a,s)=>a.filter(x=>x.status===s).length;
-    return{user:u,stays:[...set],reviews:{received:cnt(rv,'received'),missed:cnt(rv,'missed'),asked:cnt(rv,'asked'),open:cnt(rv,'open')},
-      checklists:{done:cnt(cl,'done'),missed:cnt(cl,'missed'),due:cnt(cl,'due')},
-      stock:{done:sk.reduce((t,x)=>t+x.done+(x.current&&x.current.status==='done'?1:0),0),missed:sk.reduce((t,x)=>t+x.missed,0),due:sk.filter(x=>x.current&&x.current.status==='due').length}}})}
+    const set=scope(u.properties,data.props),inS=pid=>set.has(pid),me=idOf(u),nm=String(u.name||'').trim().toLowerCase();
+    const mine=(r,idk,nk)=>{const id=String(r[idk]||'').toLowerCase();return id?id===me:!!nm&&String(r[nk]||'').trim().toLowerCase()===nm};
+    const cl=checklists(data.bookings,data.checklists,today,c,inS,data.props),rv=reviews(data.bookings,data.reviews,today,c,inS),sk=stock(data.props,data.stock,today,c,inS);
+    const cnt=(a,s)=>a.filter(x=>x.status===s).length,start=r=>String(r.done_at||r.submitted_at||r.asked_at||'').slice(0,10)>=c.start;
+    const got=(data.reviews||[]).filter(r=>r.status==='received'&&mine(r,'asked_by_id','asked_by')),rated=got.filter(r=>+r.rating>0);
+    return{user:u,stays:[...set],reviews:{received:got.length,missed:cnt(rv,'missed'),asked:cnt(rv,'asked'),open:cnt(rv,'open'),
+        avg:rated.length?Math.round(rated.reduce((t,r)=>t+ +r.rating,0)/rated.length*10)/10:null,low:got.filter(r=>r.low==='Yes').length},
+      checklists:{done:(data.checklists||[]).filter(r=>start(r)&&mine(r,'by','by_name')).length,missed:cnt(cl,'missed'),due:cnt(cl,'due')},
+      stock:{done:(data.stock||[]).filter(r=>start(r)&&mine(r,'by','by_name')).length,missed:sk.reduce((t,x)=>t+x.missed,0),due:sk.filter(x=>x.current&&x.current.status==='due').length}}})}
   /* when a row arrived: its own timestamp, or the time inside a bot id like EX18c2f... */
   const stamp=r=>{const t=r.submitted_at||r.created_at||r.done_at||r.asked_at||r.decided_at||r.confirmed_at||r.approved_at||null;if(t)return String(t);
     if(r.reported_at&&+r.reported_at>1e9)return new Date(+r.reported_at*1000).toISOString();
@@ -136,7 +174,7 @@ const OPS=(()=>{
   /* what is new from outside the app since `since` (ISO). role: 'admin' | 'manager'. ctx: {me, inScope, props} */
   function news(d,since,role,ctx){ctx=ctx||{};const cats=[],add=(key,label,items,note)=>{if(items.length)cats.push({key,label,items:items.sort((a,b)=>String(b.at).localeCompare(String(a.at))),note})};
     const nm=pid=>{const p=(d.props||[]).find(x=>x.property_id===pid);return p?String(p.property).replace(/\s*\(.*?\)/g,'').split(',')[0].trim():pid||''};
-    const inS=ctx.inScope||(()=>true);
+    const inS=ctx.inScope||(()=>true),gName=id=>((d.bookings||[]).find(b=>String(b.booking_id)===String(id))||{}).guest||id;
     if(role==='admin'){
       add('wa_bookings','New bookings on WhatsApp',(d.bookings||[]).filter(b=>/whatsapp/i.test(b.source||'')&&after(stamp(b),since)).map(b=>({at:stamp(b),title:`${b.guest||'Guest'} · ${nm(b.property_id)}`,sub:`${String(b.check_in).slice(0,10)} → ${String(b.check_out).slice(0,10)}`,ref:{kind:'booking',id:b.booking_id}})));
       add('wa_cancel','Cancelled on WhatsApp · confirm what was kept',(d.bookings||[]).filter(b=>b.refund_check==='Pending'&&!b.deleted_at).map(b=>({at:stamp(b)||'',title:`${b.guest||'Guest'} · ${nm(b.property_id)}`,sub:b.booking_id,ref:{kind:'booking',id:b.booking_id}})),'stays here until confirmed');
@@ -148,16 +186,18 @@ const OPS=(()=>{
       add('claims','Expense claims · approve',(d.claims||[]).filter(c=>String(c.status||'pending')==='pending').map(c=>({at:stamp(c)||'',title:`${c.category||'Expense'} · ₹${(+c.amount||0).toLocaleString('en-IN')}`,sub:`${nm(c.property_id)} · by ${c.by_name||c.by||'manager'}`,ref:{kind:'claim',id:c.claim_id}})),'stays here until decided');
       add('checklists','Checklists done',(d.checklists||[]).filter(r=>after(stamp(r),since)).map(r=>({at:stamp(r),title:nm(r.property_id),sub:`checkout ${r.booking_id||''}${list(js(r.photos)||r.photos).length?' · photos':''}`,ref:{kind:'ops'}})));
       add('stock','Stock checks done',(d.stock||[]).filter(r=>after(stamp(r),since)).map(r=>({at:stamp(r),title:nm(r.property_id),sub:r.issues?String(r.issues).slice(0,80):'all counted',ref:{kind:'ops'}})));
+      add('low','Low ratings',(d.reviews||[]).filter(r=>r.low==='Yes'&&after(r.low_at||r.rated_at,since)).map(r=>({at:r.low_at||r.rated_at,title:`${'★'.repeat(+r.rating||0)} · ${gName(r.booking_id)} · ${nm(r.property_id)}`,sub:[r.review_text&&String(r.review_text).slice(0,80),'rated by '+(r.rated_by||'manager')].filter(Boolean).join(' · '),ref:{kind:'reviews',id:r.booking_id}})));
       add('reviews_asked','Reviews asked for',(d.reviews||[]).filter(r=>r.status==='asked'&&after(r.asked_at,since)).map(r=>({at:r.asked_at,title:`${r.booking_id} · ${nm(r.property_id)}`,sub:`asked by ${r.asked_by||'manager'} · confirm when it arrives`,ref:{kind:'reviews'}})));
-      if(ctx.missed)add('missed','Missed',ctx.missed.filter(x=>after(x.at,since)),'checklists, stock checks or reviews not done in time')}
+      if(ctx.missed)add('missed','Missed',ctx.missed.filter(x=>after(x.at,since)),'checklists, stock checks or reviews not done in time');
+      (ctx.extra||[]).forEach(x=>add(x.key,x.label,x.items.filter(i=>x.always||after(i.at,since)),x.note))}
     else{
       add('bookings','New bookings at your stays',(d.bookings||[]).filter(b=>inS(b.property_id)&&after(stamp(b),since)).map(b=>({at:stamp(b),title:`${b.guest||'Guest'} · ${nm(b.property_id)}`,sub:`${String(b.check_in).slice(0,10)} → ${String(b.check_out).slice(0,10)} · ${b.guests||''} guests`,ref:{kind:'today'}})));
       add('alerts','Guest alerts',(d.maint||[]).filter(m=>inS(m.property_id)&&/whatsapp/i.test(m.source||'')&&after(stamp(m),since)).map(m=>({at:stamp(m),title:m.issue,sub:`${nm(m.property_id)} · ${m.priority||''}`,ref:{kind:'issues'}})));
       add('decisions','Decisions on your claims',(d.claims||[]).filter(c=>c.status&&c.status!=='pending'&&after(c.decided_at,since)).map(c=>({at:c.decided_at,title:`${c.category||'Expense'} · ₹${(+c.amount||0).toLocaleString('en-IN')}`,sub:c.status==='rejected'?'not approved'+(c.decision_note?' · '+c.decision_note:''):'approved',ref:{kind:'claims'}})));
       add('approved','Your issues',(d.maint||[]).filter(m=>/manager/i.test(m.source||'')&&after(m.decided_at,since)).map(m=>({at:m.decided_at,title:m.issue,sub:m.status==='Rejected'?'not taken up':'approved · now '+(m.status||'open'),ref:{kind:'issues'}})));
-      add('confirmed','Reviews confirmed',(d.reviews||[]).filter(r=>r.status==='received'&&after(r.confirmed_at,since)).map(r=>({at:r.confirmed_at,title:`${nm(r.property_id)} · ${r.booking_id}`,sub:'counted for you',ref:{kind:'reviews'}})))}
+      add('confirmed','Reviews confirmed · add the stars',(d.reviews||[]).filter(r=>r.status==='received'&&after(r.confirmed_at,since)).map(r=>({at:r.confirmed_at,title:`${gName(r.booking_id)} · ${nm(r.property_id)}`,sub:r.rating?'★ '+r.rating+' noted':'counted for you · add the rating it got',ref:{kind:'reviews'}})))}
     return cats}
-  return{cfg,scope,checklists,stock,reviews,scorecards,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK}})();
+  return{cfg,scope,checklists,stock,reviews,scorecards,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
 
 /* ============ basics ============ */
 const $=s=>document.querySelector(s);
@@ -165,144 +205,237 @@ function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Obj
   k.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)))});return e}
 const NS='http://www.w3.org/2000/svg';
 const ICO={today:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4',check:'M5 12.5l4.5 4.5L19 7.5',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',
-  wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',bell:'M6 16V11a6 6 0 1112 0v5l1.5 2h-15zM10 20a2 2 0 004 0',menu:'M4 7h16M4 12h16M4 17h16',sync:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7'};
+  wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',bell:'M6 16V11a6 6 0 1112 0v5l1.5 2h-15zM10 20a2 2 0 004 0',menu:'M4 7h16M4 12h16M4 17h16',sync:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',
+  cloud:'M7 18h10a4 4 0 00.5-8 6 6 0 00-11.5 1.5A3.3 3.3 0 007 18z',clock:'M12 7v5l3 2M12 21a9 9 0 110-18 9 9 0 010 18z',key:'M14 10a4 4 0 11-4-4M14 10l7 7-2 2-2-2-1 1-2-2'};
 const icon=k=>{const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');const p=document.createElementNS(NS,'path');p.setAttribute('d',ICO[k]);s.append(p);return s};
 const store={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const TZ=CLIENT.timezone||'Asia/Kolkata';
 const TODAY=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const TOMORROW=OPS.addD(TODAY,1);
-const fmtD=(s,o)=>new Date(String(s).slice(0,10)+'T12:00:00').toLocaleDateString('en-IN',o||{day:'numeric',month:'short'});
-const inr=n=>'₹'+Math.round(+n||0).toLocaleString('en-IN');
 const nowIso=()=>new Date().toISOString().slice(0,16);
-let toastT;function toast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=h('div',{class:'toast',role:'status'},m);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),3200)}
+const hhmm=()=>new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit'}).format(new Date());
+const inr=n=>'₹'+Math.round(+n||0).toLocaleString('en-IN');
+let toastT;function toast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=h('div',{class:'toast',role:'status'},m);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),3400)}
+/* ============ English / Hindi: the words on screen; names, notes and numbers stay as they are ============ */
+const HI={'Today':'आज','Checklists':'चेकलिस्ट','Stock':'स्टॉक','Reviews':'रिव्यू','Issues':'समस्याएँ','Sign in':'साइन इन','Login id':'लॉगिन आईडी','Password':'पासवर्ड','Checking…':'जाँच हो रही है…',
+  'Arriving today':'आज आने वाले','Leaving today':'आज जाने वाले','Arriving tomorrow':'कल आने वाले','No check-ins today.':'आज कोई चेक-इन नहीं।','No check-outs today.':'आज कोई चेक-आउट नहीं।','Nobody tomorrow.':'कल कोई नहीं।',
+  'Guest alerts':'मेहमान अलर्ट','My score':'मेरा स्कोर','Checklist':'चेकलिस्ट','Checklist done':'चेकलिस्ट हो गई','Arrived':'आ गए','Checked out':'चले गए','Ready':'तैयार','Check-in info':'चेक-इन जानकारी',
+  'Clean first':'पहले सफ़ाई करें','next guest arrives today':'अगला मेहमान आज आ रहा है','ready by':'तैयार करें','Do it':'करें','Late':'देर','Done':'हो गया','Count':'गिनें','Submit checklist':'चेकलिस्ट भेजें','Submit stock check':'स्टॉक भेजें',
+  'Photos (at least one)':'फ़ोटो (कम से कम एक)','Notes':'नोट्स','Issues found':'मिली समस्याएँ','Ask for a review':'रिव्यू माँगें','I asked':'मैंने पूछा','Waiting for admin':'एडमिन की प्रतीक्षा','Add the stars':'स्टार डालें','Recent':'हाल के',
+  'Report an issue':'समस्या बताएँ','Log an expense':'खर्च लिखें','Send to admin':'एडमिन को भेजें','Send claim':'क्लेम भेजें','Stay':'प्रॉपर्टी','Date':'तारीख','Category':'श्रेणी','Amount (₹)':'राशि (₹)','What it was':'किस लिए',
+  'Receipt photo':'रसीद की फ़ोटो','What’s wrong':'क्या खराब है','How soon':'कितनी जल्दी','Urgent':'तुरंत','Soon':'जल्द','Routine':'सामान्य','Menu':'मेनू','Refresh now':'अभी रिफ़्रेश करें','Sign out':'साइन आउट',
+  "What's new":'नया क्या है','Mark all seen':'सब देख लिया','Nothing new since you last looked.':'पिछली बार के बाद कुछ नया नहीं।','My expense claims':'मेरे खर्च क्लेम','My money':'मेरा पैसा','Waiting':'प्रतीक्षा में',
+  'Paid back this month':'इस महीने वापस मिला','Not approved':'मंज़ूर नहीं','Approved':'मंज़ूर','Settled':'चुकता','Issues at your stays':'आपकी प्रॉपर्टी की समस्याएँ','waiting to send':'भेजना बाकी',
+  'Saved on the phone · sends when online':'फ़ोन में सेव · नेटवर्क आने पर भेजेंगे','Language':'भाषा','Rating':'रेटिंग','What the guest wrote (optional)':'मेहमान ने क्या लिखा (वैकल्पिक)','Save rating':'रेटिंग सेव करें',
+  'Stock checks':'स्टॉक जाँच','Checkout checklists':'चेकआउट चेकलिस्ट','Loading your stays…':'आपकी प्रॉपर्टी लोड हो रही है…','min':'कम से कम','last':'पिछली बार'};
+let LANG=store.get('mg_lang')||'en';const T=s=>LANG==='hi'&&HI[s]||s;
 /* ============ the Register (same Google Sheet as the dashboard and the WhatsApp bot) ============ */
-const S={key:store.get('mg_session')||'',me:store.get('mg_me')||null,d:store.get('mg_cache')||null,tab:'today',busy:false};
-async function api(body){const r=await fetch(CLIENT.api_url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.key,device:'Manager app',...body})});const j=await r.json();if(j.error)throw new Error(j.error);return j}
+const S={key:store.get('mg_session')||'',me:store.get('mg_me')||null,d:store.get('mg_cache')||null,tab:'today',busy:false,q:0};
+async function api(body){let r;try{r=await fetch(CLIENT.api_url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:S.key,device:'Manager app',...body})})}
+  catch(e){const x=new Error('offline');x.offline=true;throw x}
+  let j;try{j=await r.json()}catch(e){const x=new Error('offline');x.offline=true;throw x}if(j.error){const x=new Error(j.error);x.server=true;throw x}return j}
 async function load(){S.busy=true;try{const d=await api({action:'read',format:'dashboard'});
     S.d={props:d.props||[],bookings:(d.bookings||[]).map(b=>({...b,booking_id:String(b.booking_id),check_in:String(b.check_in).slice(0,10),check_out:String(b.check_out).slice(0,10)})),maint:d.maint||[],reviews:d.reviews||[],
-      checklists:d.checklists||[],stock:d.stock||[],turnovers:d.turnovers||[],claims:d.claims||[],ops:d.ops||[],at:Date.now()};
-    if(d.me){S.me=d.me;store.set('mg_me',d.me)}store.set('mg_cache',S.d)}
+      checklists:d.checklists||[],stock:d.stock||[],turnovers:d.turnovers||[],claims:d.claims||[],movements:d.movements||[],ops:d.ops||[],checkin_info:d.checkin_info||[],at:Date.now()};
+    if(d.me){S.me=d.me;store.set('mg_me',d.me)}store.set('mg_cache',S.d);await queued()}
   catch(e){if(/unauthorized/.test(e.message)){try{await api({action:'me'})}catch(x){if(/unauthorized/.test(x.message))return signOut('Your sign-in ended. Sign in again.')}}
     toast(S.d?'Couldn’t refresh just now · showing the last data':'Couldn’t reach the sheet. Check the connection.')}finally{S.busy=false;render()}}
 function signOut(msg){api({action:'logout'}).catch(()=>{});S.key='';S.me=null;S.d=null;store.set('mg_session','');store.set('mg_me',null);store.set('mg_cache',null);loginScreen(msg)}
+/* ============ outbox: anything saved without a connection waits on the phone (with its photos) and is sent when the
+   connection is back. A refusal from the sheet (not your stay, etc.) is shown and dropped: retrying would not help. ============ */
+const OB=(()=>{let dbP=null;const db=()=>dbP=dbP||new Promise((ok,no)=>{if(!window.indexedDB)return no(new Error('no idb'));const r=indexedDB.open('mg_outbox',1);r.onupgradeneeded=()=>r.result.createObjectStore('q',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+  const tx=(mode,fn)=>db().then(d=>new Promise((ok,no)=>{const t=d.transaction('q',mode),st=t.objectStore('q'),res=fn(st);t.oncomplete=()=>ok(res&&res.result);t.onerror=()=>no(t.error)}));
+  const ls=()=>store.get('mg_outbox')||[];
+  return{add:it=>tx('readwrite',st=>st.put(it)).catch(()=>{const a=ls();a.push(it);store.set('mg_outbox',a)}),
+    all:()=>tx('readonly',st=>st.getAll()).then(a=>(a||[]).concat(ls())).catch(()=>ls()),
+    del:id=>tx('readwrite',st=>st.delete(id)).catch(()=>{}).then(()=>store.set('mg_outbox',ls().filter(x=>x.id!==id)))}})();
+async function queued(){const a=await OB.all();S.q=a.length;return a}
+async function sendOne(it){const p=JSON.parse(JSON.stringify(it.payload));
+  if(it.photos&&it.photos.length){const urls=[],slots={};for(let i=0;i<it.photos.length;i++){const ph=it.photos[i],r=await api({action:'upload',kind:it.kind||'checklist',name:`${it.name||'photo'} ${i+1}`,mime:'image/jpeg',data:ph.b64});const u=r.thumb||r.url;urls.push(u);if(ph.slot)(slots[ph.slot]=slots[ph.slot]||[]).push(u)}
+    p.row[it.photoField||'photos']=JSON.stringify(urls);if(Object.keys(slots).length)p.row.photo_slots=JSON.stringify(slots)}
+  await api({action:it.op,tab:it.tab,...p})}
+let flushing=false;
+async function flush(){if(flushing||!S.key)return;flushing=true;let sent=0;try{for(const it of(await OB.all()).sort((a,b)=>a.id.localeCompare(b.id))){try{await sendOne(it);await OB.del(it.id);sent++}
+    catch(e){if(e.offline)break;await OB.del(it.id);toast(`${it.label||'A change'} wasn’t accepted: ${e.message.replace(/^not allowed: /,'')}`)}}}finally{flushing=false;await queued();if(sent){toast(`${sent} saved change${sent>1?'s':''} sent ✓`);load()}else render()}}
+/* send now; without a connection keep it in the outbox and show it as done */
+async function write(op,tab,payload,msg,extra){const it={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),op,tab,payload,label:msg,...(extra||{})};
+  try{await sendOne(it);toast(T(msg)+' ✓');return'sent'}
+  catch(e){if(!e.offline){toast('Not saved: '+e.message.replace(/^not allowed: /,''));return false}
+    await OB.add(it);await queued();localApply(op,tab,payload);toast(T('Saved on the phone · sends when online'));return'queued'}}
+function localApply(op,tab,p){const k={maintenance:'maint'}[tab]||tab;if(!S.d||!S.d[k])return;
+  if(op==='append')S.d[k].push({...p.row,status:tab==='maintenance'?'Pending approval':tab==='claims'?'pending':p.row.status,_queued:true});
+  else{const r=S.d[k].find(x=>Object.entries(p.match).every(([a,b])=>String(x[a])===String(b)));if(r)Object.assign(r,p.fields,{_queued:true})}store.set('mg_cache',S.d)}
 /* ============ sign-in ============ */
-function loginScreen(msg){const id=h('input',{autocomplete:'username',autocapitalize:'none',spellcheck:'false',placeholder:'Login id'}),pw=h('input',{type:'password',autocomplete:'current-password',placeholder:'Password'}),err=h('div',{class:'err',hidden:!msg},msg||'');
-  const go=h('button',{class:'btn primary full',type:'submit'},'Sign in');
-  const f=h('form',{class:'form',onsubmit:async e=>{e.preventDefault();if(!id.value.trim()||!pw.value){err.hidden=false;err.textContent='Enter your login id and password.';return}go.disabled=true;go.textContent='Checking…';
+function loginScreen(msg){const id=h('input',{autocomplete:'username',autocapitalize:'none',spellcheck:'false',placeholder:T('Login id')}),pw=h('input',{type:'password',autocomplete:'current-password',placeholder:T('Password')}),err=h('div',{class:'err',hidden:!msg},msg||'');
+  const go=h('button',{class:'btn primary full',type:'submit'},T('Sign in'));
+  const f=h('form',{class:'form',onsubmit:async e=>{e.preventDefault();if(!id.value.trim()||!pw.value){err.hidden=false;err.textContent='Enter your login id and password.';return}go.disabled=true;go.textContent=T('Checking…');
     try{const r=await fetch(CLIENT.api_url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login_pw',login:id.value.trim(),password:pw.value,device:'Manager app · '+(navigator.platform||'phone')})}),j=await r.json();
-      if(!j.ok){go.disabled=false;go.textContent='Sign in';err.hidden=false;err.textContent=j.error==='locked'?`Too many tries. Try again in ${j.wait_min||15} minutes.`:j.error==='wrong_login'?'Login id or password is wrong.':j.error||'Sign-in failed.';return}
+      if(!j.ok){go.disabled=false;go.textContent=T('Sign in');err.hidden=false;err.textContent=j.error==='locked'?`Too many tries. Try again in ${j.wait_min||15} minutes.`:j.error==='wrong_login'?'Login id or password is wrong.':j.error||'Sign-in failed.';return}
       S.key=j.session;S.me=j.user;store.set('mg_session',j.session);store.set('mg_me',j.user);S.tab='today';await load()}
-    catch(x){go.disabled=false;go.textContent='Sign in';err.hidden=false;err.textContent='Couldn’t reach the sheet. Check the connection.'}}},h('label',null,'Login id',id),h('label',null,'Password',pw),err,go);
+    catch(x){go.disabled=false;go.textContent=T('Sign in');err.hidden=false;err.textContent='Couldn’t reach the sheet. Check the connection.'}}},h('label',null,T('Login id'),id),h('label',null,T('Password'),pw),err,go);
   $('#app').replaceChildren(h('div',{class:'login'},h('div',{class:'card'},CLIENT.logo?h('img',{src:'../'+CLIENT.logo.dark,alt:CLIENT.brand,style:{height:'34px',justifySelf:'start'},onerror:e=>e.target.remove()}):null,
-    h('h1',null,'Manager ',h('em',null,'app')),h('p',{class:'hint'},`${CLIENT.brand||''} · your stays, check-ins, checklists and reviews. Your admin gives you the login id and password.`),f)))}
+    h('h1',null,'Manager ',h('em',null,'app')),h('p',{class:'hint'},`${CLIENT.brand||''} · your stays, check-ins, checklists and reviews. Your admin gives you the login id and password.`),f,langBtn())))}
+const langBtn=()=>h('div',{class:'lang'},h('span',null,T('Language')),h('div',{class:'yn'},[['en','English'],['hi','हिंदी']].map(([k,l])=>h('button',{type:'button','aria-pressed':LANG===k,onclick:()=>{LANG=k;store.set('mg_lang',k);document.documentElement.lang=k;S.key?render():loginScreen()}},l))));
 /* ============ what this manager covers ============ */
 const C=()=>OPS.cfg((S.d||{}).ops,CLIENT);
 const myStays=()=>new Set(S.me&&S.me.properties||[]);
 const inS=pid=>myStays().has(pid);
 const P=pid=>((S.d||{}).props||[]).find(p=>p.property_id===pid)||{};
 const nm=pid=>String(P(pid).property||pid||'').replace(/\s*\(.*?\)/g,'').split(',')[0].trim();
+const fmtD=(s,o)=>new Date(String(s).slice(0,10)+'T12:00:00').toLocaleDateString(LANG==='hi'?'hi-IN':'en-IN',o||{day:'numeric',month:'short'});
 const live=b=>b&&!b.deleted_at&&String(b.booking_status||'Confirmed')!=='Cancelled';
-const SEEN='mg_seen';const seenAt=()=>{let t=store.get(SEEN);if(!t){t=new Date(Date.now()-2*864e5).toISOString();store.set(SEEN,t)}return t};
+const SEEN='mg_seen';const seenAt=()=>{let t=store.get(SEEN);if(!t){t=new Date(Date.now()-2*864e5).toISOString();store.set(SEEN,t)}const srv=S.me&&S.me.seen_at;return srv&&String(srv)>t?String(srv):t};
 const news=()=>S.d?OPS.news({...S.d,maint:S.d.maint},seenAt(),'manager',{inScope:inS}):[];
-function due(){const c=C(),d=S.d;return{check:OPS.checklists(d.bookings,d.checklists,TODAY,c,inS),stock:OPS.stock(d.props,d.stock,TODAY,c,inS),rev:OPS.reviews(d.bookings,d.reviews,TODAY,c,inS)}}
+function due(){const c=C(),d=S.d;return{check:OPS.checklists(d.bookings,d.checklists,TODAY,c,inS,d.props),stock:OPS.stock(d.props,d.stock,TODAY,c,inS),rev:OPS.reviews(d.bookings,d.reviews,TODAY,c,inS)}}
+const toRate=u=>u.rev.filter(x=>x.status==='received'&&!(x.row&&+x.row.rating>0));
 /* ============ screens ============ */
 const TABS=[['today','Today','today'],['check','Checklists','check'],['stock','Stock','box'],['reviews','Reviews','star'],['issues','Issues','wrench']];
-function render(){if(!S.key)return loginScreen();if(!S.d){$('#app').replaceChildren(h('div',{class:'loading'},h('span',{class:'spin'}),'Loading your stays…'));return}
-  const u=due(),nc=news().reduce((t,c)=>t+c.items.length,0),cnt={check:u.check.filter(x=>x.status!=='done').length,stock:u.stock.filter(x=>x.current&&x.current.status==='due').length,reviews:u.rev.filter(x=>x.status==='open').length,
+function render(){if(!S.key)return loginScreen();if(!S.d){$('#app').replaceChildren(h('div',{class:'loading'},h('span',{class:'spin'}),T('Loading your stays…')));return}
+  const u=due(),nc=news().reduce((t,c)=>t+c.items.length,0),cnt={check:u.check.filter(x=>x.status!=='done').length,stock:u.stock.filter(x=>x.current&&x.current.status==='due').length,reviews:u.rev.filter(x=>x.status==='open').length+toRate(u).length,
     issues:S.d.maint.filter(m=>inS(m.property_id)&&/whatsapp/i.test(m.source||'')&&!/^(closed|rejected)$/i.test(m.status||'')).length};
   const top=h('header',{class:'top'},h('div',{class:'who'},h('b',null,(S.me&&S.me.name||'Manager').split(' ')[0]),h('small',null,`${myStays().size} stay${myStays().size===1?'':'s'} · ${fmtD(TODAY,{weekday:'long',day:'numeric',month:'short'})}`)),
+    S.q?h('button',{class:'ic q','aria-label':`${S.q} ${T('waiting to send')}`,onclick:()=>{toast(`${S.q} ${T('waiting to send')}`);flush()}},icon('cloud'),h('span',{class:'badge warn'},S.q)):null,
     h('button',{class:'ic','aria-label':nc?`What's new: ${nc}`:"What's new",onclick:openNews},icon('bell'),nc?h('span',{class:'badge'},nc>99?'99+':nc):null),
-    h('button',{class:'ic','aria-label':'Menu',onclick:openMenu},icon('menu')));
+    h('button',{class:'ic','aria-label':T('Menu'),onclick:openMenu},icon('menu')));
   const main=h('main',null);({today,check:checkScreen,stock:stockScreen,reviews:reviewScreen,issues:issueScreen})[S.tab](main,u);
-  const tabs=h('nav',{class:'tabs','aria-label':'Sections'},TABS.map(([k,l,ic])=>h('button',{'aria-current':S.tab===k?'page':null,onclick:()=>{S.tab=k;render();scrollTo(0,0)}},icon(ic),l,cnt[k]?h('span',{class:'badge'},cnt[k]):null)));
+  const tabs=h('nav',{class:'tabs','aria-label':'Sections'},TABS.map(([k,l,ic])=>h('button',{'aria-current':S.tab===k?'page':null,onclick:()=>{S.tab=k;render();scrollTo(0,0)}},icon(ic),T(l),cnt[k]?h('span',{class:'badge'},cnt[k]):null)));
   $('#app').replaceChildren(top,main,tabs)}
-function card(title,right,...body){return h('section',{class:'card'},h('h2',null,title,right?h('small',null,right):null),...body)}
+function card(title,right,...body){return h('section',{class:'card'},h('h2',null,T(title),right?h('small',null,right):null),...body)}
+const moved=(b,kind)=>(S.d.movements||[]).filter(x=>String(x.booking_id)===b.booking_id&&x.kind===kind).pop();
+function moveMark(b,kind){write('append','movements',{row:{move_id:'MV'+Date.now().toString(36).toUpperCase(),booking_id:b.booking_id,property_id:b.property_id,kind,at:TODAY+'T'+hhmm()}},kind==='arrived'?'Marked arrived':'Marked checked out').then(ok=>{if(ok==='sent')load();else render()})}
+/* check-in steps for the guest's stay (or the whole place it belongs to): never door codes or Wi-Fi passwords */
+const infoFor=pid=>(S.d.checkin_info||[]).find(x=>x.property_id===pid)||(S.d.checkin_info||[]).find(x=>x.property_id===OPS.parentOf(pid,S.d.props))||null;
 function today(m,u){const B=S.d.bookings.filter(b=>live(b)&&inS(b.property_id)),ins=B.filter(b=>b.check_in===TODAY),tom=B.filter(b=>b.check_in===TOMORROW),outs=B.filter(b=>b.check_out===TODAY);
-  const sc=OPS.scorecards([{role:'Manager',properties:S.me&&S.me.properties||[],name:S.me&&S.me.name}],{...S.d},TODAY,C())[0];
-  const chips=[[u.check.filter(x=>x.status!=='done').length,'checklists to do','check'],[u.stock.filter(x=>x.current&&x.current.status==='due').length,'stock checks due','stock'],[u.rev.filter(x=>x.status==='open').length,'reviews to ask for','reviews']].filter(x=>x[0]);
+  const sc=OPS.scorecards([{role:'Manager',properties:S.me&&S.me.properties||[],name:S.me&&S.me.name,email:S.me&&S.me.email,login:S.me&&S.me.login}],{...S.d},TODAY,C())[0];
+  /* same-day turnovers first: the next guest arrives today */
+  const urg=u.check.filter(x=>x.urgent);
+  if(urg.length)m.append(h('section',{class:'card urgent'},h('h2',null,icon('clock'),T('Clean first'),h('small',null,T('next guest arrives today'))),urg.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id)),
+    h('span',null,`${T('ready by')} ${x.dueTime} · ${x.next.guest||'Guest'} · ${x.next.guests||''} guests`)),h('button',{class:'btn sm primary',onclick:()=>checklistForm(x.booking)},T('Checklist'))))));
+  const chips=[[u.check.filter(x=>x.status!=='done').length,'checklists to do','check'],[u.stock.filter(x=>x.current&&x.current.status==='due').length,'stock checks due','stock'],[u.rev.filter(x=>x.status==='open').length,'reviews to ask for','reviews'],[toRate(u).length,'ratings to add','reviews']].filter(x=>x[0]);
   if(chips.length)m.append(h('div',{class:'chips'},chips.map(([n,l,t])=>h('button',{class:'chip',onclick:()=>{S.tab=t;render()}},h('b',null,n),l))));
-  const bk=(b,kind)=>{const t=(S.d.turnovers||[]).find(x=>String(x.booking_id)===b.booking_id),done=t&&t.status==='Done',cl=S.d.checklists.find(x=>String(x.booking_id)===b.booking_id);
-    return h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${b.guest||'Guest'} · ${b.guests||''} guest${+b.guests===1?'':'s'}`),h('span',null,`${nm(b.property_id)} · ${kind==='in'?(b.arrival_time?'arriving '+b.arrival_time:'arrival time not set'):'check-out by 11:00'} · ${b.channel||''}`)),
-      kind==='out'?(cl?h('span',{class:'pill p-ok'},'Checklist done'):h('button',{class:'btn sm primary',onclick:()=>checklistForm(b)},'Checklist')):done?h('span',{class:'pill p-ok'},'Ready'):null)};
-  m.append(card('Arriving today',ins.length?String(ins.length):'',ins.length?ins.map(b=>bk(b,'in')):h('div',{class:'empty'},'No check-ins today.')));
-  m.append(card('Leaving today',outs.length?String(outs.length):'',outs.length?outs.map(b=>bk(b,'out')):h('div',{class:'empty'},'No check-outs today.')));
-  m.append(card('Arriving tomorrow',tom.length?String(tom.length):'',tom.length?tom.map(b=>bk(b,'in')):h('div',{class:'empty'},'Nobody tomorrow.')));
+  const bk=(b,kind)=>{const t=(S.d.turnovers||[]).find(x=>String(x.booking_id)===b.booking_id),done=t&&t.status==='Done',cl=S.d.checklists.find(x=>String(x.booking_id)===b.booking_id),mv=moved(b,kind==='in'?'arrived':'left'),info=kind==='in'?infoFor(b.property_id):null;
+    const r=h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${b.guest||'Guest'} · ${b.guests||''} guest${+b.guests===1?'':'s'}`),h('span',null,`${nm(b.property_id)} · ${kind==='in'?(b.arrival_time?'arriving '+b.arrival_time:'arrival time not set'):'check-out by 11:00'} · ${b.channel||''}`)),
+      h('div',{class:'acts'},mv?h('span',{class:'pill p-ok'},`${T(kind==='in'?'Arrived':'Checked out')} ${String(mv.at||'').slice(11,16)}`):kind!=='tom'?h('button',{class:'btn sm',onclick:()=>moveMark(b,kind==='in'?'arrived':'left')},T(kind==='in'?'Arrived':'Checked out')):null,
+        kind==='out'?(cl?h('span',{class:'pill p-ok'},T('Checklist done')):h('button',{class:'btn sm primary',onclick:()=>checklistForm(b)},T('Checklist'))):done&&kind==='in'?h('span',{class:'pill p-ok'},T('Ready')):null));
+    return info?h('div',null,r,h('details',{class:'info'},h('summary',null,T('Check-in info')),[['Check-in steps','checkin_steps'],['Parking','parking'],['House rules','house_rules'],['Directions','directions'],['Check-out','checkout_note']].filter(([,k])=>info[k]).map(([l,k])=>h('p',null,h('b',null,l+': '),String(info[k]))))):r};
+  m.append(card('Arriving today',ins.length?String(ins.length):'',ins.length?ins.map(b=>bk(b,'in')):h('div',{class:'empty'},T('No check-ins today.'))));
+  m.append(card('Leaving today',outs.length?String(outs.length):'',outs.length?outs.map(b=>bk(b,'out')):h('div',{class:'empty'},T('No check-outs today.'))));
+  m.append(card('Arriving tomorrow',tom.length?String(tom.length):'',tom.length?tom.map(b=>bk(b,'tom')):h('div',{class:'empty'},T('Nobody tomorrow.'))));
   const al=S.d.maint.filter(x=>inS(x.property_id)&&/whatsapp/i.test(x.source||'')&&!/^(closed|rejected)$/i.test(x.status||''));
-  if(al.length)m.append(card('Guest alerts',String(al.length),al.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,x.issue),h('span',null,`${nm(x.property_id)} · ${x.ticket_id} · ${x.status||'Open'}`)),h('span',{class:'pill '+(x.priority==='High'?'p-bad':'p-warn')},x.priority==='High'?'Urgent':'Soon')))));
-  if(sc)m.append(card('My score',`since ${fmtD(C().start)}`,h('div',{class:'stats'},[['Reviews',sc.reviews.received,sc.reviews.missed],['Checklists',sc.checklists.done,sc.checklists.missed],['Stock checks',sc.stock.done,sc.stock.missed]].map(([l,a,b])=>h('div',{class:'stat'},h('b',null,h('span',{class:'ok'},a),' / ',h('span',{class:'bad'},b)),h('span',null,l+' done / missed')))),
-    h('p',{class:'hint'},'Reviews count once your admin confirms they arrived.')))}
+  if(al.length)m.append(card('Guest alerts',String(al.length),al.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,x.issue),h('span',null,`${nm(x.property_id)} · ${x.ticket_id} · ${x.status||'Open'}`)),h('span',{class:'pill '+(x.priority==='High'?'p-bad':'p-warn')},T(x.priority==='High'?'Urgent':'Soon'))))));
+  if(sc)m.append(card('My score',`since ${fmtD(C().start)}`,h('div',{class:'stats'},[['Reviews',sc.reviews.received,sc.reviews.missed],['Checklists',sc.checklists.done,sc.checklists.missed],['Stock checks',sc.stock.done,sc.stock.missed]].map(([l,a,b])=>h('div',{class:'stat'},h('b',null,h('span',{class:'ok'},a),' / ',h('span',{class:'bad'},b)),h('span',null,T(l)+' done / missed')))),
+    sc.reviews.avg!=null?h('p',{class:'hint'},`Average rating of the reviews you asked for: ${sc.reviews.avg} ★`):null,
+    h('p',{class:'hint'},'Reviews count once your admin confirms they arrived.')));
+  m.append(moneyCard())}
+/* what the manager paid and got back */
+function moneyCard(){const cl=S.d.claims||[],mk=TODAY.slice(0,7),wait=cl.filter(c=>String(c.status||'pending')==='pending'),back=cl.filter(c=>c.status==='approved'&&String(c.settled_on||c.decided_at||'').slice(0,7)===mk);
+  if(!cl.length)return null;return card('My money',null,h('div',{class:'stats two'},h('div',{class:'stat'},h('b',null,inr(wait.reduce((t,c)=>t+(+c.amount||0),0))),h('span',null,`${T('Waiting')} · ${wait.length}`)),
+    h('div',{class:'stat'},h('b',{class:'ok'},inr(back.reduce((t,c)=>t+(+c.amount||0),0))),h('span',null,T('Paid back this month')))))}
 function checkScreen(m,u){const todo=u.check.filter(x=>x.status!=='done'),done=u.check.filter(x=>x.status==='done').slice(0,10);
-  m.append(card('Checkout checklists',todo.length?todo.length+' to do':'all done',todo.length?todo.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${nm(x.property_id)} · ${x.booking.guest||'Guest'}`),h('span',null,`checked out ${fmtD(x.check_out)}`)),
-      x.status==='missed'?h('span',{class:'pill p-bad'},'Late'):null,h('button',{class:'btn sm primary',onclick:()=>checklistForm(x.booking)},'Do it'))):h('div',{class:'empty'},'Nothing to do. Each check-out needs a checklist with photos by the next day.')));
-  if(done.length)m.append(card('Done',null,done.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id)),h('span',null,`out ${fmtD(x.check_out)} · done ${x.row&&x.row.done_at?fmtD(x.row.done_at):''}`)),h('span',{class:'pill p-ok'},'Done')))))}
+  m.append(card('Checkout checklists',todo.length?todo.length+' to do':'all done',todo.length?todo.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${nm(x.property_id)} · ${x.booking.guest||'Guest'}`),h('span',null,`checked out ${fmtD(x.check_out)}${x.urgent?' · '+T('ready by')+' '+x.dueTime:''}`)),
+      x.urgent?h('span',{class:'pill p-bad'},T('Urgent')):x.status==='missed'?h('span',{class:'pill p-bad'},T('Late')):null,h('button',{class:'btn sm primary',onclick:()=>checklistForm(x.booking)},T('Do it')))):h('div',{class:'empty'},'Nothing to do. Each check-out needs a checklist with photos by the next day.')));
+  if(done.length)m.append(card('Done',null,done.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id)),h('span',null,`out ${fmtD(x.check_out)} · done ${x.row&&x.row.done_at?fmtD(x.row.done_at):''}`)),h('span',{class:'pill p-ok'},T('Done'))))))}
 function stockScreen(m,u){m.append(card('Stock checks',`every ${C().every} days`,u.stock.length?u.stock.map(x=>{const c=x.current||{};return h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id)),h('span',null,c.status==='done'?`done for this round (until ${fmtD(c.until)})`:`due by ${fmtD(c.until||TODAY)}`+(x.last?` · last ${fmtD(x.last.day)}`:''))),
-    c.status==='done'?h('span',{class:'pill p-ok'},'Done'):h('button',{class:'btn sm primary',onclick:()=>stockForm(x.property_id)},'Count'))}):h('div',{class:'empty'},'No stays assigned yet.')))}
-function reviewScreen(m,u){const open=u.rev.filter(x=>x.status==='open'),asked=u.rev.filter(x=>x.status==='asked'),hist=u.rev.filter(x=>x.status==='received'||x.status==='missed').slice(-12).reverse();
-  m.append(h('p',{class:'hint'},`${C().channels.join(', ')} guests can leave a review for ${C().window} days after check-out. Ask them, then tick it here. It counts once your admin sees the review arrive.`));
+    c.status==='done'?h('span',{class:'pill p-ok'},T('Done')):h('button',{class:'btn sm primary',onclick:()=>stockForm(x.property_id)},T('Count')))}):h('div',{class:'empty'},'No stays assigned yet.')));
+  /* below the minimum at my stays' latest counts */
+  const shop=OPS.shopping(S.d.props,S.d.stock,C()).filter(x=>inS(x.property_id));
+  if(shop.length)m.append(card('To buy',String(shop.length),shop.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.item} × ${x.need}`),h('span',null,`${nm(x.property_id)} · ${x.have} of ${x.min}`))))))}
+function reviewScreen(m,u){const open=u.rev.filter(x=>x.status==='open'),asked=u.rev.filter(x=>x.status==='asked'),rate=toRate(u),hist=u.rev.filter(x=>(x.status==='received'&&x.row&&+x.row.rating>0)||x.status==='missed').slice(-12).reverse();
+  m.append(h('p',{class:'hint'},`${C().channels.join(', ')} guests can leave a review for ${C().window} days after check-out. Ask them, then tick it here. Once your admin confirms it arrived, add the stars it got.`));
+  if(rate.length)m.append(card('Add the stars',String(rate.length),rate.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,`out ${fmtD(x.check_out)} · confirmed by admin`)),
+    h('button',{class:'btn sm primary',onclick:()=>rateForm(x)},T('Rating'))))));
   m.append(card('Ask for a review',open.length?String(open.length):'',open.length?open.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,`out ${fmtD(x.check_out)} · ${x.left} day${x.left===1?'':'s'} left`)),
-      h('button',{class:'btn sm primary',onclick:()=>askedReview(x)},'I asked'))):h('div',{class:'empty'},'No reviews to ask for right now.')));
+      h('button',{class:'btn sm primary',onclick:()=>askedReview(x)},T('I asked')))):h('div',{class:'empty'},'No reviews to ask for right now.')));
   m.append(card('Waiting for admin',asked.length?String(asked.length):'',asked.length?asked.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,`asked ${x.row&&x.row.asked_at?fmtD(x.row.asked_at):''} · ${x.left} day${x.left===1?'':'s'} left`)),h('span',{class:'pill p-acc'},'Asked'))):h('div',{class:'empty'},'Nothing waiting.')));
-  if(hist.length)m.append(card('Recent',null,hist.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,'out '+fmtD(x.check_out))),h('span',{class:'pill '+(x.status==='received'?'p-ok':'p-bad')},x.status==='received'?'Received':'Missed')))))}
+  if(hist.length)m.append(card('Recent',null,hist.map(x=>{const r=x.row||{},low=r.low==='Yes';return h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,'out '+fmtD(x.check_out)+(r.review_text?' · “'+String(r.review_text).slice(0,60)+'”':''))),
+    x.status==='received'?h('button',{class:'pill '+(low?'p-bad':'p-ok'),onclick:()=>rateForm(x),'aria-label':'Change rating'},'★ '+r.rating):h('span',{class:'pill p-bad'},'Missed'))})))}
 function issueScreen(m){const mine=S.d.maint.filter(x=>inS(x.property_id)).sort((a,b)=>String(b.reported_on||'').localeCompare(String(a.reported_on||''))).slice(0,30),cl=(S.d.claims||[]).slice().sort((a,b)=>String(b.submitted_at).localeCompare(String(a.submitted_at)));
-  m.append(h('div',{class:'chips'},h('button',{class:'btn primary',onclick:issueForm},'Report an issue'),h('button',{class:'btn',onclick:claimForm},'Log an expense')));
+  m.append(h('div',{class:'chips'},h('button',{class:'btn primary',onclick:issueForm},T('Report an issue')),h('button',{class:'btn',onclick:claimForm},T('Log an expense'))));
   const st=x=>x.status==='Pending approval'?['Waiting for admin','p-acc']:x.status==='Rejected'?['Not taken up','p-bad']:/^closed$/i.test(x.status||'')?['Fixed','p-ok']:[x.status||'Open','p-warn'];
-  m.append(card('Issues at your stays',String(mine.length),mine.length?mine.map(x=>{const[l,c]=st(x);return h('div',{class:'row'},h('div',{class:'t'},h('b',null,x.issue),h('span',null,`${nm(x.property_id)} · ${/whatsapp/i.test(x.source||'')?'from a guest':/manager/i.test(x.source||'')?'you reported':'team'} · ${x.reported_on?fmtD(x.reported_on):''}`)),h('span',{class:'pill '+c},l))}):h('div',{class:'empty'},'No issues.')));
-  m.append(card('My expense claims',cl.length?String(cl.length):'',cl.length?cl.map(c=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${c.category||'Expense'} · ${inr(c.amount)}`),h('span',null,`${nm(c.property_id)} · ${c.date?fmtD(c.date):''}${c.decision_note?' · '+c.decision_note:''}`)),
-    h('span',{class:'pill '+(c.status==='rejected'?'p-bad':c.status==='approved'?'p-ok':'p-acc')},c.status==='rejected'?'Not approved':c.status==='approved'?(c.outcome==='settled'?'Settled':'Approved'):'Waiting'))):h('div',{class:'empty'},'No claims yet. Log what you paid for a stay and attach the receipt.')))}
+  m.append(card('Issues at your stays',String(mine.length),mine.length?mine.map(x=>{const[l,c]=st(x);return h('div',{class:'row'},h('div',{class:'t'},h('b',null,x.issue),h('span',null,`${nm(x.property_id)} · ${/whatsapp/i.test(x.source||'')?'from a guest':/manager/i.test(x.source||'')?'you reported':'team'} · ${x.reported_on?fmtD(x.reported_on):''}${x.assigned_to?' · '+x.assigned_to:''}`)),h('span',{class:'pill '+c},T(l)))}):h('div',{class:'empty'},'No issues.')));
+  {const mc=moneyCard();if(mc)m.append(mc)}
+  m.append(card('My expense claims',cl.length?String(cl.length):'',cl.length?cl.map(c=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${c.category||'Expense'} · ${inr(c.amount)}`),h('span',null,`${nm(c.property_id)} · ${c.date?fmtD(c.date):''}${c.settled_via?' · paid back by '+c.settled_via:''}${c.decision_note?' · '+c.decision_note:''}`)),
+    h('span',{class:'pill '+(c.status==='rejected'?'p-bad':c.status==='approved'?'p-ok':'p-acc')},T(c.status==='rejected'?'Not approved':c.status==='approved'?(c.outcome==='settled'?'Settled':'Approved'):'Waiting')))):h('div',{class:'empty'},'No claims yet. Log what you paid for a stay and attach the receipt.')))}
 /* ============ forms ============ */
 function sheet(title,...body){const close=()=>w.remove(),w=h('div',{class:'sheet',onclick:e=>{if(e.target===w)close()}},h('div',{class:'in',role:'dialog','aria-modal':'true','aria-label':title},h('h3',null,title,h('button',{class:'x','aria-label':'Close',onclick:close},'✕')),...body));document.body.append(w);return close}
 /* photos: resized on the phone (longest side 1280 px, JPEG) before upload, so they go fast on mobile data */
 function shrink(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
   c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',0.72).split(',')[1])};im.onerror=()=>no(new Error('not an image'));im.src=u})}
-function picker(list,label){const box=h('div',{class:'pics'}),fi=h('input',{type:'file',accept:'image/*',capture:'environment',multiple:true,hidden:true});
-  const draw=()=>box.replaceChildren(...list.map(x=>h('img',{src:x.preview,alt:'Photo'})),h('button',{type:'button',class:'addpic','aria-label':label||'Add photo',onclick:()=>fi.click()},'+'),fi);
-  fi.addEventListener('change',async()=>{for(const f of fi.files){try{const b64=await shrink(f);list.push({b64,preview:'data:image/jpeg;base64,'+b64})}catch(e){toast('That file isn’t a photo')}}fi.value='';draw()});draw();return box}
-async function uploadAll(list,name){const urls=[];for(let i=0;i<list.length;i++){const r=await api({action:'upload',kind:'checklist',name:`${name} ${i+1}`,mime:'image/jpeg',data:list[i].b64});urls.push(r.thumb||r.url)}return urls}
-async function write(op,tab,payload,msg){try{await api({action:op,tab,...payload});toast(msg+' ✓');return true}catch(e){toast('Not saved: '+e.message.replace(/^not allowed: /,''));return false}}
-function checklistForm(b){const items=C().checkItems,state={},photos=[],notes=h('textarea',{rows:3,placeholder:'Anything to report? (optional)'}),err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},'Submit checklist');
+function picker(list,label,slot){const box=h('div',{class:'pics'}),fi=h('input',{type:'file',accept:'image/*',capture:'environment',multiple:true,hidden:true});
+  const mine=()=>list.filter(x=>(x.slot||null)===(slot||null));
+  const draw=()=>box.replaceChildren(...mine().map(x=>h('img',{src:x.preview,alt:'Photo'})),h('button',{type:'button',class:'addpic','aria-label':label||'Add photo',onclick:()=>fi.click()},'+'),fi);
+  fi.addEventListener('change',async()=>{for(const f of fi.files){try{const b64=await shrink(f);list.push({b64,preview:'data:image/jpeg;base64,'+b64,slot:slot||null})}catch(e){toast('That file isn’t a photo')}}fi.value='';draw()});draw();return box}
+const strip=list=>list.map(x=>({b64:x.b64,slot:x.slot||null}));
+function checklistForm(b){const c=C(),items=OPS.checkItemsFor(c,b.property_id,S.d.props),slots=c.photoSlots,state={},photos=[],notes=h('textarea',{rows:3,placeholder:'Anything to report? (optional)'}),err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Submit checklist'));
   const rows=items.map(it=>{const cb=h('input',{type:'checkbox',onchange:e=>{state[it]=e.target.checked;lab.classList.toggle('on',e.target.checked)}}),lab=h('label',{class:'ck'},cb,it);return lab});
-  const close=sheet('Checklist · '+nm(b.property_id),h('p',{class:'hint'},`${b.guest||'Guest'} checked out ${fmtD(b.check_out)}. Tick each item and add photos of the rooms.`),h('div',{class:'form'},...rows,h('label',null,'Photos (at least one)',picker(photos,'Add a photo')),h('label',null,'Notes',notes),err,save_));
-  save_.addEventListener('click',async()=>{if(!photos.length){err.hidden=false;err.textContent='Add at least one photo of the rooms.';return}const missing=items.filter(i=>!state[i]);
-    if(missing.length&&!save_.dataset.ok){save_.dataset.ok='1';err.hidden=false;err.textContent=`${missing.length} item${missing.length>1?'s':''} not ticked. Tap Submit again to send it like this.`;return}
-    save_.disabled=true;save_.textContent='Uploading photos…';try{const urls=await uploadAll(photos,nm(b.property_id)+' '+b.booking_id);save_.textContent='Saving…';
-      const ok=await write('append','checklists',{row:{check_id:'CK'+Date.now().toString(36),booking_id:b.booking_id,property_id:b.property_id,items:JSON.stringify(Object.fromEntries(items.map(i=>[i,!!state[i]]))),photos:JSON.stringify(urls),notes:notes.value.trim()||null,done_at:nowIso(),by_name:S.me&&S.me.name||''}},'Checklist sent');
-      if(ok){if(!(S.d.turnovers||[]).some(t=>String(t.booking_id)===b.booking_id))api({action:'append',tab:'turnovers',row:{booking_id:b.booking_id,status:'Done',done_at:nowIso(),done_by:S.me&&S.me.name||''}}).catch(()=>{});close();load()}else{save_.disabled=false;save_.textContent='Submit checklist'}}
-    catch(e){save_.disabled=false;save_.textContent='Submit checklist';err.hidden=false;err.textContent='Photos didn’t upload ('+e.message+'). Try again on a better connection.'}})}
-function stockForm(pid){const items=C().stockItems,vals={},err=h('div',{class:'err',hidden:true}),issues=h('textarea',{rows:2,placeholder:'Anything broken, missing or running low?'}),photos=[],save_=h('button',{class:'btn primary full'},'Submit stock check');
+  const pics=slots.length?slots.map(sl=>h('label',null,sl,picker(photos,'Add a photo of '+sl,sl))):[h('label',null,T('Photos (at least one)'),picker(photos,'Add a photo'))];
+  const close=sheet(T('Checklist')+' · '+nm(b.property_id),h('p',{class:'hint'},`${b.guest||'Guest'} checked out ${fmtD(b.check_out)}. Tick each item and add photos${slots.length?' of each room below':' of the rooms'}.`),h('div',{class:'form'},...rows,...pics,h('label',null,T('Notes'),notes),err,save_));
+  save_.addEventListener('click',async()=>{const noPic=slots.length?slots.filter(sl=>!photos.some(p=>p.slot===sl)):photos.length?[]:['the rooms'];
+    if(noPic.length){err.hidden=false;err.textContent='Add a photo of: '+noPic.join(', ');return}const missing=items.filter(i=>!state[i]);
+    if(missing.length&&!save_.dataset.ok){save_.dataset.ok='1';err.hidden=false;err.textContent=`${missing.length} item${missing.length>1?'s':''} not ticked. They go to your admin as an issue. Tap Submit again to send it like this.`;return}
+    save_.disabled=true;save_.textContent='Saving…';
+    const ok=await write('append','checklists',{row:{check_id:'CK'+Date.now().toString(36),booking_id:b.booking_id,property_id:b.property_id,items:JSON.stringify(Object.fromEntries(items.map(i=>[i,!!state[i]]))),notes:notes.value.trim()||null,done_at:nowIso()}},'Checklist sent',
+      {photos:strip(photos),kind:'checklist',name:nm(b.property_id)+' '+b.booking_id});
+    if(!ok){save_.disabled=false;save_.textContent=T('Submit checklist');return}
+    /* what wasn't done becomes an issue for the admin to approve */
+    if(missing.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:b.property_id,issue:'Checklist not done: '+missing.join(', ').slice(0,180),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),booking_id:b.booking_id}},'Issue sent to admin');
+    if(!(S.d.turnovers||[]).some(t=>String(t.booking_id)===b.booking_id))write('append','turnovers',{row:{booking_id:b.booking_id,status:'Done',done_at:nowIso(),done_by:S.me&&S.me.name||''}},'Marked clean');
+    close();ok==='sent'?load():render()})}
+function stockForm(pid){const c=C(),items=OPS.stockItemsFor(c,pid,S.d.props),last=OPS.stockTrend(S.d.stock,pid,4),vals={},err=h('div',{class:'err',hidden:true}),issues=h('textarea',{rows:2,placeholder:'Anything broken, missing or running low?'}),photos=[],save_=h('button',{class:'btn primary full'},T('Submit stock check'));
   const rows=items.map(it=>{if(it.type==='ok'){const yn=h('div',{class:'yn'});const draw=()=>yn.replaceChildren(...[['Yes',true],['No',false]].map(([l,v])=>h('button',{type:'button','aria-pressed':vals[it.name]===v,onclick:()=>{vals[it.name]=v;draw()}},l)));draw();return h('div',{class:'cnt'},h('span',null,it.name),yn)}
-    const inp=h('input',{type:'number',inputmode:'numeric',min:0,placeholder:'0',oninput:e=>{vals[it.name]=e.target.value===''?null:+e.target.value}});return h('div',{class:'cnt'},h('span',null,it.name),inp)});
-  const close=sheet('Stock check · '+nm(pid),h('p',{class:'hint'},'Count what is there now. Mark anything not working.'),h('div',{class:'form'},h('div',null,...rows),h('label',null,'Issues',issues),h('label',null,'Photos (optional)',picker(photos)),err,save_));
+    const hist=last.map(r=>r.counts[it.name]).filter(x=>x!=null),low=h('small',{class:'lowm',hidden:true},`below ${T('min')} ${it.min}`);
+    const inp=h('input',{type:'number',inputmode:'numeric',min:0,placeholder:'0',oninput:e=>{vals[it.name]=e.target.value===''?null:+e.target.value;low.hidden=!(it.min&&vals[it.name]!=null&&vals[it.name]<it.min)}});
+    return h('div',{class:'cnt'},h('span',null,it.name,h('small',null,[it.min?`${T('min')} ${it.min}`:null,hist.length?`${T('last')}: ${hist.join(' · ')}`:null].filter(Boolean).join(' · ')),low),inp)});
+  const close=sheet('Stock check · '+nm(pid),h('p',{class:'hint'},'Count what is there now. Mark anything not working; it goes to your admin as an issue.'),h('div',{class:'form'},h('div',null,...rows),h('label',null,T('Issues found'),issues),h('label',null,'Photos (optional)',picker(photos)),err,save_));
   save_.addEventListener('click',async()=>{const miss=items.filter(i=>vals[i.name]==null);if(miss.length){err.hidden=false;err.textContent='Fill in: '+miss.map(i=>i.name).join(', ');return}
-    save_.disabled=true;save_.textContent='Saving…';let urls=[];try{if(photos.length)urls=await uploadAll(photos,nm(pid)+' stock')}catch(e){}
+    save_.disabled=true;save_.textContent='Saving…';
     const bad=items.filter(i=>i.type==='ok'&&vals[i.name]===false).map(i=>i.name);
-    const ok=await write('append','stock',{row:{stock_id:'SK'+Date.now().toString(36),property_id:pid,counts:JSON.stringify(vals),issues:[bad.length?'Not working: '+bad.join(', '):null,issues.value.trim()||null].filter(Boolean).join(' · ')||null,photos:urls.length?JSON.stringify(urls):null,done_at:nowIso(),by_name:S.me&&S.me.name||''}},'Stock check sent');
-    if(ok){close();load()}else{save_.disabled=false;save_.textContent='Submit stock check'}})}
+    const ok=await write('append','stock',{row:{stock_id:'SK'+Date.now().toString(36),property_id:pid,counts:JSON.stringify(vals),issues:[bad.length?'Not working: '+bad.join(', '):null,issues.value.trim()||null].filter(Boolean).join(' · ')||null,done_at:nowIso()}},'Stock check sent',
+      photos.length?{photos:strip(photos),kind:'checklist',name:nm(pid)+' stock'}:null);
+    if(!ok){save_.disabled=false;save_.textContent=T('Submit stock check');return}
+    if(bad.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:pid,issue:'Not working: '+bad.join(', '),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000)}},'Issue sent to admin');
+    close();ok==='sent'?load():render()})}
 async function askedReview(x){const ok=x.row?await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked')
-  :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked');if(ok)load()}
+  :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked');if(ok==='sent')load();else if(ok)render()}
+/* after the admin confirms the review arrived: the stars it got (3 or less is logged as low) and what the guest wrote */
+function rateForm(x){const r=x.row||{};let n=+r.rating||0;const box=h('div',{class:'stars'}),draw=()=>box.replaceChildren(...[1,2,3,4,5].map(k=>h('button',{type:'button','aria-label':k+' stars','aria-pressed':k<=n,onclick:()=>{n=k;draw();lowN.hidden=!(n&&n<=C().lowAt)}},'★')));
+  const txt=h('textarea',{rows:3,value:r.review_text||'',placeholder:'e.g. Lovely views, geyser was slow'}),lowN=h('p',{class:'err',hidden:!(n&&n<=C().lowAt)},`${C().lowAt} stars or less is flagged to your admin as a low rating.`),err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Save rating'));draw();
+  const close=sheet(T('Rating')+' · '+(x.booking.guest||'Guest'),h('p',{class:'hint'},`${nm(x.property_id)} · out ${fmtD(x.check_out)} · ${x.booking.channel||''}`),h('div',{class:'form'},box,lowN,h('label',null,T('What the guest wrote (optional)'),txt),err,save_));
+  save_.addEventListener('click',async()=>{if(!n){err.hidden=false;err.textContent='Tap the stars it got.';return}save_.disabled=true;
+    const ok=await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{rating:n,review_text:txt.value.trim()||null}},'Rating saved');if(!ok){save_.disabled=false;return}close();ok==='sent'?load():render()})}
 const staySel=()=>h('select',null,[...myStays()].filter(pid=>P(pid).property_id).map(pid=>h('option',{value:pid},nm(pid))));
-function issueForm(){const st=staySel(),is=h('input',{placeholder:'e.g. Geyser not heating in the upper bathroom'}),pr=h('select',null,h('option',{value:'High'},'Urgent'),h('option',{value:'Medium',selected:true},'Soon'),h('option',{value:'Low'},'Routine')),photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},'Send to admin');
-  const close=sheet('Report an issue',h('div',{class:'form'},h('label',null,'Stay',st),h('label',null,'What’s wrong',is),h('label',null,'How soon',pr),h('label',null,'Photo (optional)',picker(photos)),h('p',{class:'hint'},'Your admin approves it before it goes on the repairs board.'),err,save_));
-  save_.addEventListener('click',async()=>{if(!is.value.trim()){err.hidden=false;err.textContent='Say what’s wrong.';return}save_.disabled=true;let urls=[];try{if(photos.length)urls=await uploadAll(photos,nm(st.value)+' issue')}catch(e){}
-    const ok=await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:st.value,issue:is.value.trim(),priority:pr.value,reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),photos:urls.length?JSON.stringify(urls):null}},'Sent to admin');
-    if(ok){close();load()}else save_.disabled=false})}
+function issueForm(){const st=staySel(),is=h('input',{placeholder:'e.g. Geyser not heating in the upper bathroom'}),pr=h('select',null,h('option',{value:'High'},T('Urgent')),h('option',{value:'Medium',selected:true},T('Soon')),h('option',{value:'Low'},T('Routine'))),photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Send to admin'));
+  const close=sheet(T('Report an issue'),h('div',{class:'form'},h('label',null,T('Stay'),st),h('label',null,T('What’s wrong'),is),h('label',null,T('How soon'),pr),h('label',null,'Photo (optional)',picker(photos)),h('p',{class:'hint'},'Your admin approves it before it goes on the repairs board.'),err,save_));
+  save_.addEventListener('click',async()=>{if(!is.value.trim()){err.hidden=false;err.textContent='Say what’s wrong.';return}save_.disabled=true;
+    const ok=await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:st.value,issue:is.value.trim(),priority:pr.value,reported_on:TODAY,reported_at:Math.floor(Date.now()/1000)}},'Sent to admin',
+      photos.length?{photos:strip(photos),kind:'checklist',name:nm(st.value)+' issue'}:null);
+    if(ok){close();ok==='sent'?load():render()}else save_.disabled=false})}
 function claimForm(){const st=staySel(),dt=h('input',{type:'date',value:TODAY}),cat=h('select',null,['Repairs','Cleaning','Supplies','Laundry','Groceries','Transport','Other'].map(c=>h('option',null,c))),amt=h('input',{type:'number',inputmode:'decimal',min:1,placeholder:'e.g. 850'}),
-    note=h('input',{placeholder:'e.g. Tap washer and plumber visit'}),photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},'Send claim');
-  const close=sheet('Log an expense',h('div',{class:'form'},h('label',null,'Stay',st),h('label',null,'Date',dt),h('label',null,'Category',cat),h('label',null,'Amount (₹)',amt),h('label',null,'What it was',note),h('label',null,'Receipt photo',picker(photos,'Add the receipt')),h('p',{class:'hint'},'Your admin approves it, then pays you back.'),err,save_));
+    note=h('input',{placeholder:'e.g. Tap washer and plumber visit'}),photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Send claim'));
+  const close=sheet(T('Log an expense'),h('div',{class:'form'},h('label',null,T('Stay'),st),h('label',null,T('Date'),dt),h('label',null,T('Category'),cat),h('label',null,T('Amount (₹)'),amt),h('label',null,T('What it was'),note),h('label',null,T('Receipt photo'),picker(photos,'Add the receipt')),h('p',{class:'hint'},'Your admin approves it, then pays you back.'),err,save_));
   save_.addEventListener('click',async()=>{if(!(+amt.value>0)){err.hidden=false;err.textContent='Add the amount.';return}if(!note.value.trim()){err.hidden=false;err.textContent='Say what it was for.';return}
-    save_.disabled=true;let urls=[];try{if(photos.length)urls=await uploadAll(photos,nm(st.value)+' receipt')}catch(e){}
-    const ok=await write('append','claims',{row:{claim_id:'CL'+Date.now().toString(36).toUpperCase(),property_id:st.value,date:dt.value,category:cat.value,amount:+amt.value,note:note.value.trim(),photos:urls.length?JSON.stringify(urls):null,submitted_at:nowIso()}},'Claim sent');
-    if(ok){close();load()}else save_.disabled=false})}
+    /* the same amount in the last few days is probably the same bill */
+    const dup=(S.d.claims||[]).find(c=>+c.amount===+amt.value&&c.status!=='rejected'&&Math.abs(OPS.dayDiff(String(c.date||c.submitted_at).slice(0,10),dt.value))<=3);
+    if(dup&&!save_.dataset.ok){save_.dataset.ok='1';err.hidden=false;err.textContent=`You sent ${inr(dup.amount)} on ${fmtD(dup.date||dup.submitted_at)} already (${dup.note||dup.category}). Tap Send again if this is a different bill.`;return}
+    save_.disabled=true;
+    const ok=await write('append','claims',{row:{claim_id:'CL'+Date.now().toString(36).toUpperCase(),property_id:st.value,date:dt.value,category:cat.value,amount:+amt.value,note:note.value.trim(),submitted_at:nowIso()}},'Claim sent',
+      photos.length?{photos:strip(photos),kind:'checklist',name:nm(st.value)+' receipt'}:null);
+    if(ok){close();ok==='sent'?load():render()}else save_.disabled=false})}
 const OPENC={};
 function openNews(){const cats=news(),since=seenAt(),w=t=>{const d=new Date(String(t).replace(' ','T'));return isNaN(d)?'':d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})};
-  const close=sheet("What's new",h('p',{class:'hint'},'Since '+w(since)),...(cats.length?cats.map(c=>h('div',{class:'news-c'},h('b',null,c.label,h('span',null,c.items.length)),...c.items.slice(0,OPENC[c.key]?99:4).map(it=>h('div',{class:'news-i'},h('span',null,it.title),h('small',null,[it.sub,w(it.at)].filter(Boolean).join(' · ')))),
-      c.items.length>4?h('button',{class:'btn sm',onclick:()=>{OPENC[c.key]=!OPENC[c.key];close();openNews()}},OPENC[c.key]?'Show fewer':'Show all '+c.items.length):null)):[h('div',{class:'empty'},'Nothing new since you last looked.')]),
-    cats.length?h('button',{class:'btn primary full',onclick:()=>{store.set(SEEN,new Date().toISOString());close();render()}},'Mark all seen'):null)}
-function openMenu(){const close=sheet('Menu',h('div',{class:'form'},h('p',{class:'hint'},`Signed in as ${S.me&&S.me.name||''}${S.me&&S.me.login?' ('+S.me.login+')':''}. Data from ${S.d&&S.d.at?new Date(S.d.at).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}):'–'}.`),
-  h('button',{class:'btn full',onclick:()=>{close();load();toast('Refreshing…')}},icon('sync'),'Refresh now'),h('button',{class:'btn full',onclick:()=>{close();signOut()}},'Sign out')))}
+  const close=sheet(T("What's new"),h('p',{class:'hint'},'Since '+w(since)),...(cats.length?cats.map(c=>h('div',{class:'news-c'},h('b',null,c.label,h('span',null,c.items.length)),...c.items.slice(0,OPENC[c.key]?99:4).map(it=>h('div',{class:'news-i'},h('span',null,it.title),h('small',null,[it.sub,w(it.at)].filter(Boolean).join(' · ')))),
+      c.items.length>4?h('button',{class:'btn sm',onclick:()=>{OPENC[c.key]=!OPENC[c.key];close();openNews()}},OPENC[c.key]?'Show fewer':'Show all '+c.items.length):null)):[h('div',{class:'empty'},T('Nothing new since you last looked.'))]),
+    cats.length?h('button',{class:'btn primary full',onclick:()=>{const at=new Date().toISOString();store.set(SEEN,at);if(S.me)S.me.seen_at=at;api({action:'seen',at}).catch(()=>{});close();render()}},T('Mark all seen')):null)}
+function openMenu(){const close=sheet(T('Menu'),h('div',{class:'form'},h('p',{class:'hint'},`Signed in as ${S.me&&S.me.name||''}${S.me&&S.me.login?' ('+S.me.login+')':''}. Data from ${S.d&&S.d.at?new Date(S.d.at).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}):'–'}.`),
+  S.q?h('p',{class:'hint'},`${S.q} ${T('waiting to send')}.`):null,langBtn(),
+  h('button',{class:'btn full',onclick:()=>{close();flush();load();toast('Refreshing…')}},icon('sync'),T('Refresh now')),h('button',{class:'btn full',onclick:()=>{close();signOut()}},T('Sign out'))))}
 /* ============ start ============ */
-render();if(S.key)load();
-setInterval(()=>{if(S.key&&!document.hidden&&!S.busy)load()},3*60*1000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.key&&S.d&&Date.now()-S.d.at>60000)load()});
+document.documentElement.lang=LANG;
+render();if(S.key){queued().then(()=>{flush();load()})}
+setInterval(()=>{if(S.key&&!document.hidden&&!S.busy){flush();load()}},3*60*1000);
+addEventListener('online',()=>{if(S.key)flush()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.key&&S.d&&Date.now()-S.d.at>60000){flush();load()}});
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
