@@ -1912,6 +1912,34 @@ body.is-live .dev-only{display:none!important}
 .cmp-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}.cmp-imgs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block}.cmp-park{border-left:3px solid var(--warn,#b26a00);padding-left:10px}
 .form label.ck,label.ck{display:flex!important;flex-direction:row!important;align-items:center;gap:8px}.form label.ck input,label.ck input[type=checkbox]{width:18px!important;height:18px!important;min-height:0!important;padding:0!important;flex:none;margin:0}
 .cmp-sum b{white-space:nowrap}
+
+/* Plan & billing (Manage) */
+.pb-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 28px;margin:4px 0 14px}.pb-k{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.pb-plan{font-size:22px;letter-spacing:-.02em}.pb-amt{font-size:22px;letter-spacing:-.02em}
+.pb-tl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:6px 0 10px}.pb-st{position:relative;padding-top:26px;text-align:center;font-size:12px;min-width:0}
+.pb-st::before{content:'';position:absolute;top:10px;left:0;right:0;height:3px;background:var(--hair-2)}.pb-st:first-child::before{left:50%}.pb-st:last-child::before{right:50%}.pb-st.done::before{background:var(--accent)}
+.pb-st i{position:absolute;top:2px;left:50%;transform:translateX(-50%);width:19px;height:19px;border-radius:50%;background:var(--surface);border:3px solid var(--hair-2);box-sizing:border-box}
+.pb-st.done i{border-color:var(--accent);background:var(--accent)}.pb-st.now i{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 6px var(--accent-soft)}
+.pb-st.bad.now i{border-color:var(--bad)}.pb-st b{display:block}.pb-st span{color:var(--muted);font-size:11.5px}
+.pb-uses{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}.pb-use{background:var(--surface-2);border-radius:14px;padding:10px 12px}
+.pb-use span{display:block;font-size:11.5px;color:var(--muted)}.pb-use b{font-size:19px}.pb-use small{font-size:12px;color:var(--muted);font-weight:500}
+.pb-bar{display:block;height:5px;border-radius:9px;background:var(--hair-2);margin-top:7px;overflow:hidden}.pb-bar i{display:block;height:100%;background:var(--accent);border-radius:9px}.pb-bar.full i{background:var(--warn)}
+.pb-req{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}.pb-req b{display:block}
+.pb-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:6px}
+.pb-tier{position:relative;text-align:left;border:1px solid var(--hair-2);border-radius:18px;padding:16px;background:var(--surface);cursor:pointer;color:var(--ink);display:flex;flex-direction:column;gap:2px;transition:transform .15s,box-shadow .15s}
+.pb-tier:hover{transform:translateY(-1px);box-shadow:0 10px 24px -14px rgba(12,26,61,.3)}.pb-tier[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pb-tier b{font-size:15px}.pb-pr{font-size:22px;font-weight:700;margin:4px 0}.pb-pr small{font-size:12px;color:var(--muted);font-weight:500}.pb-tier ul{margin:8px 0 0;padding-left:17px;font-size:12.5px;color:var(--ink-2)}
+.pb-rib{position:absolute;top:-10px;right:12px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.pb-cur{align-self:flex-start;font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-soft,#e6f6ef);padding:2px 8px;border-radius:999px;margin-bottom:4px}
+.pb-h3{margin:18px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.pb-adds{display:flex;flex-direction:column}.pb-add{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:10px 0;border-top:1px solid var(--hair)}.pb-add:first-child{border-top:0}
+.pb-add b{display:block;font-size:13.5px}.pb-add small{color:var(--muted)}.pb-add input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+.pb-qty{display:flex;align-items:center;gap:6px}.pb-qty .btn{min-width:36px;justify-content:center}.pb-qty b{min-width:20px;text-align:center}
+.pb-sum{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px;padding:14px;border-radius:16px;background:var(--surface-2)}
+.pb-sum>div{flex:1 1 220px;min-width:0}.pb-sum .hint{display:block;margin-top:2px}
+.pb-sum input{flex:1 1 220px;min-width:0;min-height:44px;padding:10px 14px;border-radius:12px;border:1px solid var(--hair-2);background:var(--surface);font:inherit;font-size:16px;color:var(--ink)}
+.pb-qty .btn{min-height:36px}
+@media (max-width:520px){.pb-tl .pb-st{font-size:11px}.pb-sum .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -3168,6 +3196,7 @@ const MONEY_CARDS=new Set(['Revenue by month','Channel mix','Cities head to head
   'From bookings to profit','Expenses by category','Profit & loss by month','Platform fees & direct share','Payments to collect','Platform payouts to chase']);
 const SUB_MG={properties:'Add or change stays, prices, photos and links - reviewed before saving',guest:'Wi-Fi, door PIN and check-in steps the bot sends on check-in day',
   pricing:'Weekend %, holidays, add-ons and custom prices on dates',expenses:'What each stay costs - profit everywhere uses these',lists:'The drop-downs in the booking form',
+  plan:'Your scalewithluv plan, what it costs, when it’s due - and changes for scalewithluv to approve',
   history:'Every saved change: who, when, before → after, with Undo',trash:'Restore within 30 days - then removed for good'};
 const SUB={insights:'Price and season opportunities found in your own bookings',overview:'How the business is doing for the period you pick',desk:'Who checks in and out — select rows to share with staff',calendar:'Every stay, night by night',properties:'Compare listings and open any one for detail',property:'Everything about one listing',money:'Profit, platform fees, expenses and payouts',ops:'Cleaning turnovers and maintenance',bookings:'Every booking from the form',manage:'Change bookings: cancel, notes, batch edits, Trash - reviewed before saving',whatsapp:'Enquiries, leads, requests and issues from the bot - see the status lights below for whether this is live'};
 const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -6105,6 +6134,63 @@ function costMonth(mk){const bs=rowsOf('botstats').filter(r=>String(r.day).slice
   const waBase=Math.max(0,free-rate('costs.wa_free'))*rate('costs.wa_rate')+tpl*rate('costs.wa_tpl_rate'),wa=waBase*(1+rate('costs.gst_pct')/100)*mu;
   const host=rate('costs.hosting_usd')*fxNow()*mu,days=new Set(bs.map(r=>String(r.day).slice(0,10))).size;
   return{bs,days,ai,ins,mk:mkc,ext,who,all,tpl,free,wa,host,total:ai.inr+ins.inr+mkc.inr+ext.photo+ext.brief+wa+host}}
+/* Plan & billing (admins): what you pay and when, usage against the plan, and a change request for scalewithluv to
+   approve (Razorpay payments replace the approval later). Prices and plans come from the scalewithluv console
+   (billing.catalog); this page never changes the plan by itself. */
+const PB={};
+function managePlan(v,tabs){const B=S.data.billing||{},P=SUBPLAN(),cat=B.catalog||null,reqs=B.requests||[],open_=reqs.find(r=>r.status==='pending');
+  const T=cat&&cat.tiers||[],A=cat&&cat.addons||[],F=cat&&cat.features||[],cur=T.find(t=>t.k===P.tier);
+  const due=String(P.due||'').slice(0,10),gu=String(P.grace_until||'').slice(0,10)||(due?add(due,5):''),lp=String(B.last_paid||'').slice(0,10),st0=String(P.status||'active');
+  const stage=st0==='readonly'||st0==='off'?3:st0==='grace'||(due&&TODAY>due)?2:due&&TODAY===due?1:0;
+  const tl=h('div',{class:'pb-tl',role:'list','aria-label':'Payment timeline'},[['Paid',lp?fmtD(lp):'–'],['Due',due?fmtD(due):'not set'],['Grace',due?'until '+fmtD(gu):'5 days'],['Read-only',gu?'from '+fmtD(add(gu,1)):'bot paused']]
+    .map(([l,x],i)=>h('div',{class:'pb-st'+(i<stage?' done':'')+(i===stage?' now':'')+(i===3?' bad':''),role:'listitem','aria-current':i===stage?'step':null},h('i'),h('b',null,l),h('span',null,x))));
+  const props=(S.data.props||[]).filter(p=>!/^(stopped|inactive|off)$/i.test(String(p.status||''))),cities=new Set(props.map(p=>String(p.city||'').trim()).filter(Boolean));
+  const L=P.limits||{},use=(l,n,k)=>h('div',{class:'pb-use'},h('span',null,l),h('b',{class:'num'},n.toLocaleString('en-IN'),L[k]?h('small',null,' of '+L[k]):null),
+    L[k]?h('i',{class:'pb-bar'+(n>=L[k]?' full':'')},h('i',{style:`width:${Math.min(100,n/L[k]*100)}%`})):null);
+  const amt=+B.amount||(cur?cur.price:0);
+  v.append(card('s12','Plan & billing',{hint:'your scalewithluv subscription',acts:[tabs]},
+    h('div',{class:'pb-head'},h('div',null,h('span',{class:'pb-k'},'Your plan'),h('b',{class:'pb-plan'},cur?cur.name:P.tier==='custom'?'Custom':P.tier?P.tier:'Not set yet')),
+      h('div',null,h('span',{class:'pb-k'},'Monthly'),h('b',{class:'num pb-amt'},amt?inr(amt):'–')),
+      h('div',null,h('span',{class:'pb-k'},'Next due'),h('b',null,due?fmtD(due):'–')),
+      h('span',{class:'chip-s '+(st0==='active'?'ok':st0==='grace'?'warn':'bad')},st0==='active'?'Paid':st0==='grace'?'Payment due':st0==='readonly'?'Read-only':'Switched off')),
+    tl,
+    B.extra?h('p',{class:'hint'},`Next bill includes ${inr(B.extra)} for an upgrade during this month.`):null,
+    B.next&&B.next.tier?h('p',{class:'hint'},`From ${due?fmtD(due):'the next bill'}: ${(T.find(t=>t.k===B.next.tier)||{}).name||B.next.tier}${B.next.price?' at '+inr(B.next.price)+' a month':''}.`):null,
+    h('div',{class:'pb-uses'},use('Stays',props.length,'stays'),use('Cities',cities.size,'cities'),use('Managers',(S.data.staff||[]).length,'managers')),
+    h('p',{class:'hint'},'Payments: UPI or bank transfer to scalewithluv for now. ',supportLink('Contact scalewithluv',`Hi, about the ${CLIENT.brand||''} subscription`))));
+  // the open request
+  if(open_){const ad=[].concat(open_.addons||[]);v.append(card('s12','Change requested',{hint:'waiting for scalewithluv to approve'},
+    h('div',{class:'pb-req'},h('div',null,h('b',null,`${(T.find(t=>t.k===open_.tier)||{}).name||open_.tier}${ad.length?', '+ad.map(k=>(A.find(a=>a.k===k)||{}).name||k).join(', '):''}`),
+      h('span',{class:'hint'},`${inr(open_.price)} a month · asked ${fmtD(String(open_.at).slice(0,10))} by ${open_.by}`)),
+      h('button',{class:'btn sm',onclick:async e=>{e.currentTarget.disabled=true;try{await apiPost({action:'plan_request_cancel'});S.data=await liveLoad();toast('Request cancelled');render()}catch(x){toast('Couldn’t cancel: '+x.message);e.currentTarget.disabled=false}}},'Cancel request'))))}
+  if(!cat){v.append(card('s12','Plans',{},h('div',{class:'empty'},'Plans and prices appear here once scalewithluv publishes them.')));return}
+  // choose a plan and add-ons -> the new monthly price -> request
+  const from=P.tier+'|'+JSON.stringify(B.addons||[]);if(PB.from!==from){PB.tier=cur?cur.k:(T[1]||T[0]||{}).k;PB.addons=[...(B.addons||[])];PB.from=from}   // start from what they have now (live data may land after the first paint)
+  const tier=T.find(t=>t.k===PB.tier)||T[0],fN=k=>(F.find(f=>f.k===k)||{}).name||FEAT_NAME[k]||k;
+  const price=(tier?tier.price:0)+PB.addons.reduce((a,k)=>a+((A.find(x=>x.k===k)||{}).price||0),0);
+  const cards=h('div',{class:'pb-tiers'},T.map(t=>h('button',{class:'pb-tier','aria-pressed':String(PB.tier===t.k),onclick:()=>{PB.tier=t.k;PB.addons=PB.addons.filter(k=>{const a=A.find(x=>x.k===k);return !(a&&a.feature&&(t.features||[]).includes(a.feature))});render()}},
+    t.k==='growth'?h('span',{class:'pb-rib'},'Most popular'):null,cur&&cur.k===t.k?h('span',{class:'pb-cur'},'Current'):null,
+    h('b',null,t.name),h('div',{class:'pb-pr num'},inr(t.price),h('small',null,' /month')),t.blurb?h('div',{class:'hint'},t.blurb):null,
+    h('ul',null,(t.features||[]).map(k=>h('li',null,fN(k))),t.limits?h('li',null,`${t.limits.stays} stays · ${t.limits.cities} cit${t.limits.cities===1?'y':'ies'} · ${t.limits.managers} manager${t.limits.managers===1?'':'s'} · ${t.limits.logins} logins`):null))));
+  const adds=h('div',{class:'pb-adds'},A.filter(a=>!a.feature||!(tier&&(tier.features||[]).includes(a.feature))).map(a=>{const n=PB.addons.filter(x=>x===a.k).length;
+    if(a.stack)return h('div',{class:'pb-add'},h('div',null,h('b',null,a.name),h('small',null,inr(a.price)+' a month each'+(n?' · ×'+n:''))),
+      h('div',{class:'pb-qty'},h('button',{class:'btn sm',disabled:!n||null,'aria-label':'One fewer '+a.name,onclick:()=>{PB.addons.splice(PB.addons.indexOf(a.k),1);render()}},'−'),h('b',{class:'num'},n),
+        h('button',{class:'btn sm','aria-label':'One more '+a.name,onclick:()=>{PB.addons.push(a.k);render()}},'+')));
+    return h('label',{class:'pb-add ck'},h('div',null,h('b',null,a.name),h('small',null,'+'+inr(a.price)+' a month')),h('input',{type:'checkbox',checked:n>0||null,onchange:e=>{e.target.checked?PB.addons.push(a.k):PB.addons=PB.addons.filter(x=>x!==a.k);render()}}))}));
+  const same=tier&&cur&&tier.k===cur.k&&[...PB.addons].sort().join()===[...(B.addons||[])].sort().join();
+  const up=price>amt,left=due&&due>TODAY?diff(TODAY,due):0,pro=up&&left?Math.round((price-amt)*Math.min(left,30)/30):0;
+  const note=h('input',{type:'text',placeholder:'Anything scalewithluv should know (optional)',maxlength:500,'aria-label':'Note'});
+  v.append(card('s12','Change plan or add-ons',{hint:'scalewithluv approves it · prices a month, Meta’s WhatsApp fees not included'},cards,
+    A.length?h('h3',{class:'pb-h3'},'Add-ons'):null,adds,
+    h('div',{class:'pb-sum'},h('div',null,h('span',{class:'pb-k'},'New monthly price'),h('b',{class:'num pb-amt'},inr(price)),
+        h('span',{class:'hint'},same?'This is your current plan.':up?`Starts once approved${pro?`; about ${inr(pro)} for the rest of this month is added to your next bill`:''}.`:`Starts ${due?'on '+fmtD(due):'from the next bill'}, after this paid month.`)),
+      note,h('button',{class:'btn primary',disabled:same||null,onclick:async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Sending…';
+        try{await apiPost({action:'plan_request',tier:tier.k,addons:PB.addons,price,note:note.value.trim()});S.data=await liveLoad();toast('Request sent to scalewithluv ✓');render()}
+        catch(x){toast('Couldn’t send: '+x.message);b.disabled=false;b.textContent='Request change'}}},open_?'Replace my request':'Request change'))));
+  const past=reqs.filter(r=>r.status!=='pending').slice(0,5);
+  if(past.length)v.append(card('s12','Earlier requests',{},h('div',{class:'mg-list'},past.map(r=>h('div',{class:'mg-row'},h('span'),h('div',{class:'mg-main'},
+    h('b',null,`${(T.find(t=>t.k===r.tier)||{}).name||r.tier} · ${inr(r.price)} a month`),h('span',null,`${fmtD(String(r.at).slice(0,10))} · ${r.status}${r.decided_note?' · '+r.decided_note:''}`)))))));
+  return pendingBar(v)}
 function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.costM,c=costMonth(mk),ms=[];for(let k=TODAY.slice(0,7),i=0;i<12;i++,k=prevM(k))ms.push(k);
   const r2=n=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pick=h('select',{class:'mg-pick','aria-label':'Month',onchange:e=>{S.costM=e.target.value;render()}},ms.map(k=>h('option',{value:k,selected:k===mk||null},mLong(k)+(k===TODAY.slice(0,7)?' (so far)':''))));
@@ -6159,7 +6245,7 @@ function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at),trashE=(S.data.expenses||[]).map(e=>ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e).filter(e=>e.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['costs','AI Expenses',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['costs','AI Expenses',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash'],['plan','Plan & billing',null,'wallet']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();pushHash();render();requestAnimationFrame(()=>document.querySelector('.mg-tabs [aria-selected=true]')?.scrollIntoView({block:'nearest',inline:'center'}))}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
@@ -6169,6 +6255,7 @@ function manage(v){
   if(MG.sec==='expenses')return manageExpenses(v,tabs);
   if(MG.sec==='history')return manageHistory(v,tabs);
   if(MG.sec==='costs')return manageCosts(v,tabs);
+  if(MG.sec==='plan')return managePlan(v,tabs);
   if(MG.sec==='trash'){
     const list=sortBy(trash,['deleted_at',-1]);
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);
@@ -6262,7 +6349,7 @@ function render(){
   {const P=SUBPLAN(),st=String(P.status||'active');if(st==='grace'||readOnly()){const left=P.grace_until?Math.max(0,diff(TODAY,String(P.grace_until).slice(0,10))):null;
     v.prepend(h('section',{class:'s12 bill-banner'+(readOnly()?' ro':''),role:'alert'},h('b',null,readOnly()?'Read-only · subscription paused':'Payment due'),
       h('span',null,readOnly()?'You can see everything; changes and the WhatsApp bot are paused until the payment is in.':`${left!=null?left+' day'+(left===1?'':'s')+' left before the dashboard turns read-only and the bot pauses':'Please pay to keep everything running'}${P.due?' · due '+fmtD(String(P.due).slice(0,10)):''}`),
-      supportLink('Contact scalewithluv',`Hi, about the ${CLIENT.brand||''} subscription`)))}}
+      S.admin?h('button',{class:'btn sm primary',onclick:()=>{MG.sec='plan';go('manage')}},'Plan & billing'):supportLink('Contact scalewithluv',`Hi, about the ${CLIENT.brand||''} subscription`)))}}
   if(S.admin&&ownerCovers().length){const ls=ownerCovers();v.prepend(h('section',{class:'s12 cv-banner',role:'status'},h('b',null,`You’re covering for ${ls.map(l=>l.user_name||coverName(l.user)).join(' & ')}`),
     h('span',null,`until ${fmtD(ls.map(l=>String(l.to)).sort().pop(),{weekday:'short',day:'numeric',month:'short'})} · their stays’ tasks and alerts come to you`),h('button',{class:'btn sm',onclick:()=>{S.opsTab='cover';go('ops')}},'See what’s due')))}
   fillRows(v);
