@@ -419,6 +419,12 @@ const coverFor=pid=>covers().find(c=>(c.stays||[]).includes(pid));
 const cvTag=pid=>{const c=coverFor(pid);return c?h('span',{class:'cv-tag',title:'Covering for '+c.user_name},T('Cover')):null};
 const myLeaves=()=>((S.d||{}).leaves||[]).filter(l=>String(l.user||'').toLowerCase()===myId()).sort((x,y)=>String(y.from).localeCompare(String(x.from)));
 const leaveNow=()=>myLeaves().find(l=>l.status==='approved'&&String(l.to).slice(0,10)>=TODAY);
+/* Help: a question to scalewithluv; replies show here (C7) */
+async function helpSheet(){const q=h('textarea',{rows:4,maxlength:2000,placeholder:T('What do you need help with?')}),err=h('div',{class:'err',hidden:true}),go=h('button',{class:'btn primary full'},T('Send')),list=h('div',{class:'lv-list'});
+  const close=sheet(T('Help'),h('p',{class:'hint'},T('Ask anything about the app. The reply shows here.')),h('div',{class:'form'},h('label',null,T('Your question'),q),err,go),list);
+  go.addEventListener('click',async()=>{if(q.value.trim().length<3){err.hidden=false;err.textContent=T('Write your question first.');return}go.disabled=true;
+    try{await api({action:'support_ask',message:q.value.trim(),page:'manager app',device:navigator.userAgent.slice(0,100)});close();toast(T('Sent')+' ✓')}catch(e){err.hidden=false;err.textContent=e.message;go.disabled=false}});
+  try{const j=await api({action:'support_mine'});(j.tickets||[]).slice(0,5).forEach(t=>list.append(h('div',{class:'row'},h('div',{class:'t'},h('b',null,t.message.slice(0,100)),h('span',null,t.reply||T('Waiting for a reply'))))))}catch(e){}}
 function leaveSheet(){const f=h('input',{type:'date',min:TODAY,value:TOMORROW}),t=h('input',{type:'date',min:TODAY,value:TOMORROW}),why=h('input',{placeholder:T('e.g. Family wedding'),maxlength:200}),err=h('div',{class:'err',hidden:true}),go=h('button',{class:'btn primary full'},T('Send request'));
   const st={pending:['p-warn','Waiting'],approved:['p-ok','Approved'],rejected:['p-bad','Declined'],cancelled:['','Cancelled']};
   const mine=myLeaves().slice(0,6);
@@ -619,6 +625,7 @@ function openNews(){const cats=news(),since=seenAt(),w=t=>{const d=new Date(Stri
 function openMenu(){const close=sheet(T('Menu'),h('div',{class:'form'},h('p',{class:'hint'},`Signed in as ${S.me&&S.me.name||''}${S.me&&S.me.login?' ('+S.me.login+')':''}. Data from ${S.d&&S.d.at?new Date(S.d.at).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}):'–'}.`),
   S.q?h('p',{class:'hint'},`${S.q} ${T('waiting to send')}.`):null,langBtn(),
   h('button',{class:'btn full',onclick:()=>{close();leaveSheet()}},icon('today'),T('Leave')),
+  h('button',{class:'btn full',onclick:()=>{close();helpSheet()}},T('Help')),
   h('button',{class:'btn full',onclick:()=>{close();flush();load();toast('Refreshing…')}},icon('sync'),T('Refresh now')),h('button',{class:'btn full',onclick:()=>{close();signOut()}},T('Sign out'))))}
 /* ============ start ============ */
 document.documentElement.lang=LANG;
