@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light only">
 <meta name="theme-color" content="#f6f8fc">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -104,6 +104,23 @@ h4.sub{margin:6px 0 0;font-size:14px}.card.tasks{border-color:rgba(165,189,237,1
 .stars{display:flex;gap:6px}.stars button{border:0;background:none;font-size:36px;line-height:1;color:var(--hair-2);cursor:pointer;padding:2px}.stars button[aria-pressed=true]{color:#f5a623}
 .stats.two{grid-template-columns:repeat(2,1fr)}.cnt span small{display:block;color:var(--muted);font-size:11.5px;font-weight:500}.cnt .lowm{color:var(--warn);font-weight:650}
 .lang{display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}button.pill{border:0;cursor:pointer}
+
+/* photo viewer */
+html.iv-open,html.iv-open body{overflow:hidden}
+.iv{position:fixed;inset:0;z-index:200;background:rgba(6,8,14,.96);display:flex;flex-direction:column;touch-action:none;color:#fff;animation:ivIn .18s ease-out}
+@keyframes ivIn{from{opacity:0}to{opacity:1}}
+.iv-top{display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top,0px)) 12px 10px;font-size:13px}
+.iv-n{font-variant-numeric:tabular-nums;opacity:.8;min-width:42px}.iv-cap{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.9}
+.iv-acts{display:flex;gap:6px}.iv-b{border:0;border-radius:99px;background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:13px;font-weight:600;padding:8px 12px;cursor:pointer;min-height:36px}
+.iv-stage{flex:1;min-height:0;display:grid;place-items:center;overflow:hidden;padding:0 0 max(10px,env(safe-area-inset-bottom,0px))}
+.iv-img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;transition:transform .08s linear;user-select:none;-webkit-user-drag:none}
+.iv-prev,.iv-next{position:absolute;top:50%;margin-top:-22px;width:44px;height:44px;border-radius:50%;font-size:26px;line-height:1;padding:0}
+.iv-prev{left:10px}.iv-next{right:10px}.iv-prev[hidden],.iv-next[hidden]{display:none}
+@media (pointer:coarse){.iv-prev,.iv-next{display:none}}
+.cv-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;background:#fff3d6;color:#8a5a00;vertical-align:1px}
+.cv-note{display:flex;flex-direction:column;gap:2px;border-left:4px solid #e0a020}.cv-note.on{border-left-color:#1d5bd8}.cv-note span{font-size:13px;color:#5a6681}
+.lv-list{margin-top:14px}
+.in input,.in select,.in textarea{font-size:16px}   /* 16 px: iPhone never zooms into a field */
 </style>
 </head>
 <body>
@@ -252,6 +269,45 @@ const OPS=(()=>{
 const $=s=>document.querySelector(s);
 /* null-safe inserts: a helper that has nothing to show returns null; the DOM would print it as text (B-110) */
 for(const P_ of [Element.prototype,DocumentFragment.prototype])for(const m_ of ['append','prepend','replaceChildren','before','after']){const f_=P_[m_];if(f_)P_[m_]=function(...a){return f_.apply(this,a.filter(x=>x!=null&&x!==false))}}
+/* app-like: the page never zooms (pinch, double tap, field focus); only the photo viewer zooms, by itself */
+['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>{if(!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false});
+/* One full-screen photo viewer for every photo (stays, checklists, issues, stock, receipts, reviews): swipe, pinch or
+   double-tap to zoom, share/download, caption with who and when. Any link inside a photo strip opens here. */
+function photoViewer(urls,start,cap){urls=urls.filter(Boolean);if(!urls.length)return;let i=Math.max(0,Math.min(start||0,urls.length-1)),sc=1,tx=0,ty=0;
+  const img=document.createElement('img');img.className='iv-img';img.alt='Photo';
+  const el=(t,c,txt)=>{const e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e};
+  const box=el('div','iv');box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label','Photo');
+  const top=el('div','iv-top'),cnt=el('span','iv-n'),capE=el('span','iv-cap',cap||''),acts=el('div','iv-acts');
+  const btn=(lab,txt,fn)=>{const b=el('button','iv-b',txt);b.type='button';b.setAttribute('aria-label',lab);b.onclick=e=>{e.stopPropagation();fn()};return b};
+  const close=()=>{box.remove();document.documentElement.classList.remove('iv-open');removeEventListener('keydown',key)};
+  acts.append(btn('Share','Share',async()=>{const u=urls[i];try{if(navigator.share)await navigator.share({url:u,title:cap||'Photo'});else{await navigator.clipboard.writeText(u);(window.jgToast||alert)('Link copied')}}catch(e){}}),
+    btn('Open or download','Save',()=>{const a=document.createElement('a');a.href=urls[i];a.target='_blank';a.rel='noopener';a.download='';document.body.append(a);a.click();a.remove()}),
+    btn('Close','✕',close));
+  top.append(cnt,capE,acts);
+  const stage=el('div','iv-stage');stage.append(img);
+  const prev=btn('Previous photo','‹',()=>show(i-1)),next=btn('Next photo','›',()=>show(i+1));prev.classList.add('iv-prev');next.classList.add('iv-next');
+  box.append(top,stage,prev,next);
+  const apply=()=>{img.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`};
+  const show=k=>{i=(k+urls.length)%urls.length;sc=1;tx=ty=0;apply();img.src=urls[i];cnt.textContent=urls.length>1?`${i+1} / ${urls.length}`:'';prev.hidden=next.hidden=urls.length<2};
+  /* gestures: swipe when not zoomed, pinch to zoom, drag to pan when zoomed, double tap toggles 2.5x */
+  let t0=null,lastTap=0;
+  stage.addEventListener('touchstart',e=>{const t=e.touches;if(t.length===2){t0={d:Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY),sc}}else if(t.length===1){t0={x:t[0].clientX,y:t[0].clientY,tx,ty,at:Date.now()}}},{passive:true});
+  stage.addEventListener('touchmove',e=>{if(!t0)return;const t=e.touches;e.preventDefault();
+    if(t.length===2&&t0.d){sc=Math.max(1,Math.min(5,t0.sc*Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)/t0.d));if(sc===1){tx=ty=0}apply()}
+    else if(t.length===1&&sc>1&&t0.x!=null){tx=t0.tx+t[0].clientX-t0.x;ty=t0.ty+t[0].clientY-t0.y;apply()}},{passive:false});
+  stage.addEventListener('touchend',e=>{if(!t0)return;const c=e.changedTouches[0];
+    if(t0.x!=null&&sc===1&&c){const dx=c.clientX-t0.x,dy=c.clientY-t0.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))show(i+(dx<0?1:-1));else if(dy>90&&Math.abs(dy)>Math.abs(dx))close()}
+    const now=Date.now();if(t0.x!=null&&now-lastTap<300){sc=sc>1?1:2.5;tx=ty=0;apply();lastTap=0}else lastTap=now;t0=null},{passive:true});
+  stage.addEventListener('dblclick',()=>{sc=sc>1?1:2.5;tx=ty=0;apply()});
+  stage.addEventListener('wheel',e=>{e.preventDefault();sc=Math.max(1,Math.min(5,sc*(e.deltaY<0?1.15:1/1.15)));if(sc===1){tx=ty=0}apply()},{passive:false});
+  stage.addEventListener('click',e=>{if(e.target===stage)close()});
+  const key=e=>{if(e.key==='Escape')close();else if(e.key==='ArrowRight')show(i+1);else if(e.key==='ArrowLeft')show(i-1)};addEventListener('keydown',key);
+  document.documentElement.classList.add('iv-open');document.body.append(box);show(i)}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('.pd-photos a,.cl-pics a,[data-pv]');if(!a)return;
+  const box=a.closest('.pd-photos,.cl-pics,[data-pv-group]')||a.parentElement,as=[...box.querySelectorAll('a[href],[data-pv]')];
+  e.preventDefault();e.stopPropagation();photoViewer(as.map(x=>x.dataset.pv||x.getAttribute('href')),as.indexOf(a),box.dataset.cap||a.dataset.cap||'')},true);
+window.photoViewer=photoViewer;
 function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(v==null||v===false)continue;if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else if(x==='class')e.className=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x in e&&typeof v!=='string')e[x]=v;else e.setAttribute(x,v===true?'':v)}
   k.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)))});return e}
 const NS='http://www.w3.org/2000/svg';
@@ -291,7 +347,7 @@ async function api(body){let r;try{r=await fetch(CLIENT.api_url,{method:'POST',h
   let j;try{j=await r.json()}catch(e){const x=new Error('offline');x.offline=true;throw x}if(j.error){const x=new Error(j.error);x.server=true;throw x}return j}
 async function load(){S.busy=true;try{const d=await api({action:'read',format:'dashboard'});
     S.d={props:d.props||[],bookings:(d.bookings||[]).map(b=>({...b,booking_id:String(b.booking_id),check_in:String(b.check_in).slice(0,10),check_out:String(b.check_out).slice(0,10)})),maint:d.maint||[],reviews:d.reviews||[],
-      checklists:d.checklists||[],requests:d.requests||[],stock:d.stock||[],turnovers:d.turnovers||[],claims:d.claims||[],movements:d.movements||[],ops:d.ops||[],checkin_info:d.checkin_info||[],at:Date.now()};
+      checklists:d.checklists||[],requests:d.requests||[],stock:d.stock||[],turnovers:d.turnovers||[],claims:d.claims||[],movements:d.movements||[],ops:d.ops||[],leaves:d.leaves||[],plan:d.plan||null,checkin_info:d.checkin_info||[],at:Date.now()};
     if(d.me){S.me=d.me;store.set('mg_me',d.me)}store.set('mg_cache',S.d);await queued()}
   catch(e){if(/unauthorized/.test(e.message)){try{await api({action:'me'})}catch(x){if(/unauthorized/.test(x.message))return signOut('Your sign-in ended. Sign in again.')}}
     toast(S.d?'Couldn’t refresh just now · showing the last data':'Couldn’t reach the sheet. Check the connection.')}finally{S.busy=false;render()}}
@@ -312,8 +368,18 @@ async function sendOne(it){const p=JSON.parse(JSON.stringify(it.payload));
 let flushing=false;
 async function flush(){if(flushing||!S.key)return;flushing=true;let sent=0;try{for(const it of(await OB.all()).sort((a,b)=>a.id.localeCompare(b.id))){try{await sendOne(it);await OB.del(it.id);sent++}
     catch(e){if(e.offline)break;await OB.del(it.id);toast(`${it.label||'A change'} wasn’t accepted: ${e.message.replace(/^not allowed: /,'')}`)}}}finally{flushing=false;await queued();if(sent){toast(`${sent} saved change${sent>1?'s':''} sent ✓`);load()}else render()}}
+/* Geotag: where the phone is when a checklist, stock check or issue is sent. The sheet works out the distance to the
+   stay's map pin and flags anything over 200 m to the admin. Location refused = it can't be sent; no GPS fix in 15 s =
+   sent anyway, marked "no location". Off when the admin sets ops.geotag = off. */
+const geoOn=()=>{const r=((S.d||{}).ops||[]).filter(x=>x.key==='ops.geotag').pop(),pf=(((S.d||{}).plan||{}).features||{}).geotag;return!(r&&/^(off|no|false|0)$/i.test(String(r.value||'').trim()))&&!/^(off|no|false|0)$/i.test(String(pf||''))};
+function geoNow(){return new Promise(ok=>{if(!navigator.geolocation)return ok({flag:'no_fix'});
+  navigator.geolocation.getCurrentPosition(p=>ok({lat:+p.coords.latitude.toFixed(6),lng:+p.coords.longitude.toFixed(6),acc:Math.round(p.coords.accuracy||0)}),
+    e=>ok(e&&e.code===1?{denied:true}:{flag:'no_fix'}),{enableHighAccuracy:true,timeout:15000,maximumAge:60000})})}
+async function geoFields(err){if(!geoOn())return{};const g=await geoNow();
+  if(g.denied){err.hidden=false;err.textContent=T('Location is off for this app. Allow location in your phone settings, then send again. It confirms you are at the stay.');return null}
+  return g.flag?{geo_flag:g.flag,geo_at:nowIso()}:{geo_lat:g.lat,geo_lng:g.lng,geo_acc_m:g.acc,geo_at:nowIso()}}
 /* send now; without a connection keep it in the outbox and show it as done */
-async function write(op,tab,payload,msg,extra){const it={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),op,tab,payload,label:msg,...(extra||{})};
+async function write(op,tab,payload,msg,extra){if(['readonly','off'].includes(String(((S.d||{}).plan||{}).status||''))){toast(T('Read-only for now · ask your admin'));return false}const it={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),op,tab,payload,label:msg,...(extra||{})};
   try{await sendOne(it);toast(T(msg)+' ✓');return'sent'}
   catch(e){if(!e.offline){toast('Not saved: '+e.message.replace(/^not allowed: /,''));return false}
     await OB.add(it);await queued();localApply(op,tab,payload);toast(T('Saved on the phone · sends when online'));return'queued'}}
@@ -326,7 +392,9 @@ function loginScreen(msg){const id=h('input',{autocomplete:'username',autocapita
   const f=h('form',{class:'form',onsubmit:async e=>{e.preventDefault();if(!id.value.trim()||!pw.value){err.hidden=false;err.textContent='Enter your login id and password.';return}go.disabled=true;go.textContent=T('Checking…');
     try{const r=await fetch(CLIENT.api_url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login_pw',login:id.value.trim(),password:pw.value,device:'Manager app · '+(navigator.platform||'phone')})}),j=await r.json();
       if(!j.ok){go.disabled=false;go.textContent=T('Sign in');err.hidden=false;err.textContent=j.error==='locked'?`Too many tries. Try again in ${j.wait_min||15} minutes.`:j.error==='wrong_login'?'Login id or password is wrong.':j.error||'Sign-in failed.';return}
-      S.key=j.session;S.me=j.user;store.set('mg_session',j.session);store.set('mg_me',j.user);S.tab=hashTab()||'today';await load()}
+      S.key=j.session;S.me=j.user;store.set('mg_session',j.session);store.set('mg_me',j.user);S.tab=hashTab()||'today';await load();
+      const others=j.other_devices||[];if(others.length){const close=sheet(T('Signed in on another phone'),h('p',{class:'hint'},`${others.map(o=>o.device).slice(0,3).join(', ')}. ${T('Sign out there? One phone at a time keeps your stays safe.')}`),
+        h('div',{class:'form'},h('button',{class:'btn primary full',onclick:()=>{close();api({action:'logout_others'}).then(r=>toast(`${r.ended||0} ${T('signed out')} ✓`)).catch(e=>toast(e.message))}},T('Sign out the other phone')),h('button',{class:'btn full',onclick:()=>close()},T('Keep both'))))}}
     catch(x){go.disabled=false;go.textContent=T('Sign in');err.hidden=false;err.textContent='Couldn’t reach the sheet. Check the connection.'}}},h('label',null,T('Login id'),id),h('label',null,T('Password'),pw),err,go);
   $('#app').replaceChildren(h('div',{class:'login'},h('div',{class:'card'},CLIENT.logo?h('img',{src:'../'+CLIENT.logo.dark,alt:CLIENT.brand,style:{height:'34px',justifySelf:'start'},onerror:e=>e.target.remove()}):null,
     h('h1',null,'Manager ',h('em',null,'app')),h('p',{class:'hint'},`${CLIENT.brand||''} · your stays, check-ins, checklists and reviews. Your admin gives you the login id and password.`),f,langBtn())))}
@@ -343,6 +411,24 @@ const SEEN='mg_seen';const seenAt=()=>{let t=store.get(SEEN);if(!t){t=new Date(D
 const news=()=>S.d?OPS.news({...S.d,maint:S.d.maint},seenAt(),'manager',{inScope:inS}):[];
 function due(){const c=C(),d=S.d;return{check:OPS.checklists(d.bookings,d.checklists,TODAY,c,inS,d.props),stock:OPS.stock(d.props,d.stock,TODAY,c,inS),rev:OPS.reviews(d.bookings,d.reviews,TODAY,c,inS)}}
 const toRate=u=>u.rev.filter(x=>x.status==='received'&&!(x.row&&+x.row.rating>0));
+/* leave and cover: stays I cover today for someone on leave (the sheet adds them to my stays), my own leave */
+const myId=()=>!S.me?'':S.me.email?String(S.me.email).trim().toLowerCase():'login:'+String(S.me.login||'').trim().toLowerCase();   // as the sheet names them: email first
+const covers=()=>(S.me&&S.me.cover)||[];
+const coverFor=pid=>covers().find(c=>(c.stays||[]).includes(pid));
+const cvTag=pid=>{const c=coverFor(pid);return c?h('span',{class:'cv-tag',title:'Covering for '+c.user_name},T('Cover')):null};
+const myLeaves=()=>((S.d||{}).leaves||[]).filter(l=>String(l.user||'').toLowerCase()===myId()).sort((x,y)=>String(y.from).localeCompare(String(x.from)));
+const leaveNow=()=>myLeaves().find(l=>l.status==='approved'&&String(l.to).slice(0,10)>=TODAY);
+function leaveSheet(){const f=h('input',{type:'date',min:TODAY,value:TOMORROW}),t=h('input',{type:'date',min:TODAY,value:TOMORROW}),why=h('input',{placeholder:T('e.g. Family wedding'),maxlength:200}),err=h('div',{class:'err',hidden:true}),go=h('button',{class:'btn primary full'},T('Send request'));
+  const st={pending:['p-warn','Waiting'],approved:['p-ok','Approved'],rejected:['p-bad','Declined'],cancelled:['','Cancelled']};
+  const mine=myLeaves().slice(0,6);
+  const close=sheet(T('Leave'),h('p',{class:'hint'},T('Ask for days off. Your admin approves it and picks who covers your stays; their app gets your tasks for those days.')),
+    h('div',{class:'form'},h('label',null,T('From'),f),h('label',null,T('To (last day off)'),t),h('label',null,T('Reason (optional)'),why),err,go),
+    mine.length?h('div',{class:'lv-list'},h('h4',{class:'sub'},T('Your requests')),...mine.map(l=>{const s=st[l.status]||['',l.status];
+      return h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${fmtD(l.from)} – ${fmtD(l.to,{day:'numeric',month:'short',year:'numeric'})}`),h('span',null,[l.reason,l.status==='approved'&&l.cover_name?T('Covered by')+' '+l.cover_name:null].filter(Boolean).join(' · ')||' ')),h('span',{class:'pill '+s[0]},T(s[1])))})):null);
+  go.addEventListener('click',async()=>{if(!f.value||!t.value||t.value<f.value){err.hidden=false;err.textContent=T('Pick the first and the last day off.');return}
+    if(t.value<TODAY){err.hidden=false;err.textContent=T('Those dates are over.');return}go.disabled=true;
+    const ok=await write('append','leaves',{row:{leave_id:'LV'+Date.now().toString(36).toUpperCase(),from:f.value,to:t.value,reason:why.value.trim()||null,requested_at:nowIso()}},'Leave request sent');
+    if(ok){close();ok==='sent'?load():render()}else go.disabled=false})}
 /* ============ screens ============ */
 const TABS=[['today','Today','today'],['check','Checklists','check'],['stock','Stock','box'],['reviews','Reviews','star'],['issues','Issues','wrench']];
 function render(){if(!S.key)return loginScreen();if(!S.d){$('#app').replaceChildren(h('div',{class:'loading'},h('span',{class:'spin'}),T('Loading your stays…')));return}
@@ -372,16 +458,19 @@ function moveMark(b,kind,steps){const st_=kind==='arrived'?OPS.cityStepsOf(C(),P
   write('append','movements',{row:{move_id:'MV'+Date.now().toString(36).toUpperCase(),booking_id:b.booking_id,property_id:b.property_id,kind,at:TODAY+'T'+hhmm(),steps:steps?JSON.stringify(steps):null}},kind==='arrived'?'Marked arrived':'Marked checked out').then(ok=>{if(ok==='sent')load();else render()})}
 /* check-in steps for the guest's stay (or the whole place it belongs to): never door codes or Wi-Fi passwords */
 const infoFor=pid=>(S.d.checkin_info||[]).find(x=>x.property_id===pid)||(S.d.checkin_info||[]).find(x=>x.property_id===OPS.parentOf(pid,S.d.props))||null;
-function today(m,u){const B=S.d.bookings.filter(b=>live(b)&&inS(b.property_id)),ins=B.filter(b=>b.check_in===TODAY),tom=B.filter(b=>b.check_in===TOMORROW),outs=B.filter(b=>b.check_out===TODAY);
+function coverBanners(m){const lv=leaveNow();
+  if(lv)m.append(h('section',{class:'card cv-note'},h('b',null,lv.from<=TODAY?T('You are on leave'):T('Leave approved')),h('span',null,`${fmtD(lv.from)} – ${fmtD(lv.to)}${lv.cover_name?' · '+T('Covered by')+' '+lv.cover_name:''}`)));
+  covers().forEach(c=>m.append(h('section',{class:'card cv-note on'},h('b',null,T('Covering for')+' '+c.user_name),h('span',null,`${T('until')} ${fmtD(c.to)} · ${c.stays.map(nm).filter(Boolean).join(', ')} · ${T('their tasks are tagged Cover')}`))))}
+function today(m,u){coverBanners(m);const B=S.d.bookings.filter(b=>live(b)&&inS(b.property_id)),ins=B.filter(b=>b.check_in===TODAY),tom=B.filter(b=>b.check_in===TOMORROW),outs=B.filter(b=>b.check_out===TODAY);
   const sc=OPS.scorecards([{role:'Manager',properties:S.me&&S.me.properties||[],name:S.me&&S.me.name,email:S.me&&S.me.email,login:S.me&&S.me.login}],{...S.d},TODAY,C())[0];
   /* same-day turnovers first: the next guest arrives today */
   const urg=u.check.filter(x=>x.urgent);
-  if(urg.length)m.append(h('section',{class:'card urgent'},h('h2',null,icon('clock'),T('Clean first'),h('small',null,T('next guest arrives today'))),urg.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id)),
+  if(urg.length)m.append(h('section',{class:'card urgent'},h('h2',null,icon('clock'),T('Clean first'),h('small',null,T('next guest arrives today'))),urg.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id),cvTag(x.property_id)),
     h('span',null,`${T('ready by')} ${x.dueTime} · ${x.next.guest||'Guest'} · ${x.next.guests||''} guests`)),h('button',{class:'btn sm primary',onclick:()=>checklistForm(x.booking)},T('Checklist'))))));
   const chips=[[u.check.filter(x=>x.status!=='done').length,'checklists to do','check'],[u.stock.filter(x=>x.current&&x.current.status==='due').length,'stock checks due','stock'],[u.rev.filter(x=>x.status==='open').length,'reviews to ask for','reviews'],[toRate(u).length,'ratings to add','reviews']].filter(x=>x[0]);
   if(chips.length)m.append(h('div',{class:'chips'},chips.map(([n,l,t])=>h('button',{class:'chip',onclick:()=>{S.tab=t;render()}},h('b',null,n),l))));
   const bk=(b,kind)=>{const t=(S.d.turnovers||[]).find(x=>String(x.booking_id)===b.booking_id),done=t&&t.status==='Done',cl=S.d.checklists.find(x=>String(x.booking_id)===b.booking_id),mv=moved(b,kind==='in'?'arrived':'left'),info=kind==='in'?infoFor(b.property_id):null;
-    const r=h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${b.guest||'Guest'} · ${b.guests||''} guest${+b.guests===1?'':'s'}`),h('span',null,`${nm(b.property_id)} · ${kind==='in'?(b.arrival_time?'arriving '+b.arrival_time:'arrival time not set'):'check-out by 11:00'} · ${b.channel||''}`)),
+    const r=h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${b.guest||'Guest'} · ${b.guests||''} guest${+b.guests===1?'':'s'}`),cvTag(b.property_id),h('span',null,`${nm(b.property_id)} · ${kind==='in'?(b.arrival_time?'arriving '+b.arrival_time:'arrival time not set'):'check-out by 11:00'} · ${b.channel||''}`)),
       h('div',{class:'acts'},mv?h('span',{class:'pill p-ok'},`${T(kind==='in'?'Arrived':'Checked out')} ${String(mv.at||'').slice(11,16)}`):kind!=='tom'?h('button',{class:'btn sm',onclick:()=>moveMark(b,kind==='in'?'arrived':'left')},T(kind==='in'?'Arrived':'Checked out')):null,
         kind==='out'?(cl?h('span',{class:'pill p-ok'},T('Checklist done')):h('button',{class:'btn sm primary',onclick:()=>checklistForm(b)},T('Checklist'))):done&&kind==='in'?h('span',{class:'pill p-ok'},T('Ready')):null,
         mapOf(P(b.property_id))?h('a',{class:'btn sm',href:mapOf(P(b.property_id)),target:'_blank',rel:'noopener','aria-label':T('Map')},'📍 '+T('Map')):null,
@@ -406,8 +495,8 @@ function moneyCard(){const cl=S.d.claims||[],mk=TODAY.slice(0,7),wait=cl.filter(
 function checkScreen(m,u){const todo=u.check.filter(x=>x.status!=='done'),done=u.check.filter(x=>x.status==='done').slice(0,10);
   m.append(card('Checkout checklists',todo.length?todo.length+' to do':'all done',todo.length?todo.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${nm(x.property_id)} · ${x.booking.guest||'Guest'}`),h('span',null,`checked out ${fmtD(x.check_out)}${x.urgent?' · '+T('ready by')+' '+x.dueTime:''}`)),
       x.urgent?h('span',{class:'pill p-bad'},T('Urgent')):x.status==='missed'?h('span',{class:'pill p-bad'},T('Late')):null,h('button',{class:'btn sm primary',onclick:()=>checklistForm(x.booking)},T('Do it')))):h('div',{class:'empty'},'Nothing to do. Each check-out needs a checklist with photos by the next day.')));
-  if(done.length)m.append(card('Done',null,done.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id)),h('span',null,`out ${fmtD(x.check_out)} · done ${x.row&&x.row.done_at?fmtD(x.row.done_at):''}`)),h('span',{class:'pill p-ok'},T('Done'))))))}
-function stockScreen(m,u){m.append(card('Stock checks',`every ${C().every} days`,u.stock.length?u.stock.map(x=>{const c=x.current||{};return h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id)),h('span',null,c.status==='done'?`done for this round (until ${fmtD(c.until)})`:`due by ${fmtD(c.until||TODAY)}`+(x.last?` · last ${fmtD(x.last.day)}`:''))),
+  if(done.length)m.append(card('Done',null,done.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id),cvTag(x.property_id)),h('span',null,`out ${fmtD(x.check_out)} · done ${x.row&&x.row.done_at?fmtD(x.row.done_at):''}`)),h('span',{class:'pill p-ok'},T('Done'))))))}
+function stockScreen(m,u){m.append(card('Stock checks',`every ${C().every} days`,u.stock.length?u.stock.map(x=>{const c=x.current||{};return h('div',{class:'row'},h('div',{class:'t'},h('b',null,nm(x.property_id),cvTag(x.property_id)),h('span',null,c.status==='done'?`done for this round (until ${fmtD(c.until)})`:`due by ${fmtD(c.until||TODAY)}`+(x.last?` · last ${fmtD(x.last.day)}`:''))),
     c.status==='done'?h('span',{class:'pill p-ok'},T('Done')):h('button',{class:'btn sm primary',onclick:()=>stockForm(x.property_id)},T('Count')))}):h('div',{class:'empty'},'No stays assigned yet.')));
   /* below the minimum at my stays' latest counts */
   const shop=OPS.shopping(S.d.props,S.d.stock,C()).filter(x=>inS(x.property_id));
@@ -429,13 +518,13 @@ function issueScreen(m){const mine=S.d.maint.filter(x=>inS(x.property_id)).sort(
   m.append(card('My expense claims',cl.length?String(cl.length):'',cl.length?cl.map(c=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${c.category||'Expense'} · ${inr(c.amount)}`),h('span',null,`${nm(c.property_id)} · ${c.date?fmtD(c.date):''}${c.settled_via?' · paid back by '+c.settled_via:''}${c.decision_note?' · '+c.decision_note:''}`)),
     h('span',{class:'pill '+(c.status==='rejected'?'p-bad':c.status==='approved'?'p-ok':'p-acc')},T(c.status==='rejected'?'Not approved':c.status==='approved'?(c.outcome==='settled'?'Settled':'Approved'):'Waiting')))):h('div',{class:'empty'},'No claims yet. Log what you paid for a stay and attach the receipt.')))}
 /* ============ forms ============ */
-function sheet(title,...body){const close=()=>w.remove(),w=h('div',{class:'sheet',onclick:e=>{if(e.target===w)close()}},h('div',{class:'in',role:'dialog','aria-modal':'true','aria-label':title},h('h3',null,title,h('button',{class:'x','aria-label':'Close',onclick:close},'✕')),...body));document.body.append(w);return close}
+function sheet(title,...body){const esc=e=>{if(e.key==='Escape'&&w.isConnected&&w===[...document.querySelectorAll('.sheet')].pop())close()},close=()=>{w.remove();removeEventListener('keydown',esc)};addEventListener('keydown',esc);const w=h('div',{class:'sheet',onclick:e=>{if(e.target===w)close()}},h('div',{class:'in',role:'dialog','aria-modal':'true','aria-label':title},h('h3',null,title,h('button',{class:'x','aria-label':'Close',onclick:close},'✕')),...body));document.body.append(w);return close}
 /* photos: resized on the phone (longest side 1280 px, JPEG) before upload, so they go fast on mobile data */
 function shrink(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
   c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',0.72).split(',')[1])};im.onerror=()=>no(new Error('not an image'));im.src=u})}
 function picker(list,label,slot){const box=h('div',{class:'pics'}),fi=h('input',{type:'file',accept:'image/*',capture:'environment',multiple:true,hidden:true});
   const mine=()=>list.filter(x=>(x.slot||null)===(slot||null));
-  const draw=()=>box.replaceChildren(...mine().map(x=>h('img',{src:x.preview,alt:'Photo'})),h('button',{type:'button',class:'addpic','aria-label':label||'Add photo',onclick:()=>fi.click()},'+'),fi);
+  const draw=()=>box.replaceChildren(...mine().map((x,j,all)=>h('img',{src:x.preview,alt:'Photo',onclick:()=>photoViewer(all.map(y=>y.preview),j,'Your photo')})),h('button',{type:'button',class:'addpic','aria-label':label||'Add photo',onclick:()=>fi.click()},'+'),fi);
   fi.addEventListener('change',async()=>{for(const f of fi.files){try{const b64=await shrink(f);list.push({b64,preview:'data:image/jpeg;base64,'+b64,slot:slot||null})}catch(e){toast('That file isn’t a photo')}}fi.value='';draw()});draw();return box}
 const strip=list=>list.map(x=>({b64:x.b64,slot:x.slot||null}));
 /* one item on the checklist / stock screens: the control, a camera (photos kept with the item's name as their slot)
@@ -443,7 +532,7 @@ const strip=list=>list.map(x=>({b64:x.b64,slot:x.slot||null}));
 function itemCard(it,ctl,photos,notes,need,sub){const fi=h('input',{type:'file',accept:'image/*',capture:'environment',multiple:true,hidden:true}),thumbs=h('div',{class:'ci-pics'});
   const mine=()=>photos.filter(p=>p.slot===it.name),note=h('input',{class:'ci-note',placeholder:T('Add a comment'),maxlength:200,value:notes[it.name]||'',hidden:!notes[it.name]||null,oninput:e=>{notes[it.name]=e.target.value}});
   const cam=h('button',{type:'button',class:'ci-b','aria-label':T('Add a photo')+' · '+it.name,onclick:()=>fi.click()},icon('cam')),cm=h('button',{type:'button',class:'ci-b','aria-label':T('Add a comment')+' · '+it.name,onclick:()=>{note.hidden=false;note.focus()}},icon('note'));
-  const draw=()=>{const ps=mine();thumbs.replaceChildren(...ps.map(p=>h('span',{class:'ci-th'},h('img',{src:p.preview,alt:''}),h('button',{type:'button','aria-label':T('Remove photo'),onclick:()=>{photos.splice(photos.indexOf(p),1);draw()}},'×'))));
+  const draw=()=>{const ps=mine();thumbs.replaceChildren(...ps.map(p=>h('span',{class:'ci-th'},h('img',{src:p.preview,alt:'',onclick:()=>photoViewer(ps.map(x=>x.preview),ps.indexOf(p),'Your photo')}),h('button',{type:'button','aria-label':T('Remove photo'),onclick:()=>{photos.splice(photos.indexOf(p),1);draw()}},'×'))));
     cam.classList.toggle('has',ps.length>0);cam.replaceChildren(...[icon('cam'),ps.length?h('b',null,String(ps.length)):null].filter(Boolean));card.classList.toggle('need',!!need&&!ps.length)};
   fi.addEventListener('change',async()=>{for(const f of fi.files){try{const b64=await shrink(f);photos.push({b64,preview:'data:image/jpeg;base64,'+b64,slot:it.name})}catch(e){toast(T('That file isn’t a photo'))}}fi.value='';draw()});
   const card=h('div',{class:'ci'},h('div',{class:'ci-top'},ctl,h('div',{class:'ci-t'},h('b',null,it.name),sub?h('small',null,sub):null,need?h('small',{class:'ci-req'},T('Photo needed')):null),h('div',{class:'ci-acts'},cm,cam,fi)),note,thumbs);
@@ -467,13 +556,13 @@ function checklistForm(b){const c=C(),items=OPS.checkItemsFor(c,b.property_id,S.
     if(noPic.length){err.hidden=false;err.textContent=T('Add a photo of')+': '+noPic.join(', ');cards.forEach(c_=>c_._draw());return}
     const missing=items.filter(i=>!OPS.checkDone(i,state[i.name])).map(i=>i.type==='count'&&state[i.name]!=null?`${i.name} (${state[i.name]}${i.expect?' of '+i.expect:''})`:i.name);
     if(missing.length&&!save_.dataset.ok){save_.dataset.ok='1';err.hidden=false;err.textContent=`${missing.length} ${T('not done')}: ${missing.join(', ')}. ${T('They go to your admin as an issue. Tap Submit again to send it like this.')}`;return}
-    save_.disabled=true;save_.textContent='Saving…';
+    save_.disabled=true;save_.textContent=T('Checking location…');const geo=await geoFields(err);if(!geo){save_.disabled=false;save_.textContent=T('Submit checklist');return}save_.textContent='Saving…';
     const vals=Object.fromEntries(items.map(i=>[i.name,i.type==='count'?(state[i.name]??null):!!state[i.name]])),cm=Object.fromEntries(Object.entries(inotes).map(([k,v])=>[k,String(v||'').trim()]).filter(([,v])=>v));
-    const ok=await write('append','checklists',{row:{check_id:'CK'+Date.now().toString(36),booking_id:b.booking_id,property_id:b.property_id,items:JSON.stringify(vals),item_notes:Object.keys(cm).length?JSON.stringify(cm):null,notes:notes.value.trim()||null,done_at:nowIso()}},'Checklist sent',
+    const ok=await write('append','checklists',{row:{check_id:'CK'+Date.now().toString(36),booking_id:b.booking_id,property_id:b.property_id,items:JSON.stringify(vals),item_notes:Object.keys(cm).length?JSON.stringify(cm):null,notes:notes.value.trim()||null,done_at:nowIso(),...geo}},'Checklist sent',
       {photos:strip(photos),kind:'checklist',name:nm(b.property_id)+' '+b.booking_id});
     if(!ok){save_.disabled=false;save_.textContent=T('Submit checklist');return}
     /* what wasn't done becomes an issue for the admin to approve */
-    if(missing.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:b.property_id,issue:'Checklist not done: '+missing.join(', ').slice(0,180),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),booking_id:b.booking_id}},'Issue sent to admin');
+    if(missing.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:b.property_id,issue:'Checklist not done: '+missing.join(', ').slice(0,180),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),booking_id:b.booking_id,...geo}},'Issue sent to admin');
     if(!(S.d.turnovers||[]).some(t=>String(t.booking_id)===b.booking_id))write('append','turnovers',{row:{booking_id:b.booking_id,status:'Done',done_at:nowIso(),done_by:S.me&&S.me.name||''}},'Marked clean');
     close();ok==='sent'?load():render()})}
 function stockForm(pid){const c=C(),items=OPS.stockItemsFor(c,pid,S.d.props),last=OPS.stockTrend(S.d.stock,pid,4),vals={},photos=[],inotes={},err=h('div',{class:'err',hidden:true}),issues=h('textarea',{rows:2,placeholder:T('Anything else broken, missing or running low?')}),save_=h('button',{class:'btn primary full'},T('Submit stock check'));
@@ -487,12 +576,12 @@ function stockForm(pid){const c=C(),items=OPS.stockItemsFor(c,pid,S.d.props),las
     h('div',{class:'form'},h('label',null,T('Issues found'),issues),h('label',null,T('Other photos (optional)'),picker(photos)),err,save_));
   save_.addEventListener('click',async()=>{const miss=items.filter(i=>vals[i.name]==null);if(miss.length){err.hidden=false;err.textContent=T('Fill in')+': '+miss.map(i=>i.name).join(', ');return}
     const needItem=items.filter(i=>i.photo&&!photos.some(p=>p.slot===i.name)).map(i=>i.name);if(needItem.length){err.hidden=false;err.textContent=T('Add a photo of')+': '+needItem.join(', ');cards.forEach(c_=>c_._draw());return}
-    save_.disabled=true;save_.textContent='Saving…';
+    save_.disabled=true;save_.textContent=T('Checking location…');const geo=await geoFields(err);if(!geo){save_.disabled=false;save_.textContent=T('Submit stock check');return}save_.textContent='Saving…';
     const bad=items.filter(i=>i.type==='ok'&&vals[i.name]===false).map(i=>i.name),cm=Object.fromEntries(Object.entries(inotes).map(([k,v])=>[k,String(v||'').trim()]).filter(([,v])=>v));
-    const ok=await write('append','stock',{row:{stock_id:'SK'+Date.now().toString(36),property_id:pid,counts:JSON.stringify(vals),item_notes:Object.keys(cm).length?JSON.stringify(cm):null,issues:[bad.length?'Not working: '+bad.join(', '):null,issues.value.trim()||null].filter(Boolean).join(' · ')||null,done_at:nowIso()}},'Stock check sent',
+    const ok=await write('append','stock',{row:{stock_id:'SK'+Date.now().toString(36),property_id:pid,counts:JSON.stringify(vals),item_notes:Object.keys(cm).length?JSON.stringify(cm):null,issues:[bad.length?'Not working: '+bad.join(', '):null,issues.value.trim()||null].filter(Boolean).join(' · ')||null,done_at:nowIso(),...geo}},'Stock check sent',
       photos.length?{photos:strip(photos),kind:'checklist',name:nm(pid)+' stock'}:null);
     if(!ok){save_.disabled=false;save_.textContent=T('Submit stock check');return}
-    if(bad.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:pid,issue:'Not working: '+bad.join(', ')+(bad.some(x=>cm[x])?' ('+bad.filter(x=>cm[x]).map(x=>x+': '+cm[x]).join('; ')+')':''),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000)}},'Issue sent to admin');
+    if(bad.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:pid,issue:'Not working: '+bad.join(', ')+(bad.some(x=>cm[x])?' ('+bad.filter(x=>cm[x]).map(x=>x+': '+cm[x]).join('; ')+')':''),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),...geo}},'Issue sent to admin');
     close();ok==='sent'?load():render()})}
 async function askedReview(x){const ok=x.row?await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked')
   :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked');if(ok==='sent')load();else if(ok)render()}
@@ -506,7 +595,8 @@ const staySel=()=>h('select',null,[...myStays()].filter(pid=>P(pid).property_id)
 function issueForm(){const st=staySel(),is=h('input',{placeholder:'e.g. Geyser not heating in the upper bathroom'}),pr=h('select',null,h('option',{value:'High'},T('Urgent')),h('option',{value:'Medium',selected:true},T('Soon')),h('option',{value:'Low'},T('Routine'))),photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Send to admin'));
   const close=sheet(T('Report an issue'),h('div',{class:'form'},h('label',null,T('Stay'),st),h('label',null,T('What’s wrong'),is),h('label',null,T('How soon'),pr),h('label',null,'Photo (optional)',picker(photos)),h('p',{class:'hint'},'Your admin approves it before it goes on the repairs board.'),err,save_));
   save_.addEventListener('click',async()=>{if(!is.value.trim()){err.hidden=false;err.textContent='Say what’s wrong.';return}save_.disabled=true;
-    const ok=await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:st.value,issue:is.value.trim(),priority:pr.value,reported_on:TODAY,reported_at:Math.floor(Date.now()/1000)}},'Sent to admin',
+    const geo=await geoFields(err);if(!geo){save_.disabled=false;return}
+    const ok=await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:st.value,issue:is.value.trim(),priority:pr.value,reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),...geo}},'Sent to admin',
       photos.length?{photos:strip(photos),kind:'checklist',name:nm(st.value)+' issue'}:null);
     if(ok){close();ok==='sent'?load():render()}else save_.disabled=false})}
 function claimForm(){const st=staySel(),dt=h('input',{type:'date',value:TODAY}),cat=h('select',null,['Repairs','Cleaning','Supplies','Laundry','Groceries','Transport','Other'].map(c=>h('option',null,c))),amt=h('input',{type:'number',inputmode:'decimal',min:1,placeholder:'e.g. 850'}),
@@ -527,6 +617,7 @@ function openNews(){const cats=news(),since=seenAt(),w=t=>{const d=new Date(Stri
     cats.length?h('button',{class:'btn primary full',onclick:()=>{const at=new Date().toISOString();store.set(SEEN,at);if(S.me)S.me.seen_at=at;api({action:'seen',at}).catch(()=>{});close();render()}},T('Mark all seen')):null)}
 function openMenu(){const close=sheet(T('Menu'),h('div',{class:'form'},h('p',{class:'hint'},`Signed in as ${S.me&&S.me.name||''}${S.me&&S.me.login?' ('+S.me.login+')':''}. Data from ${S.d&&S.d.at?new Date(S.d.at).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}):'–'}.`),
   S.q?h('p',{class:'hint'},`${S.q} ${T('waiting to send')}.`):null,langBtn(),
+  h('button',{class:'btn full',onclick:()=>{close();leaveSheet()}},icon('today'),T('Leave')),
   h('button',{class:'btn full',onclick:()=>{close();flush();load();toast('Refreshing…')}},icon('sync'),T('Refresh now')),h('button',{class:'btn full',onclick:()=>{close();signOut()}},T('Sign out'))))}
 /* ============ start ============ */
 document.documentElement.lang=LANG;

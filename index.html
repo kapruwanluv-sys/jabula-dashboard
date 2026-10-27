@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light only">
 <meta name="theme-color" content="#f6f8fc">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1851,6 +1851,67 @@ html{scrollbar-gutter:stable}   /* locking the page under a popup hides the scro
 #view .card,.modal{overflow-wrap:anywhere}   /* a 60-character name or a pasted link never spills out of its card */
 .modal-h h2{min-width:0;flex:1 1 auto}.modal-h .x{flex:none}   /* a long title never pushes the close button off screen */
 @media (max-width:720px){.card-h:has(.mg-tabs)>.acts{flex:1 1 100%;width:100%;min-width:0}}   /* Manage tabs always on their own row */
+
+/* photo viewer */
+html.iv-open,html.iv-open body{overflow:hidden}
+.iv{position:fixed;inset:0;z-index:200;background:rgba(6,8,14,.96);display:flex;flex-direction:column;touch-action:none;color:#fff;animation:ivIn .18s ease-out}
+@keyframes ivIn{from{opacity:0}to{opacity:1}}
+.iv-top{display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top,0px)) 12px 10px;font-size:13px}
+.iv-n{font-variant-numeric:tabular-nums;opacity:.8;min-width:42px}.iv-cap{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.9}
+.iv-acts{display:flex;gap:6px}.iv-b{border:0;border-radius:99px;background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:13px;font-weight:600;padding:8px 12px;cursor:pointer;min-height:36px}
+.iv-stage{flex:1;min-height:0;display:grid;place-items:center;overflow:hidden;padding:0 0 max(10px,env(safe-area-inset-bottom,0px))}
+.iv-img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;transition:transform .08s linear;user-select:none;-webkit-user-drag:none}
+.iv-prev,.iv-next{position:absolute;top:50%;margin-top:-22px;width:44px;height:44px;border-radius:50%;font-size:26px;line-height:1;padding:0}
+.iv-prev{left:10px}.iv-next{right:10px}.iv-prev[hidden],.iv-next[hidden]{display:none}
+@media (pointer:coarse){.iv-prev,.iv-next{display:none}}
+
+body.is-live .dev-only{display:none!important}
+.acct{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--hair)}
+.acct-av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px}
+.acct-t{flex:1;min-width:0;display:grid}.acct-t b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.acct-t small{margin:0}
+.pv-vw{display:flex;justify-content:center;width:100%}
+
+.news-sum{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 4px}.news-sum small{flex:1 1 100%;color:var(--muted);font-size:12px}
+.news-grp{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 2px 2px}
+.news-cat.urg .news-ic{background:rgba(191,42,32,0.14);background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.news-it.read{opacity:.5}.news-it.read b{font-weight:500}
+@media (max-width:720px){.news-modal{max-height:calc(100dvh - 24px)}.news-modal .news-it time{font-size:11px}}
+.bk-ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.bk-ctl .search{flex:1 1 200px;min-width:0}
+.bk-ctl .btn.on{border-color:var(--accent);color:var(--accent)}.bk-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--accent);color:#fff;font-size:11px;margin-left:2px}
+.bk-st{margin-top:8px}.bkf{display:grid;gap:14px}.bkf-sec{display:grid;gap:6px}
+@media (max-width:560px){.bk-ctl .search{flex:1 1 100%}}
+.ch{padding:2px 0 4px}.ch-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.ch-wk div{text-align:center;font-size:10.5px;color:var(--muted);font-weight:600;padding:2px 0}
+.ch-c{position:relative;aspect-ratio:1/1.05;border:0;border-radius:10px;padding:4px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font:inherit;color:var(--ink);cursor:pointer;min-width:0}
+.ch-pad{background:transparent;cursor:default}
+.ch-c.l0{background:var(--surface-2)}.ch-c.l1{background:rgba(223,232,250,1.0);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}.ch-c.l2{background:rgba(183,203,243,1.0);background:color-mix(in srgb,var(--accent) 32%,var(--surface))}
+.ch-c.l3{background:rgba(131,165,234,1.0);background:color-mix(in srgb,var(--accent) 55%,var(--surface));color:#fff}.ch-c.l4{background:var(--accent);color:#fff}
+.ch-c.gone{opacity:.55}.ch-c.td{box-shadow:inset 0 0 0 2px var(--ink)}
+.ch-n{font-size:11px;font-weight:600;line-height:1}.ch-c b{font-size:11.5px;line-height:1}.ch-c em{position:absolute;right:4px;top:4px;font-style:normal;font-size:9.5px;font-weight:700;opacity:.85}
+.ch-key{display:flex;align-items:center;gap:4px;margin-top:10px;font-size:11px;color:var(--muted)}.ch-key .ch-c{width:14px;height:14px;aspect-ratio:auto;border-radius:4px;padding:0;cursor:default}
+.ch-sum{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}.ch-sum b{font-size:24px}.ch-sum span{color:var(--muted);font-size:13px}
+.ch-list{display:flex;flex-direction:column;gap:6px}
+.ch-bk{display:grid;grid-template-columns:4px 1fr auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--hair-2);background:var(--surface);border-radius:12px;padding:9px 10px;font:inherit;color:var(--ink);cursor:pointer}
+.ch-bk>i{align-self:stretch;border-radius:3px}.ch-bk b{display:block;font-size:13.5px}.ch-bk span{display:block;font-size:12px;color:var(--muted);margin-top:1px}.ch-bk small{font-size:11px;color:var(--muted)}
+.ch-span{display:flex;gap:2px;margin-top:6px;align-items:center}.ch-span i{flex:0 0 12px;height:5px;border-radius:3px;background:var(--hair-2)}.ch-span i.past{background:rgba(165,189,239,1.0);background:color-mix(in srgb,var(--accent) 40%,var(--surface))}.ch-span i.on{background:var(--accent)}.ch-span em{font-size:10px;color:var(--muted)}
+.cv-tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;background:#fff3d6;color:#8a5a00}
+.cv-banner{display:flex;flex-wrap:wrap;align-items:center;align-self:start;gap:6px 12px;border-radius:18px;border:1px solid #f0d7a0;background:linear-gradient(90deg,#fff8e8,var(--surface));padding:12px 16px}
+.cv-banner b{font-size:14px}.cv-banner>span{color:var(--muted);font-size:13px;flex:1 1 220px}
+.lv-def{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.lv-def select{font:inherit;font-size:12.5px;padding:5px 8px;border-radius:10px;border:1px solid var(--hair-2);background:var(--surface);color:var(--ink)}
+.bill-banner{display:flex;flex-wrap:wrap;align-items:center;align-self:start;gap:6px 12px;border-radius:18px;border:1px solid #f3c9a8;background:linear-gradient(90deg,#fff1e6,var(--surface));padding:12px 16px}
+.bill-banner.ro{border-color:#f0b4b4;background:linear-gradient(90deg,#ffecec,var(--surface))}.bill-banner b{font-size:14px}.bill-banner>span:not(.chip-s){color:var(--muted);font-size:13px;flex:1 1 220px}
+.locked-card{flex-direction:row;align-items:flex-start;gap:14px;opacity:.92}.locked-card .lk-ico{font-size:22px;line-height:1;filter:grayscale(1)}.locked-card b{font-size:15px}.locked-card p{margin:4px 0 10px;color:var(--muted);font-size:13.5px;max-width:60ch}
+.rp-model b{font-size:14px}
+.br-form .br-go{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.br-verdict{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.br-verdict b{font-size:16px}
+.br-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 22px}.br-sec h4{margin:4px 0 4px;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.wa-tabs{max-width:max-content}
+.wab-wrap{background:#e7ddd3;border-radius:14px;padding:14px;display:flex}.wab{background:#fff;border-radius:10px 10px 10px 2px;max-width:300px;padding:6px;box-shadow:0 1px 1px rgba(0,0,0,.12);font-size:13px;color:#111}
+.wab img{display:block;width:100%;border-radius:7px;aspect-ratio:1.9/1;object-fit:cover}.wab p{margin:6px 4px;white-space:pre-wrap}.wab small{display:block;margin:0 4px 4px;color:#667}
+.wab-b{display:flex;flex-direction:column;border-top:1px solid #eee;margin-top:4px}.wab-b span{color:#0a84c6;text-align:center;padding:7px;font-weight:600}
+.cmp-aud{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.cmp-sum{display:flex;align-items:baseline;gap:4px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}.cmp-sum b{font-size:18px}
+.cmp-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}.cmp-imgs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block}.cmp-park{border-left:3px solid var(--warn,#b26a00);padding-left:10px}
+.form label.ck,label.ck{display:flex!important;flex-direction:row!important;align-items:center;gap:8px}.form label.ck input,label.ck input[type=checkbox]{width:18px!important;height:18px!important;min-height:0!important;padding:0!important;flex:none;margin:0}
+.cmp-sum b{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1871,16 +1932,15 @@ html{scrollbar-gutter:stable}   /* locking the page under a popup hides the scro
     </div>
     <div class="menu" id="menu" hidden>
       <div class="sync"><span class="dot"></span><span id="syncText">Loading…</span></div>
-      <div><h3>View as</h3><div class="seg" role="group" aria-label="View as" style="margin-top:8px"><button class="role-btn" data-role="admin" aria-pressed="true">Admin</button><button class="role-btn" data-role="viewer" aria-pressed="false">Viewer</button></div></div>
+      <div class="dev-only"><h3>View as</h3><div class="seg" role="group" aria-label="View as" style="margin-top:8px"><button class="role-btn" data-role="admin" aria-pressed="true">Admin</button><button class="role-btn" data-role="viewer" aria-pressed="false">Viewer</button></div></div>
       <div><h3>Data</h3><div class="row" style="margin-top:8px">
-        <button class="btn sm primary" id="connectBtn">Connect live data</button>
         <button class="btn sm" id="refreshBtn">Refresh now</button>
-        <label class="btn sm" for="xlsxIn" style="cursor:pointer">Load Excel</label>
+        <label class="btn sm dev-only" for="xlsxIn" style="cursor:pointer">Load Excel</label>
         <input type="file" id="xlsxIn" accept=".xlsx,.xls" hidden>
-        <button class="btn sm admin" id="resetDemo">Reset demo</button>
+        <button class="btn sm admin dev-only" id="resetDemo">Reset demo</button>
       </div></div>
       <div id="installBox" hidden><h3>App</h3><div class="row" style="margin-top:8px;align-items:center"><button class="btn sm primary" id="installBtn" type="button" hidden>Install app</button><span class="foot-note" id="installNote" style="margin:0"></span></div></div>
-      <div class="foot-note" id="menuNote"></div>
+      <div class="acct"><span class="acct-av" id="acctAv" aria-hidden="true">·</span><div class="acct-t"><b id="acctName">Demo</b><small class="foot-note" id="menuNote"></small></div><button class="btn sm" id="connectBtn">Connect live data</button></div>
     </div>
   </header>
   <main id="main">
@@ -2040,6 +2100,45 @@ const EMPTY_DATA=()=>Object.fromEntries(Object.entries(SEED).map(([k,v])=>[k,Arr
 <script>
 (function(){
 /* ============ helpers ============ */
+/* app-like: the page never zooms (pinch, double tap, field focus); only the photo viewer zooms, by itself */
+['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>{if(!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false});
+/* One full-screen photo viewer for every photo (stays, checklists, issues, stock, receipts, reviews): swipe, pinch or
+   double-tap to zoom, share/download, caption with who and when. Any link inside a photo strip opens here. */
+function photoViewer(urls,start,cap){urls=urls.filter(Boolean);if(!urls.length)return;let i=Math.max(0,Math.min(start||0,urls.length-1)),sc=1,tx=0,ty=0;
+  const img=document.createElement('img');img.className='iv-img';img.alt='Photo';
+  const el=(t,c,txt)=>{const e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e};
+  const box=el('div','iv');box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label','Photo');
+  const top=el('div','iv-top'),cnt=el('span','iv-n'),capE=el('span','iv-cap',cap||''),acts=el('div','iv-acts');
+  const btn=(lab,txt,fn)=>{const b=el('button','iv-b',txt);b.type='button';b.setAttribute('aria-label',lab);b.onclick=e=>{e.stopPropagation();fn()};return b};
+  const close=()=>{box.remove();document.documentElement.classList.remove('iv-open');removeEventListener('keydown',key)};
+  acts.append(btn('Share','Share',async()=>{const u=urls[i];try{if(navigator.share)await navigator.share({url:u,title:cap||'Photo'});else{await navigator.clipboard.writeText(u);(window.jgToast||alert)('Link copied')}}catch(e){}}),
+    btn('Open or download','Save',()=>{const a=document.createElement('a');a.href=urls[i];a.target='_blank';a.rel='noopener';a.download='';document.body.append(a);a.click();a.remove()}),
+    btn('Close','✕',close));
+  top.append(cnt,capE,acts);
+  const stage=el('div','iv-stage');stage.append(img);
+  const prev=btn('Previous photo','‹',()=>show(i-1)),next=btn('Next photo','›',()=>show(i+1));prev.classList.add('iv-prev');next.classList.add('iv-next');
+  box.append(top,stage,prev,next);
+  const apply=()=>{img.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`};
+  const show=k=>{i=(k+urls.length)%urls.length;sc=1;tx=ty=0;apply();img.src=urls[i];cnt.textContent=urls.length>1?`${i+1} / ${urls.length}`:'';prev.hidden=next.hidden=urls.length<2};
+  /* gestures: swipe when not zoomed, pinch to zoom, drag to pan when zoomed, double tap toggles 2.5x */
+  let t0=null,lastTap=0;
+  stage.addEventListener('touchstart',e=>{const t=e.touches;if(t.length===2){t0={d:Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY),sc}}else if(t.length===1){t0={x:t[0].clientX,y:t[0].clientY,tx,ty,at:Date.now()}}},{passive:true});
+  stage.addEventListener('touchmove',e=>{if(!t0)return;const t=e.touches;e.preventDefault();
+    if(t.length===2&&t0.d){sc=Math.max(1,Math.min(5,t0.sc*Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)/t0.d));if(sc===1){tx=ty=0}apply()}
+    else if(t.length===1&&sc>1&&t0.x!=null){tx=t0.tx+t[0].clientX-t0.x;ty=t0.ty+t[0].clientY-t0.y;apply()}},{passive:false});
+  stage.addEventListener('touchend',e=>{if(!t0)return;const c=e.changedTouches[0];
+    if(t0.x!=null&&sc===1&&c){const dx=c.clientX-t0.x,dy=c.clientY-t0.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))show(i+(dx<0?1:-1));else if(dy>90&&Math.abs(dy)>Math.abs(dx))close()}
+    const now=Date.now();if(t0.x!=null&&now-lastTap<300){sc=sc>1?1:2.5;tx=ty=0;apply();lastTap=0}else lastTap=now;t0=null},{passive:true});
+  stage.addEventListener('dblclick',()=>{sc=sc>1?1:2.5;tx=ty=0;apply()});
+  stage.addEventListener('wheel',e=>{e.preventDefault();sc=Math.max(1,Math.min(5,sc*(e.deltaY<0?1.15:1/1.15)));if(sc===1){tx=ty=0}apply()},{passive:false});
+  stage.addEventListener('click',e=>{if(e.target===stage)close()});
+  const key=e=>{if(e.key==='Escape')close();else if(e.key==='ArrowRight')show(i+1);else if(e.key==='ArrowLeft')show(i-1)};addEventListener('keydown',key);
+  document.documentElement.classList.add('iv-open');document.body.append(box);show(i)}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('.pd-photos a,.cl-pics a,[data-pv]');if(!a)return;
+  const box=a.closest('.pd-photos,.cl-pics,[data-pv-group]')||a.parentElement,as=[...box.querySelectorAll('a[href],[data-pv]')];
+  e.preventDefault();e.stopPropagation();photoViewer(as.map(x=>x.dataset.pv||x.getAttribute('href')),as.indexOf(a),box.dataset.cap||a.dataset.cap||'')},true);
+window.photoViewer=photoViewer;
 /* null-safe inserts: a helper that has nothing to show returns null; the DOM would print it as text (B-110) */
 for(const P_ of [Element.prototype,DocumentFragment.prototype])for(const m_ of ['append','prepend','replaceChildren','before','after']){const f_=P_[m_];if(f_)P_[m_]=function(...a){return f_.apply(this,a.filter(x=>x!=null&&x!==false))}}
 const $=s=>document.querySelector(s);
@@ -2170,7 +2269,9 @@ function derive(raw){
 }
 const F=()=>S.f;
 /* picking a whole place (combo) picks its family: its flats come along, since the family's money, costs and nights are one */
-const fP=p=>{const f=F();if(!((!f.cities.length||f.cities.includes(p.city))&&(f.own==='All'||p.ownership===f.own)))return false;
+/* Owned / Managed: an explicit ownership column wins; otherwise a stay with an owner's share is managed for that owner */
+const ownOf=p=>p.ownership||(+p.owner_share>0||String(p.owner_share_basis||'')==='profit'?'Managed':'Owned');
+const fP=p=>{const f=F();if(!((!f.cities.length||f.cities.includes(p.city))&&(f.own==='All'||ownOf(p)===f.own)))return false;
   if(!f.props.length||f.props.includes(p.property_id))return true;const par=parentOf(p.property_id);return!!par&&f.props.includes(par)};
 /* A stopped property keeps its money in every financial figure, but leaves the operational views (calendar,
    occupancy, properties, filters, forms). */
@@ -2179,6 +2280,8 @@ const active=p=>!isStopped(p);
 const fB=b=>{const f=F();return b.ok&&fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))};
 /* Money attribution: a confirmed stay's money is split by nights (a night belongs to its start date); a cancelled
    booking's money stays whole in its check-in month. */
+/* operational views (check-in desk, calendar, cleaning): every channel, always - a channel filter must never hide a guest who is arriving */
+const fBo=b=>b.ok&&fP(D.P[b.property_id]);
 const fBm=b=>{const f=F();return b.money&&fP(D.P[b.property_id])&&(!f.channels.length||f.channels.includes(b.channel))};
 function share(b,from,to){if(!b.ok||b.nights<=0)return b.check_in>=from&&b.check_in<=to?1:0;return overlap(b,from,to)/b.nights}
 const overlap=(b,a,z)=>Math.max(0,Math.min(diff(a,b.check_out),diff(a,z)+1)-Math.max(0,diff(a,b.check_in)));
@@ -2204,17 +2307,18 @@ function stats0(from,to,pid,fam){
   /* one stay (or family): only its own bookings and its whole place's can count, so look at those alone */
   const SB=pid?(()=>{const w=new Set([...ids,...opIds]);const p0=one?parentOf(pid):null;if(p0)w.add(p0);return[...w].flatMap(id=>BP().get(id)||[])})():D.B;
   const SE=pid?[...ids].flatMap(id=>EP().get(id)||[]):D.E;
-  const bs=SB.filter(b=>opIds.has(b.property_id)&&(pid?b.ok:fB(b)));
+  const chM=b=>!F().channels.length||F().channels.includes(b.channel);   // the Channel filter applies to one stay's figures too
+  const bs=SB.filter(b=>opIds.has(b.property_id)&&(pid?b.ok&&chM(b):fB(b)));
   const att=bs.filter(b=>b.check_in>=from&&b.check_in<=to);
   const par=one?parentOf(pid):null,cover=b=>one?1:incOf(b.property_id).filter(k=>physIds.has(k)).length||(physIds.has(b.property_id)?1:0);
-  const nb=SB.filter(b=>(one?b.ok&&(b.property_id===pid||b.property_id===par):famIds?b.ok&&opIds.has(b.property_id):chOk(b)&&(opIds.has(b.property_id)||incOf(b.property_id).some(k=>physIds.has(k)))));
+  const nb=SB.filter(b=>(one?chOk(b)&&(b.property_id===pid||b.property_id===par):famIds?chOk(b)&&opIds.has(b.property_id):chOk(b)&&(opIds.has(b.property_id)||incOf(b.property_id).some(k=>physIds.has(k)))));
   const nights=sum(nb.filter(b=>b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to)*cover(b));
-  const mb=SB.filter(b=>ids.has(b.property_id)&&(pid?b.money:fBm(b))).map(b=>[b,share(b,from,to)]).filter(x=>x[1]>0);
+  const mb=SB.filter(b=>ids.has(b.property_id)&&(pid?b.money&&chM(b):fBm(b))).map(b=>[b,share(b,from,to)]).filter(x=>x[1]>0);
   const ms=k=>sum(mb,([b,w])=>b[k]*w);
   const s={listings:phys.length,days,avail,nights,count:att.length,room:ms('room'),gross:ms('gross'),fee:ms('fee'),net:ms('net'),gst:ms('gst'),owner:ms('owner'),nightsAttr:nights};
   s.exp=sum(SE.filter(e=>ids.has(e.property_id)&&e.date>=from&&e.date<=to),e=>+e.amount||0);s.owner=ownerCut(ids,mb,from,to);
   /* a flat's nightly rate is its own money over its own nights (its whole place's nights fill it, but earn on the whole place) */
-  const ownN=one&&par?sum(SB.filter(b=>b.ok&&b.property_id===pid&&b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to)):nights;
+  const ownN=one&&par?sum(SB.filter(b=>chOk(b)&&b.property_id===pid&&b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to)):nights;
   s.occ=avail?nights/avail:0;s.roomStay=sum(mb.filter(([b])=>b.ok),([b,w])=>b.room*w);s.adr=ownN?s.roomStay/ownN:0;s.revpar=avail?s.roomStay/avail:0;s.profit=s.net-s.exp-s.owner;
   if(pid){const par=parentOf(pid);
     if(par){s.profit=null;s.inFamily=par}                                     // a flat's costs sit with its family
@@ -2233,7 +2337,7 @@ function ownerCut(ids,mb,from,to){let o=sum(mb.filter(([b])=>ids.has(b.property_
     o+=Math.round(+p.owner_share*Math.max(0,net-exp))});return o}
 /* one family's money in a period: every booking of the parent and its flats, the family's costs, nights per flat */
 function famMoney(from,to,par){const kids=kidsOf(par),ids=new Set([par,...kids]),FB=[...ids].flatMap(id=>BP().get(id)||[]);
-  const mb=FB.filter(b=>ids.has(b.property_id)&&b.money).map(b=>[b,share(b,from,to)]).filter(x=>x[1]>0);
+  const mb=FB.filter(b=>ids.has(b.property_id)&&b.money&&(!F().channels.length||F().channels.includes(b.channel))).map(b=>[b,share(b,from,to)]).filter(x=>x[1]>0);
   const by={};mb.forEach(([b,w])=>by[b.property_id]=(by[b.property_id]||0)+b.net*w);
   const nightsOf=id=>sum(FB.filter(b=>b.ok&&(b.property_id===id||b.property_id===par)&&b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to));
   const es=[...ids].flatMap(id=>EP().get(id)||[]).filter(e=>e.date>=from&&e.date<=to),cats={};es.forEach(e=>cats[e.category||'Other']=(cats[e.category||'Other']||0)+(+e.amount||0));
@@ -2451,14 +2555,38 @@ function aiContextEdit(){const cur=String((rowsOf('ai').find(r=>r.key==='ai.cont
     [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{closeLayer();const txt=tas.filter(([,ta])=>ta.value.trim()).map(([l,ta])=>'## '+l+'\n'+ta.value.trim()).join('\n\n');setSetting('ai.context',txt.slice(0,4000),'Business context saved')}},'Save')])}
 const ymL=k=>k?pd(String(k).slice(0,7)+'-01').toLocaleDateString('en-IN',{month:'short'})+" '"+String(k).slice(2,4):'';
 const whenL=iso=>new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});
+/* New-property brief (console add-on, Owner): drop a pin and the basics; the bot writes the brief from your own
+   bookings nearby and the Google rentals already saved (no new search), on the model set in the console. */
+function aiBrief(v){const B=rowsOf('briefs').slice().sort((x,y)=>String(y.requested_at||'').localeCompare(String(x.requested_at||''))),mk=TODAY.slice(0,7),
+    lim=+(SUBPLAN().limits||{}).briefs||5,used=B.filter(b=>b.status==='done'&&String(b.done_at||'').slice(0,7)===mk).length,model=(SUBPLAN().models||{}).property_brief||'claude-sonnet-5-5';
+  const pin=h('input',{placeholder:'Paste a Google Maps link, or lat, lng'}),city=h('input',{list:'brCities',placeholder:'e.g. Rishikesh'}),dl=h('datalist',{id:'brCities'},liveCities().map(x=>h('option',{value:x})));
+  const type=h('select',null,['Villa','Apartment','Cottage','Homestay','Room','Other'].map(x=>h('option',null,x))),br=h('input',{type:'number',min:1,max:20,value:2,inputmode:'numeric'}),gs=h('input',{type:'number',min:1,max:40,value:4,inputmode:'numeric'});
+  const am=h('input',{placeholder:'e.g. pool, mountain view, parking'}),nt=h('textarea',{rows:2,placeholder:'Anything else: budget, rent or buy, timing'}),err=h('div',{class:'err',hidden:true});
+  const go=h('button',{class:'btn primary',disabled:used>=lim||null,onclick:async()=>{const p=pinFromText(pin.value);if(!p&&!city.value.trim()){err.hidden=false;err.textContent='Add the pin or at least the city.';return}
+    const row={brief_id:'BR'+Date.now().toString(36).toUpperCase(),status:'requested',requested_at:new Date().toISOString(),by:(LIVE.me||{}).email||'admin',
+      inputs:JSON.stringify({pin:p?p.join(', '):'',city:city.value.trim(),type:type.value,bedrooms:+br.value||null,max_guests:+gs.value||null,amenities:am.value.trim(),notes:nt.value.trim()})};
+    if(await save('briefs','append',{row},'Brief asked for · ready in a few minutes'))render()}},'Write the brief');
+  v.append(card('s12','New property brief',{hint:`${insName(model)} · about ₹${model.includes('haiku')?'0.5':model.includes('opus')?'12':'6'} a brief · ${used} of ${lim} this month`},
+    h('div',{class:'form br-form'},fld('Pin',pin,1),fld('City',h('span',null,city,dl)),fld('Type',type),fld('Bedrooms',br),fld('Guests',gs),fld('Amenities you’d add',am,1),fld('Notes',nt,1),err,
+      h('div',{class:'full br-go'},go,h('small',{class:'hint'},'Uses your own bookings nearby and the Google rentals already saved. No new search.')))));
+  const L=x=>x&&x.length?h('ul',{class:'ins-list'},x.map(i=>h('li',null,typeof i==='string'?i:[h('b',null,i.item||i.months||''),' ',i.why||[i.occupancy,i.nightly_rate].filter(Boolean).join(' · ')]))):null;
+  B.forEach(b=>{const ask=(()=>{try{return JSON.parse(b.inputs||'{}')}catch(e){return{}}})(),R=(()=>{try{return JSON.parse(b.result||'{}')}catch(e){return{}}})();
+    const title=[ask.type,ask.bedrooms?ask.bedrooms+' BR':null,ask.city].filter(Boolean).join(' · ')||'Brief';
+    if(b.status!=='done'){v.append(card('s12',title,{hint:b.status==='failed'?'couldn’t write it':'asked '+whenL(b.requested_at)},h('div',{class:b.status==='failed'?'err':'empty'},b.status==='failed'?String(b.error||'Failed'):'The bot writes it in a few minutes. Pull to refresh or come back shortly.')));return}
+    const sec=(t,x)=>x&&(Array.isArray(x)?x.length:true)?h('div',{class:'br-sec'},h('h4',null,t),Array.isArray(x)?L(x):h('p',null,String(x))):null;
+    v.append(card('s12',title,{hint:`${whenL(b.done_at)} · ${insName(b.model)}${b.cost_inr?' · ₹'+(+b.cost_inr).toFixed(2):''}`},
+      h('div',{class:'br-verdict'},h('b',null,R.verdict||'—'),R.confidence?h('span',{class:'pill '+(R.confidence==='high'?'p-ok':R.confidence==='low'?'p-warn':'p-mute')},R.confidence+' confidence'):null),
+      R.facts_note?h('small',{class:'hint'},'Based on '+R.facts_note):null,
+      h('div',{class:'br-grid'},sec('What works there',R.what_works),sec('Amenities that earn',R.amenities),sec('Price & occupancy by season',R.seasons),sec('Competition',R.competition),sec('Gaps in the market',R.gaps),sec('Risks',R.risks),sec('Next steps',R.next_steps))))})}
 function insights(v){
-  const AI_TABS=[['insights','Insights',SPARK],['pricing','Pricing','M20 13l-7 7-9-9V4h7zM7.5 7.5h.01'],['market','Market','M4 19V9M9 19V5M14 19v-7M19 19V11'],['ideas','Ideas','M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z']];
+  const AI_TABS=[['insights','Insights',SPARK],['pricing','Pricing','M20 13l-7 7-9-9V4h7zM7.5 7.5h.01'],['market','Market','M4 19V9M9 19V5M14 19v-7M19 19V11'],['ideas','Ideas','M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z'],['brief','New property','M3 11l9-7 9 7M5 10v10h14V10M12 13v5M9.5 15.5h5']];
   const tab=S.aiTab||'insights',open=rowsOf('ideas').filter(i=>!/^(implemented|dropped)$/i.test(String(i.status||''))).length;
   v.append(h('div',{class:'s12 ai-tabs seg',role:'tablist'},AI_TABS.map(([k,l,d])=>h('button',{role:'tab','aria-pressed':tab===k,onclick:()=>{S.aiTab=k;render()}},navIcon(d),l,k==='ideas'&&open?h('b',{class:'num'},open):null))));
   if(live()&&!PROG.t&&!PROG.busy&&!PROG.seen){PROG.seen=1;setTimeout(pollProgress,300)}
-  if(tab==='pricing')return aiPricing(v);if(tab==='market')return aiMarket(v);if(tab==='ideas')return aiIdeas(v);
+  if(!feat('ai_insights'))return v.append(lockedCard('ai_insights','A monthly analysis of your stays: where prices can go up, festivals to charge more for, what to fix, and an idea board.'));
+  if(tab==='pricing')return aiPricing(v);if(tab==='market')return feat('ai_market')?aiMarket(v):v.append(lockedCard('ai_market','Prices of similar rentals near each stay from Google, twice a month, so pricing advice is grounded in the market.'));if(tab==='ideas')return aiIdeas(v);if(tab==='brief')return feat('property_brief')?aiBrief(v):v.append(lockedCard('property_brief','Thinking of adding a place? Drop its pin and size: the AI weighs it against your own bookings and the market around it - what works there, which amenities earn more, price and occupancy by season, and the gaps.'));
   const I=insData(),A=I._ai||{},M=I._meta||{},R=I._request||{},stays=I.stays||[],nm=id=>(stays.find(x=>x.stay_id===id)||{}).stay||id,RUNS=insRuns().runs;
-  const pick=aiVal('ai.insights_model')||M.model||'claude-haiku-5-5';
+  const pick=(SUBPLAN().models||{}).insights||aiVal('ai.insights_model')||M.model||'claude-sonnet-5-5';   // set in the scalewithluv console (until then: the last pick)
   const spark=sm=>h('span',{class:'ins-spark'+(sm?' sm':''),'aria-hidden':'true'},navIcon(SPARK));
   const say=t=>t?h('p',{class:'ins-ai'},spark(true),h('span',null,t)):null;
   /* save any suggestion to the idea board (title + detail + stay), from every section */
@@ -2477,8 +2605,7 @@ function insights(v){
           return mine.length?h('small',{class:'ins-spend'},`${mLong(mk)}: ${mine.length} run${mine.length>1?'s':''} · ₹${sp.toFixed(2)} on AI`):null})()))),
     h('div',{class:'ins-run'},
       null)));
-  v.append(runPlan('insights',h('div',{class:'rp-model'},h('small',null,'Model for the planned runs'),
-    h('div',{class:'seg',role:'group','aria-label':'AI model'},INS_MODELS.map(([k,l])=>h('button',{'aria-pressed':pick===k,disabled:!S.admin||null,onclick:()=>{if(k!==pick)setSetting('ai.insights_model',k,`Planned runs will use ${insName(k)}`).then(render)}},l))),
+  v.append(runPlan('insights',h('div',{class:'rp-model'},h('small',null,'Model for the planned runs'),h('b',null,insName(pick)),
     (()=>{const ch=insCharge(pick);return h('small',{class:'ins-cost'},`about ₹${ch.inr<1?ch.inr.toFixed(2):Math.round(ch.inr)} a run · ${ch.basis}`)})())));
   if(!M.generated_at){v.append(card('s12','AI insights',{},h('div',{class:'empty'},'Your first analysis will appear here: where prices can go up, which festivals to charge more for, and what to fix.')));return}
   /* what changed since the run before this one */
@@ -2964,7 +3091,7 @@ function exportChart(holder,name){
     cv.toBlob(b=>saveFile(`${CONFIG.BRAND} - ${name} - ${TODAY}.png`,b),'image/png')};
   img.onerror=()=>toast('Could not render this chart to an image.');img.src=src;
 }
-const ico={chevL:'M15 6l-6 6 6 6',chevR:'M9 6l6 6-6 6',wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',chat:'M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z',
+const ico={filter:'M4 6h16M7 12h10M10 18h4',chevL:'M15 6l-6 6 6 6',chevR:'M9 6l6 6-6 6',wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',chat:'M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z',
   check:'M5 12.5l4.5 4.5L19 7.5',user:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0',up2:'M12 16V4M7 9l5-5 5 5M4 20h16',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',
   bulb:'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z',key:'M15 7a4 4 0 11-3.9 4.9L4 19v2h3l1-1v-2h2v-2h2l1.1-1.1A4 4 0 0115 7z',
   info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 7.5v.5',clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
@@ -2988,6 +3115,19 @@ const pillPay=s=>h('span',{class:'pill '+({Received:'p-ok',Short:'p-bad',Pending
 const warnPills=b=>(b.warn||[]).filter(w=>w!=='Check amount'||b.pay!=='Check amount').map(w=>h('span',{class:'pill p-warn','data-tip':'Looks unusual - please check this booking'},'⚠ '+w));
 const pillPrio=s=>h('span',{class:'pill '+({High:'p-bad',Medium:'p-warn',Low:'p-ok'}[s])},{High:'Urgent',Medium:'Soon',Low:'Routine'}[s]);
 const chd=c=>h('span',{class:'chd'},h('i',{style:{background:chColor(c)}}),c);
+/* One set of booking tags, always in the same order on every tile: status, money, warnings (then the note chip). */
+const bDer=b=>{if(b&&b.pay!==undefined&&b.nights!==undefined)return b;const m=D._bmap||(D._bmap=new Map(D.B.map(x=>[x.booking_id,x])));return m.get(String(b&&b.booking_id))||b||{}};
+function moneyPill(b){const d=bDer(b),bal=+(b.balance_due??d.balance_due)||0;if(String(b.booking_status||d.booking_status)==='Cancelled')return null;
+  if(d.pay==='Check amount')return h('span',{class:'pill p-bad'},'Check amount');
+  if(bal>0)return h('span',{class:'pill p-warn'},inrK(bal)+' to collect');
+  if(d.pay==='Short')return h('span',{class:'pill p-bad'},'Short');
+  if(d.pay==='Pending')return h('span',{class:'pill p-warn','data-tip':'The platform has not paid out yet'},'Payout pending');
+  if(d.pay==='Received')return h('span',{class:'pill p-ok'},'Paid');return null}
+const bkTags=b=>{const d=bDer(b);return[pillStatus(String(b.booking_status||'')==='Cancelled'?'Cancelled':d.status||'Upcoming'),moneyPill(b),warnPills(d)]};
+/* notes: newest line only, repeats dropped, the whole history in the tooltip */
+const noteLines=b=>{const seen=new Set();return String(b.notes||'').split('\n').map(s=>s.trim()).filter(l=>{const k=l.toLowerCase().replace(/\s+/g,' ');if(!l||seen.has(k))return false;seen.add(k);return true})};
+const noteChip=b=>{const ls=noteLines(b);if(!ls.length)return null;const last=ls[ls.length-1].replace(/^\d{1,2} \w{3,4} \d{4} · /,'');
+  return h('span',{class:'chip-s mg-note','data-tip':ls.slice().reverse().join('\n')},'📝 '+last.slice(0,60)+(last.length>60?'…':'')+(ls.length>1?` · +${ls.length-1}`:''))};
 const who=(name,sub)=>{name=name||'Not assigned';return h('div',{class:'who'},h('div',{class:'av',style:{background:avc(name)}},ini(name)),h('div',null,h('b',null,name),sub?h('span',null,sub):null))};
 const delta=(a,b,inv)=>{if(!b||!isFinite(a/b))return h('span',{class:'delta flat none','aria-hidden':'true'},'—');const d=(a-b)/Math.abs(b);const good=inv?d<=0:d>=0;return h('span',{class:'delta '+(Math.abs(d)<.005?'flat':good?'up':'down'),'data-tip':'vs previous period'},(d>=0?'▲ ':'▼ ')+(Math.abs(d)>=10?'10×+':Math.abs(d*100).toFixed(Math.abs(d)<.1?1:0)+'%'))};
 const PHONE=()=>innerWidth<760;
@@ -3004,7 +3144,7 @@ function propCard(r){const p=D.P[r.id];return[mTop(thumb(p),short(p.property),`$
   h('div',{class:'mfoot'},r.rating?h('span',{class:'chip-s'},'★ '+r.rating.toFixed(1)+(r.reviews?` (${r.reviews})`:'')):null,r.next?h('span',{class:'chip-s'},'Next check-in '+fmtD(r.next)):null,r.issues?h('span',{class:'pill p-warn'},`${r.issues} open issue${r.issues>1?'s':''}`):null)]}
 function bookCard(b,{showProp=true,amount='gross'}={}){return[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${b.guests} guest${b.guests>1?'s':''}`,[h('b',{class:'num'},inr(amount==='net'?b.net:b.gross)),h('small',null,`${b.nights} night${b.nights>1?'s':''}`)]),
   showProp?h('div',{class:'mline'},h('b',null,short(b.pname)),h('span',null,` · ${b.area}, ${b.city}`)):null,
-  h('div',{class:'mfoot'},h('span',{class:'chip-s date'},`${fmtD(b.check_in)}${b.arrival_time?' '+b.arrival_time:''} → ${fmtD(b.check_out)}`),chd(b.channel),h('span',{class:'grow'}),pillStatus(b.status),b.pay!=='n/a'&&b.pay!=='Not due'?pillPay(b.pay):null,warnPills(b))]}
+  h('div',{class:'mfoot'},h('span',{class:'chip-s date'},`${fmtD(b.check_in)}${b.arrival_time?' '+b.arrival_time:''} → ${fmtD(b.check_out)}`),chd(b.channel),h('span',{class:'grow'}),bkTags(b))]}
 const profitCell=v=>v==null?h('span',{class:'in-fam'},'in family'):h('b',null,inr(v));
 function sortBy(arr,[k,dir]){return[...arr].sort((a,b)=>{const x=a[k],y=b[k];return(typeof x==='string'?x.localeCompare(y):(x||0)-(y||0))*dir})}
 let toastT;function toast(m,undo,label){document.querySelectorAll('.toast').forEach(t=>t.remove());const ms=String(m||''),ok=(/✓/.test(ms)||/^(saved|downloaded|loaded|copied|connected|undone|up to date|welcome|all done)/i.test(ms))&&!/(couldn|can[’']t|not|failed|error|blocked|disconnected|demo)/i.test(ms);if(ok&&typeof m==='string')m=m.replace(/\s*✓\s*$/,'');const t=h('div',{class:'toast'+(ok?' ok':''),role:'status'},m,undo?h('button',{class:'undo',onclick:()=>{t.remove();undo()}},label||'Undo'):null);document.body.append(t);clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),undo?5000:3000)}
@@ -3012,6 +3152,16 @@ let toastT;function toast(m,undo,label){document.querySelectorAll('.toast').forE
 /* ============ navigation ============ */
 const VIEWS=[['overview','Overview','M4 13h4v7H4zM10 4h4v16h-4zM16 9h4v11h-4z'],['desk','Check-in desk','M3 12h13M12 7l5 5-5 5M20 4v16'],['calendar','Calendar','M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'],['properties','Properties','M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],['money','Financials','M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z'],['ops','Operations','M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z'],['bookings','Bookings','M6 4h12v16H6zM9 9h6M9 13h6M9 17h3'],['whatsapp','WhatsApp','M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z'],['insights','AI insights','M12 2.5l2.1 5.6 5.9 1.9-5.9 1.9L12 17.5l-2.1-5.6L4 10l5.9-1.9zM19 15.5l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z'],['manage','Manage','M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6']];
 const navViews=()=>VIEWS.filter(([k])=>!['manage','money','insights'].includes(k)||S.admin);
+/* The plan (set in the scalewithluv console): tier, billing, feature switches, limits, AI models. No plan rows = all on. */
+const SUBPLAN=()=>(S.data&&S.data.plan)||{status:'active',features:{},limits:{},models:{}};
+const feat=k=>!/^(off|no|false|0)$/i.test(String((SUBPLAN().features||{})[k]||''));
+const readOnly=()=>['readonly','off'].includes(String(SUBPLAN().status||''));
+/* where Upgrade / payment questions go: client.json support_url (a wa.me or mailto link); none = plain text */
+const supportLink=(label,msg)=>CLIENT.support_url?h('a',{class:'btn sm primary',href:/^https:\/\/wa\.me\//.test(CLIENT.support_url)?CLIENT.support_url+'?text='+encodeURIComponent(msg):CLIENT.support_url,target:'_blank',rel:'noopener'},label):h('span',{class:'chip-s'},'Ask scalewithluv');
+const FEAT_NAME={ai_insights:'AI insights',ai_market:'Google market prices',property_brief:'New-property brief',campaigns:'WhatsApp campaigns',manager_app:'Manager app',photo_check:'AI photo check'};
+/* a feature the plan doesn't include: greyed, with what it does and how to get it */
+const lockedCard=(k,what)=>h('section',{class:'card glass s12 locked-card'},h('span',{class:'lk-ico','aria-hidden':'true'},'🔒'),h('div',null,h('b',null,`${FEAT_NAME[k]||k} isn’t in your plan`),
+  h('p',null,what),supportLink('Upgrade',`Hi, I'd like to add ${FEAT_NAME[k]||k} to the ${CLIENT.brand||''} plan`)))
 /* cards that are only money: hidden for view-only roles (the sheet already strips their money fields) */
 const MONEY_CARDS=new Set(['Revenue by month','Channel mix','Cities head to head','Property ranking','Month by month','Where the money goes','Owner statement',
   'From bookings to profit','Expenses by category','Profit & loss by month','Platform fees & direct share','Payments to collect','Platform payouts to chase']);
@@ -3070,7 +3220,9 @@ function renderChrome(){
   $('#syncText').textContent=`${S.source} · updated ${t(S.loadedAt)} · next refresh ${t(new Date(S.loadedAt.getTime()+CONFIG.REFRESH_MINUTES*6e4))}`;
   $('#menuNote').textContent=!S.admin?'View only: new bookings, expenses, issues and “mark cleaned” are hidden.':S.source==='Demo data'?(CONFIG.API_URL?'Demo data. Use “Connect live data” to read and edit the real sheet.':'Demo data.'):'Live: changes you make are saved straight into the sheet the WhatsApp bot uses.';
   {const cb=$('#connectBtn');if(cb)cb.textContent=SIGNIN?(live()?'Sign out':'Sign in'):live()?'Disconnect this device':'Connect live data'}
-  if(SIGNIN&&live()&&LIVE.me)$('#menuNote').textContent=`Signed in as ${LIVE.me.name||LIVE.me.email} · ${LIVE.me.role}${S.admin?'':' (view only)'}`;
+  if(SIGNIN&&live()&&LIVE.me)$('#menuNote').textContent=`${LIVE.me.email||''}${LIVE.me.email?' · ':''}${LIVE.me.role}${S.admin?'':' (view only)'}`;
+  {document.body.classList.toggle('is-live',live());const nm=live()&&LIVE.me?(LIVE.me.name||LIVE.me.email||'Signed in'):live()?'Connected':'Demo';const an=$('#acctName'),av=$('#acctAv');
+   if(an)an.textContent=nm;if(av)av.textContent=String(nm).split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'·'}
   paintStatus();paintBell();
 }
 /* ---- what's new: things that came in from outside the dashboard (the WhatsApp bot, manager apps) since this device last
@@ -3087,9 +3239,19 @@ function newsExtra(){const out=[],R=insRuns().runs,last=R[R.length-1];
   {const rp=rowsOf('reports').slice().sort((a,b)=>String(b.made_at).localeCompare(String(a.made_at)))[0];
     if(rp)out.push({key:'report',label:'Monthly report ready',items:[{at:String(rp.made_at),title:mLong(String(rp.month).slice(0,7)),sub:'open it in Financials',ref:{kind:'report'}}]})}
   const lastMk=rowsOf('market').map(r=>String(r.observed_on||'')).sort().pop();
-  if(D.props.some(p=>!isStopped(p)&&+p.base_rate>0)&&(!lastMk||lastMk<add(TODAY,-7)))out.push({key:'market',label:'Weekly price check',always:true,note:'stays here until prices are checked',items:[{at:TODAY+'T00:00',title:lastMk?'Last checked '+fmtD(lastMk):'No market prices yet',sub:'15 minutes keeps the pricing advice sharp',ref:{kind:'market'}}]});
+  /* only when Google price checks are off: then the team's own weekly price checks are the market data */
+  if(!swOn('ai.market_rentals')&&D.props.some(p=>!isStopped(p)&&+p.base_rate>0)&&(!lastMk||lastMk<add(TODAY,-7)))out.push({key:'market',label:'Price check due',always:true,note:'stays here until prices are checked',items:[{at:TODAY+'T00:00',title:lastMk?'Last checked '+fmtD(lastMk):'No market prices yet',sub:'15 minutes keeps the pricing advice sharp',ref:{kind:'market'}}]});
   if(+TODAY.slice(8)>=10){const k=prevM(TODAY.slice(0,7)),miss=billsMissing(k);if(miss.length)out.push({key:'bills_missing',label:`${mLong(k)} bills missing`,always:true,note:'due by the 10th · stays here until entered',
     items:[{at:TODAY+'T00:00',title:`${miss.length} bill${miss.length>1?'s':''} not entered`,sub:[...new Set(miss.map(x=>short(x.p.property)))].slice(0,4).join(', '),ref:{kind:'bills',id:k}}]})}
+  {const lp=rowsOf('leaves').filter(l=>String(l.status)==='pending'&&String(l.to).slice(0,10)>=TODAY);
+    if(lp.length)out.push({key:'leave',label:'Leave requests',always:true,note:'stays here until you approve or decline',items:lp.map(l=>({at:String(l.requested_at||TODAY+'T00:00'),title:`${l.user_name||'A manager'} · ${fmtD(l.from)} – ${fmtD(l.to)}`,sub:l.reason||'pick who covers',ref:{kind:'ops',id:l.leave_id}}))})}
+  {const since=add(TODAY,-14),nm=pid=>short((D.P[pid]||{}).property||pid||''),it=[];
+    rowsOf('checklists').forEach(r=>{if(r.geo_flag==='far'&&String(r.done_at||'').slice(0,10)>=since)it.push({at:String(r.done_at),title:`Checklist sent ${geoDist(+r.geo_dist_m||0)} from ${nm(r.property_id)}`,sub:r.by_name||r.by||'manager',ref:{kind:'ops'}})});
+    rowsOf('stock').forEach(r=>{if(r.geo_flag==='far'&&String(r.done_at||'').slice(0,10)>=since)it.push({at:String(r.done_at),title:`Stock check sent ${geoDist(+r.geo_dist_m||0)} from ${nm(r.property_id)}`,sub:r.by_name||r.by||'manager',ref:{kind:'ops'}})});
+    (S.data.maint||[]).forEach(r=>{if(r.geo_flag==='far'&&String(r.reported_on||'').slice(0,10)>=since)it.push({at:String(r.reported_on).slice(0,10)+'T00:00',title:`Issue sent ${geoDist(+r.geo_dist_m||0)} from ${nm(r.property_id)}`,sub:r.reported_by||'manager',ref:{kind:'ops',id:r.ticket_id}})});
+    if(it.length)out.push({key:'geo',label:'Sent away from the stay',note:'more than 200 m from its map pin',items:it})
+    const ph=rowsOf('checklists').filter(r=>String(r.done_at||'').slice(0,10)>=since&&aiCheckOf(r)&&!aiCheckOf(r).ok);
+    if(ph.length)out.push({key:'photo',label:'Photos flagged by the AI check',items:ph.map(r=>({at:String(r.done_at),title:`${nm(r.property_id)} · ${String((aiCheckOf(r).flags||[])[0]||'check the photos')}`,sub:r.by_name||r.by||'manager',ref:{kind:'ops'}}))})}
   return out}
 function missedItems(){const c=OPSC(),nm=pid=>short((D.P[pid]||{}).property||pid||''),out=[];
   OPS.checklists(S.data.bookings,rowsOf('checklists'),TODAY,c).filter(x=>x.status==='missed').forEach(x=>out.push({at:x.missedAt+'T00:00',title:'Checklist missed · '+nm(x.property_id),sub:'checkout '+fmtD(x.check_out),ref:{kind:'ops'}}));
@@ -3097,9 +3259,23 @@ function missedItems(){const c=OPSC(),nm=pid=>short((D.P[pid]||{}).property||pid
   OPS.reviews(S.data.bookings,rowsOf('reviews'),TODAY,c).filter(x=>x.status==='missed').forEach(x=>out.push({at:String(x.missedAt).slice(0,10)+'T00:00',title:'Review missed · '+nm(x.property_id),sub:x.booking.guest+' · '+x.booking.booking_id,ref:{kind:'reviews'}}));
   return out}
 function newsNow(){if(!S.data||!S.admin)return[];return OPS.news({...S.data,maint:S.data.maint||[]},seenAt(),'admin',{missed:missedItems(),extra:newsExtra()})}
-function paintBell(){const b=$('#bellBtn');if(!b)return;b.hidden=!S.admin;if(!S.admin)return;const n=sum(newsNow(),c=>c.items.length),nb=b.querySelector('.bell-n');
+/* read marks per item (this device): a read item fades and stops counting */
+const NEWS_URGENT=new Set(['issues','mgr_issues','missed','low','bills_missing','wa_cancel','geo','leave','photo']);
+/* geotag: a manager-app entry sent far from the stay (the sheet measured it against the stay's map pin) */
+/* AI photo check (console add-on): its verdict on a checklist's photos */
+const aiCheckOf=r=>{try{const x=typeof r.ai_check==='string'?JSON.parse(r.ai_check):r.ai_check;return x&&typeof x==='object'?x:null}catch(e){return null}};
+const aiCheckPill=r=>{const x=aiCheckOf(r);if(!x)return null;return x.ok?h('span',{class:'pill p-ok','data-tip':x.note||'The photos look right for the items ticked'},'AI ✓ photos'):
+  h('span',{class:'pill p-warn','data-tip':[x.note,...(x.flags||[])].filter(Boolean).join('\n')},'AI: '+String((x.flags||[])[0]||'check the photos').slice(0,40))};
+const geoDist=d=>d>=1000?(d/1000).toFixed(d>=10000?0:1)+' km':d+' m';
+const geoPill=r=>{const f=String((r&&r.geo_flag)||'');if(f==='far')return h('span',{class:'pill p-warn','data-tip':'Sent this far from the stay’s map pin'},'📍 '+geoDist(+r.geo_dist_m||0)+' away');
+  if(f==='no_fix')return h('span',{class:'chip-s','data-tip':'The phone couldn’t get a location'},'📍 No location');
+  if(f==='no_pin')return h('span',{class:'chip-s','data-tip':'Add a map pin for this stay in Manage › Stays'},'📍 Stay has no map pin');return null};
+const newsKey=it=>String(it.title||'')+'|'+String(it.at||'');
+const newsRead=()=>{try{return new Set(JSON.parse(localStorage.getItem('jg_news_read')||'[]'))}catch(e){return new Set()}};
+const newsMark=keys=>{const s=newsRead();keys.forEach(k=>s.add(k));try{localStorage.setItem('jg_news_read',JSON.stringify([...s].slice(-800)))}catch(e){}};
+function paintBell(){const b=$('#bellBtn');if(!b)return;b.hidden=!S.admin;if(!S.admin)return;const rd=newsRead(),n=sum(newsNow(),c=>c.items.filter(it=>!rd.has(newsKey(it))).length),nb=b.querySelector('.bell-n');
   nb.hidden=!n;nb.textContent=n>99?'99+':String(n);b.setAttribute('aria-label',n?`What's new: ${n}`:"What's new")}
-const NEWS_ICON={wa_bookings:'list',wa_cancel:'x',issues:'wrench',requests:'chat',leads:'chat',bills:'wallet',mgr_issues:'wrench',claims:'wallet',checklists:'check',stock:'list',reviews_asked:'star',missed:'clock',low:'star',ai:'bulb',market:'list',bills_missing:'wallet',report:'dl'};
+const NEWS_ICON={wa_bookings:'list',wa_cancel:'x',issues:'wrench',requests:'chat',leads:'chat',bills:'wallet',mgr_issues:'wrench',geo:'x',leave:'cal',photo:'x',claims:'wallet',checklists:'check',stock:'list',reviews_asked:'star',missed:'clock',low:'star',ai:'bulb',market:'list',bills_missing:'wallet',report:'dl'};
 /* open the right screen and point at the item itself */
 function flashRef(id){if(!id)return;setTimeout(()=>{const el=document.querySelector(`[data-ref="${CSS.escape(String(id))}"]`);if(!el)return;el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2800)},260)}
 function newsGo(ref){closeLayer();if(!ref)return;const k=ref.kind;
@@ -3111,17 +3287,19 @@ function newsGo(ref){closeLayer();if(!ref)return;const k=ref.kind;
   if(k==='insights'){S.aiTab='insights';return go('insights')}
   if(k==='market'){S.aiTab='market';return go('insights')}
   if(k==='whatsapp')return go('whatsapp')}
-function openNews(){const cats=newsNow(),since=seenAt(),open=S.newsOpen||{};
+function openNews(){const rd=newsRead(),cats=newsNow().sort((a,b)=>(NEWS_URGENT.has(b.key)-NEWS_URGENT.has(a.key))),since=seenAt(),open=S.newsOpen||{};
+  const unread=c=>c.items.filter(it=>!rd.has(newsKey(it))).length,urgN=sum(cats.filter(c=>NEWS_URGENT.has(c.key)),unread),updN=sum(cats.filter(c=>!NEWS_URGENT.has(c.key)),unread);
   const when=t=>{const d=new Date(String(t).replace(' ','T'));return isNaN(d)?'':d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})};
   const body=h('div',{class:'news'},
-    h('p',{class:'news-since'},`Since ${when(since)} · from WhatsApp and the manager apps. Your own changes are in Manage › History.`),
-    cats.length?cats.map(c=>{const all=open[c.key],shown=all?c.items:c.items.slice(0,3);
-      return h('section',{class:'news-cat'},h('div',{class:'news-h'},h('span',{class:'news-ic'},icon(NEWS_ICON[c.key]||'info')),h('b',null,c.label),h('span',{class:'news-n num'},c.items.length)),
+    h('div',{class:'news-sum'},urgN?h('span',{class:'pill p-bad'},`${urgN} need${urgN===1?'s':''} attention`):null,updN?h('span',{class:'pill p-mute'},`${updN} update${updN>1?'s':''}`):null,
+      !urgN&&!updN?h('span',{class:'pill p-ok'},'All read'):null,h('small',null,`since ${when(since)} · WhatsApp and manager apps · your own changes are in Manage › History`)),
+    cats.length?cats.map((c,ci)=>{const all=open[c.key],shown=all?c.items:c.items.slice(0,3),urg=NEWS_URGENT.has(c.key),head=ci===0||urg!==NEWS_URGENT.has(cats[ci-1].key);
+      return [head?h('div',{class:'news-grp'},urg?'Needs attention':'Updates'):null,h('section',{class:'news-cat'+(urg?' urg':'')},h('div',{class:'news-h'},h('span',{class:'news-ic'},icon(NEWS_ICON[c.key]||'info')),h('b',null,c.label),h('span',{class:'news-n num'},unread(c)||'✓')),
         c.note?h('small',{class:'news-note'},c.note):null,
-        h('div',{class:'news-list'},shown.map(it=>h('button',{class:'news-it',onclick:()=>newsGo(it.ref)},h('span',{class:'news-t'},h('b',null,it.title),h('small',null,it.sub||'')),h('time',null,it.at?when(it.at):'')))),
-        c.items.length>3?h('button',{class:'btn sm ghost',onclick:()=>{S.newsOpen={...open,[c.key]:!all};openNews()}},all?'Show fewer':`Show all ${c.items.length}`):null)})
+        h('div',{class:'news-list'},shown.map(it=>h('button',{class:'news-it'+(rd.has(newsKey(it))?' read':''),onclick:()=>{newsMark([newsKey(it)]);paintBell();newsGo(it.ref)}},h('span',{class:'news-t'},h('b',null,it.title),h('small',null,it.sub||'')),h('time',null,it.at?when(it.at):'')))),
+        c.items.length>3?h('button',{class:'btn sm ghost',onclick:()=>{S.newsOpen={...open,[c.key]:!all};openNews()}},all?'Show fewer':`Show all ${c.items.length}`):null)]})
       :h('div',{class:'empty'},'Nothing new since you last looked.'));
-  modal("What's new",body,[h('button',{class:'btn',onclick:closeLayer},'Close'),cats.length?h('button',{class:'btn primary',onclick:()=>{markSeen();S.newsOpen={};closeLayer();render();toast('All caught up ✓')}},'Mark all seen'):null]);
+  modal("What's new",body,[h('button',{class:'btn',onclick:closeLayer},'Close'),cats.length?h('button',{class:'btn primary',onclick:()=>{newsMark(cats.flatMap(c=>c.items.map(newsKey)));markSeen();S.newsOpen={};closeLayer();render();paintBell();toast('All caught up ✓')}},'Mark all read'):null]);
   $('#layer .modal')?.classList.add('news-modal')}
 /* ---- lead: hero on Overview, editorial page head elsewhere ---- */
 const HEAD={desk:['Check-ins &','check-outs'],calendar:['Every night,','at a glance'],properties:['Your','stays'],money:['Where the money','goes'],ops:['Cleaning &','repairs'],bookings:['Every','booking'],whatsapp:['Your','WhatsApp bot'],insights:['Where to','earn more']};
@@ -3205,7 +3383,7 @@ function renderFilters(){
     const list=h('div');const draw=()=>{const ql=S.popQ.toLowerCase();list.replaceChildren(...liveCities().flatMap(c=>{const ps=D.props.filter(p=>p.city===c&&active(p)&&(!ql||p.property.toLowerCase().includes(ql)));return ps.length?[h('div',{class:'grp'},c),...ps.map(p=>cb(f.props.includes(p.property_id),h('span',null,short(p.property),h('span',{style:{color:'var(--muted)'}},' · '+p.area)),()=>toggleIn('props',p.property_id)))]:[]}))};
     q.addEventListener('input',()=>{S.popQ=q.value;draw()});draw();if(matchMedia('(hover:hover)').matches)setTimeout(()=>q.focus(),0);
     return panel('Properties',q,list,h('div',{class:'pop-foot'},h('button',{class:'btn sm',onclick:()=>setF({props:[]})},'Clear'),h('button',{class:'btn sm',onclick:close},'Done')))}));
-  bar.append(seg('chan','chan','Channel',f.channels.length?f.channels.join(', '):'All channels',()=>panel('Channel',CHN.map(c=>cb(f.channels.includes(c),c,()=>toggleIn('channels',c),chColor(c))))));
+  if(!['desk','calendar','ops','whatsapp'].includes(S.view))bar.append(seg('chan','chan','Channel',f.channels.length?f.channels.join(', '):'All channels',()=>panel('Channel',CHN.map(c=>cb(f.channels.includes(c),c,()=>toggleIn('channels',c),chColor(c))))));
   bar.append(seg('own','own','Ownership',f.own==='All'?'All':f.own,()=>panel('Ownership',['All','Owned','Managed'].map(o=>rb('own',f.own===o,o==='All'?'Owned & managed':o,()=>{S.pop=null;setF({own:o})})))));
   bar.lastChild.querySelector('.pop')?.classList.add('r');
   bar.append(h('button',{class:'fgo','aria-label':'Refresh data from the sheet now','data-tip':'Refresh',onclick:e=>{e.stopPropagation();manualRefresh(e.currentTarget)}},fIcon('sync')));
@@ -3399,14 +3577,14 @@ function overview(v){
 function deskDate(){return S.desk.mode==='today'?TODAY:S.desk.mode==='tomorrow'?TOMORROW:S.desk.date}
 function desk(v){
   const d=deskDate();const ds=S.desk;
-  const arr=sortBy(D.B.filter(b=>fB(b)&&b.check_in===d),['arrival_time',1]);
-  const dep=sortBy(D.B.filter(b=>fB(b)&&b.check_out===d),['property_id',1]);
+  const arr=sortBy(D.B.filter(b=>fBo(b)&&b.check_in===d),['arrival_time',1]);
+  const dep=sortBy(D.B.filter(b=>fBo(b)&&b.check_out===d),['property_id',1]);
   const turn=sameDayTurn;
   const dateIn=h('input',{type:'date',class:'date',value:ds.date,id:'deskDate','aria-label':'Pick a date'});dateIn.addEventListener('change',()=>{if(dateIn.value){ds.mode='date';ds.date=dateIn.value;ds.sel.clear();render()}});
   v.append(h('div',{class:'s12',style:{display:'flex',gap:'10px',flexWrap:'wrap',alignItems:'center'}},
     h('div',{class:'seg'},[['today','Today'],['tomorrow','Tomorrow'],['date','Pick a date']].map(([k,l])=>h('button',{'aria-pressed':ds.mode===k,onclick:()=>{ds.mode=k;ds.sel.clear();render()}},l))),ds.mode==='date'?dateIn:null,
     h('span',{class:'range-label',style:{fontSize:'15px'}},fmtD(d,{weekday:'long',day:'numeric',month:'long'}))));
-  v.append(h('div',{class:'s12 stat-row'},[[arr.length,'Check-ins'],[dep.length,'Check-outs'],[dep.filter(turn).length,'Same Day Check-In & Check-Out'],[D.B.filter(b=>fB(b)&&b.check_in<d&&b.check_out>d).length,'Staying over']].map(([n,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,l)))));
+  v.append(h('div',{class:'s12 stat-row'},[[arr.length,'Check-ins'],[dep.length,'Check-outs'],[dep.filter(turn).length,'Same Day Check-In & Check-Out'],[D.B.filter(b=>fBo(b)&&b.check_in<d&&b.check_out>d).length,'Staying over']].map(([n,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,l)))));
   const row=(b,kind)=>{const key=kind+':'+b.booking_id,on=ds.sel.has(key),p=D.P[b.property_id],t=D.T[b.booking_id];
     const cbx=h('input',{type:'checkbox',checked:on||null,'aria-label':'Select '+b.guest,onchange:()=>{on?ds.sel.delete(key):ds.sel.add(key);render()}});
     return h('div',{class:'drow'+(on?' on':'')},cbx,h('div',{class:'time num'},kind==='in'?b.arrival_time||'—':'11:00'),
@@ -3530,7 +3708,7 @@ function calendar(v){
   days.forEach((ds,i)=>{const dw=pd(ds).getDay();head.append(h('div',{class:'cal-d'+(dw===0||dw===6?' we':'')+(ds===TODAY?' td':''),style:{gridColumn:i+2,gridRow:1}},label(ds,i)?[h('div',{style:{fontSize:'9px',opacity:.75}},zm==='w'?['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dw]:'SMTWTFS'[dw]),h('span',null,+ds.slice(8))]:null))});
   if(!narrow)head.append(h('div',{class:'cal-d',style:{gridColumn:n+2,gridRow:1}},'Occ.'));wrap.append(head);let tot=0;
   const isWhole=p=>arrOf(p.includes).length>0,realRows=props.filter(p=>!isWhole(p));let realN=0;
-  props.forEach(p=>{const bs=D.B.filter(b=>fB(b)&&b.property_id===p.property_id&&b.check_in<=end&&b.check_out>start);
+  props.forEach(p=>{const bs=D.B.filter(b=>fBo(b)&&b.property_id===p.property_id&&b.check_in<=end&&b.check_out>start);
     const par=parentOf(p.property_id),sold=par?D.B.filter(b=>b.ok&&b.property_id===par&&b.check_in<=end&&b.check_out>start):[];  // whole place booked = this flat sold
     const nights=sum(bs,b=>overlap(b,start,end))+sum(sold,b=>overlap(b,start,end));if(!isWhole(p)||!realRows.length){tot+=nights;realN++}const o=nights/n,oc=o>=.7?'var(--ok)':o<.3?'var(--warn)':'var(--ink)';
     const row=h('div',{class:'cal-row',style:{gridTemplateColumns:cols,minWidth:minW?minW+'px':null}},h('div',{class:'cal-name',style:{cursor:'pointer'},onclick:()=>go('property',{propId:p.property_id})},short(p.property),h('span',null,narrow?h('b',{class:'num',style:{color:oc}},pct(o)):null,narrow?` · ${p.city}`:`${p.area} · ${p.city}`)));
@@ -3543,18 +3721,40 @@ function calendar(v){
       row.append(h('button',{class:'cal-bar cal-linked',style:{gridColumn:`${s0+2}/${e0+2}`},onclick:()=>openBooking(b),'aria-label':`Not available: ${via} is booked ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`,
         'data-tip':`${via} is booked · ${b.guest}`},narrow?'':'via '+via))});
     if(!narrow)row.append(h('div',{class:'cal-occ num',style:{gridColumn:n+2,color:oc}},pct(o)));wrap.append(row)});
-  const body=wrap;
+  const heat=narrow&&!two,body=heat?calHeat(k,props):wrap;
   const title=two?`${fmtD(start,{day:'numeric',month:'short'})} – ${fmtD(end,{day:'numeric',month:'short',year:'numeric'})}`:mLong(k);
-  v.append(card('s12',title,{hint:`${pct(tot/((realN||1)*n))} occupied · tap a stay for details`,acts:[zoom,monSel,nav,h('button',{class:'btn sm admin',onclick:()=>openForm('booking')},icon('plus'),'Booking'),btnExport(()=>exportRows(D.B.filter(b=>fB(b)&&b.check_in<=end&&b.check_out>start).map(bookRow),`Calendar ${start}`))]},
-    h('div',{class:'legend'},CHN.map(c=>h('button',{'aria-pressed':!S.f.channels.length||S.f.channels.includes(c),onclick:()=>toggleIn('channels',c)},h('span',{class:'sw',style:{background:chColor(c)}}),c)),
+  v.append(card('s12',title,{hint:`${pct(tot/((realN||1)*n))} occupied · ${heat?'tap a day to see who is in':'tap a stay for details'}`,acts:[zoom,monSel,nav,h('button',{class:'btn sm admin',onclick:()=>openForm('booking')},icon('plus'),'Booking'),btnExport(()=>exportRows(D.B.filter(b=>fBo(b)&&b.check_in<=end&&b.check_out>start).map(bookRow),`Calendar ${start}`))]},
+    heat?null:h('div',{class:'legend'},CHN.map(c=>h('span',{style:{display:'inline-flex',gap:'6px',alignItems:'center'}},h('span',{class:'sw',style:{background:chColor(c)}}),c)),
       D.props.some(x=>x.includes&&String(x.includes).trim())?h('span',{class:'lg-linked'},h('span',{class:'sw cal-linked'}),'Linked stay booked'):null),props.length?body:h('div',{class:'empty'},'No properties match these filters. Clear a filter above to see stays.')));
 }
+/* Phone Month view: one cell per day shaded by how full the stays are; tap a day for every booking that night with its
+   whole span (check-in → check-out, night x of y) so multi-day stays read at a glance. */
+function calHeat(k,props){
+  const first=mStart(k),n=diff(first,mEnd(k))+1,lead=(pd(first).getDay()+6)%7,ids=new Set(props.map(p=>p.property_id));
+  const base=props.filter(p=>!arrOf(p.includes).length).length?props.filter(p=>!arrOf(p.includes).length):props;
+  const inOn=d=>base.map(p=>({p,b:nightBooking(p.property_id,d)})).filter(x=>x.b);
+  const lvl=o=>o<=0?0:o<.3?1:o<.55?2:o<.8?3:4;
+  const daySheet=d=>{const xs=inOn(d),ins=D.B.filter(b=>b.ok&&ids.has(b.property_id)&&b.check_in===d),outs=D.B.filter(b=>b.ok&&ids.has(b.property_id)&&b.check_out===d);
+    const row=({p,b})=>{const nt=diff(b.check_in,b.check_out),at=diff(b.check_in,d)+1;
+      return h('button',{class:'ch-bk',onclick:()=>openBooking(b)},h('i',{style:{background:chColor(b.channel)}}),
+        h('div',null,h('b',null,short(p.property)),h('span',null,`${b.guest} · ${fmtD(b.check_in,{weekday:'short',day:'numeric',month:'short'})} → ${fmtD(b.check_out,{weekday:'short',day:'numeric',month:'short'})}`),
+          h('div',{class:'ch-span','aria-label':`night ${at} of ${nt}`},[...Array(Math.min(nt,14))].map((_,i)=>h('i',{class:i===at-1?'on':i<at-1?'past':null})),nt>14?h('em',null,'…'):null)),
+        h('small',{class:'num'},`night ${at}/${nt}`))};
+    modal(fmtD(d,{weekday:'long',day:'numeric',month:'long'}),h('div',{class:'ch-day'},
+      h('div',{class:'ch-sum'},h('b',{class:'num'},pct(xs.length/(base.length||1))),h('span',null,`${xs.length} of ${base.length} stays booked · ${ins.length} check-in${ins.length===1?'':'s'} · ${outs.length} check-out${outs.length===1?'':'s'}`)),
+      xs.length?h('div',{class:'ch-list'},xs.map(row)):h('div',{class:'empty'},'Every stay is free this night.')),[h('button',{class:'btn',onclick:closeLayer},'Close')])};
+  const cells=[...Array(lead)].map(()=>h('div',{class:'ch-c ch-pad'}));
+  for(let i=0;i<n;i++){const d=add(first,i),xs=inOn(d),o=xs.length/(base.length||1),ins=D.B.filter(b=>b.ok&&ids.has(b.property_id)&&b.check_in===d).length;
+    cells.push(h('button',{class:`ch-c l${lvl(o)}`+(d===TODAY?' td':'')+(d<TODAY?' gone':''),onclick:()=>daySheet(d),'aria-label':`${fmtD(d)}: ${xs.length} of ${base.length} booked`},
+      h('span',{class:'ch-n'},+d.slice(8)),h('b',{class:'num'},xs.length?pct(o):''),ins?h('em',{title:`${ins} check-in${ins>1?'s':''}`},'↘'+ins):null))}
+  return h('div',{class:'ch'},h('div',{class:'ch-g ch-wk'},['M','T','W','T','F','S','S'].map(x=>h('div',null,x))),h('div',{class:'ch-g'},cells),
+    h('div',{class:'ch-key'},h('span',null,'Less'),[0,1,2,3,4].map(i=>h('i',{class:'ch-c l'+i})),h('span',null,'Fuller'),h('span',{class:'grow'}),h('span',null,'↘ check-ins · tap a day')))}
 const bookRow=b=>({Notes:b.notes||'',Booking:b.booking_id,Guest:b.guest,Mobile:phoneNice(b.phone),Guests:b.guests,Property:short(b.pname),Area:b.area,City:b.city,Channel:b.channel,'Check-in':b.check_in,'Check-in time':b.arrival_time||'','Check-out':b.check_out,Nights:b.nights,'Nightly rate ₹':b.nightly_rate,'Gross ₹':b.gross,'Platform fee ₹':b.fee,'Payout ₹':b.net,Stay:b.status,'Payout status':b.pay,Rating:b.rating||''});
 
 /* ============ PROPERTIES ============ */
 function propRows(){const f=S.f;return D.props.filter(p=>fP(p)&&active(p)).map(p=>{const st=stats(f.from,f.to,p.property_id);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);const nx=bs.filter(b=>b.check_in>=TODAY).sort((a,b)=>a.check_in.localeCompare(b.check_in))[0];
   let free30=0;for(let i=0;i<30;i++){const d=add(TODAY,i);if(!nightBooking(p.property_id,d)&&!nightBlock(p.property_id,d))free30++}
-  return{p,id:p.property_id,name:short(p.property),area:p.area,city:p.city,type:p.type,beds:p.bedrooms,own:p.ownership,occ:st.occ,adr:st.adr,free30,net:st.net,profit:st.profit,count:st.count,rating:rated.length?sum(rated,b=>b.rating)/rated.length:0,reviews:rated.length,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length,next:nx?nx.check_in:'',inHouse:!!tonight(p.property_id),tn:tonight(p.property_id)}})}
+  return{p,id:p.property_id,name:short(p.property),area:p.area,city:p.city,type:p.type,beds:p.bedrooms,own:ownOf(p),occ:st.occ,adr:st.adr,free30,net:st.net,profit:st.profit,count:st.count,rating:rated.length?sum(rated,b=>b.rating)/rated.length:0,reviews:rated.length,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length,next:nx?nx.check_in:'',inHouse:!!tonight(p.property_id),tn:tonight(p.property_id)}})}
 /* Properties: one view at a time (Stays by city · Compare table · Price vs occupancy) under a short summary,
    so nothing stacks into a long scroll. Stays are tiles grouped by city; on phones each tile is one slim row. */
 function properties(v){
@@ -3562,7 +3762,7 @@ function properties(v){
   const views=h('div',{class:'seg',role:'group','aria-label':'View'},[['stays','Stays'],['table','Compare'],['chart','Price vs occupancy']].map(([k,l])=>
     h('button',{'aria-pressed':mode===k,onclick:()=>{S.propView=k;render()}},l)));
   const kpi=(l,val)=>h('div',{class:'pv-k'},h('span',null,l),h('b',{class:'num'},val));
-  v.append(h('section',{class:'card glass s12 pv-head'},h('div',{class:'pv-kpis'},kpi('Listings',String(rows.length)),kpi('Occupancy',pct(st.occ)),S.admin?kpi('Avg nightly rate',inrK(st.adr)):null,S.admin?kpi('Net payout',inrK(st.net)):null),views));
+  v.append(h('section',{class:'card glass s12 pv-head'},h('div',{class:'pv-kpis'},kpi('Listings',String(rows.length)),kpi('Occupancy',pct(st.occ)),S.admin?kpi('Avg nightly rate',inrK(st.adr)):null,S.admin?kpi('Net payout',inrK(st.net)):null),h('div',{class:'pv-vw'},views)));
   if(!rows.length){v.append(card('s12','Stays',{},h('div',{class:'empty'},'No properties match these filters.')));return}
   if(mode==='stays'){
     const stat=(l,val)=>h('div',null,h('span',null,l),h('b',{class:'num'},val));
@@ -3667,7 +3867,8 @@ function reportsCard(){if(!S.admin)return null;const rs=rowsOf('reports').slice(
         sel,h('button',{class:'btn sm primary',disabled:!live()||null,onclick:()=>setSetting('ops.report_request',`${sel.value}|${new Date().toISOString().slice(0,16)}`,'Asked the bot · the report appears here in a few minutes')},icon('plus'),'Make report')]},
     waiting?h('p',{class:'hint'},`Making ${mLong(req.slice(0,7))}… it appears here when ready.`):null,
     rs.length?h('div',{class:'rp-list'},rs.slice(0,12).map(r=>h('a',{class:'rp-row',href:r.url,target:'_blank',rel:'noopener'},h('span',{class:'rp-ic'},icon('dl')),
-      h('div',null,h('b',null,mLong(String(r.month).slice(0,7))),h('small',null,`made ${whenL(r.made_at)}${r.size_kb?' · '+r.size_kb+' KB':''}`)),icon('chev')))):
+      h('div',null,h('b',null,mLong(String(r.month).slice(0,7))),h('small',null,`made ${whenL(r.made_at)}${r.size_kb?' · '+r.size_kb+' KB':''}`),
+        r.prev_url?h('small',{class:'rp-prev'},h('span',{role:'link',tabindex:0,onclick:e=>{e.preventDefault();e.stopPropagation();window.open(r.prev_url,'_blank','noopener')}},`Previous version · made ${r.prev_made_at?whenL(r.prev_made_at):'earlier'}`)):null),icon('chev')))):
     h('div',{class:'empty'},'No reports yet. The first one arrives on the 2nd of next month, or make one now.'))}
 function money(v){
   const f=S.f,s=stats(f.from,f.to),[pa,pz]=prevRange(),p=stats(pa,pz);
@@ -3749,9 +3950,9 @@ function money(v){
 /* ============ OPS ============ */
 function ops(v){
   const OT=S.admin?(S.opsTab||'board'):'board',waitR=OPS.reviews(S.data.bookings,rowsOf('reviews'),TODAY,OPSC()).filter(x=>x.status==='asked').length;
-  if(S.admin)v.append(h('div',{class:'s12 seg ops-tabs',role:'tablist'},[['board','Cleaning & repairs',null],['reviews','Reviews',waitR],['team','Managers',null]].map(([k,l,n])=>h('button',{role:'tab','aria-pressed':OT===k,onclick:()=>{S.opsTab=k;render()}},l,n?h('b',{class:'num'},n):null))));
-  if(OT==='reviews')return opsReviews(v);if(OT==='team')return opsTeam(v);
-  const d1=TOMORROW,d7=add(TODAY,7);const outs=sortBy(D.B.filter(b=>fB(b)&&b.check_out>=TODAY&&b.check_out<d7),['check_out',1]);
+  if(S.admin)v.append(h('div',{class:'s12 seg ops-tabs',role:'tablist'},[['board','Cleaning & repairs',null],['reviews','Reviews',waitR],['team','Managers',rowsOf('leaves').filter(l=>String(l.status)==='pending'&&String(l.to).slice(0,10)>=TODAY).length||null],...(ownerCovers().length?[['cover','Covering',null]]:[])].map(([k,l,n])=>h('button',{role:'tab','aria-pressed':OT===k,onclick:()=>{S.opsTab=k;render()}},l,n?h('b',{class:'num'},n):null))));
+  if(OT==='reviews')return opsReviews(v);if(OT==='team')return opsTeam(v);if(OT==='cover')return opsCover(v);
+  const d1=TOMORROW,d7=add(TODAY,7);const outs=sortBy(D.B.filter(b=>fBo(b)&&b.check_out>=TODAY&&b.check_out<d7),['check_out',1]);
   const open=D.M.filter(m=>fP(D.P[m.property_id])&&m.status!=='Closed'&&m.status!=='Pending approval'&&m.status!=='Rejected');const closed=D.M.filter(m=>fP(D.P[m.property_id])&&m.status==='Closed'&&m.closed_on);
   v.append(h('div',{class:'s12 stat-row'},[[outs.filter(b=>b.check_out===TODAY).length,'Cleanings today'],[outs.filter(sameDayTurn).length,'Same Day Check-In & Check-Out this week'],[open.length,'Open issues'],[open.filter(m=>m.priority==='High').length,'Urgent'],[closed.length?(sum(closed,m=>diff(m.reported_on,m.closed_on))/closed.length).toFixed(1)+' d':'–','Avg time to fix']].map(([n,l])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,l)))));
   const col=(title,list,tile)=>{const all=(S.colAll||{})[title],cut=!all&&list.length>6;return h('div',{class:'col'},h('div',{class:'col-h'},title,h('span',null,list.length)),list.length?(cut?list.slice(0,6):list).map(tile):h('div',{class:'empty'},'Nothing here.'),
@@ -3768,8 +3969,8 @@ function ops(v){
   /* issues a manager reported wait here until an admin takes them on (or not) */
   const pend=D.M.filter(m=>m.status==='Pending approval'&&fP(D.P[m.property_id]));
   if(pend.length&&S.admin){const me=(LIVE.me||{}).name||(LIVE.me||{}).email||'admin',now=()=>new Date().toISOString().slice(0,16);
-    v.append(card('s12','Reported by managers · waiting for you',{hint:'approve to add it to the board below'},h('div',{class:'cl-list'},pend.map(m=>h('div',{class:'cl-row','data-ref':m.ticket_id},h('div',{class:'cl-t'},h('b',null,m.issue),h('span',null,`${short(m.pname)} · ${m.source==='Review'?'from a low rating, ':''}${m.reported_by||'manager'} · ${fmtD(String(m.reported_on||TODAY).slice(0,10))}${m.priority?' · '+m.priority:''}`)),
-      h('div',{class:'cl-pics'},...OPS.list(OPS.js(m.photos)||m.photos).slice(0,3).map(u=>h('a',{href:u,target:'_blank',rel:'noopener',class:'cl-pic'},h('img',{src:u,alt:'Photo',loading:'lazy'})))),
+    v.append(card('s12','Reported by managers · waiting for you',{hint:'approve to add it to the board below'},h('div',{class:'cl-list'},pend.map(m=>h('div',{class:'cl-row','data-ref':m.ticket_id},h('div',{class:'cl-t'},h('b',null,m.issue),h('span',null,`${short(m.pname)} · ${m.source==='Review'?'from a low rating, ':''}${m.reported_by||'manager'} · ${fmtD(String(m.reported_on||TODAY).slice(0,10))}${m.priority?' · '+m.priority:''}`),geoPill(m)),
+      h('div',{class:'cl-pics','data-cap':`${short(m.pname||'')} · ${m.issue||'Issue'} · ${fmtD(m.reported_on)}`},...OPS.list(OPS.js(m.photos)||m.photos).slice(0,3).map(u=>h('a',{href:u,target:'_blank',rel:'noopener',class:'cl-pic'},h('img',{src:u,alt:'Photo',loading:'lazy'})))),
       h('div',{class:'cl-acts'},h('button',{class:'btn sm primary',onclick:()=>issueApprove(m,me,now())},'Approve'),
         h('button',{class:'btn sm ghost danger-t',onclick:()=>confirmBox('Not taking this up?',`${m.issue} · ${short(m.pname)}. The manager sees it was not taken up.`,'Reject',true,()=>save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{status:'Rejected',decided_at:now(),decided_by:me,closed_on:TODAY}},m.ticket_id+' rejected'))},'Reject')))))))}
   v.append(card('s12','Maintenance',{id:'maintCard',acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('issue')},icon('plus'),'Log issue'),btnExport(()=>exportRows(D.M.filter(m=>fP(D.P[m.property_id])).map(m=>({Ticket:m.ticket_id,Property:short(m.pname),City:m.city,Issue:m.issue,Priority:m.priority,'Assigned to':m.assigned_to,Status:m.status,'Reported on':m.reported_on,'Closed on':m.closed_on||'','Cost ₹':m.cost||''})),'Maintenance'))]},
@@ -3903,12 +4104,81 @@ function opsItemsEdit(){const c=OPSC();
       await setSetting('ops.stay_items',JSON.stringify(SI),'Stay extras saved');await setSetting('ops.photo_slots',JSON.stringify(rooms.value()),'Photo rooms saved');
       await setSetting('ops.stock_every_days',String(+every.value||14),'Saved');await setSetting('reviews.window_days',String(+win.value||14),'Saved');await setSetting('reviews.channels',chs.value,'Saved');await setSetting('ops.start_date',start.value,'Saved');
       await setSetting('ops.claim_two_admin_above',String(+two.value>=0?+two.value:5000),'Saved');await setSetting('ops.checkin_time',cin.value||'13:00','Saved')}},'Save')])}
-function opsTeam(v){const c=OPSC(),staff=rowsOf('staff'),mgrs=staff.filter(u=>String(u.role||'').toLowerCase()==='manager'),sc=OPS.scorecards(mgrs.filter(u=>String(u.active||'Yes').toLowerCase()!=='no'),{...S.data,props:S.data.props},TODAY,c);
+/* ---- leave and cover (Leaves tab). A manager asks in their app; an admin approves and picks the cover: another manager
+   (their app holds the stays on those days, tagged Cover; the bot's alerts go to them) or the owner (cover mode: a banner
+   and Operations › Covering). Ids: 'login:<login>' (or an email); 'owner' = the owner covers. ---- */
+const mgrId=u=>u.email?String(u.email).trim().toLowerCase():'login:'+String(u.login||'').trim().toLowerCase();   // as the sheet names them: email first
+const mgrById=id=>rowsOf('staff').find(u=>mgrId(u)===String(id||'').toLowerCase());
+const mgrsOn=()=>rowsOf('staff').filter(u=>String(u.role||'').toLowerCase()==='manager'&&String(u.active||'Yes').toLowerCase()!=='no');
+const coverName=id=>id==='owner'?'You (owner)':((mgrById(id)||{}).name||String(id||'').replace(/^login:/,''));
+const lvOn=(l,d)=>String(l.status)==='approved'&&String(l.from).slice(0,10)<=d&&String(l.to).slice(0,10)>=d;
+/* a manager's stays as their app has them: their list, the flats under a whole place, the whole place over a flat */
+const staysOfMgr=u=>u?[...OPS.scope(u.properties,S.data.props)]:[];
+const ownerCovers=()=>rowsOf('leaves').filter(l=>lvOn(l,TODAY)&&String(l.cover)==='owner');
+const lvDates=l=>`${fmtD(l.from)} – ${fmtD(l.to,{day:'numeric',month:'short',year:'numeric'})}`;
+function leaveDecide(l,yes){if(!yes){confirmBox(`Decline ${l.user_name||'this'} leave?`,`${lvDates(l)}${l.reason?' · '+l.reason:''}. They see it as declined in their app.`,'Decline',true,
+    ()=>save('leaves','update',{match:{leave_id:l.leave_id},fields:{status:'rejected',decided_by:(LIVE.me||{}).email||'admin',decided_at:new Date().toISOString()}},'Leave declined'));return}
+  const who=mgrById(l.user),def=aiVal('ops.cover_default')||rowsOf('ops').filter(r=>r.key==='ops.cover_default').map(r=>r.value).pop()||'owner';
+  const opts=[['owner','I’ll cover it myself (owner)'],...mgrsOn().filter(u=>mgrId(u)!==String(l.user).toLowerCase()).map(u=>[mgrId(u),u.name||u.login])];
+  const sel=h('select',null,opts.map(([v_,t])=>h('option',{value:v_,selected:v_===def||null},t)));
+  const clash=rowsOf('leaves').filter(x=>x!==l&&String(x.status)==='approved'&&String(x.from)<=String(l.to)&&String(x.to)>=String(l.from));
+  const warn=h('p',{class:'hint'});const chk=()=>{const c=clash.find(x=>String(x.user).toLowerCase()===sel.value);warn.textContent=c?`${c.user_name||'They'} is on leave too (${lvDates(c)}). Pick someone else or yourself.`:''};sel.addEventListener('change',chk);chk();
+  modal('Approve leave',h('div',{class:'form'},h('p',{class:'full hint',style:{margin:0}},`${l.user_name||coverName(l.user)} · ${lvDates(l)}${l.reason?' · '+l.reason:''} · ${staysOfMgr(who).length} stay${staysOfMgr(who).length===1?'':'s'}`),fld('Who covers',sel,1),h('div',{class:'full'},warn),
+    h('p',{class:'full hint'},'On those days the cover gets their check-ins, checklists, stock checks, reviews and guest alerts. Done work is credited to whoever does it.')),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{closeLayer();
+      save('leaves','update',{match:{leave_id:l.leave_id},fields:{status:'approved',cover:sel.value,cover_name:sel.value==='owner'?'Owner':coverName(sel.value),decided_by:(LIVE.me||{}).email||'admin',decided_at:new Date().toISOString()}},`Leave approved · ${coverName(sel.value)} covers`)}},'Approve')])}
+function leaveAdd(){const ms=mgrsOn();if(!ms.length)return toast('Add a manager first');
+  const who=h('select',null,ms.map(u=>h('option',{value:mgrId(u)},u.name||u.login))),f=h('input',{type:'date',value:TODAY}),t=h('input',{type:'date',value:TODAY}),why=h('input',{placeholder:'optional'}),err=h('div',{class:'err',hidden:true});
+  modal('Add leave',h('div',{class:'form'},fld('Manager',who,1),fld('From',f),fld('To (last day off)',t),fld('Reason',why,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{
+    if(!f.value||!t.value||t.value<f.value){err.hidden=false;err.textContent='Pick the first and last day off.';return}const u=mgrById(who.value);closeLayer();
+    const row={leave_id:'LV'+Date.now().toString(36).toUpperCase(),user:who.value,user_name:u&&u.name||'',from:f.value,to:t.value,reason:why.value.trim()||null,status:'pending',requested_at:new Date().toISOString()};
+    save('leaves','append',{row},'Leave added').then(ok=>{if(ok)leaveDecide(rowsOf('leaves').find(x=>x.leave_id===row.leave_id)||row,true)})}},'Next: pick the cover')])}
+function leaveCard(v){const L=rowsOf('leaves'),pend=L.filter(l=>String(l.status)==='pending'&&String(l.to).slice(0,10)>=TODAY).sort((x,y)=>String(x.from).localeCompare(String(y.from))),
+    on=L.filter(l=>String(l.status)==='approved'&&String(l.to).slice(0,10)>=TODAY).sort((x,y)=>String(x.from).localeCompare(String(y.from)));
+  const def=aiVal('ops.cover_default')||rowsOf('ops').filter(r=>r.key==='ops.cover_default').map(r=>r.value).pop()||'owner';
+  const defSel=h('select',{'aria-label':'Default cover',onchange:e=>setSetting('ops.cover_default',e.target.value,'Default cover saved')},[['owner','Me (owner)'],...mgrsOn().map(u=>[mgrId(u),u.name||u.login])].map(([v_,t])=>h('option',{value:v_,selected:v_===def||null},t)));
+  const row=(l,acts)=>h('div',{class:'cl-row','data-ref':l.leave_id},h('div',{class:'cl-t'},h('b',null,`${l.user_name||coverName(l.user)} · ${lvDates(l)}`),
+    h('span',null,[l.reason,l.status==='approved'?(lvOn(l,TODAY)?'on leave now':'upcoming')+' · '+coverName(l.cover)+' covers':'asked '+(l.requested_at?whenL(l.requested_at):'')].filter(Boolean).join(' · '))),h('div',{class:'row',style:{gap:'6px'}},acts));
+  v.append(card('s12','Leave & cover',{hint:'approve and pick who covers · their tasks and alerts follow the cover on those days',acts:[h('label',{class:'lv-def'},h('span',null,'Default cover'),defSel),mgrsOn().length?h('button',{class:'btn sm',onclick:leaveAdd},icon('plus'),'Add leave'):null]},
+    pend.length||on.length?h('div',{class:'cl-list'},pend.map(l=>row(l,[h('button',{class:'btn sm',onclick:()=>leaveDecide(l,false)},'Decline'),h('button',{class:'btn sm primary',onclick:()=>leaveDecide(l,true)},'Approve')])),
+      on.map(l=>row(l,[h('button',{class:'btn sm ghost',onclick:()=>confirmBox('Cancel this leave?',`${l.user_name||''} · ${lvDates(l)}. Their stays go back to them${lvOn(l,TODAY)?' at once':''}.`,'Cancel leave',true,
+        ()=>save('leaves','update',{match:{leave_id:l.leave_id},fields:{status:'cancelled',decided_by:(LIVE.me||{}).email||'admin',decided_at:new Date().toISOString()}},'Leave cancelled'))},'Cancel')]))):
+      h('div',{class:'empty'},'No leave requests. Managers ask from their app (Menu › Leave); you can also add one here.')))}
+/* hand over for good: stays move from one manager to another. Their app, tasks and WhatsApp alerts follow at once;
+   work already done stays credited to whoever did it. */
+function mgrHandover(u){const others=mgrsOn().filter(x=>mgrId(x)!==mgrId(u));if(!others.length)return toast('Add another manager first');
+  const mine=OPS.list(u.properties),pick=new Set(mine),to=h('select',null,others.map(x=>h('option',{value:mgrId(x)},x.name||x.login))),box=h('div',{class:'pe-chips'}),off=h('input',{type:'checkbox'}),err=h('div',{class:'err',hidden:true});
+  const draw=()=>box.replaceChildren(...mine.map(id=>h('label',{class:'pe-chip'+(pick.has(id)?' on':'')},h('input',{type:'checkbox',checked:pick.has(id)||null,onchange:e=>{e.target.checked?pick.add(id):pick.delete(id);draw()}}),short((D.P[id]||{}).property||id))));draw();
+  modal('Hand over stays',h('div',{class:'form'},h('p',{class:'full hint',style:{margin:0}},`From ${u.name||u.login}. Future check-ins, checklists, stock checks, reviews, open issues and WhatsApp alerts move with the stays. Past work stays credited to ${u.name||'them'}.`),
+    fld('Hand over to',to,1),h('div',{class:'full'},h('span',{class:'pr-lab'},'Stays to move'),box),h('label',{class:'full ck'},off,` Also switch ${u.name||'them'} off (they have left)`),err),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:async()=>{if(!pick.size){err.hidden=false;err.textContent='Pick at least one stay.';return}
+      const tgt=mgrById(to.value),keep=mine.filter(id=>!pick.has(id)),gets=[...new Set([...OPS.list(tgt.properties),...pick])];closeLayer();
+      const m1=tgt.login?{login:tgt.login}:{email:tgt.email},m0=u.login?{login:u.login}:{email:u.email};
+      if(!await save('users','update',{match:m1,fields:{properties:gets}},`${pick.size} stay${pick.size>1?'s':''} handed to ${tgt.name}`))return;
+      if(!await save('users','update',{match:m0,fields:{properties:keep,...(off.checked?{active:'No'}:{})}},keep.length?`${u.name} keeps ${keep.length}`:`${u.name} has no stays now`)){
+        toast(`Only half done: ${tgt.name} has the stays but ${u.name} still lists them. Edit ${u.name} to remove them.`)}}},'Hand over')])}
+/* owner cover mode: what is due at the stays the owner covers today */
+function opsCover(v){const ls=ownerCovers(),c=OPSC();if(!ls.length){v.append(card('s12','Covering',{},h('div',{class:'empty'},'You are not covering for anyone today.')));return}
+  ls.forEach(l=>{const ids=new Set(staysOfMgr(mgrById(l.user))),inS=pid=>ids.has(pid),d=S.data;
+    const ck=OPS.checklists(d.bookings,rowsOf('checklists'),TODAY,c,inS,d.props).filter(x=>x.status!=='done'),sk=OPS.stock(d.props,rowsOf('stock'),TODAY,c,inS).filter(x=>x.current&&x.current.status==='due'),
+      rv=OPS.reviews(d.bookings,rowsOf('reviews'),TODAY,c,inS).filter(x=>x.status==='open'),B=D.B.filter(b=>b.ok&&ids.has(b.property_id)),ins=B.filter(b=>b.check_in===TODAY),outs=B.filter(b=>b.check_out===TODAY),
+      iss=D.M.filter(m=>ids.has(m.property_id)&&!/^(closed|rejected)$/i.test(m.status||''));
+    const line=(t,s,ref)=>h('div',{class:'cl-row'},h('div',{class:'cl-t'},h('b',null,t),h('span',null,s)),ref?h('button',{class:'btn sm',onclick:ref},'Open'):h('span'));
+    v.append(card('s12',`Covering for ${l.user_name||coverName(l.user)}`,{hint:`until ${fmtD(l.to,{weekday:'short',day:'numeric',month:'short'})} · ${ids.size} stay${ids.size===1?'':'s'}: ${[...ids].map(id=>short((D.P[id]||{}).property||id)).join(', ')}`},
+      h('div',{class:'s12 stat-row'},[[ins.length,'Check-ins today'],[outs.length,'Check-outs today'],[ck.length,'Checklists due'],[sk.length,'Stock checks due'],[rv.length,'Reviews to ask'],[iss.length,'Open issues']].map(([n,lb])=>h('div',{class:'stat glass'},h('b',{class:'num'},n),h('span',null,lb)))),
+      h('div',{class:'cl-list'},[...ins.map(b=>line(`Check-in · ${b.guest}`,`${short(b.pname)}${b.arrival_time?' · arriving '+b.arrival_time:''}`,()=>openBooking(b))),
+        ...outs.map(b=>line(`Check-out · ${b.guest}`,short(b.pname),()=>openBooking(b))),
+        ...ck.map(x=>line(`Checklist · ${short((D.P[x.property_id]||{}).property||x.property_id)}`,x.status==='missed'?'missed':'after check-out '+fmtD(x.check_out),null)),
+        ...sk.map(x=>line(`Stock check · ${short((D.P[x.property_id]||{}).property||x.property_id)}`,'due this fortnight',null)),
+        ...rv.map(x=>line(`Ask for a review · ${x.booking.guest}`,short((D.P[x.property_id]||{}).property||x.property_id),null))].slice(0,40)),
+      h('p',{class:'hint'},'Checklists and stock checks are sent from the manager app. Cancel the leave in Operations › Managers to hand the stays back early.')))})}
+function opsTeam(v){leaveCard(v);const c=OPSC(),staff=rowsOf('staff'),mgrs=staff.filter(u=>String(u.role||'').toLowerCase()==='manager'),sc=OPS.scorecards(mgrs.filter(u=>String(u.active||'Yes').toLowerCase()!=='no'),{...S.data,props:S.data.props},TODAY,c);
   const card_=u=>{const off=String(u.active||'Yes').toLowerCase()==='no',st=OPS.list(u.properties).map(x=>short((D.P[x]||{}).property||x));
     return h('div',{class:'mg-card'+(off?' off':'')},h('div',{class:'mg-ch'},h('span',{class:'av',style:{background:avc(u.name||'M')}},ini(u.name||'M')),h('div',{class:'mg-cn'},h('b',null,u.name||'Manager'),h('small',null,[u.login?'login '+u.login:'no login yet',u.phone?phoneNice(u.phone):'no WhatsApp number',off?'switched off':null].filter(Boolean).join(' · ')))),
       h('div',{class:'mg-st'},st.length?st.map(x=>h('span',{class:'chip-s'},x)):h('span',{class:'hint'},'No stays assigned')),
-      h('div',{class:'mg-ca'},h('button',{class:'btn sm',onclick:()=>mgrEdit(u)},icon('edit'),'Edit'),u.login?h('button',{class:'btn sm',onclick:()=>mgrPassword(u)},icon('key'),'Password'):null))};
-  v.append(card('s12','Managers',{hint:'they use the manager app only · never this dashboard',acts:[h('button',{class:'btn sm',onclick:opsItemsEdit},icon('list'),'Manager app setup'),h('button',{class:'btn sm primary',onclick:()=>mgrEdit(null)},icon('plus'),'Add manager')]},
+      h('div',{class:'mg-ca'},h('button',{class:'btn sm',onclick:()=>mgrEdit(u)},icon('edit'),'Edit'),u.login?h('button',{class:'btn sm',onclick:()=>mgrPassword(u)},icon('key'),'Password'):null,!off&&st.length&&mgrsOn().length>1?h('button',{class:'btn sm',onclick:()=>mgrHandover(u)},'Hand over'):null,
+        (()=>{const l=rowsOf('leaves').find(x=>lvOn(x,TODAY)&&String(x.user).toLowerCase()===mgrId(u));return l?h('span',{class:'cv-tag'},'On leave · '+coverName(l.cover)+' covers'):null})()))};
+  v.append(card('s12','Managers',{hint:'they use the manager app only · never this dashboard',acts:[h('button',{class:'btn sm',onclick:opsItemsEdit},icon('list'),'Manager app setup'),feat('manager_app')?h('button',{class:'btn sm primary',onclick:()=>mgrEdit(null)},icon('plus'),'Add manager'):h('span',{class:'chip-s','data-tip':'The manager app isn’t in your plan'},'🔒 Manager app · Upgrade')]},
     h('div',{class:'mg-link'},icon('info'),h('span',null,'Manager app link: ',h('b',null,MGR_URL()),' · they sign in with their login id and the password you set.'),h('button',{class:'btn sm ghost',onclick:async()=>{try{await navigator.clipboard.writeText(MGR_URL());toast('Link copied ✓')}catch(e){toast(MGR_URL())}}},icon('copy'),'Copy')),
     mgrs.length?h('div',{class:'mg-grid'},mgrs.map(card_)):h('div',{class:'empty'},'No managers yet. Add one, assign their stays and set a password; they get their check-ins, check-outs, checklists, stock checks, reviews and guest alerts on their phone.')));
   if(sc.length){const cell=(a,b,c_)=>h('td',{class:'r'},h('span',{class:'sc-ok num'},a),' / ',h('span',{class:'sc-bad num'},b),c_!=null?h('small',{class:'hint'},` · ${c_} due`):null);
@@ -3930,9 +4200,9 @@ function opsTeam(v){const c=OPSC(),staff=rowsOf('staff'),mgrs=staff.filter(u=>St
             return h('td',{class:'r num'+(it.min&&+v_<it.min?' sc-bad':'')},v_==null?'–':v_,nx!=null&&v_!=null&&+v_!==+nx?h('small',{class:'hint'},+v_>+nx?' ↑':' ↓'):null)})))))}))):null))}
   const recentC=sortBy(rowsOf('checklists').filter(r=>fP(D.P[r.property_id])),['done_at',-1]).slice(0,12);
   if(recentC.length)v.append(card('s12','Latest checklists',{hint:'from the manager app'},h('div',{class:'cl-list'},recentC.map(r=>{const items=OPS.js(r.items)||{},n=Object.keys(items).length,ok=Object.values(items).filter(Boolean).length;
-    return h('div',{class:'cl-row'},h('div',{class:'cl-t'},h('b',null,`${short((D.P[r.property_id]||{}).property||r.property_id)} · ${r.booking_id||''}`),h('span',null,`${r.by_name||r.by||'manager'} · ${r.done_at?whenL(r.done_at):''} · ${ok}/${n} done`),r.notes?h('small',null,r.notes):null,
+    return h('div',{class:'cl-row'},h('div',{class:'cl-t'},h('b',null,`${short((D.P[r.property_id]||{}).property||r.property_id)} · ${r.booking_id||''}`),h('span',null,`${r.by_name||r.by||'manager'} · ${r.done_at?whenL(r.done_at):''} · ${ok}/${n} done`),geoPill(r),aiCheckPill(r),r.notes?h('small',null,r.notes):null,
       (()=>{const cm=Object.entries(OPS.js(r.item_notes)||{});return cm.length?h('small',{class:'cl-cm'},cm.map(([k,v])=>`${k}: ${v}`).join(' · ')):null})()),
-      h('div',{class:'cl-pics'},...OPS.list(OPS.js(r.photos)||r.photos).slice(0,4).map(u=>h('a',{href:u,target:'_blank',rel:'noopener',class:'cl-pic'},h('img',{src:u,alt:'Photo',loading:'lazy'})))),h('span'))}))))}
+      h('div',{class:'cl-pics','data-cap':`${short((D.P[r.property_id]||{}).property||r.property_id||'')} · checklist${r.done_by?' · '+r.done_by:''}${r.done_at?' · '+fmtD(String(r.done_at).slice(0,10)):''}`},...OPS.list(OPS.js(r.photos)||r.photos).slice(0,4).map(u=>h('a',{href:u,target:'_blank',rel:'noopener',class:'cl-pic'},h('img',{src:u,alt:'Photo',loading:'lazy'})))),h('span'))}))))}
 /* ============ BOOKINGS ============ */
 function bookings(v){
   const st=S.bk;const ql=st.q.toLowerCase();const per=innerWidth<760?20:60;if(st.lim<per||st.lim%per)st.lim=per;const f=S.f;
@@ -3943,10 +4213,18 @@ function bookings(v){
   const rows=recent?[...pool].sort((a,b)=>(idn(b)-idn(a))*(st.sort[1]<0?1:-1)):sortBy(pool,st.sort);
   const q=h('input',{class:'search',type:'search','aria-label':'Search bookings',placeholder:'Search guest, booking ID, property…',value:st.q,id:'bkQ',style:{flex:'1 1 220px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;st.lim=60;render();const n=$('#bkQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
   const cols=[{t:'Booking',k:'booking_id',m:1,f:b=>b.booking_id},{t:'Guest',k:'guest',f:b=>who(b.guest,`${b.guests} guest${b.guests>1?'s':''}`)},{t:'Property',k:'pname',f:b=>h('div',{class:'who'},h('div',null,h('b',null,short(b.pname)),h('span',null,b.area+', '+b.city)))},{t:'Channel',k:'channel',f:b=>chd(b.channel)},{t:'Check-in',k:'check_in',f:b=>fmtD(b.check_in)+(b.arrival_time?' · '+b.arrival_time:'')},{t:'Nights',k:'nights',r:1,f:b=>b.nights},{t:'Gross',k:'gross',r:1,f:b=>inr(b.gross)},{t:'Payout',k:'net',r:1,f:b=>inr(b.net)},{t:'Stay',k:'status',f:b=>pillStatus(b.status)},{t:'Payout status',k:'pay',f:b=>[pillPay(b.pay),...warnPills(b)]},{t:'Notes',k:'notes',f:b=>b.notes?h('span',{class:'bk-note',title:b.notes},String(b.notes).split('\n').pop()):'–'}].filter(c=>S.admin||!['Gross','Payout','Payout status'].includes(c.t));  // view-only roles: no money columns
-  const order=h('div',{class:'seg',role:'group','aria-label':'Order'},[['added','Recently added'],['check_in','By check-in']].map(([k,l])=>h('button',{'aria-pressed':st.sort[0]===k||(k==='check_in'&&!recent),onclick:()=>{st.sort=[k,-1];st.lim=per;render()}},l)));
-  v.append(card('s12','Bookings',{hint:recent?`${rows.length} bookings · newest added first · all dates`:`${rows.length} checking in ${rangeLabel()}`,acts:[order,btnExport(()=>exportRows(rows.map(bookRow),'Bookings'))]},
-    h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}},q,h('div',{class:'seg'},['All','Upcoming','In-house','Completed','Cancelled'].map(x=>h('button',{'aria-pressed':st.status===x,onclick:()=>{st.status=x;st.lim=per;render()}},x))),
-      h('div',{class:'seg',role:'group','aria-label':'Payment'},[['Any','Any payment'],['To collect','To collect'],['Collected','Collected']].map(([x,l])=>h('button',{'aria-pressed':(st.pay||'Any')===x,onclick:()=>{st.pay=x;st.lim=per;render()}},l))),h('button',{class:'btn primary admin',onclick:()=>openForm('booking')},icon('plus'),'New booking')),
+  /* one row: search, Filters (payment + order, with a count), New booking; then the status row */
+  const nF=(st.pay&&st.pay!=='Any'?1:0)+(recent?0:1);
+  const fSheet=()=>{const sec=(l,opts,cur,set)=>h('div',{class:'bkf-sec'},h('span',{class:'pr-lab'},l),h('div',{class:'seg'},opts.map(([x,lab])=>h('button',{'aria-pressed':cur===x,onclick:()=>{set(x);st.lim=per;render();fSheet()}},lab))));
+    modal('Filters',h('div',{class:'form bkf'},
+      sec('Payment',[['Any','Any'],['To collect','To collect'],['Collected','Collected']],st.pay||'Any',x=>{st.pay=x}),
+      sec('Order',[['added','Recently added'],['check_in','By check-in date']],recent?'added':'check_in',x=>{st.sort=[x,-1]}),
+      h('p',{class:'hint full',style:{margin:0}},'City, stay, channel and period are in the bar at the top and apply to every page.')),
+      [h('button',{class:'btn',onclick:()=>{st.pay='Any';st.sort=['added',-1];render();closeLayer()}},'Reset'),h('button',{class:'btn primary',onclick:closeLayer},'Done')])};
+  v.append(card('s12','Bookings',{hint:recent?`${rows.length} bookings · newest added first · all dates`:`${rows.length} checking in ${rangeLabel()}`,acts:[btnExport(()=>exportRows(rows.map(bookRow),'Bookings'))]},
+    h('div',{class:'bk-ctl'},q,h('button',{class:'btn'+(nF?' on':''),onclick:fSheet,'aria-label':`Filters${nF?', '+nF+' on':''}`},icon('filter'),'Filters',nF?h('b',{class:'bk-n'},String(nF)):null),
+      h('button',{class:'btn primary admin',onclick:()=>openForm('booking')},icon('plus'),'New booking')),
+    h('div',{class:'bk-st'},h('div',{class:'seg'},['All','Upcoming','In-house','Completed','Cancelled'].map(x=>h('button',{'aria-pressed':st.status===x,onclick:()=>{st.status=x;st.lim=per;render()}},x)))),
     rows.length?table(cols,rows.slice(0,st.lim),{card:b=>[...bookCard(b),b.notes?h('div',{class:'bk-note m'},'📝 '+String(b.notes).split('\n').pop()):null],sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openBooking}):h('div',{class:'empty'},'No bookings match. Try a wider period or clear filters.'),
     rows.length>st.lim?h('button',{class:'btn',style:{alignSelf:'center'},onclick:()=>{st.lim+=per;render()}},`Show ${Math.min(per,rows.length-st.lim)} more of ${rows.length}`):null));
 }
@@ -3960,7 +4238,7 @@ function openBooking(b){
   const p=D.P[b.property_id];
   $('#layer').replaceChildren(h('div',{class:'scrim',onclick:closeLayer}),h('aside',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':'Booking '+b.booking_id},h('div',{class:'in'},
     h('div',{class:'img',style:{position:'relative'}},scene(p,880,495),h('button',{class:'xbtn','aria-label':'Close',onclick:closeLayer},'✕')),
-    h('div',{class:'body'},h('div',{class:'tags'},pillStatus(b.status),pillPay(b.pay),warnPills(b),chd(b.channel),repeatPill(b)),h('h2',null,b.guest),h('div',{style:{color:'var(--muted)'}},`${b.booking_id} · ${short(p.property)}, ${p.area}`),
+    h('div',{class:'body'},h('div',{class:'tags'},bkTags(b),chd(b.channel),repeatPill(b)),h('h2',null,b.guest),h('div',{style:{color:'var(--muted)'}},`${b.booking_id} · ${short(p.property)}, ${p.area}`),
       h('div',{class:'kv'},...[['Check-in',fmtD(b.check_in,{weekday:'short',day:'numeric',month:'short'})+(b.arrival_time?' · '+b.arrival_time:'')],['Check-out',fmtD(b.check_out,{weekday:'short',day:'numeric',month:'short'})+' · '+(p.check_out_time||'11:00')],['Guests',b.guests],['Nights',b.nights],p.cleaner?['Housekeeping',p.cleaner]:null,['Rating',b.rating?'★ '+b.rating:'–']].filter(Boolean).map(([l,x])=>h('div',null,h('span',null,l),h('b',null,x==null||x===''?'–':String(x))))),
       h('div',{class:'money'},h('div',null,h('span',null,`${b.nights} × ${inr(b.nightly_rate)}`),h('span',{class:'num'},inr(b.room))),b.cleaning_fee?h('div',null,h('span',null,'Cleaning fee'),h('span',{class:'num'},inr(b.cleaning_fee))):null,h('div',null,h('span',null,`${b.channel} fee`),h('span',{class:'num'},inr(-b.fee))),b.owner?h('div',null,h('span',null,'Owner share'),h('span',{class:'num'},inr(-b.owner))):null,h('div',null,h('span',null,'Payout'),h('span',{class:'num'},inr(b.net)))),
       b.received?h('div',{class:'foot-note'},`Received ${inr(b.received)}${b.pay==='Short'?' — short by '+inr(b.net-b.received):''}`):null,
@@ -4125,15 +4403,16 @@ function normLive(d){const n=v=>v==null||v===''?0:+v||0;
   const js=v=>{if(Array.isArray(v))return v;try{const x=JSON.parse(v);return Array.isArray(x)?x:[]}catch(e){return v?[String(v)]:[]}};
   d.props=(d.props||[]).map(p=>({...p,photos:js(p.photos),photo_thumbs:js(p.photo_thumbs),photo:p.photo||js(p.photos)[0]||null,bedrooms:n(p.bedrooms),base_rate:n(p.base_rate),cleaning_fee:n(p.cleaning_fee),owner_share:p.owner_share==null||p.owner_share===''?null:+p.owner_share}));
   d.bookings=(d.bookings||[]).filter(b=>b.booking_id&&b.check_in&&b.check_out).map(b=>({...b,booking_id:String(b.booking_id),guest:b.guest||'Guest',guests:n(b.guests)||1,nightly_rate:n(b.nightly_rate),cleaning_fee:n(b.cleaning_fee),booking_status:b.booking_status||'Confirmed',rating:b.rating?+b.rating:null}));
+  {const byDay=new Map();(d.botstats||[]).forEach(r=>byDay.set(String(r.day||'').slice(0,10),r));d.botstats=[...byDay.values()]}   // one row per day (B-121)
   d.payouts=(d.payouts||[]).map(p=>({...p,booking_id:String(p.booking_id),amount_received:n(p.amount_received)}));
   d.expenses=(d.expenses||[]).map(e=>({...e,amount:n(e.amount)}));
   d.maint=(d.maint||[]).filter(m=>m.ticket_id).map(m=>({...m,ticket_id:String(m.ticket_id)}));
   d.turnovers=(d.turnovers||[]).map(t=>({...t,booking_id:String(t.booking_id)}));
   d.leads=d.leads||[];d.requests=d.requests||[];d.blocks=d.blocks||[];d.lists=d.lists||[];d.fee_pct=d.fee_pct&&Object.keys(d.fee_pct).length?d.fee_pct:SEED.fee_pct;
-  ['ideas','market','reviews','checklists','stock','staff','claims','ops','ai','movements','botstats','reports','rentals','rentaltrend'].forEach(k=>{d[k]=d[k]||[]});
+  ['ideas','market','reviews','checklists','stock','staff','claims','ops','ai','movements','botstats','reports','rentals','rentaltrend','leaves','briefs','campaigns'].forEach(k=>{d[k]=d[k]||[]});
   d.market=d.market.map(r=>({...r,price:n(r.price),night:String(r.night||'').slice(0,10)}));d.claims=d.claims.map(c=>({...c,amount:n(c.amount)}));return d}
 const TABKEY={lists:'lists',properties:'props',bookings:'bookings',payouts:'payouts',expenses:'expenses',maintenance:'maint',turnovers:'turnovers',leads:'leads',requests:'requests',blocks:'blocks',
-  ideas:'ideas',market:'market',reviews:'reviews',checklists:'checklists',stock:'stock',claims:'claims',users:'staff',movements:'movements',botstats:'botstats',reports:'reports',rentals:'rentals',rentaltrend:'rentaltrend'};
+  ideas:'ideas',market:'market',reviews:'reviews',checklists:'checklists',stock:'stock',claims:'claims',users:'staff',movements:'movements',botstats:'botstats',reports:'reports',rentals:'rentals',rentaltrend:'rentaltrend',leaves:'leaves',briefs:'briefs',campaigns:'campaigns'};
 /* (requests is already a core tab: TABKEY.requests) */
 /* returning guests, matched by the last 10 digits of the phone: earlier stays before a date */
 const ph10=v=>String(v||'').replace(/\D/g,'').slice(-10);
@@ -4145,7 +4424,7 @@ const rowsOf=k=>(S.data&&S.data[k])||[];
 /* checklist / stock / review rules (Settings ops.* and reviews.*) */
 const OPSC=()=>OPS.cfg(rowsOf('ops'),CLIENT);
 /* one Settings row that admins may change (ai.* ops.* reviews.* pricing.*): update it, or add it */
-async function setSetting(key,value,msg){const grp=/^(ai|msgs)\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),rows=arr.filter(r=>r.key===key),row=rows[rows.length-1],old=row?row.value:undefined;
+async function setSetting(key,value,msg){if(readOnly()&&live()){toast('Read-only while the subscription is paused');return false}const grp=/^(ai|msgs)\./.test(key)?'ai':'ops',arr=S.data[grp]||(S.data[grp]=[]),rows=arr.filter(r=>r.key===key),row=rows[rows.length-1],old=row?row.value:undefined;
   if(rows.length)rows.forEach(r=>{r.value=value});else arr.push({key,value});render();
   if(!live()){toast((msg||'Saved')+' · demo only');return true}
   try{let r=await apiPost({action:'setting_put',name:key,value}).catch(e=>/not allowed|unknown/i.test(e.message)?null:Promise.reject(e));
@@ -4157,6 +4436,7 @@ function applyLocal(tab,op,a){const k=TABKEY[tab],arr=S.data[k]||(S.data[k]=[]);
   const[f,v]=Object.entries(a.match)[0];let n=0;for(let i=arr.length-1;i>=0;i--)if(String(arr[i][f])===String(v)){n++;op==='delete'?arr.splice(i,1):Object.assign(arr[i],a.fields)}return n}
 /* Every change: shown at once, written to the sheet, rolled back with a message if the sheet refuses. */
 async function save(tab,op,a,msg){
+  if(readOnly()&&live()){toast('Read-only while the subscription is paused · nothing was changed');return false}
   const k=TABKEY[tab],before=JSON.stringify(S.data[k]||[]);applyLocal(tab,op,a);refresh();
   if(!live()){hiLocal(tab,op,a,JSON.parse(before));toast((msg||'Saved')+' · demo only - connect live data to save to the sheet');return true}
   try{const r=await apiPost({action:op,tab,undo_of:HI.undoing||undefined,new_id:a.newId||undefined,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
@@ -4178,7 +4458,8 @@ function signInScreen(){
     try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login',id_token:cred,device:(navigator.userAgentData&&navigator.userAgentData.platform||navigator.platform||'device')+' · '+new Date().toISOString().slice(0,10)})});
       const j=await r.json();if(!j.ok){note.textContent='Use the Google account your team added for you.';return fail(j.error==='not_listed'?`${j.email} isn’t on this dashboard’s team list. Ask an admin to add you.`:j.error==='manager_app'?'Managers use the manager app, not this dashboard. Open the manager link your admin shared and sign in with your login id.':j.error||'Sign-in failed')}
       LIVE.key=j.session;LIVE.me=j.user;store.set(KEYNAME,j.session);store.set('jg_me',j.user);S.admin=String(j.user.role||'').toLowerCase()==='admin';
-      extra={bookings:[],expenses:[],maint:[],turnDone:[],maintStatus:{}};saveExtra();closeLayer();S.data=null;await load();toast(`Welcome, ${(j.user.name||j.user.email).split(' ')[0]}`)}
+      extra={bookings:[],expenses:[],maint:[],turnDone:[],maintStatus:{}};saveExtra();closeLayer();S.data=null;await load();toast(`Welcome, ${(j.user.name||j.user.email).split(' ')[0]}`);
+      const others=(j.other_devices||[]);if(others.length)setTimeout(()=>confirmBox('Signed in somewhere else too',`${others.length===1?'Another device is':others.length+' other devices are'} signed in as you (${others.map(o=>o.device).slice(0,3).join(', ')}). Sign ${others.length===1?'it':'them'} out? Only one device at a time keeps your account safe.`,'Sign out the other'+(others.length>1?'s':''),false,()=>apiPost({action:'logout_others'}).then(r=>toast(`${r.ended||0} other device${r.ended===1?'':'s'} signed out ✓`)).catch(e=>toast('Couldn’t sign the other device out: '+e.message))),600);}
     catch(x){note.textContent='Use the Google account your team added for you.';fail('Couldn’t reach the sheet ('+x.message+'). Try again.')}};
   const draw=()=>{google.accounts.id.initialize({client_id:CLIENT.google_client_id,callback:r=>done(r.credential),auto_select:false,ux_mode:'popup'});
     google.accounts.id.renderButton(btn,{theme:'outline',size:'large',text:'signin_with',shape:'pill',width:260})};
@@ -4296,7 +4577,70 @@ function waData(){
   const issues=D.M.filter(m=>m.source==='WhatsApp'&&fP(D.P[m.property_id]));
   return{L,P,guests,hosts,reached,waB,reqs,issues};
 }
+/* ---- WhatsApp campaigns (console add-on). Rows of the Campaigns tab: template | image | campaign. ---- */
+const CMP=t=>rowsOf('campaigns').filter(r=>r.type===t);
+const tplPill=s=>{s=String(s||'').toUpperCase();return h('span',{class:'pill '+(s==='APPROVED'?'p-ok':s==='REJECTED'||s==='ERROR'?'p-bad':'p-warn')},s==='SUBMIT'?'Sending to Meta…':s==='APPROVED'?'Approved':s==='REJECTED'?'Rejected':s==='ERROR'?'Not sent':s==='PENDING'?'Waiting for Meta':s||'Draft')};
+/* a WhatsApp-like bubble: header image, body with the name filled in, footer, buttons */
+const waBubble=(t,img,name)=>h('div',{class:'wab'},img&&String(t.header_type||'').toUpperCase()==='IMAGE'?h('img',{src:img,alt:'',loading:'lazy'}):null,h('p',null,String(t.body||'').replace(/\{\{1\}\}/g,name||'Asha')),
+  t.footer?h('small',null,t.footer):null,(()=>{let b=t.buttons;try{b=typeof b==='string'?JSON.parse(b||'[]'):b||[]}catch(e){b=[]}return b.length?h('div',{class:'wab-b'},b.map(x=>h('span',null,x.text))):null})());
+/* past guests a campaign can reach: one per phone, newest stay first */
+function cmpAudience(f){const since=add(TODAY,-30*(+f.months||12)),now=new Map();
+  D.B.filter(b=>b.ok&&b.check_out<TODAY&&b.check_in>=since&&(!f.city||D.P[b.property_id]&&D.P[b.property_id].city===f.city)&&(!f.channel||b.channel===f.channel)).forEach(b=>{const p=String(b.phone||'').replace(/\D/g,'');if(p.length<10)return;
+    const k=p.slice(-10),g=now.get(k)||{name:String(b.guest||'Guest').split(' ')[0],stays:0,last:''};g.stays++;if(b.check_in>g.last)g.last=b.check_in;now.set(k,g)});
+  const busy=new Set(D.B.filter(b=>b.ok&&b.check_out>=TODAY).map(b=>String(b.phone||'').replace(/\D/g,'').slice(-10)));
+  return[...now.entries()].filter(([k,g])=>(!f.repeat||g.stays>1)&&!(f.skipBusy!==false&&busy.has(k))).map(([k,g])=>g)}
+const cmpCost=n=>n*rate('costs.wa_mkt_rate')*(1+rate('costs.gst_pct')/100)*(1+rate('costs.markup_pct')/100);
+function tplEdit(){const nm=h('input',{placeholder:'e.g. diwali_offer',autocomplete:'off'}),lang=h('select',null,[['en','English'],['hi','Hindi']].map(([v,l])=>h('option',{value:v},l)));
+  const imgs=CMP('image'),hdr=h('select',null,h('option',{value:'NONE'},'No header'),h('option',{value:'IMAGE'},'Image header')),ex=h('select',null,imgs.length?imgs.map(i=>h('option',{value:i.url},i.name||'Image')):h('option',{value:''},'Add an image to the library first'));
+  const body=h('textarea',{rows:4,maxlength:1000,placeholder:'Hi {{1}}, this Diwali our stays are 15% off for returning guests…'}),foot=h('input',{maxlength:60,placeholder:'e.g. Reply STOP to stop offers'});
+  const bt=h('input',{maxlength:25,placeholder:'Button text, e.g. Book now'}),bu=h('input',{placeholder:'Button link (https://…)'}),pv=h('div',{class:'wab-wrap'}),err=h('div',{class:'err',hidden:true});
+  const row=()=>({type:'template',name:nm.value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''),language:lang.value,category:'MARKETING',header_type:hdr.value,header_image:hdr.value==='IMAGE'?ex.value:'',
+    body:body.value.trim(),footer:foot.value.trim(),buttons:bt.value.trim()?JSON.stringify([{text:bt.value.trim(),...(bu.value.trim()?{url:bu.value.trim()}:{})}]):''});
+  const draw=()=>{const r=row();pv.replaceChildren(waBubble(r,r.header_image,'Asha'))};[nm,lang,hdr,ex,body,foot,bt,bu].forEach(x=>x.addEventListener('input',draw));[hdr,ex].forEach(x=>x.addEventListener('change',draw));draw();
+  modal('New WhatsApp template',h('div',{class:'form'},fld('Name (lowercase, underscores)',nm),fld('Language',lang),fld('Header',hdr),fld('Example image (Meta sees it)',ex),
+    fld('Message',body,1),h('div',{class:'full'},h('button',{type:'button',class:'btn sm',onclick:()=>{body.setRangeText('{{1}}',body.selectionStart,body.selectionEnd,'end');body.focus();draw()}},'Insert first name')),
+    fld('Footer',foot,1),fld('Button',bt),fld('Button link',bu),h('div',{class:'full'},h('span',{class:'pr-lab'},'Preview'),pv),err,
+    h('p',{class:'full hint'},'Meta reviews every marketing template, usually within a day. The image in each send can change later; this one is only the example.')),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{const r=row();
+      if(!/^[a-z0-9_]{3,60}$/.test(r.name)){err.hidden=false;err.textContent='Name: 3-60 lowercase letters, digits or underscores.';return}
+      if(r.body.length<10){err.hidden=false;err.textContent='Write the message.';return}
+      if(r.header_type==='IMAGE'&&!r.header_image){err.hidden=false;err.textContent='Pick an example image (add one to the library first).';return}
+      if(CMP('template').some(t=>t.name===r.name&&(t.language||'en')===r.language)){err.hidden=false;err.textContent='A template with that name exists.';return}
+      closeLayer();save('campaigns','append',{row:{row_id:'TP'+Date.now().toString(36).toUpperCase(),...r,status:'submit',created_at:new Date().toISOString()}},'Sent to Meta for approval · usually within a day')}},'Submit to Meta')])}
+function cmpEdit(cur){const tpls=CMP('template').filter(t=>!/^(rejected|error)$/i.test(t.status||'')),imgs=CMP('image');if(!tpls.length)return toast('Write a template first');
+  const x=cur||{},f=(()=>{try{return JSON.parse(x.audience||'{}')}catch(e){return{}}})();
+  const nm=h('input',{value:x.name||'',placeholder:'e.g. Diwali returning guests'}),tp=h('select',null,tpls.map(t=>h('option',{value:t.name,selected:t.name===x.template||null},`${t.name}${String(t.status).toUpperCase()==='APPROVED'?'':' (waiting for Meta)'}`)));
+  const im=h('select',null,h('option',{value:''},'The template’s own image'),imgs.map(i=>h('option',{value:i.url,selected:i.url===x.image_url||null},i.name||'Image')));
+  const mo=h('select',null,[[3,'Last 3 months'],[6,'Last 6 months'],[12,'Last 12 months'],[24,'Last 2 years']].map(([v,l])=>h('option',{value:v,selected:+(f.months||12)===v||null},l)));
+  const ci=h('select',null,h('option',{value:''},'All cities'),liveCities().map(c_=>h('option',{value:c_,selected:f.city===c_||null},c_))),ch=h('select',null,h('option',{value:''},'All channels'),CHN.map(c_=>h('option',{value:c_,selected:f.channel===c_||null},c_)));
+  const rp=h('input',{type:'checkbox',checked:f.repeat||null}),when=h('input',{type:'datetime-local',value:x.schedule_at||''}),thr=h('input',{type:'number',min:1,max:120,value:x.throttle||20});
+  const sum=h('div',{class:'cmp-sum'}),pv=h('div',{class:'wab-wrap'});
+  const cur_=()=>({months:+mo.value,city:ci.value,channel:ch.value,repeat:rp.checked});
+  const draw=()=>{const A=cmpAudience(cur_()),t=tpls.find(t=>t.name===tp.value)||{};sum.replaceChildren(h('b',{class:'num'},A.length.toLocaleString('en-IN')),h('span',null,` guest${A.length===1?'':'s'} · about ₹${Math.round(cmpCost(A.length)).toLocaleString('en-IN')} in WhatsApp fees (billed by Meta)`));
+    pv.replaceChildren(waBubble(t,im.value||t.header_image,(A[0]||{}).name))};[tp,im,mo,ci,ch,rp].forEach(e=>e.addEventListener('change',draw));draw();
+  const rowOut=st=>({type:'campaign',name:nm.value.trim()||'Campaign',template:tp.value,image_url:im.value,audience:JSON.stringify(cur_()),schedule_at:when.value,throttle:+thr.value||20,est_count:cmpAudience(cur_()).length,est_cost:Math.round(cmpCost(cmpAudience(cur_()).length)),status:st});
+  const put=async(st,msg)=>{closeLayer();const r=rowOut(st);return x.row_id?save('campaigns','update',{match:{row_id:x.row_id},fields:r},msg):save('campaigns','append',{row:{row_id:'CP'+Date.now().toString(36).toUpperCase(),created_at:new Date().toISOString(),...r}},msg)};
+  modal(x.row_id?'Edit campaign':'New campaign',h('div',{class:'form'},fld('Name',nm,1),fld('Template',tp),fld('Image for this send',im),
+    h('div',{class:'full'},h('span',{class:'pr-lab'},'Who gets it'),h('div',{class:'cmp-aud'},mo,ci,ch,h('label',{class:'ck'},rp,' Repeat guests only'))),h('small',{class:'full hint'},'Past guests with a phone number, one message each; guests staying now or booked are left out.'),
+    h('div',{class:'full'},sum),fld('Send at',when),fld('Messages a minute',thr),h('div',{class:'full'},h('span',{class:'pr-lab'},'Preview'),pv),
+    h('p',{class:'full hint cmp-park'},'Sending to guests is switched off for now: who may receive offers (opt-in) is still to be decided. “Send a test to me” sends it to the owner WhatsApp number only.')),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn',onclick:()=>put('draft','Campaign saved')},'Save draft'),
+     h('button',{class:'btn primary',onclick:()=>put('test','Test on its way to the owner number')},'Send a test to me'),h('button',{class:'btn',disabled:true,title:'Parked until the opt-in rules are decided'},'Send to guests')])}
+function campaigns(v){const T=CMP('template'),I=CMP('image'),K=CMP('campaign');
+  v.append(card('s12','Templates',{hint:'Meta approves each marketing template before it can be sent',acts:[h('button',{class:'btn sm primary',onclick:tplEdit},icon('plus'),'New template')]},
+    T.length?h('div',{class:'cl-list'},T.map(t=>h('div',{class:'cl-row'},h('div',{class:'cl-t'},h('b',null,t.name,h('span',{class:'hint'},' · '+(t.language||'en'))),h('span',null,String(t.body||'').slice(0,110)),t.rejected_reason||t.error?h('small',{class:'err'},t.rejected_reason||t.error):null),tplPill(t.status)))):
+      h('div',{class:'empty'},'No templates yet. Write one (an offer, a festival wish, a welcome-back discount) and submit it to Meta.')));
+  const add=pickPhotos('Add images',async fs=>{const up=await uploadPhotos(fs,'campaign');for(const u of up)await save('campaigns','append',{row:{row_id:'IM'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,5),type:'image',name:'Image '+(CMP('image').length+1),url:u.url,added_at:new Date().toISOString()}},'Image added');render()});
+  v.append(card('s12','Image library',{hint:'the picture in a campaign’s header, changed per send',acts:add},
+    I.length?h('div',{class:'cmp-imgs','data-pv-group':''},I.map(i=>h('a',{href:i.url,'data-pv':'',title:i.name||''},h('img',{src:i.url,alt:i.name||'Campaign image',loading:'lazy'})))):h('div',{class:'empty'},'No images yet.')));
+  v.append(card('s12','Campaigns',{hint:'builder + test send · sending to guests is parked',acts:[h('button',{class:'btn sm primary',disabled:!T.some(t=>!/^(rejected|error)$/i.test(t.status||''))||null,title:T.length?null:'Write a template first',onclick:()=>cmpEdit(null)},icon('plus'),'New campaign')]},
+    K.length?h('div',{class:'cl-list'},K.map(k=>{const tr=(()=>{try{return JSON.parse(k.test_result||'null')}catch(e){return null}})();
+      return h('div',{class:'cl-row',role:'button',tabindex:0,onclick:()=>cmpEdit(k)},h('div',{class:'cl-t'},h('b',null,k.name),h('span',null,`${k.template} · ${(+k.est_count||0).toLocaleString('en-IN')} guests · about ₹${(+k.est_cost||0).toLocaleString('en-IN')}${k.schedule_at?' · '+whenL(k.schedule_at):''}`),
+        tr?h('small',{class:tr.ok?'':'err'},tr.ok?`Test sent to the owner number ${k.tested_at?whenL(k.tested_at):''}`:`Test not sent: ${tr.why||'see the bot log'}`):null),
+        h('span',{class:'pill '+(k.status==='tested'?'p-ok':k.status==='test'?'p-warn':'p-mute')},k.status==='test'?'Test on its way':k.status==='tested'?'Tested':'Draft'))})):h('div',{class:'empty'},'No campaigns yet.')))}
 function whatsapp(v){
+  if(S.admin){const wt=S.waTab||'activity';v.append(h('div',{class:'s12 seg wa-tabs',role:'tablist'},[['activity','Activity'],['campaigns','Campaigns']].map(([k,l])=>h('button',{role:'tab','aria-pressed':wt===k,onclick:()=>{S.waTab=k;render()}},l))));
+    if(wt==='campaigns')return feat('campaigns')?campaigns(v):v.append(lockedCard('campaigns','Offers, last-minute deals, festival wishes and loyal-guest discounts on WhatsApp: write a template with an image, get Meta’s approval, pick who gets it, preview, see the cost.'))}
   const st=S.wa||(S.wa={type:'All',stage:'All',status:'All',q:'',sort:['created_at',-1],lim:25,win:'30',mode:'people',heat:'All',psort:'hot'});if(!st.win)st.win='30';if(!st.mode)Object.assign(st,{mode:'people',heat:'All',psort:'hot'});
   if(!S.waSeenSession){S.waPrevSeen=+(store.get('jg_wa_seen')||0);store.set('jg_wa_seen',Date.now());S.waSeenSession=true}const W=waData(),f={...S.f,...waWin()};
   const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':Math.round(m/60)+' h ago'};
@@ -4307,7 +4651,7 @@ function whatsapp(v){
     if(w1.length){const t=(xs,k)=>sum(xs,x=>+x[k]||0),bm=t(w1,'bot_msgs'),hm=t(w1,'human_msgs'),avg=bm?sum(w1,x=>(+x.avg_reply_secs||0)*(+x.bot_msgs||0))/bm:null,share=bm+hm?bm/(bm+hm):null,bm0=t(w0,'bot_msgs');
       const k=(val,l,sub)=>h('div',{class:'bp-k'},h('b',{class:'num'},val),h('span',null,l),sub?h('small',null,sub):null);
       v.append(card('s12','How the bot is doing',{hint:'last 7 days · counted by the bot itself (numbers only, no messages)'},h('div',{class:'bp-row'},
-        k(bm.toLocaleString('en-IN'),'messages answered',bm0?`${bm>=bm0?'+':''}${Math.round((bm/bm0-1)*100)}% vs the week before`:null),
+        k(bm.toLocaleString('en-IN'),'messages answered',[(()=>{const ar=t(w1,'ai_replies');return ar?`${ar.toLocaleString('en-IN')} written by AI, the rest menus & buttons`:'menus, buttons and AI replies'})(),bm0?` · ${bm>=bm0?'+':''}${Math.round((bm/bm0-1)*100)}% vs the week before`:''].join('')),
         k(avg!=null?(avg<60?Math.round(avg)+' s':(avg/60).toFixed(1)+' min'):'–','average reply time'),
         k(share!=null?pct(share):'–','handled without you',hm?`${hm} message${hm>1?'s':''} answered by the team`:null),
         k(t(w1,'handovers'),'asked for a person'),k(t(w1,'escalations'),'issues escalated'),k(t(w1,'addon_requests'),'add-ons requested'),k(t(w1,'guest_requests'),'guest requests'),k(t(w1,'returning_guests'),'returning guests')))) }}
@@ -5606,7 +5950,7 @@ function audField(tab,k,e){
   if(tab==='lists')return({value:'Option',fee_pct:'Usual fee %',active:'In use',list:'List',row_id:'Id'})[k]||k;
   const m={bookings:MG_L,properties:P_L,expenses:EXP_L,guest_info:GI_L}[tab]||{};return m[k]||k.replace(/_/g,' ').replace(/^./,x=>x.toUpperCase())}
 const AUD_MONEY=['tariff','platform_fee','gst','received','balance_due','collected_amount','written_off','with_maid','with_manager','amount','rate','base_rate','extra_guest_fee','cleaning_fee','nightly_rate','amount_received','pet_fee'];
-function audVal(e,k,v){if(v===undefined)return'not recorded';if(v===null||v==='')return'—';if(k==='wifi_password')return'••••••';
+function audVal(e,k,v){if(v===undefined)return'not recorded';if(v===null||v==='')return'—';if(typeof v==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d(:\d\d(\.\d+)?)?Z?$/.test(v))return whenL(v);   // a time, never raw ISOif(k==='wifi_password')return'••••••';
   if(Array.isArray(v))return v.length?v.join(', '):'—';if(typeof v==='object')return JSON.stringify(v);
   if(AUD_MONEY.includes(k)&&v!==''&&!isNaN(+v))return inr(+v);if(k==='owner_share'&&!isNaN(+v))return Math.round(+v*100)+'%';
   if(/_pct$/.test(k)||(e.tab==='settings'&&/_pct$/.test(e.target)))if(!isNaN(+v))return v+'%';
@@ -5751,15 +6095,15 @@ const COST_SW=[['ai.guest_replies','AI WhatsApp bot','Writes the replies to mess
   ['msgs.to_owners','Owners','Off: the bot sends owners nothing and ignores what they write, # commands included.','wa'],
   ['msgs.to_managers','Managers','Off: the bot sends managers nothing and ignores what they write. They still see everything in the manager app.','wa']];
 const COST_RATES=[['costs.wa_rate','WhatsApp ₹ per message (after the free ones)',0.115],['costs.wa_free','Free messages a month',1000],['costs.wa_tpl_rate','WhatsApp ₹ per template message',0.145],
-  ['costs.gst_pct','GST on WhatsApp %',18],['costs.hosting_usd','Hosting $ a month (Render)',7.25],['costs.markup_pct','Markup on the total %',5]];
+  ['costs.gst_pct','GST on WhatsApp %',18],['costs.wa_mkt_rate','WhatsApp ₹ per marketing template (check Meta’s rate card)',0.86],['costs.hosting_usd','Hosting $ a month (Render)',7.25],['costs.markup_pct','Markup on the total %',5]];
 const rate=k=>{const d=COST_RATES.find(x=>x[0]===k)[2],v=aiVal(k);return v!==''&&isFinite(+v)?+v:d};
 function costMonth(mk){const bs=rowsOf('botstats').filter(r=>String(r.day).slice(0,7)===mk),t=k=>sum(bs,r=>+r[k]||0),mu=1+rate('costs.markup_pct')/100;
   const runs=insRuns().runs.map(r=>r.I._meta||{}).filter(m=>String(m.generated_at||'').slice(0,7)===mk&&m.cost_inr!=null);
-  const ai={replies:t('ai_replies'),calls:t('ai_calls'),tin:t('ai_in_tok'),tout:t('ai_out_tok'),inr:t('ai_cost_inr')},ins={runs,inr:sum(runs,m=>+m.cost_inr||0)},mkc={scans:t('market_scans'),searches:t('market_searches'),inr:t('market_cost_inr')};
+  const ext={checks:t('photo_checks'),photo:t('photo_cost_inr'),brief:t('brief_cost_inr'),briefs:rowsOf('briefs').filter(b=>String(b.done_at||'').slice(0,7)===mk&&b.status==='done').length},ai={replies:t('ai_replies'),calls:t('ai_calls'),tin:t('ai_in_tok'),tout:t('ai_out_tok'),inr:t('ai_cost_inr')},ins={runs,inr:sum(runs,m=>+m.cost_inr||0)},mkc={scans:t('market_scans'),searches:t('market_searches'),inr:t('market_cost_inr')};
   const who=['guest','owner','manager'].map(k=>({k,all:t('wa_'+k),tpl:t('wa_tpl_'+k)})),all=sum(who,x=>x.all),tpl=sum(who,x=>x.tpl),free=all-tpl;
   const waBase=Math.max(0,free-rate('costs.wa_free'))*rate('costs.wa_rate')+tpl*rate('costs.wa_tpl_rate'),wa=waBase*(1+rate('costs.gst_pct')/100)*mu;
   const host=rate('costs.hosting_usd')*fxNow()*mu,days=new Set(bs.map(r=>String(r.day).slice(0,10))).size;
-  return{bs,days,ai,ins,mk:mkc,who,all,tpl,free,wa,host,total:ai.inr+ins.inr+mkc.inr+wa+host}}
+  return{bs,days,ai,ins,mk:mkc,ext,who,all,tpl,free,wa,host,total:ai.inr+ins.inr+mkc.inr+ext.photo+ext.brief+wa+host}}
 function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.costM,c=costMonth(mk),ms=[];for(let k=TODAY.slice(0,7),i=0;i<12;i++,k=prevM(k))ms.push(k);
   const r2=n=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const pick=h('select',{class:'mg-pick','aria-label':'Month',onchange:e=>{S.costM=e.target.value;render()}},ms.map(k=>h('option',{value:k,selected:k===mk||null},mLong(k)+(k===TODAY.slice(0,7)?' (so far)':''))));
@@ -5769,11 +6113,14 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
     h('div',{class:'cs-tiles'},tile('Total',r2(c.total),'AI + WhatsApp + hosting'),
       tile('AI WhatsApp bot',r2(c.ai.inr),c.ai.replies?`${c.ai.replies.toLocaleString('en-IN')} replies · ${r2(c.ai.inr/c.ai.replies)} each`:'no AI replies'),
       tile('AI insights',r2(c.ins.inr),`${c.ins.runs.length} run${c.ins.runs.length===1?'':'s'}`),
+      c.mk.inr>0?tile('AI web price search',r2(c.mk.inr),`${c.mk.scans} check${c.mk.scans===1?'':'s'} · ${c.mk.searches} searches · now replaced by Google prices`):null,   // counted in the total, so it must show
+      c.ext.photo>0||feat('photo_check')&&SUBPLAN().features.photo_check?tile('AI photo check',r2(c.ext.photo),`${c.ext.checks} checklist${c.ext.checks===1?'':'s'} checked`):null,
+      c.ext.brief>0?tile('New-property briefs',r2(c.ext.brief),`${c.ext.briefs} brief${c.ext.briefs===1?'':'s'}`):null,
       (()=>{const ac=((PROG.rentals||{}).account)||null;return tile('Google rental prices','₹0',ac&&ac.per_month?`${ac.used} of ${ac.per_month} free searches used · renews ${fmtD(ac.renews)}`:'free plan · no AI')})(),
       tile('WhatsApp',r2(c.wa),`${c.all.toLocaleString('en-IN')} messages · estimate`),tile('Hosting',r2(c.host),'fixed'))));
   /* AI */
   v.append(card('s6','AI WhatsApp bot',{hint:'AI answers typed messages; menus and buttons use no AI'},h('div',{class:'cs-kv'},
-    ...[['Replies sent',c.ai.replies.toLocaleString('en-IN')],['AI calls (a reply can use a few)',c.ai.calls.toLocaleString('en-IN')],['Tokens read · written',`${c.ai.tin.toLocaleString('en-IN')} · ${c.ai.tout.toLocaleString('en-IN')}`],
+    ...[['AI replies (typed messages; menus and buttons are free)',c.ai.replies.toLocaleString('en-IN')],['AI calls (a reply can use a few)',c.ai.calls.toLocaleString('en-IN')],['Tokens read · written',`${c.ai.tin.toLocaleString('en-IN')} · ${c.ai.tout.toLocaleString('en-IN')}`],
       ['Cost',r2(c.ai.inr)],['Per reply',c.ai.replies?r2(c.ai.inr/c.ai.replies):'–'],['Per day',c.days?r2(c.ai.inr/c.days):'–']].map(([k,x])=>h('div',null,h('span',null,k),h('b',{class:'num'},x)))),
     h('p',{class:'hint',style:{margin:'10px 0 0'}},'The monthly report PDF uses no AI.')));
   v.append(card('s6','AI insights runs',{hint:'each analysis, its model and cost'},c.ins.runs.length?h('div',{class:'cs-kv'},
@@ -5860,8 +6207,8 @@ function manage(v){
       h('span',{class:'av',style:{background:avc(b.guest||'G')}},ini(b.guest||'G')),
       h('div',{class:'mg-main'},h('div',{class:'mg-l1'},h('b',null,b.guest||'Guest'),h('span',{class:'mg-id'},id)),
         h('div',{class:'mg-l2'},h('span',null,short(P_.property||b.property_id)),h('span',{class:'mg-dot'},'·'),h('span',null,`${fmtD(b.check_in)} → ${fmtD(b.check_out)}`),h('span',{class:'mg-dot'},'·'),h('span',{class:'chan'},h('i',{style:{background:chColor(b.channel)}}),b.channel||'')),
-        h('div',{class:'mg-tags'},can?h('span',{class:'pill p-bad'},'Cancelled'):null,can&&b.refund_check==='Pending'?h('span',{class:'pill p-warn'},'Confirm what was kept'):null,!can&&heldOf(b)>0?heldTags(b).map(t=>h('span',{class:'pill p-warn'},t)):null,ed?h('span',{class:'pill p-warn'},'Changed · not saved'):null,bal&&!can?h('span',{class:'pill p-warn'},inrK(bal)+' to collect'):null,
-          b.notes?h('span',{class:'chip-s mg-note',title:b.notes},'📝 '+String(b.notes).split('\n').pop().slice(0,60)):null)),
+        h('div',{class:'mg-tags'},bkTags(b),can&&b.refund_check==='Pending'?h('span',{class:'pill p-warn'},'Confirm what was kept'):null,!can&&heldOf(b)>0?heldTags(b).map(t=>h('span',{class:'pill p-warn'},t)):null,ed?h('span',{class:'pill p-warn'},'Changed · not saved'):null,
+          noteChip(b))),
       h('div',{class:'mg-amt'},h('b',{class:'num'},mgAmount(b,id).split(' · ')[0]),h('small',null,bal&&!can?'total':'received')),
       h('div',{class:'mg-acts'},bal>0&&!can?h('button',{class:'btn sm primary',onclick:()=>mgCollect(id)},'Collected'):null,
         h('button',{class:'btn sm',onclick:()=>openForm('booking',b.property_id,b,{stage:true})},icon('edit'),'Edit'),
@@ -5911,6 +6258,12 @@ function render(){
   ({overview,desk,calendar,properties,property,money,ops,bookings,whatsapp,insights,manage})[S.view](v);
   if(S.source==='Sheet unreachable')v.prepend(h('section',{class:'card glass s12 offline-note',role:'alert'},h('b',null,'Can’t reach the Google Sheet'),
     h('span',null,`Nothing is shown until it answers${LIVE.err?' ('+LIVE.err+')':''}. Check the internet connection, then try again.`),h('button',{class:'btn primary sm',onclick:e=>manualRefresh(e.currentTarget)},'Try again')));
+  {const P=SUBPLAN(),st=String(P.status||'active');if(st==='grace'||readOnly()){const left=P.grace_until?Math.max(0,diff(TODAY,String(P.grace_until).slice(0,10))):null;
+    v.prepend(h('section',{class:'s12 bill-banner'+(readOnly()?' ro':''),role:'alert'},h('b',null,readOnly()?'Read-only · subscription paused':'Payment due'),
+      h('span',null,readOnly()?'You can see everything; changes and the WhatsApp bot are paused until the payment is in.':`${left!=null?left+' day'+(left===1?'':'s')+' left before the dashboard turns read-only and the bot pauses':'Please pay to keep everything running'}${P.due?' · due '+fmtD(String(P.due).slice(0,10)):''}`),
+      supportLink('Contact scalewithluv',`Hi, about the ${CLIENT.brand||''} subscription`)))}}
+  if(S.admin&&ownerCovers().length){const ls=ownerCovers();v.prepend(h('section',{class:'s12 cv-banner',role:'status'},h('b',null,`You’re covering for ${ls.map(l=>l.user_name||coverName(l.user)).join(' & ')}`),
+    h('span',null,`until ${fmtD(ls.map(l=>String(l.to)).sort().pop(),{weekday:'short',day:'numeric',month:'short'})} · their stays’ tasks and alerts come to you`),h('button',{class:'btn sm',onclick:()=>{S.opsTab='cover';go('ops')}},'See what’s due')))}
   fillRows(v);
   if(!S.counted&&S.view==='overview'){S.counted=true;countUp(v)}
   if(keepY)sc.scrollTop=keepY;
