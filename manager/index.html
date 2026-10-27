@@ -21,7 +21,7 @@
 :root{--bg:#f6f8fc;--surface:#fff;--surface-2:#f2f5fb;--hair:#eef2f8;--hair-2:#dde4ef;--ink:#0c1a3d;--ink-2:#2f3d5e;--muted:#5a6681;--faint:#9aa4ba;
   --accent:#1d5bd8;--accent-soft:#eaf1ff;--ok:#0f8a5f;--warn:#b86e00;--bad:#c2372f;--shadow:0 10px 30px rgba(12,26,61,.08);
   --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--serif:'DM Serif Display',Georgia,serif}
-*{box-sizing:border-box}html,body{margin:0}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent;color-scheme:light only}.sheet{overscroll-behavior:contain}body{background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+*{box-sizing:border-box}html,body{margin:0}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent;color-scheme:light only;touch-action:pan-x pan-y}.sheet{overscroll-behavior:contain}body{background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 [hidden]{display:none!important}button,input,select,textarea{font:inherit;color:inherit}
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));
   background:rgba(246,248,252,0.86);background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--hair)}
@@ -120,7 +120,7 @@ html.iv-open,html.iv-open body{overflow:hidden}
 .cv-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;background:#fff3d6;color:#8a5a00;vertical-align:1px}
 .cv-note{display:flex;flex-direction:column;gap:2px;border-left:4px solid #e0a020}.cv-note.on{border-left-color:#1d5bd8}.cv-note span{font-size:13px;color:#5a6681}
 .lv-list{margin-top:14px}
-.in input,.in select,.in textarea{font-size:16px}   /* 16 px: iPhone never zooms into a field */
+input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}   /* 16 px everywhere: iPhone never zooms into a field */
 </style>
 </head>
 <body>
@@ -271,6 +271,7 @@ const $=s=>document.querySelector(s);
 for(const P_ of [Element.prototype,DocumentFragment.prototype])for(const m_ of ['append','prepend','replaceChildren','before','after']){const f_=P_[m_];if(f_)P_[m_]=function(...a){return f_.apply(this,a.filter(x=>x!=null&&x!==false))}}
 /* app-like: the page never zooms (pinch, double tap, field focus); only the photo viewer zooms, by itself */
 ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>{if(!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1&&!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false});   // home-screen apps: two-finger pinch outside the image viewer
 document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false});
 /* One full-screen photo viewer for every photo (stays, checklists, issues, stock, receipts, reviews): swipe, pinch or
    double-tap to zoom, share/download, caption with who and when. Any link inside a photo strip opens here. */

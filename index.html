@@ -38,7 +38,7 @@
   color-scheme:light only;
 }
 *{box-sizing:border-box}
-html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent;touch-action:pan-x pan-y}
 /* Android: sheets and dialogs scroll on their own - no pull-to-refresh reload, no scroll chaining to the page */
 #layer,#layer *,.sheet,.modal,.pop{overscroll-behavior:contain}
 /* page lock under popups and the phone menu (iOS 16+ and Android honour overflow on the root) */
@@ -2102,6 +2102,7 @@ const EMPTY_DATA=()=>Object.fromEntries(Object.entries(SEED).map(([k,v])=>[k,Arr
 /* ============ helpers ============ */
 /* app-like: the page never zooms (pinch, double tap, field focus); only the photo viewer zooms, by itself */
 ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>{if(!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1&&!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false});   // home-screen apps: two-finger pinch outside the image viewer
 document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&!(e.target.closest&&e.target.closest('.iv')))e.preventDefault()},{passive:false});
 /* One full-screen photo viewer for every photo (stays, checklists, issues, stock, receipts, reviews): swipe, pinch or
    double-tap to zoom, share/download, caption with who and when. Any link inside a photo strip opens here. */
