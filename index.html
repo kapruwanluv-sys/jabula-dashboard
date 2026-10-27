@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light only">
 <meta name="theme-color" content="#f6f8fc">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -101,7 +101,7 @@ button{cursor:pointer}
 .seg{display:inline-flex;background:var(--seg);border-radius:99px;padding:3px;gap:2px;flex-wrap:nowrap;max-width:100%;overflow-x:auto;scrollbar-width:none}
 .seg::-webkit-scrollbar{display:none}
 .seg button{border:0;background:none;border-radius:99px;padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap}
-.seg button[aria-pressed="true"]{background:var(--seg-on);color:var(--ink);box-shadow:0 1px 3px rgba(12,26,61,.12)}
+.seg button[aria-pressed="true"],.seg button[role=tab][aria-selected="true"]{background:var(--seg-on);color:var(--ink);box-shadow:0 1px 3px rgba(12,26,61,.12)}
 .btn{border:1px solid var(--hair-2);background:var(--surface);border-radius:99px;padding:8px 15px;font-size:12.5px;font-weight:650;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;color:var(--ink)}
 .btn:hover{border-color:var(--accent);color:var(--accent-ink)}
 .btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -455,6 +455,7 @@ button.sstat:hover{background:var(--surface-2)}
 .tile{background:var(--surface);border:1px solid var(--hair);border-radius:16px;padding:11px 13px;display:flex;flex-direction:column;gap:6px;min-width:0;box-shadow:0 1px 2px rgba(12,26,61,.04)}
 .tile .row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .tile .row .end{margin-left:auto}
+.tile .row .pill{max-width:100%;white-space:normal;text-align:left;border-radius:10px}   /* long pills wrap inside narrow tiles (768 px overflow, 27 Oct) */
 .tile b{font-size:12.5px;font-weight:700}
 .tile .m{font-size:11.5px;color:var(--muted)}
 
@@ -1397,7 +1398,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 /* ---------- controls ---------- */
 .seg,.mg-tabs,.pr-sub,.pay-seg{background:var(--fill-1);border-color:transparent}
 .seg button,.mg-tabs button,.pr-sub button,.pay-seg button{transition:background-color .25s var(--e-out),color .2s,box-shadow .25s var(--e-out)}
-.seg button[aria-pressed="true"],.mg-tabs button[aria-selected=true],.pr-sub button[aria-selected=true],.pay-seg button[aria-checked=true]{background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.10),0 1px 1px rgba(0,0,0,.04)}
+.seg button[aria-pressed="true"],.seg button[role=tab][aria-selected="true"],.mg-tabs button[aria-selected=true],.pr-sub button[aria-selected=true],.pay-seg button[aria-checked=true]{background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.10),0 1px 1px rgba(0,0,0,.04)}
 .btn{background:rgba(255,255,255,.92);border-color:rgba(12,26,61,.1);box-shadow:var(--sh-1);font-weight:600}
 .btn:hover{background:#fff;border-color:rgba(29,91,216,0.4);border-color:color-mix(in srgb,var(--accent) 40%,transparent);color:var(--accent-ink);box-shadow:var(--sh-2)}
 .btn.primary,.btn.primary:hover{color:#fff;border-color:transparent}
@@ -2651,7 +2652,7 @@ function aiBrief(v){const B=rowsOf('briefs').slice().sort((x,y)=>String(y.reques
 function insights(v){
   const AI_TABS=[['insights','Insights',SPARK],['pricing','Pricing','M20 13l-7 7-9-9V4h7zM7.5 7.5h.01'],['market','Market','M4 19V9M9 19V5M14 19v-7M19 19V11'],['ideas','Ideas','M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z'],['brief','New property','M3 11l9-7 9 7M5 10v10h14V10M12 13v5M9.5 15.5h5']];
   const tab=S.aiTab||'insights',open=rowsOf('ideas').filter(i=>!/^(implemented|dropped)$/i.test(String(i.status||''))).length;
-  v.append(h('div',{class:'s12 ai-tabs seg',role:'tablist'},AI_TABS.map(([k,l,d])=>h('button',{role:'tab','aria-pressed':tab===k,onclick:()=>{S.aiTab=k;render()}},navIcon(d),l,k==='ideas'&&open?h('b',{class:'num'},open):null))));
+  v.append(h('div',{class:'s12 ai-tabs seg',role:'tablist'},AI_TABS.map(([k,l,d])=>h('button',{role:'tab','aria-selected':String(tab===k),onclick:()=>{S.aiTab=k;render()}},navIcon(d),l,k==='ideas'&&open?h('b',{class:'num'},open):null))));
   if(live()&&!PROG.t&&!PROG.busy&&!PROG.seen){PROG.seen=1;setTimeout(pollProgress,300)}
   if(!feat('ai_insights'))return v.append(lockedCard('ai_insights','A monthly analysis of your stays: where prices can go up, festivals to charge more for, what to fix, and an idea board.'));
   if(tab==='pricing')return aiPricing(v);if(tab==='market')return feat('ai_market')?aiMarket(v):v.append(lockedCard('ai_market','Prices of similar rentals near each stay from Google, twice a month, so pricing advice is grounded in the market.'));if(tab==='ideas')return aiIdeas(v);if(tab==='brief')return feat('property_brief')?aiBrief(v):v.append(lockedCard('property_brief','Thinking of adding a place? Drop its pin and size: the AI weighs it against your own bookings and the market around it - what works there, which amenities earn more, price and occupancy by season, and the gaps.'));
@@ -4022,7 +4023,7 @@ function money(v){
 /* ============ OPS ============ */
 function ops(v){
   const OT=S.admin?(S.opsTab||'board'):'board',waitR=OPS.reviews(S.data.bookings,rowsOf('reviews'),TODAY,OPSC()).filter(x=>x.status==='asked').length;
-  if(S.admin)v.append(h('div',{class:'s12 seg ops-tabs',role:'tablist'},[['board','Cleaning & repairs',null],['reviews','Reviews',waitR],['team','Managers',rowsOf('leaves').filter(l=>String(l.status)==='pending'&&String(l.to).slice(0,10)>=TODAY).length||null],...(ownerCovers().length?[['cover','Covering',null]]:[])].map(([k,l,n])=>h('button',{role:'tab','aria-pressed':OT===k,onclick:()=>{S.opsTab=k;render()}},l,n?h('b',{class:'num'},n):null))));
+  if(S.admin)v.append(h('div',{class:'s12 seg ops-tabs',role:'tablist'},[['board','Cleaning & repairs',null],['reviews','Reviews',waitR],['team','Managers',rowsOf('leaves').filter(l=>String(l.status)==='pending'&&String(l.to).slice(0,10)>=TODAY).length||null],...(ownerCovers().length?[['cover','Covering',null]]:[])].map(([k,l,n])=>h('button',{role:'tab','aria-selected':String(OT===k),onclick:()=>{S.opsTab=k;render()}},l,n?h('b',{class:'num'},n):null))));
   if(OT==='reviews')return opsReviews(v);if(OT==='team')return opsTeam(v);if(OT==='cover')return opsCover(v);
   const d1=TOMORROW,d7=add(TODAY,7);const outs=sortBy(D.B.filter(b=>fBo(b)&&b.check_out>=TODAY&&b.check_out<d7),['check_out',1]);
   const open=D.M.filter(m=>fP(D.P[m.property_id])&&m.status!=='Closed'&&m.status!=='Pending approval'&&m.status!=='Rejected');const closed=D.M.filter(m=>fP(D.P[m.property_id])&&m.status==='Closed'&&m.closed_on);
@@ -4168,7 +4169,7 @@ function opsItemsEdit(){const c=OPSC();
       fld('Claims above this (₹) need two admins',two),fld('Next guest’s check-in time (same-day cleanings)',cin))};
   let tab='check';const seg=h('div',{class:'seg ie-tabs',role:'tablist','aria-label':'Sections'}),pane=h('div',{class:'ie-pane'});
   const drawTabs=()=>{seg.replaceChildren(...[['check','Checklist'],['stock','Stock'],['req','Guest requests'],['stay','One stay'],['more','Photos & timing']].map(([k,l])=>
-    h('button',{role:'tab','aria-selected':tab===k?'true':'false','aria-pressed':tab===k?'true':'false',onclick:()=>{tab=k;drawTabs()}},l)));pane.replaceChildren(panes[tab])};drawTabs();
+    h('button',{role:'tab','aria-selected':tab===k?'true':'false',onclick:()=>{tab=k;drawTabs()}},l)));pane.replaceChildren(panes[tab])};drawTabs();
   modal('Manager app setup',h('div',{class:'ie-wrap'},seg,pane),
     [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:async()=>{keep();closeLayer();
       await setSetting('ops.checkout_items',JSON.stringify(E.check.value()),'Checklist saved');await setSetting('ops.stock_items',JSON.stringify(E.stock.value()),'Stock items saved');
@@ -4719,7 +4720,7 @@ function campaigns(v){const T=CMP('template'),I=CMP('image'),K=CMP('campaign');
         tr?h('small',{class:tr.ok?'':'err'},tr.ok?`Test sent to the owner number ${k.tested_at?whenL(k.tested_at):''}`:`Test not sent: ${tr.why||'see the bot log'}`):null),
         h('span',{class:'pill '+(k.status==='tested'?'p-ok':k.status==='test'?'p-warn':'p-mute')},k.status==='test'?'Test on its way':k.status==='tested'?'Tested':'Draft'))})):h('div',{class:'empty'},'No campaigns yet.')))}
 function whatsapp(v){{const s_=useStrip('AI replies this month',aiRepliesMonth(),(SUBPLAN().limits||{}).ai_replies,'past the limit guests get “our team will reply” and you get an alert');if(s_)v.append(s_)}
-  if(S.admin){const wt=S.waTab||'activity';v.append(h('div',{class:'s12 seg wa-tabs',role:'tablist'},[['activity','Activity'],['campaigns','Campaigns']].map(([k,l])=>h('button',{role:'tab','aria-pressed':wt===k,onclick:()=>{S.waTab=k;render()}},l))));
+  if(S.admin){const wt=S.waTab||'activity';v.append(h('div',{class:'s12 seg wa-tabs',role:'tablist'},[['activity','Activity'],['campaigns','Campaigns']].map(([k,l])=>h('button',{role:'tab','aria-selected':String(wt===k),onclick:()=>{S.waTab=k;render()}},l))));
     if(wt==='campaigns')return feat('campaigns')?campaigns(v):v.append(lockedCard('campaigns','Offers, last-minute deals, festival wishes and loyal-guest discounts on WhatsApp: write a template with an image, get Meta’s approval, pick who gets it, preview, see the cost.'))}
   const st=S.wa||(S.wa={type:'All',stage:'All',status:'All',q:'',sort:['created_at',-1],lim:25,win:'30',mode:'people',heat:'All',psort:'hot'});if(!st.win)st.win='30';if(!st.mode)Object.assign(st,{mode:'people',heat:'All',psort:'hot'});
   if(!S.waSeenSession){S.waPrevSeen=+(store.get('jg_wa_seen')||0);store.set('jg_wa_seen',Date.now());S.waSeenSession=true}const W=waData(),f={...S.f,...waWin()};
@@ -4777,7 +4778,7 @@ function whatsapp(v){{const s_=useStrip('AI replies this month',aiRepliesMonth()
   // leads: grouped per person (default, hottest first) or every enquiry flat
   const ql=st.q.toLowerCase();
   const q=h('input',{class:'search',type:'search','aria-label':'Search enquiries',placeholder:'Search name, phone, stay…',value:st.q,id:'waQ',style:{flex:'1 1 200px'}});let tmr;q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{st.q=q.value;render();const n=$('#waQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},220)});
-  const selF=(val,opts,fn)=>{const s=h('select',{class:'btn sm'},opts.map(([v_,t])=>h('option',{value:v_,selected:v_===val||null},t)));s.addEventListener('change',()=>fn(s.value));return s};
+  const selF=(val,opts,fn,label)=>{const s=h('select',{class:'btn sm','aria-label':label||null},opts.map(([v_,t])=>h('option',{value:v_,selected:v_===val||null},t)));s.addEventListener('change',()=>fn(s.value));return s};
   const modeSeg=h('div',{class:'seg'},[['people','People'],['all','All enquiries']].map(([m,t])=>h('button',{'aria-pressed':st.mode===m,onclick:()=>{st.mode=m;st.lim=25;render()}},t)));
   const typeSeg=h('div',{class:'seg'},['All','Guests','Hosting'].map(x=>h('button',{'aria-pressed':st.type===x,onclick:()=>{st.type=x;st.lim=25;render()}},x)));
   if(st.mode!=='all'){
@@ -4798,8 +4799,8 @@ function whatsapp(v){{const s_=useStrip('AI replies this month',aiRepliesMonth()
     v.append(card('s12','Leads by person',{id:'waLeads',hint:`${people.length} people · ${waWin().label.toLowerCase()} · ${st.psort==='recent'?'most recent first':'hottest first'} · 🔵 = new since your last visit`,
       acts:[btnExport(()=>exportRows(people.map(p=>({Heat:p.label,Why:p.why.join('; '),Name:p.latest.name,Phone:phoneTxt(p.latest.phone),Enquiries:p.rows.length,'Last active':p.last,'Latest stay':p.latest.pname||p.latest.location||'','Check-in':p.latest.check_in||'','Quoted ₹':p.latest.quoted||'',Stage:p.latest.stage||'','Follow-up':p.status})),'WhatsApp leads by person'))]},
       h('div',{class:'lead-ctl'},modeSeg,typeSeg,h('div',{class:'seg'},[['hot','Hottest'],['recent','Recent']].map(([m,t])=>h('button',{'aria-pressed':(st.psort||'hot')===m,onclick:()=>{st.psort=m;render()}},t)))),
-      h('div',{class:'lead-ctl'},q,selF(st.heat,[['All','Any heat'],...['Hot','Warm','Cool','Booked','Won','Lost'].filter(x=>counts[x]).map(x=>[x,`${HEAT[x][0]} ${x} (${counts[x]})`])],x=>{st.heat=x;st.lim=25;render()}),
-        selF(st.status,[['All','Any follow-up'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()})),
+      h('div',{class:'lead-ctl'},q,selF(st.heat,[['All','Any heat'],...['Hot','Warm','Cool','Booked','Won','Lost'].filter(x=>counts[x]).map(x=>[x,`${HEAT[x][0]} ${x} (${counts[x]})`])],x=>{st.heat=x;st.lim=25;render()},'Lead heat'),
+        selF(st.status,[['All','Any follow-up'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()},'Follow-up status')),
       people.length?h('div',{class:'people'},people.slice(0,st.lim).map(pcardEl)):h('div',{class:'empty'},'No one matches. Try another window or clear the filters.'),
       people.length>st.lim?h('button',{class:'btn',style:{alignSelf:'center'},onclick:()=>{st.lim+=25;render()}},`Show more (${people.length-st.lim})`):null));
   }else{
@@ -4812,8 +4813,8 @@ function whatsapp(v){{const s_=useStrip('AI replies this month',aiRepliesMonth()
       {t:'Guests',k:'guests',r:1,f:l=>l.guests||''},{t:'Price',k:'quoted',r:1,f:l=>l.quoted?inr(+l.quoted):''},{t:'Stage',k:'stage',f:l=>l.kind==='owner'?'':pillStage(l.stage)},{t:'Follow-up',k:'status',f:l=>[pillLs(l.status),l.asked_team?h('span',{class:'pill p-warn',style:{marginLeft:'4px'}},'📞 wants a call'):null]}];
     v.append(card('s12','All enquiries',{id:'waLeads',hint:`${rows.length} of ${W.P.length} · ${waWin().label.toLowerCase()} · tap a row for details`,acts:[btnExport(()=>exportRows(rows.map(l=>({'Last active':l.last_active,Type:l.kind==='owner'?'Hosting':'Guest',Name:l.name,Phone:phoneTxt(l.phone),Stay:l.pname||l.location||'',City:l.city,'Check-in':l.check_in||'','Check-out':l.check_out||'',Guests:l.guests||'','Quoted ₹':l.quoted||'','Times asked':l.times_asked||1,Stage:l.stage||'',Status:l.status,'Asked for team':l.asked_team||''})),'WhatsApp enquiries'))]},
       h('div',{class:'lead-ctl'},modeSeg,typeSeg),
-      h('div',{class:'lead-ctl'},q,selF(st.stage,[['All','Any stage'],['Follow-up','Worth a follow-up'],['Viewed','Opened a stay'],['Asked','Asked'],['Quoted','Quoted'],['Quoted+','Quoted or further'],['Requested','Special request'],['Held','Held'],['Booked','Booked'],['Expired','Expired'],['Cancelled','Cancelled']],x=>{st.stage=x;st.lim=25;render()}),
-        selF(st.status,[['All','Any follow-up'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()})),
+      h('div',{class:'lead-ctl'},q,selF(st.stage,[['All','Any stage'],['Follow-up','Worth a follow-up'],['Viewed','Opened a stay'],['Asked','Asked'],['Quoted','Quoted'],['Quoted+','Quoted or further'],['Requested','Special request'],['Held','Held'],['Booked','Booked'],['Expired','Expired'],['Cancelled','Cancelled']],x=>{st.stage=x;st.lim=25;render()},'Lead stage'),
+        selF(st.status,[['All','Any follow-up'],...LSTAT.map(s=>[s,s])],x=>{st.status=x;st.lim=25;render()},'Follow-up status')),
       rows.length?table(cols,rows.slice(0,st.lim),{sort:st.sort,onSort:k=>{st.sort=[k,st.sort[0]===k?-st.sort[1]:-1];render()},onRow:openLead,card:l=>[mTop(h('span',{class:'av',style:{background:avc(l.name||'G')}},ini(l.name||'G')),l.name||'Guest',`${l.kind==='owner'?'🏠 Hosting':'🧳 '+(l.pname||'Guest')} · ${fmtD(l.last_active.slice(0,10))}`,l.kind==='owner'?pillLs(l.status):pillStage(l.stage)),
         h('div',{class:'mfoot'},l.check_in?h('span',{class:'chip-s date'},`${fmtD(l.check_in)} → ${fmtD(l.check_out)}`):l.location?h('span',{class:'chip-s'},l.location):null,l.quoted?h('span',{class:'chip-s'},inr(+l.quoted)):null,h('span',{class:'grow'}),pillLs(l.status))]})
         :h('div',{class:'empty'},'No enquiries match. Try another window or clear the filters.'),
