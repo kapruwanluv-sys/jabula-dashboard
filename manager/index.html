@@ -121,6 +121,7 @@ html.iv-open,html.iv-open body{overflow:hidden}
 .cv-note{display:flex;flex-direction:column;gap:2px;border-left:4px solid #e0a020}.cv-note.on{border-left-color:#1d5bd8}.cv-note span{font-size:13px;color:#5a6681}
 .lv-list{margin-top:14px}
 input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}   /* 16 px everywhere: iPhone never zooms into a field */
+@supports not (color:color-mix(in srgb,red,blue)){.p-ok{background:#e3f5eb}.p-warn{background:#fff1de}.p-bad{background:#fdecea}}   /* iOS < 16.2 */
 </style>
 </head>
 <body>
@@ -364,7 +365,8 @@ const OB=(()=>{let dbP=null;const db=()=>dbP=dbP||new Promise((ok,no)=>{if(!wind
 async function queued(){const a=await OB.all();S.q=a.length;return a}
 async function sendOne(it){const p=JSON.parse(JSON.stringify(it.payload));
   if(it.photos&&it.photos.length){const urls=[],slots={};for(let i=0;i<it.photos.length;i++){const ph=it.photos[i],r=await api({action:'upload',kind:it.kind||'checklist',name:`${it.name||'photo'} ${i+1}`,mime:'image/jpeg',data:ph.b64});const u=r.thumb||r.url;urls.push(u);if(ph.slot)(slots[ph.slot]=slots[ph.slot]||[]).push(u)}
-    p.row[it.photoField||'photos']=JSON.stringify(urls);if(Object.keys(slots).length)p.row.photo_slots=JSON.stringify(slots)}
+    if(p.fields)p.fields[it.photoField||'photos']=urls.length===1?urls[0]:JSON.stringify(urls);   // an update (a task's done photo)
+    else{p.row[it.photoField||'photos']=JSON.stringify(urls);if(Object.keys(slots).length)p.row.photo_slots=JSON.stringify(slots)}}
   await api({action:it.op,tab:it.tab,...p})}
 let flushing=false;
 async function flush(){if(flushing||!S.key)return;flushing=true;let sent=0;try{for(const it of(await OB.all()).sort((a,b)=>a.id.localeCompare(b.id))){try{await sendOne(it);await OB.del(it.id);sent++}
@@ -450,7 +452,19 @@ function render(){if(!S.key)return loginScreen();if(!S.d){$('#app').replaceChild
   $('#app').replaceChildren(top,main,tabs)}
 function card(title,right,...body){return h('section',{class:'card'},h('h2',null,T(title),right?h('small',null,right):null),...body)}
 /* guest requests for my stays that aren't done (towels, gas cylinder, cleaning...): the bot tells the guest when done */
-const openTasks=()=>((S.d||{}).requests||[]).filter(r=>String(r.type||'')==='task'&&inS(r.property_id)&&!/^done$/i.test(r.status||'')).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
+const meId=()=>{const m=S.me||{};return String(m.email||'').trim().toLowerCase()||'login:'+String(m.login||'').trim().toLowerCase()};
+/* my stays' tasks, plus any where I'm the backup; the ones with a due time first, by due time */
+const isBackup=r=>!!r.backup&&String(r.backup).toLowerCase()===meId();
+const openTasks=()=>((S.d||{}).requests||[]).filter(r=>String(r.type||'')==='task'&&(inS(r.property_id)||isBackup(r))&&!/^done$/i.test(r.status||''))
+  .sort((a,b)=>(a.due_at?0:1)-(b.due_at?0:1)||String(a.due_at||a.created_at).localeCompare(String(b.due_at||b.created_at)));
+const dueTxt=r=>{if(!r.due_at)return null;const d=new Date(String(r.due_at).replace(' ','T'));if(isNaN(d))return null;const late=d<new Date();
+  return {late,txt:(late?T('overdue')+' · ':T('by')+' ')+d.toLocaleString('en-IN',{hour:'numeric',minute:'2-digit',...(d.toDateString()===new Date().toDateString()?{}:{day:'numeric',month:'short'})})}};
+/* done: an optional photo of the finished job, sent with the update (queued offline like everything else) */
+function taskDone(r){let ph=null;const pv=h('div',{class:'pv'}),fi=h('input',{type:'file',accept:'image/*',capture:'environment',hidden:true,'aria-label':T('Add a photo')});
+  fi.addEventListener('change',async()=>{const f=fi.files[0];if(!f)return;try{const b64=await shrink(f);ph={b64};pv.replaceChildren(h('img',{src:'data:image/jpeg;base64,'+b64,alt:T('Done photo'),style:{maxWidth:'100%',borderRadius:'12px'}}))}catch(e){toast(T('That file isn’t a photo'))}});
+  const close=sheet(T('Done')+' · '+r.addon,h('p',{class:'hint'},nm(r.property_id)+' · '+T('a photo of the finished job helps (optional)')),fi,pv,
+    h('div',{class:'acts'},h('button',{class:'btn',onclick:()=>fi.click()},T('Add a photo')),h('button',{class:'btn primary',onclick:()=>{close();
+      write('update','requests',{match:{request_id:r.request_id},fields:{status:'Done'}},T('Done · the guest is told'),ph?{photos:[ph],photoField:'done_photo',kind:'task',name:'Done '+r.addon}:null).then(ok=>{if(ok==='sent')load();else render()})}},T('Done'))))}
 const ago=t=>{const m=Math.max(0,Math.round((Date.now()-new Date(String(t).replace(' ','T')).getTime())/6e4));return isNaN(m)?'':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
 function taskSet(r,status){write('update','requests',{match:{request_id:r.request_id},fields:{status}},status==='Done'?'Done · the guest is told':'Marked on it').then(ok=>{if(ok==='sent')load();else render()})}
 /* the stay's map link: its own maps_url, else one from its pin (lat/lng, or a pasted Google Maps link) */
@@ -488,8 +502,8 @@ function today(m,u){coverBanners(m);const B=S.d.bookings.filter(b=>live(b)&&inS(
   m.append(card('Arriving tomorrow',tom.length?String(tom.length):'',tom.length?tom.map(b=>bk(b,'tom')):h('div',{class:'empty'},T('Nobody tomorrow.'))));
   const al=S.d.maint.filter(x=>inS(x.property_id)&&/whatsapp/i.test(x.source||'')&&!/^(closed|rejected)$/i.test(x.status||''));
   {const ts=openTasks();if(ts.length)m.append(h('section',{class:'card tasks'},h('h2',null,icon('bell'),T('Guest requests'),h('small',null,String(ts.length))),
-    ts.map(r=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,r.addon),h('span',null,[nm(r.property_id),r.details||null,'asked '+ago(r.created_at),r.status==='In progress'?'on it':null].filter(Boolean).join(' · '))),
-      h('div',{class:'acts'},r.status==='In progress'?null:h('button',{class:'btn sm',onclick:()=>taskSet(r,'In progress')},T('On it')),h('button',{class:'btn sm primary',onclick:()=>taskSet(r,'Done')},T('Done')))))))}
+    ts.map(r=>{const du=dueTxt(r);return h('div',{class:'row'},h('div',{class:'t'},h('b',null,r.addon,du?h('span',{class:'pill '+(du.late?'p-bad':'p-warn'),style:{marginLeft:'6px'}},du.txt):null),h('span',null,[nm(r.property_id),r.details||null,'asked '+ago(r.created_at),r.status==='In progress'?'on it':null,isBackup(r)&&!inS(r.property_id)?T('you are the backup'):null].filter(Boolean).join(' · '))),
+      h('div',{class:'acts'},r.status==='In progress'?null:h('button',{class:'btn sm',onclick:()=>taskSet(r,'In progress')},T('On it')),h('button',{class:'btn sm primary',onclick:()=>taskDone(r)},T('Done'))))})))}
   if(al.length)m.append(card('Guest alerts',String(al.length),al.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,x.issue),h('span',null,`${nm(x.property_id)} · ${x.ticket_id} · ${x.status||'Open'}`)),h('span',{class:'pill '+(x.priority==='High'?'p-bad':'p-warn')},T(x.priority==='High'?'Urgent':'Soon'))))));
   if(sc)m.append(card('My score',`since ${fmtD(C().start)}`,h('div',{class:'stats'},[['Reviews',sc.reviews.received,sc.reviews.missed],['Checklists',sc.checklists.done,sc.checklists.missed],['Stock checks',sc.stock.done,sc.stock.missed]].map(([l,a,b])=>h('div',{class:'stat'},h('b',null,h('span',{class:'ok'},a),' / ',h('span',{class:'bad'},b)),h('span',null,T(l)+' done / missed')))),
     sc.reviews.avg!=null?h('p',{class:'hint'},`Average rating of the reviews you asked for: ${sc.reviews.avg} ★`):null,

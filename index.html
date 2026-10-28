@@ -26,7 +26,7 @@
   --hair:#eef2f8; --hair-2:#dde4ef;
   --ink:#0c1a3d; --ink-2:#2f3d5e; --muted:#5a6681; --faint:#9aa4ba;
   --accent:#1d5bd8; --accent-2:#3d7bff; --accent-soft:#eaf1ff; --accent-ink:#1749b8;
-  --ok:#12804c; --ok-soft:#e3f5eb; --warn:#b4570a; --warn-soft:#fff1de; --bad:#bf2a20; --bad-soft:#fdecea;
+  --ok:#0f7445; --ok-soft:#e3f5eb; --warn:#a04c08; --warn-soft:#fff1de; --bad:#bf2a20; --bad-soft:#fdecea;
   --c-airbnb:#ff385c; --c-booking:#2f6fe0; --c-mmt:#d97706; --c-direct:#16a34a; --c-website:#7c3aed;
   --city-1:#0e9f8b; --city-2:#e0742f; --city-3:#8b5cf6;
   --seg:#eef2f8; --seg-on:#ffffff; --tipbg:#0c1a3d; --tipink:#fff;
@@ -352,7 +352,7 @@ button.sstat:hover{background:var(--surface-2)}
 .cal-name{position:sticky;left:0;z-index:2;background:var(--surface);padding:6px 12px;font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:100%;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--hair);grid-row:1;grid-column:1}
 .cal-name span{font-size:10.5px;color:var(--muted);font-weight:500}
 .cal-d{font-size:10px;color:var(--muted);text-align:center;font-weight:650;padding:7px 0;line-height:1.2}
-.cal-d.we{color:var(--accent-ink)}
+.cal-d.we{color:var(--accent-ink)}.cal-d.we>div{opacity:1!important}
 .cal-d.td span{background:var(--accent);color:#fff;border-radius:7px;padding:1px 5px}
 .cal-cell{grid-row:1;height:100%;border-left:1px solid var(--hair)}
 .cal-cell.td{background:var(--accent-soft)}
@@ -488,7 +488,7 @@ button.sstat:hover{background:var(--surface-2)}
 .mg-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
 .mg-pending{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom));z-index:40;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:99px;box-shadow:var(--shadow-lg);max-width:calc(100% - 32px);width:max-content;flex-wrap:nowrap;white-space:nowrap;border:1px solid var(--hair-2)}
 .mg-pending>span{display:inline-flex;align-items:center;gap:8px;font-size:13.5px}
-.mg-pending>span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 3px rgba(180,87,10,0.22);box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 22%,transparent);flex:none}
+.mg-pending>span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 3px rgba(160,76,8,0.22);box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 22%,transparent);flex:none}
 .mg-pending .btn{white-space:nowrap}
 @media (max-width:980px){.mg-pending{bottom:calc(env(safe-area-inset-bottom,0px) + 96px)}}  /* clear the bottom tab bar */  /* centred with left:50%: without max-content the bar shrinks to half the screen and wraps */
 @media (max-width:640px){
@@ -516,7 +516,7 @@ button.sstat:hover{background:var(--surface-2)}
 .mg-sheet{display:flex;flex-direction:column;gap:8px}.mg-sheet .btn{width:100%;justify-content:center}.mg-sheetp{margin:0 0 4px;color:var(--muted);font-size:13px}
 .mg-notes{margin:0 0 6px;padding:10px 12px;background:var(--surface-2);border-radius:12px;font:inherit;font-size:12.5px;white-space:pre-wrap;max-height:140px;overflow:auto}
 .cal-mon{border:1px solid var(--hair-2);border-radius:99px;padding:7px 12px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;font-weight:650}
-.lg-free{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}.lg-free i{width:14px;height:10px;border-radius:3px;background:rgba(18,128,76,0.16);background:color-mix(in srgb,var(--ok) 16%,transparent);border:1px dashed rgba(18,128,76,0.55);border:1px dashed color-mix(in srgb,var(--ok) 55%,transparent)}
+.lg-free{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}.lg-free i{width:14px;height:10px;border-radius:3px;background:rgba(15,116,69,0.16);background:color-mix(in srgb,var(--ok) 16%,transparent);border:1px dashed rgba(15,116,69,0.55);border:1px dashed color-mix(in srgb,var(--ok) 55%,transparent)}
 .cs{display:flex;flex-direction:column}.cs-grid{display:grid;gap:0}
 .cs-top{position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px);z-index:5;background:var(--surface);padding:4px 0 6px;border-bottom:1px solid var(--hair)}
 .cs-mon div{font-size:10px;font-weight:800;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:visible;height:13px}
@@ -526,7 +526,7 @@ button.sstat:hover{background:var(--surface-2)}
 .cs-name{display:flex;flex-direction:column;gap:1px;background:none;border:0;padding:0 0 7px;text-align:left;color:inherit;width:100%}
 .cs-name b{font-size:13.5px;line-height:1.25}.cs-name span{font-size:11.5px;color:var(--muted)}
 .cs-strip{position:relative;height:26px}
-.cs-cell{grid-row:1;margin:0 1px;border-radius:5px;background:rgba(18,128,76,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px dashed rgba(18,128,76,0.45);border:1px dashed color-mix(in srgb,var(--ok) 45%,transparent)}
+.cs-cell{grid-row:1;margin:0 1px;border-radius:5px;background:rgba(15,116,69,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px dashed rgba(15,116,69,0.45);border:1px dashed color-mix(in srgb,var(--ok) 45%,transparent)}
 .cs-cell.past{background:var(--surface-2);border-color:transparent}.cs-cell.td{box-shadow:inset 0 0 0 2px var(--accent)}
 .cs-bar{grid-row:1;z-index:1;margin:0 1px;border:0;border-radius:6px;color:#fff;font-size:10.5px;font-weight:700;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .cs-bar.ol{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0}.cs-bar.or{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0}
@@ -536,7 +536,7 @@ button.sstat:hover{background:var(--surface-2)}
 .cs-head,.cs-strip{background-image:linear-gradient(to right,var(--hair-2) 1px,transparent 1px);background-size:calc(100% / var(--n)) 100%;background-position:0 0}
 .cs-head{padding-bottom:3px}.cs-d.we{background:rgba(29,91,216,0.06);background:color-mix(in srgb,var(--accent) 6%,transparent);border-radius:6px}
 .cs-strip{border-left:1px solid var(--hair-2);border-right:1px solid var(--hair-2);background-color:transparent}
-.cs-cell.we:not(.past){background:rgba(18,128,76,0.2);background:color-mix(in srgb,var(--ok) 20%,transparent)}.cs-cell.we.past{background:rgba(229,236,249,1.0);background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}
+.cs-cell.we:not(.past){background:rgba(15,116,69,0.2);background:color-mix(in srgb,var(--ok) 20%,transparent)}.cs-cell.we.past{background:rgba(229,236,249,1.0);background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}
 .cs-m .cs-cell{margin:0;border-radius:0;border-width:0 0 0 1px;border-style:solid;border-color:var(--hair-2)}.cs-m .cs-bar{margin:0;border-radius:3px}
 .hm2 .hm-c{border-left:1px solid var(--hair);border-bottom:1px solid var(--hair)}.hm2 .hm-c.we{background:rgba(29,91,216,0.05);background:color-mix(in srgb,var(--accent) 5%,transparent)}
 .hm2 .hm-c.td{background:var(--accent-soft)}.hm2 .hm-d{border-left:1px solid var(--hair)}.hm2 .hm-rowname{border-top:1px solid var(--hair-2);margin-top:4px}
@@ -606,7 +606,7 @@ button.sstat:hover{background:var(--surface-2)}
 /* platform fees & direct share */
 .pf-head{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pf-head>div{display:grid;gap:2px;padding:12px 14px;border-radius:14px;background:rgba(191,42,32,0.07);background:color-mix(in srgb,var(--bad) 7%,transparent)}
-.pf-head>div.pf-dir{background:rgba(18,128,76,0.09);background:color-mix(in srgb,var(--ok) 9%,transparent)}
+.pf-head>div.pf-dir{background:rgba(15,116,69,0.09);background:color-mix(in srgb,var(--ok) 9%,transparent)}
 .pf-head span{font-size:12px;color:var(--muted);font-weight:600}.pf-head b{font-size:24px;letter-spacing:-.02em}
 .pf-head>div:first-child b{color:var(--bad)}.pf-dir b{color:var(--ok)}
 .pf-head small{font-size:11.5px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -642,7 +642,7 @@ button.sstat:hover{background:var(--surface-2)}
 .mg-amt{display:grid;justify-items:end;gap:1px}.mg-amt b{font-size:15px}.mg-amt small{font-size:11px;color:var(--muted)}
 .mg-row.bk .mg-acts{flex-wrap:nowrap}.mg-acts .btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .btn.icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
-.mg-row.cx,.mg-prow.cx{opacity:.72}
+.mg-row.cx,.mg-prow.cx{opacity:.94}   /* cancelled rows: faded, but text still 4.5:1 (axe, 28 Oct) */
 .mg-prow{grid-template-columns:auto minmax(0,1fr) auto;padding:10px 6px 10px 12px;border-radius:18px}
 .mg-pmain{flex-direction:row!important;align-items:center;gap:11px!important}
 .mg-ptx{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
@@ -710,11 +710,11 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .gi-wifi svg{width:15px;height:15px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;flex:none}.gi-wifi .miss{color:var(--warn,#b45309);font-weight:600}
 .gi-chips{display:flex;flex-wrap:wrap;gap:4px}
 .gi-c{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:rgba(12,26,61,0.05);background:color-mix(in srgb,var(--ink) 5%,transparent);color:var(--muted)}
-.gi-c.ok{background:rgba(18,128,76,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
-.gi-c.miss{background:rgba(180,87,10,0.1);background:color-mix(in srgb,var(--warn,#d97706) 10%,transparent);color:var(--warn,#b45309)}
+.gi-c.ok{background:rgba(15,116,69,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.gi-c.miss{background:rgba(160,76,8,0.1);background:color-mix(in srgb,var(--warn,#d97706) 10%,transparent);color:var(--warn,#b45309)}
 .gi-row.ok{grid-template-columns:44px minmax(0,1fr) auto;padding:10px 14px 10px 10px}
 .gi-row.ok .mp-kimg{width:44px;height:44px}
-.gi-ok{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--ok);background:rgba(18,128,76,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.gi-ok{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--ok);background:rgba(15,116,69,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent)}
 .gi-all{color:var(--ok);font-weight:650}
 .gi-list{gap:8px}
 .gi-ring{--p:0;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ok) calc(var(--p)*360deg),rgba(12,26,61,0.08) 0);background:conic-gradient(var(--ok) calc(var(--p)*360deg),color-mix(in srgb,var(--ink) 8%,transparent) 0)}
@@ -769,7 +769,7 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .pr-d{font-size:11.5px;font-weight:600;color:var(--muted)}.pr-c b{font-size:13.5px;align-self:flex-end;letter-spacing:-.01em}
 .k-base{background:rgba(12,26,61,0.04);background:color-mix(in srgb,var(--ink) 4%,transparent)}
 .k-weekend{background:rgba(29,91,216,0.11);background:color-mix(in srgb,var(--accent) 11%,transparent);color:var(--accent)}.pr-c.k-weekend b{color:var(--accent)}
-.k-holiday{background:rgba(180,87,10,0.14);background:color-mix(in srgb,var(--warn,#d97706) 14%,transparent);color:var(--warn,#b45309)}.pr-c.k-holiday b{color:var(--warn,#b45309)}
+.k-holiday{background:rgba(160,76,8,0.14);background:color-mix(in srgb,var(--warn,#d97706) 14%,transparent);color:var(--warn,#b45309)}.pr-c.k-holiday b{color:var(--warn,#b45309)}
 .k-custom{background:linear-gradient(160deg,var(--accent),rgba(22,68,162,1.0));background:linear-gradient(160deg,var(--accent),color-mix(in srgb,var(--accent) 75%,#000));color:#fff}.pr-c.k-custom b,.pr-c.k-custom .pr-d{color:#fff}
 .pr-rules .bk{background:rgba(12,26,61,0.04);background:color-mix(in srgb,var(--ink) 4%,transparent);color:var(--muted)}.pr-rules .bk::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.55}
 .pr-c.past{opacity:.38;cursor:default}
@@ -796,7 +796,7 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .pr-hols{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
 .pr-hol{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--hair);border-radius:14px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
 .pr-hol:hover{box-shadow:0 6px 18px rgba(12,26,61,.08)}
-.pr-hd8{width:42px;height:44px;border-radius:11px;display:grid;place-items:center;align-content:center;flex:none;background:rgba(180,87,10,0.13);background:color-mix(in srgb,var(--warn,#d97706) 13%,transparent);color:var(--warn,#b45309)}
+.pr-hd8{width:42px;height:44px;border-radius:11px;display:grid;place-items:center;align-content:center;flex:none;background:rgba(160,76,8,0.13);background:color-mix(in srgb,var(--warn,#d97706) 13%,transparent);color:var(--warn,#b45309)}
 .pr-hd8 b{font-size:16px;line-height:1}.pr-hd8 small{font-size:10px;font-weight:700;text-transform:uppercase}
 .pr-hol>div{display:grid;gap:1px;min-width:0;flex:1}.pr-hol>div b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pr-hol>div span{font-size:11.5px;color:var(--muted)}
 .pr-pct{font-weight:700;font-size:13px;color:var(--warn,#b45309)}
@@ -861,7 +861,7 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 @media (max-width:640px){.ex-k b{font-size:18px}.ex-row{grid-template-columns:34px minmax(0,1fr) auto;padding:10px 12px}.ex-row .ex-rep,.ex-row .pill{display:none}.ex-ic{width:34px;height:34px}
   .ex-top .btn.primary{width:100%;justify-content:center}.ex-filters{width:100%}.ex-filters .mg-pick{flex:1;max-width:none!important}}
 /* missing details + uploads */
-.gap-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:rgba(180,87,10,0.1);background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid rgba(180,87,10,0.3);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
+.gap-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:rgba(160,76,8,0.1);background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid rgba(160,76,8,0.3);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
 .gap-banner>div{display:grid;gap:2px}.gap-banner b{font-size:14px}.gap-banner span{font-size:12px;color:var(--muted)}
 .gap-chip{border:0;cursor:pointer;font:inherit}
 .gap-q{margin:0;font-size:16px;font-weight:650}
@@ -1054,7 +1054,7 @@ body:not(.is-admin) .admin{display:none!important}
   /* swipeable tab bar: wrapper carries the fixed position so the hints can sit on top */
   .tabwrap{display:block;position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:45;max-width:640px;margin:0 auto}
   .tabwrap .tabbar{position:relative;left:auto;right:auto;bottom:auto;max-width:none;margin:0;padding-bottom:11px}
-  .tb-arrow{position:absolute;top:calc(50% - 4px);transform:translateY(-50%) scale(.85);width:28px;height:28px;border-radius:50%;border:1px solid var(--glass-line);background:var(--surface);box-shadow:var(--shadow-md,0 4px 14px rgba(0,0,0,.12));display:grid;place-items:center;color:var(--accent-ink);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:2}
+  .tb-arrow{position:absolute;top:calc(50% - 4px);transform:translateY(-50%) scale(.85);width:36px;height:36px;border-radius:50%;border:1px solid var(--glass-line);background:var(--surface);box-shadow:var(--shadow-md,0 4px 14px rgba(0,0,0,.12));display:grid;place-items:center;color:var(--accent-ink);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:2}
   .tb-arrow svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
   .tb-arrow.l{left:4px}.tb-arrow.r{right:4px}
   .tabwrap.more-r .tb-arrow.r,.tabwrap.more-l .tb-arrow.l{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1)}
@@ -1185,7 +1185,7 @@ body:not(.is-admin) .admin{display:none!important}
 .bot-off-note{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(224,161,0,.45);background:rgba(224,161,0,.1);color:#7a5600;border-radius:99px;padding:5px 10px 5px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
 .bot-off-note svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
 .light.down i{background:var(--bad,#d93a2b)}
-.live-badge.live{color:var(--ok);border-color:rgba(18,128,76,0.4);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.live-badge.live{color:var(--ok);border-color:rgba(15,116,69,0.4);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
 .live-badge.offline{color:var(--warn)}
 @media (max-width:760px){.live-badge{padding:0 10px;font-size:12px}}
 .light{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--hair);border:0;font:inherit;color:inherit;cursor:default}
@@ -1222,7 +1222,7 @@ button.light{cursor:pointer}.light b{font-weight:650;font-size:13px}.light-note{
 .tl-top{display:flex;align-items:center;gap:8px;min-width:0}.tl-top b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tl-time{color:var(--muted);font-size:12px}
 .tl-meta{color:var(--muted);font-size:12.5px}
 @media (max-width:760px){.people{grid-template-columns:1fr}.person{padding:12px}}
-.data-note{padding:7px 11px;border-radius:12px;border:1px dashed var(--hair-2);color:var(--muted);opacity:.9}.dn-h{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin-bottom:2px}.data-note .rules{font-size:10.5px;line-height:1.4;margin:0;padding-left:14px}.data-note .rules li{margin:0}
+.data-note{padding:7px 11px;border-radius:12px;border:1px dashed var(--hair-2);color:var(--muted)}.dn-h{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink);margin-bottom:2px}.data-note .rules{font-size:10.5px;line-height:1.4;margin:0;padding-left:14px}.data-note .rules li{margin:0}
 /* live data, WhatsApp tab */
 .btn.danger{background:var(--bad,#d93a2b);color:#fff;border-color:transparent}.btn.danger-t{color:var(--bad,#d93a2b)}
 .wa-live{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;font-size:13.5px;flex-wrap:wrap}
@@ -1535,7 +1535,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .mg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.mg-card{display:grid;gap:10px;padding:14px;border:1px solid var(--hair-2);border-radius:18px;background:var(--surface)}.mg-card.off{opacity:.6}
 .mg-ch{display:flex;gap:10px;align-items:center}.mg-cn{display:grid;gap:2px;min-width:0}.mg-cn small{color:var(--muted);font-size:11.5px}.mg-st{display:flex;flex-wrap:wrap;gap:6px}.mg-ca{display:flex;gap:8px;flex-wrap:wrap}
 .sc-ok{color:var(--ok);font-weight:700}.sc-bad{color:var(--bad);font-weight:700}
-.wait-chips{display:flex;flex-wrap:wrap;gap:8px}.wait-chip{display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border-radius:99px;border:1px solid rgba(205,172,147,1.0);border:1px solid color-mix(in srgb,var(--warn) 40%,var(--hair-2));background:rgba(248,240,233,1.0);background:color-mix(in srgb,var(--warn) 9%,var(--surface));font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+.wait-chips{display:flex;flex-wrap:wrap;gap:8px}.wait-chip{display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border-radius:99px;border:1px solid rgba(197,167,147,1.0);border:1px solid color-mix(in srgb,var(--warn) 40%,var(--hair-2));background:rgba(246,239,233,1.0);background:color-mix(in srgb,var(--warn) 9%,var(--surface));font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
 .wait-chip svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2}
 .rv-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--hair-2);font-size:13px;color:var(--ink-2)}.rv-line svg{width:16px;height:16px;fill:none;stroke:#f5b301;stroke-width:2}
 /* AI tab: sections, runs, pricing, market, ideas */
@@ -1547,24 +1547,24 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .ap-grid td,.ap-grid th{white-space:nowrap}.ap-cell{display:inline-flex;gap:6px;align-items:center;border:0;background:none;cursor:pointer;font:inherit;color:inherit;padding:2px}.ap-cell small{color:var(--muted)}
 .ap-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}.ap-leg{display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
 .ap-leg span{display:inline-flex;align-items:center;gap:5px}.ap-leg span::before{content:'';width:10px;height:10px;border-radius:3px;background:var(--surface-2);border:1px solid var(--hair-2)}
-.ap-leg .mk-in::before{background:rgba(212,232,223,1.0);background:color-mix(in srgb,var(--ok) 18%,var(--surface))}.ap-leg .mk-hi::before{background:rgba(245,221,219,1.0);background:color-mix(in srgb,var(--bad) 16%,var(--surface))}.ap-leg .mk-lo::before{background:rgba(238,218,201,1.0);background:color-mix(in srgb,var(--warn) 22%,var(--surface))}.ap-leg .bk::before{background:var(--accent)}
+.ap-leg .mk-in::before{background:rgba(212,230,222,1.0);background:color-mix(in srgb,var(--ok) 18%,var(--surface))}.ap-leg .mk-hi::before{background:rgba(245,221,219,1.0);background:color-mix(in srgb,var(--bad) 16%,var(--surface))}.ap-leg .mk-lo::before{background:rgba(234,216,201,1.0);background:color-mix(in srgb,var(--warn) 22%,var(--surface))}.ap-leg .bk::before{background:var(--accent)}
 .ap-wrap{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:18px;margin-top:12px;align-items:start}@media(max-width:900px){.ap-wrap{grid-template-columns:1fr}}
 .ap-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.ap-c{display:grid;gap:1px;padding:6px 6px 5px;border-radius:10px;background:var(--surface-2);border:1px solid var(--hair);min-height:58px;font-size:11px;min-width:0}
 .ap-c.ap-x{background:none;border:0}.ap-c.past{opacity:.5}.ap-c b{font-size:12.5px}.ap-d{color:var(--muted);font-size:10.5px}.ap-c small{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ap-c.mk-in{background:rgba(231,242,237,1.0);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}.ap-c.mk-hi{background:rgba(249,236,235,1.0);background:color-mix(in srgb,var(--bad) 9%,var(--surface))}.ap-c.mk-lo{background:rgba(244,231,221,1.0);background:color-mix(in srgb,var(--warn) 14%,var(--surface))}
+.ap-c.mk-in{background:rgba(231,241,236,1.0);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}.ap-c.mk-hi{background:rgba(249,236,235,1.0);background:color-mix(in srgb,var(--bad) 9%,var(--surface))}.ap-c.mk-lo{background:rgba(242,230,220,1.0);background:color-mix(in srgb,var(--warn) 14%,var(--surface))}
 .ap-c.bk{box-shadow:inset 0 -3px 0 var(--accent)}.ap-bk,.ap-sg{white-space:nowrap;overflow:visible!important;text-overflow:clip!important}.ap-bk{color:var(--accent)!important;font-weight:650}.ap-sg.up{color:var(--ok)!important;font-weight:650}.ap-sg.dn{color:var(--warn)!important;font-weight:650}
 .ap-side{display:grid;gap:12px}.ap-v{display:grid;gap:6px}.ap-v b{font-size:15px;line-height:1.35}.ap-why summary{cursor:pointer;font-weight:650;font-size:13px}.ap-why ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:12.5px;color:var(--ink-2)}
 .ap-risk{display:flex;gap:6px;margin:0;font-size:12.5px;color:var(--ink-2)}.ap-risk svg{flex:none;width:15px;height:15px;fill:none;stroke:var(--warn);stroke-width:2;margin-top:2px}
 .ap-tbl{display:grid;border:1px solid var(--hair-2);border-radius:12px;overflow:hidden}.ap-kv{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;padding:7px 10px;font-size:12px;border-top:1px solid var(--hair)}
 .ap-kv:first-child{border-top:0}.ap-kh{background:var(--surface-2);color:var(--muted);font-weight:650}.ap-kv span{color:var(--muted)}.ap-kv b{text-align:right}
 .ap-facts{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--ink-2)}.ap-facts .warn{color:var(--warn)}.ap-acts{display:flex;gap:8px;flex-wrap:wrap}
-.mk-cell{display:inline-flex;gap:4px;align-items:center}.mk-pos{font-weight:700;font-size:12px;padding:1px 6px;border-radius:99px}.mk-pos.mk-in{color:var(--ok);background:rgba(18,128,76,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent)}
-.mk-pos.mk-hi{color:var(--bad);background:rgba(191,42,32,0.1);background:color-mix(in srgb,var(--bad) 10%,transparent)}.mk-pos.mk-lo{color:var(--warn);background:rgba(180,87,10,0.14);background:color-mix(in srgb,var(--warn) 14%,transparent)}
-.chip-s.late{background:rgba(242,225,211,1.0);background:color-mix(in srgb,var(--warn) 18%,var(--surface));color:var(--ink)}
+.mk-cell{display:inline-flex;gap:4px;align-items:center}.mk-pos{font-weight:700;font-size:12px;padding:1px 6px;border-radius:99px}.mk-pos.mk-in{color:var(--ok);background:rgba(15,116,69,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.mk-pos.mk-hi{color:var(--bad);background:rgba(191,42,32,0.1);background:color-mix(in srgb,var(--bad) 10%,transparent)}.mk-pos.mk-lo{color:var(--warn);background:rgba(160,76,8,0.14);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.chip-s.late{background:rgba(238,223,211,1.0);background:color-mix(in srgb,var(--warn) 18%,var(--surface));color:var(--ink)}
 .mk-list{display:grid;gap:8px}.mk-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--hair-2);border-radius:14px;background:var(--surface)}
 .mk-t,.mk-p{display:grid;gap:2px;min-width:0}.mk-t span,.mk-p small{color:var(--muted);font-size:12px}.mk-p{text-align:right}
 .id-list{display:grid;gap:10px}.id-row{display:grid;grid-template-columns:1fr auto;gap:14px;padding:12px 14px;border:1px solid var(--hair-2);border-radius:16px;background:var(--surface)}
-.id-row.done{background:rgba(243,249,246,1.0);background:color-mix(in srgb,var(--ok) 5%,var(--surface))}.id-t{display:grid;gap:3px;min-width:0}.id-t span{font-size:12.5px;color:var(--ink-2)}.id-t small{color:var(--muted);font-size:11.5px}
+.id-row.done{background:rgba(243,248,246,1.0);background:color-mix(in srgb,var(--ok) 5%,var(--surface))}.id-t{display:grid;gap:3px;min-width:0}.id-t span{font-size:12.5px;color:var(--ink-2)}.id-t small{color:var(--muted);font-size:11.5px}
 .id-r{display:grid;gap:6px;justify-items:end;align-content:start}.id-imp{display:grid;gap:2px;justify-items:end}.id-imp small{color:var(--muted);font-size:11px}.id-d{font-size:12px;font-weight:650}.id-d.up{color:var(--ok)}.id-d.dn{color:var(--bad)}
 @media(max-width:700px){.id-row{grid-template-columns:1fr}.id-r{justify-items:start}.id-imp{justify-items:start}.mk-row{grid-template-columns:1fr auto}.mk-row>a,.mk-row>span:last-child{display:none}}
 .mk-chip{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;padding:10px 12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--hair-2)}.mk-chip>svg{flex:none;width:16px;height:16px;fill:none;stroke:var(--accent);stroke-width:2;margin-top:3px}
@@ -1605,7 +1605,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .mt-nights{display:flex;flex-wrap:wrap;gap:6px}.mt-nights .chip-s{cursor:pointer;border:1px solid var(--hair-2)}.mt-nights .chip-s.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .mt-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 .ml{display:grid;gap:4px}.ml-head{margin:0 0 8px;font-size:14px;line-height:1.55;color:var(--ink)}.ml-head b{font-weight:700}
-.ml-v{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:650;white-space:nowrap}.ml-v.ok{background:rgba(18,128,76,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}.ml-v.warn{background:rgba(237,161,0,0.18);background:color-mix(in srgb,#eda100 18%,transparent);color:#8a5a00}.ml-v.acc{background:var(--accent-soft);color:var(--accent)}
+.ml-v{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:650;white-space:nowrap}.ml-v.ok{background:rgba(15,116,69,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}.ml-v.warn{background:rgba(237,161,0,0.18);background:color-mix(in srgb,#eda100 18%,transparent);color:#8a5a00}.ml-v.acc{background:var(--accent-soft);color:var(--accent)}
 .ml-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(90px,2fr) 58px;gap:12px;align-items:center;padding:6px 8px;border-radius:10px}.ml-row:hover{background:var(--surface-2)}.ml-row.you{background:var(--accent-soft)}
 .ml-name{min-width:0;display:grid;gap:1px}.ml-name>a,.ml-name>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:inherit;text-decoration:none}.ml-name>a:hover{text-decoration:underline}
 .ml-name small{color:var(--muted);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1643,7 +1643,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .sd-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}.sd-col{display:grid;gap:7px;align-content:start;min-width:0}.sd-col h4{margin:4px 0 0;font-size:12px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .sd-m{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 11px;border-radius:12px;background:var(--surface-2);color:inherit;text-decoration:none;min-width:0}.sd-m:hover{outline:1px solid var(--accent)}
 .sd-m>span{display:grid;min-width:0}.sd-m>span b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sd-m small{font-size:11.5px;color:var(--muted)}
-.sd-ams{display:flex;flex-wrap:wrap;gap:6px}.sd-am{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:99px;font-size:12.5px;background:rgba(18,128,76,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ink)}
+.sd-ams{display:flex;flex-wrap:wrap;gap:6px}.sd-am{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:99px;font-size:12.5px;background:rgba(15,116,69,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ink)}
 .sd-am i{font-style:normal;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--surface);font-size:13px}.sd-ams.mute .sd-am{background:var(--surface-2);color:var(--muted)}
 .sd-facts{display:flex;flex-wrap:wrap;gap:8px}.sd-facts:empty{display:none}.sd-fact{font-size:12.5px;padding:5px 11px;border-radius:99px;background:var(--surface-2)}.sd-fact.hot{background:rgba(235,104,52,0.13);background:color-mix(in srgb,#eb6834 13%,transparent);color:#a8441a;font-weight:600}
 .sd-empty{display:grid;gap:4px;padding:16px;border-radius:14px;background:var(--surface-2);font-size:13px}.sd-empty span{color:var(--muted)}
@@ -1658,7 +1658,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .mt-nums{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted)}.mt-nums b{color:var(--ink)}
 .mt-near{display:grid;gap:4px}.mt-near a{min-width:0;display:flex;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:10px;background:var(--surface-2);color:inherit;text-decoration:none;font-size:12.5px}
 .mt-near a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.mt-near a small{color:var(--muted);white-space:nowrap}.mt-near a:hover{outline:1px solid var(--accent)}
-.mt-chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.mt-chips>small{color:var(--muted);font-size:12px;margin-right:2px}.chip-s.good{background:rgba(18,128,76,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.mt-chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.mt-chips>small{color:var(--muted);font-size:12px;margin-right:2px}.chip-s.good{background:rgba(15,116,69,0.14);background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
 .mt-busy{color:#9a6b00;font-weight:600;font-size:12px}.mt-prem{color:var(--muted);font-size:12px;line-height:1.4}
 .mt-do{display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:12px;background:var(--accent-soft);font-size:12.5px;line-height:1.45}.mt-do svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--accent);stroke-width:2;margin-top:1px}
 .mt-trend{width:100%;height:auto;display:block}
@@ -1702,7 +1702,7 @@ th.on{color:var(--accent)}
 .rp-row:hover{border-color:var(--accent)}.rp-row>div{display:grid;gap:1px;flex:1}.rp-row small{color:var(--muted);font-size:12px}.rp-row>svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:2}
 .rp-ic{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center}.rp-ic svg{width:17px;height:17px;fill:none;stroke:var(--accent);stroke-width:2}
 /* festival calendar, booking speed */
-.pr-ly{display:block;margin-top:2px;font-size:11px;color:var(--muted)}.pr-hol.risky{border-color:rgba(205,172,147,1.0);border-color:color-mix(in srgb,var(--warn) 40%,var(--hair-2))}
+.pr-ly{display:block;margin-top:2px;font-size:11px;color:var(--muted)}.pr-hol.risky{border-color:rgba(197,167,147,1.0);border-color:color-mix(in srgb,var(--warn) 40%,var(--hair-2))}
 .pr-past summary{cursor:pointer;font-size:12.5px;font-weight:650;color:var(--muted);margin-top:10px}
 .pc-t td:first-child{white-space:normal;min-width:118px;max-width:200px;line-height:1.3}.pc-t td:first-child small{display:block;font-size:11px}
 .pc-c{display:grid;justify-items:end;gap:1px}.pc-c small{font-size:11px}.pc-c .up{color:var(--ok);font-weight:650}.pc-c .dn{color:var(--bad);font-weight:650}.pc-wk{color:var(--accent);font-weight:650}
@@ -1711,7 +1711,7 @@ th.on{color:var(--accent)}
 .fh-list{display:grid;gap:6px;padding:10px 12px;border-radius:14px;background:rgba(241,245,253,1.0);background:color-mix(in srgb,var(--accent) 6%,var(--surface));margin-bottom:8px}.fh-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}.fh-row small{color:var(--muted)}
 .fh-note{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
 .fh-banner{display:flex;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(239,244,252,1.0);background:color-mix(in srgb,var(--accent) 7%,var(--surface));margin-bottom:10px;font-size:12.5px}.fh-banner>div{display:grid;gap:3px}.fh-banner svg{flex:none;width:16px;height:16px;fill:none;stroke:var(--accent);stroke-width:2;margin-top:2px}
-.fh-warn{display:grid;gap:6px;padding:12px;border-radius:14px;border:1px solid rgba(203,165,136,1.0);border:1px solid color-mix(in srgb,var(--warn) 45%,var(--hair-2));background:rgba(249,242,235,1.0);background:color-mix(in srgb,var(--warn) 8%,var(--surface));margin-bottom:10px;font-size:12.5px}.fh-warn ul{margin:0;padding-left:18px}
+.fh-warn{display:grid;gap:6px;padding:12px;border-radius:14px;border:1px solid rgba(194,160,135,1.0);border:1px solid color-mix(in srgb,var(--warn) 45%,var(--hair-2));background:rgba(247,241,235,1.0);background:color-mix(in srgb,var(--warn) 8%,var(--surface));margin-bottom:10px;font-size:12.5px}.fh-warn ul{margin:0;padding-left:18px}
 /* quick wins: cities, why this price, lead time, repeat guests, bot strip */
 .card-h .acts{min-width:0;max-width:100%;flex-wrap:wrap}.card-h .acts .mg-pick{max-width:min(320px,100%);min-width:0;text-overflow:ellipsis}
 .ct-list{display:grid;gap:6px}.ct-row{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--hair-2);border-radius:14px;background:var(--surface);cursor:pointer;font:inherit;color:inherit;text-align:left}
@@ -1737,13 +1737,13 @@ th.on{color:var(--accent)}
 .ins-dg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.ins-dg div{display:grid;gap:2px;padding:10px;border-radius:12px;background:var(--surface-2);text-align:center}.ins-dg b{font-size:20px}.ins-dg span{font-size:11.5px;color:var(--muted)}
 .ins-mv{display:flex;flex-wrap:wrap;gap:6px}.ins-save{margin-left:6px;vertical-align:middle}.ins-ai-row{display:flex;gap:8px;align-items:flex-start}.ins-ai-row .ins-ai{flex:1}
 .pa-list{display:grid;gap:10px}.pa-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;padding:12px 14px;border:1px solid var(--hair-2);border-radius:16px;background:var(--surface)}
-.pa-row.done{background:rgba(243,249,246,1.0);background:color-mix(in srgb,var(--ok) 5%,var(--surface))}.pa-l{display:grid;gap:5px;min-width:0}.pa-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pa-h small{color:var(--muted)}
+.pa-row.done{background:rgba(243,248,246,1.0);background:color-mix(in srgb,var(--ok) 5%,var(--surface))}.pa-l{display:grid;gap:5px;min-width:0}.pa-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pa-h small{color:var(--muted)}
 .pa-t{font-size:13.5px}.pa-why{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2);display:grid;gap:2px}.pa-risk{display:flex;gap:6px;color:var(--muted);font-size:11.5px}.pa-risk svg{flex:none;width:13px;height:13px;fill:none;stroke:var(--warn);stroke-width:2;margin-top:1px}
 .pa-r{display:grid;gap:6px;justify-items:end;align-content:start}.pa-p{display:flex;gap:6px;align-items:baseline}.pa-p s{color:var(--faint);font-size:12px}.pa-p b{font-size:16px}.pa-p .up{color:var(--ok);font-weight:700;font-size:12px}.pa-p .dn{color:var(--warn);font-weight:700;font-size:12px}
 .pa-g{color:var(--muted);font-size:11.5px}@media(max-width:700px){.pa-row{grid-template-columns:1fr}.pa-r{justify-items:start}}
 .ap-facts .ok{color:var(--ok);font-weight:650}
 .mk-week{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}.mk-wk{display:grid;gap:2px;text-align:left;padding:10px 12px;border-radius:14px;border:1px solid var(--hair-2);background:var(--surface);cursor:pointer;font:inherit;color:inherit}
-.mk-wk span{font-size:12px;color:var(--muted)}.mk-wk.part{border-color:rgba(203,165,136,1.0);border-color:color-mix(in srgb,var(--warn) 45%,var(--hair-2))}.mk-wk.ok{border-color:rgba(130,183,166,1.0);border-color:color-mix(in srgb,var(--ok) 45%,var(--hair-2));background:rgba(241,247,244,1.0);background:color-mix(in srgb,var(--ok) 6%,var(--surface))}.mk-wk.ok span{color:var(--ok);font-weight:650}
+.mk-wk span{font-size:12px;color:var(--muted)}.mk-wk.part{border-color:rgba(194,160,135,1.0);border-color:color-mix(in srgb,var(--warn) 45%,var(--hair-2))}.mk-wk.ok{border-color:rgba(128,178,163,1.0);border-color:color-mix(in srgb,var(--ok) 45%,var(--hair-2));background:rgba(241,247,244,1.0);background:color-mix(in srgb,var(--ok) 6%,var(--surface))}.mk-wk.ok span{color:var(--ok);font-weight:650}
 .mk-nights{display:grid;gap:6px}.mk-nr{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center}.mk-so{display:flex;gap:6px;align-items:center;font-size:12.5px;white-space:nowrap}
 .mk-ra{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.mk-row{grid-template-columns:1fr auto auto}.mk-t small{color:var(--muted);font-size:11.5px}
 .id-own{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.id-own input{min-height:34px;border-radius:10px;border:1px solid var(--hair-2);padding:0 8px;font:inherit;font-size:12.5px}.id-lift{font-size:12px}.id-lift.up{color:var(--ok)}.id-lift.dn{color:var(--bad)}
@@ -1981,6 +1981,17 @@ body.is-live .dev-only{display:none!important}
 .hs-row div{display:flex;flex-direction:column;min-width:0}.hs-row div span{font-size:12px;color:var(--muted)}
 @media (max-width:640px){.sy-sum{grid-template-columns:repeat(2,minmax(0,1fr))}.sy-fields{grid-template-columns:minmax(0,1fr)}
   .hs-row{grid-template-columns:minmax(0,1fr) auto}.hs-row .chip-s{display:none}}
+.mg-tabs button .num{color:#4a5570}   /* tab counts: 5.5:1 on the grey chip */
+/* iOS before 16.2 has no color-mix(): the bars and backgrounds people read must still show (decorative tints may go) */
+@supports not (color:color-mix(in srgb,red,blue)){.tabbar{background:var(--surface)!important}.topbar .brand{background:var(--surface)}
+  .pace-bar .fill{background:var(--accent)}.pace-bar .mark{background:var(--muted)}.pr-tipbox{background:var(--surface-2,#f3f5f9)}}
+.pm-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--hair)}.pm-row:first-child{border-top:0}
+.pm-row .t{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}.pm-row .t small{color:var(--muted)}.pm-row .end{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pm-empty .tags{display:flex;flex-wrap:wrap;gap:6px}.form .chk{display:flex;gap:8px;align-items:center}
+.goal-card{border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}.goal-card.empty{flex-direction:row;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted)}
+.gc-top{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.gc-top>div{flex:1 1 200px;min-width:0}.gc-big{font-size:24px;font-variant-numeric:tabular-nums}.gc-of{color:var(--muted);font-variant-numeric:tabular-nums}
+.gc-bar{height:8px;border-radius:99px;background:var(--hair);overflow:hidden}.gc-bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}.goal-card.ok .gc-bar i{background:var(--ok)}.goal-card.low .gc-bar i{background:var(--warn)}
+.gc-note{margin:0;color:var(--muted);font-size:13.5px}
 </style>
 </head>
 <body>
@@ -2249,6 +2260,10 @@ function syncCities(){const want=[...CLIENT.cities.map(c=>c.name),...cityExtra()
 const cityMeta=c=>({...(CLIENT.cities.find(x=>x.name===c)||{}),...(cityExtra().find(x=>x.name===c)||{})});
 const liveCities=()=>CITIES.filter(c=>!D||D.props.some(p=>p.city===c&&!/^(stopped|inactive)$/i.test(String(p.status||'').trim())));
 const CITY_MORE=['#d63384','#2f80ed','#b7791f','#4f8a10','#7d5ba6','#c2410c','#0f766e','#9a3412'];
+/* a colour used for TEXT on white: darkened just enough to read at 4.5:1 (city colours are picked for charts) */
+const textSafe=c=>{const t=String(c||'').trim();let v=/^#([0-9a-f]{6})$/i.exec(t)?[0,2,4].map(i=>parseInt(t.slice(1+i,3+i),16)):(t.match(/\d+(\.\d+)?/g)||[]).slice(0,3).map(Number);
+  if(v.length<3)return c;const lum=x=>{x/=255;return x<=.03928?x/12.92:((x+.055)/1.055)**2.4},L=a=>.2126*lum(a[0])+.7152*lum(a[1])+.0722*lum(a[2]);
+  for(let k=0;k<14&&1.05/(L(v)+.05)<4.6;k++)v=v.map(x=>Math.round(x*.9));return '#'+v.map(x=>Math.max(0,Math.min(255,x)).toString(16).padStart(2,'0')).join('')};
 const cityColor=c=>{const m=cityMeta(c),i=CITIES.indexOf(c);if(m.color)return m.color;return i>=0&&i<3?css(['--city-1','--city-2','--city-3'][i]):CITY_MORE[(Math.max(i,3)-3)%CITY_MORE.length]};
 /* a light-to-dark palette from one colour, for the scenery of a city added later */
 const palOf=hex=>{const n=parseInt(String(hex).replace('#',''),16),c=[n>>16&255,n>>8&255,n&255],mx=k=>'#'+c.map(v=>Math.round(v+(255-v)*k).toString(16).padStart(2,'0')).join('');return[mx(.86),mx(.66),mx(.44),mx(.2),mx(0)]};
@@ -2664,7 +2679,7 @@ function insights(v){
   const saveBtn=(key,title,detail,stay,cat)=>{const sv=hasIdea(key);return h('button',{class:'btn sm ins-save'+(sv?' ghost':''),disabled:sv||null,onclick:()=>saveIdea({id:key,title,detail,stay_id:stay||null,category:cat||'move',run:I._runId})},icon(sv?'check':'bulb'),sv?'Saved':'Save')};
   const sayS=(t,key,cat)=>t?h('div',{class:'ins-ai-row'},say(t),saveBtn(key,String(t).slice(0,110),t,null,cat)):null;
   const list=items=>items&&items.length?h('ul',{class:'ins-list'},items.map(x=>h('li',null,...x))):null;
-  const tbl=(head,rows)=>h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,head.map(([l,r])=>h('th',{class:r?'r':null},l)))),h('tbody',null,rows)));
+  const tbl=(head,rows)=>h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},h('thead',null,h('tr',null,head.map(([l,r])=>h('th',{class:r?'r':null},l)))),h('tbody',null,rows)));
   const td=(x,r)=>h('td',{class:r?'r num':null},x);
   const runPick=RUNS.length>1?h('select',{class:'mg-pick ins-runs','aria-label':'Analysis run',onchange:e=>{S.insRun=e.target.value===RUNS[RUNS.length-1].id?null:e.target.value;render()}},
     [...RUNS].reverse().map(r=>{const m=r.I._meta||{};return h('option',{value:r.id,selected:r.id===I._runId||null},`${m.generated_at?whenL(m.generated_at):'Earlier run'} · ${insName(m.model)}${m.cost_inr!=null?' · ₹'+(+m.cost_inr).toFixed(2):''}${m.status==='waiting'?' · words on the way':''}`)})):null;
@@ -3043,7 +3058,7 @@ function aiMarket(v){const all=rowsOf('rentals').map(RK).filter(r=>!perRoom(r)),
   // the price ahead: each area's median by night
   const famsAll=[...new Set(inCity.map(r=>r.family))];
   if(nights.length>1)v.append(card('s12','The price ahead',{hint:'median listed price by night · compare next week with 4 and 8 weeks out and festival nights'},
-    h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Area'),nights.map(n=>h('th',{class:'r'+(n===night?' on':'')},nLab(n))))),
+    h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Area'),nights.map(n=>h('th',{class:'r'+(n===night?' on':'')},nLab(n))))),
       h('tbody',null,famsAll.map(f=>{const fr=inCity.filter(r=>r.family===f),base=pctl(fr.filter(r=>r.night===(tueN||nights[0])&&r.price).map(r=>r.price),.5);
         return h('tr',null,h('td',null,`${fr[0].area} · ${f.replace(/^.*-/,'')}`),nights.map(n=>{const m=pctl(fr.filter(r=>r.night===n&&r.price).map(r=>r.price),.5),dd=m&&base&&n!==(tueN||nights[0])?Math.round((m/base-1)*100):null;
           return h('td',{class:'r num'},m?inrK(m):'–',dd!=null?h('small',{class:dd>=0?'up':'dn'},` ${dd>=0?'+':''}${dd}%`):null)}))}))))));
@@ -3072,7 +3087,7 @@ function aiMarketChecks(v){prLoad();const props=D.props.filter(p=>!isStopped(p)&
   const pos=(you,b)=>!b||!you?h('span',{class:'hint'},'–'):h('span',{class:'mk-pos '+(you>b.high?'mk-hi':you<b.low?'mk-lo':'mk-in')},`${inrK(you)} vs ${inrK(b.mid)} · ${you>=b.mid?'+':''}${Math.round((you/b.mid-1)*100)}%`);
 
   v.append(card('s12','You vs the market',{hint:'your listed price vs comparable listings on the nights checked (next 4 months) · weekdays and weekends',acts:[...uplBtns('market'),h('button',{class:'btn sm primary',onclick:()=>mkEdit()},icon('plus'),'Price check')]},
-    h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Stay'),h('th',{class:'r'},'Weekdays'),h('th',{class:'r'},'Weekends'),h('th',{class:'r'},'Comparables sold out'),h('th',{class:'r'},'Listings'),h('th',{class:'r'},'Last checked'))),
+    h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Stay'),h('th',{class:'r'},'Weekdays'),h('th',{class:'r'},'Weekends'),h('th',{class:'r'},'Comparables sold out'),h('th',{class:'r'},'Listings'),h('th',{class:'r'},'Last checked'))),
       h('tbody',null,props.map(p=>{const b=mkBand(p.property_id,'recent'),allR=all.filter(r=>r.property_id===p.property_id),last=allR.map(r=>String(r.observed_on||'')).sort().pop(),
         lowOnly=allR.length&&allR.every(r=>mkAI(r)&&String(r.confidence||'').toLowerCase()==='low'),lo=n=>lowOnly?h('span',{class:'hint',title:'The AI found only rough matches: shown in the list below, not compared'},'low confidence only'):pos(n,null);
         return h('tr',{class:p.property_id===S.mkPid?'hl':'',onclick:()=>{S.mkPid=p.property_id;render()},style:{cursor:'pointer'}},h('td',null,short(p.property)),
@@ -3204,7 +3219,7 @@ const delta=(a,b,inv)=>{if(!b||!isFinite(a/b))return h('span',{class:'delta flat
 const PHONE=()=>innerWidth<760;
 function table(cols,rows,{sort,onSort,onRow,hl,card}={}){
   if(card&&PHONE())return h('div',{class:'mlist'},rows.map(r=>h(onRow?'button':'div',{class:'mcard'+(hl&&hl(r)?' hl':''),onclick:onRow?()=>onRow(r):null},card(r))));
-  return h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,cols.map(c=>{const on=sort&&sort[0]===c.k;return h('th',{class:(c.r?'r ':'')+(onSort&&c.k?'sort':''),onclick:onSort&&c.k?()=>onSort(c.k):null,'aria-sort':on?(sort[1]>0?'ascending':'descending'):null},c.t,on?h('span',{class:'ar'},sort[1]>0?'↑':'↓'):null)}))),
+  return h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},h('thead',null,h('tr',null,cols.map(c=>{const on=sort&&sort[0]===c.k;return h('th',{class:(c.r?'r ':'')+(onSort&&c.k?'sort':''),onclick:onSort&&c.k?()=>onSort(c.k):null,'aria-sort':on?(sort[1]>0?'ascending':'descending'):null},c.t,on?h('span',{class:'ar'},sort[1]>0?'↑':'↓'):null)}))),
     h('tbody',null,rows.map(r=>h('tr',{class:(onRow?'click ':'')+(hl&&hl(r)?'hl':''),onclick:onRow?()=>onRow(r):null},cols.map(c=>h('td',{class:(c.r?'r num ':'')+(c.m?'m':''),'data-l':c.t||null},c.f(r))))))))
 }
 const mStat=(l,v,bar,color)=>h('div',{class:'mst'},h('span',null,l),h('b',{class:'num'},v),bar!=null?h('i',{class:'mbar'},h('i',{style:{width:Math.max(3,Math.min(100,bar*100))+'%',background:color||'var(--accent)'}})):null);
@@ -3474,11 +3489,21 @@ document.addEventListener('click',()=>{if(S.pop){S.pop=null;renderFilters()}});
 /* ============ OVERVIEW ============ */
 /* guest requests the bot turned into tasks for the stay's manager (Requests tab, type "task") */
 const openTasksAll=()=>(S.data.requests||[]).filter(r=>String(r.type||'')==='task'&&!/^done$/i.test(r.status||'')&&D.P[r.property_id]&&fP(D.P[r.property_id]));
+/* a task's due time and backup manager: the backup sees it in their app and is alerted on WhatsApp once it's overdue */
+const managersList=()=>(S.data.staff||[]).filter(u=>/^manager$/i.test(String(u.role||''))&&String(u.active||'Yes').toLowerCase()!=='no').map(u=>({id:String(u.email||'').trim().toLowerCase()||'login:'+String(u.login||'').trim().toLowerCase(),name:String(u.name||u.login||u.email||'Manager')}));
+const mgrName=id=>(managersList().find(m=>m.id===String(id).toLowerCase())||{}).name||String(id).replace(/^login:/,'');
+function taskDueChip(r){if(!r.due_at)return null;const d=new Date(String(r.due_at).replace(' ','T'));if(isNaN(d))return null;const late=d<new Date();
+  return h('span',{class:'pill '+(late?'p-bad':'p-mute')},(late?'overdue · ':'by ')+d.toLocaleString('en-IN',{hour:'numeric',minute:'2-digit',...(d.toDateString()===new Date().toDateString()?{}:{day:'numeric',month:'short'})}))}
+function taskDueForm(r){const ms=managersList(),due=h('input',{id:'tkDue',type:'datetime-local',value:String(r.due_at||'').slice(0,16)}),bk=h('select',{id:'tkBackup'},[h('option',{value:''},'No backup')].concat(ms.map(m=>h('option',{value:m.id,selected:String(r.backup||'').toLowerCase()===m.id||null},m.name))));
+  modal('Due time and backup',h('div',{class:'form'},h('p',{class:'full hint',style:{margin:0}},`${r.addon} · ${short(D.P[r.property_id].property)}. If it isn't done by then, the backup is alerted on WhatsApp and can close it in their app.`),
+      h('label',{class:'f'},'Due by',due),h('label',{class:'f'},'Backup manager',bk)),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{closeLayer();save('requests','update',{match:{request_id:r.request_id},fields:{due_at:due.value||'',backup:bk.value||'',escalated_at:''}},due.value?'Due time saved':'Saved')}},'Save')])}
 function tasksCard(){const all=(S.data.requests||[]).filter(r=>String(r.type||'')==='task'&&D.P[r.property_id]&&fP(D.P[r.property_id]));if(!all.length)return null;
   const open=openTasksAll().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))),done=all.filter(r=>/^done$/i.test(r.status||'')).sort((a,b)=>String(b.done_at).localeCompare(String(a.done_at))).slice(0,6);
   const age=t=>{const m=Math.round((Date.now()-new Date(String(t).replace(' ','T')).getTime())/6e4);return isNaN(m)?'':m<60?m+' min':m<1440?Math.round(m/60)+' h':Math.round(m/1440)+' d'};
   const row=r=>h('div',{class:'cl-row','data-ref':r.request_id},h('div',{class:'cl-t'},h('b',null,r.addon),h('span',null,[short(D.P[r.property_id].property),r.details||null,/^done$/i.test(r.status||'')?`done by ${r.done_by||'manager'}${r.done_at?' · '+whenL(r.done_at):''}${r.notified_at?' · guest told':''}`:`asked ${age(r.created_at)} ago · ${mgrOf(r.property_id)||'no manager'}`].filter(Boolean).join(' · '))),
-    h('span'),/^done$/i.test(r.status||'')?h('span',{class:'pill p-ok'},'Done'):h('div',{class:'cl-acts'},h('span',{class:'pill '+(r.status==='In progress'?'p-acc':'p-warn')},r.status==='In progress'?'On it':'Waiting'),
+    h('span'),/^done$/i.test(r.status||'')?h('div',{class:'cl-acts'},r.done_photo?h('a',{class:'btn sm ghost',href:r.done_photo,target:'_blank',rel:'noopener'},'Photo'):null,h('span',{class:'pill p-ok'},'Done')):h('div',{class:'cl-acts'},taskDueChip(r),r.backup?h('span',{class:'pill p-mute',title:'backup manager'},'↪ '+mgrName(r.backup)):null,h('span',{class:'pill '+(r.status==='In progress'?'p-acc':'p-warn')},r.status==='In progress'?'On it':'Waiting'),
+      S.admin?h('button',{class:'btn sm ghost',onclick:()=>taskDueForm(r)},r.due_at||r.backup?'Change':'Due / backup'):null,
       h('button',{class:'btn sm admin',onclick:()=>save('requests','update',{match:{request_id:r.request_id},fields:{status:'Done',done_at:new Date().toISOString().slice(0,16),done_by:(LIVE.me||{}).name||'admin'}},'Marked done · the guest is told')},'Done')));
   return card('s12 tasks-card','Guest requests',{hint:'everyday needs guests asked for on WhatsApp · the stay\'s manager gets them and the guest is told when done'},
     open.length?h('div',{class:'cl-list'},open.map(row)):h('div',{class:'empty'},'Nothing waiting.'),done.length?h('details',{class:'cl-done'},h('summary',null,`Recently done (${done.length})`),h('div',{class:'cl-list'},done.map(row))):null)}
@@ -3486,8 +3511,28 @@ function waitingChips(){if(!S.admin||!S.data)return null;const c=OPSC(),rv=OPS.r
   is=(S.data.maint||[]).filter(m=>m.status==='Pending approval').length,cl=rowsOf('claims').filter(x=>String(x.status||'pending')==='pending').length,tk=openTasksAll().length;
   const chips=[tk&&[`${tk} guest request${tk>1?'s':''} open`,()=>{S.opsTab='board';go('ops');setTimeout(()=>document.querySelector('.tasks-card')?.scrollIntoView({block:'start',behavior:calm()?'auto':'smooth'}),300)}],rv&&[`${rv} review${rv>1?'s':''} to confirm`,()=>{S.opsTab='reviews';go('ops')}],is&&[`${is} issue${is>1?'s':''} from managers to approve`,()=>{S.opsTab='board';go('ops')}],cl&&[`${cl} expense claim${cl>1?'s':''} to decide`,()=>{MG.sec='expenses';go('manage')}]].filter(Boolean);
   return chips.length?h('div',{class:'s12 wait-chips'},chips.map(([t,fn])=>h('button',{class:'wait-chip',onclick:fn},icon('clock'),t,icon('chev')))):null}
+/* Revenue goal for the month (Settings ops.revenue_goals = {"YYYY-MM": amount}; a goal carries on until changed).
+   On the books = money of every confirmed booking's nights in this month, the same figure as Net payout. */
+function goalsMap(){const r=(S.data.ops||[]).filter(x=>x.key==='ops.revenue_goals').pop();let v=r?r.value:null;if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){v={}}}return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}
+function goalFor(k){const g=goalsMap(),ks=Object.keys(g).filter(x=>/^\d{4}-\d{2}$/.test(x)&&x<=k&&+g[x]>0).sort();return ks.length?+g[ks[ks.length-1]]:0}
+function goalCard(){const f=F();if(f.cities.length||f.props.length||f.channels.length||(f.own&&f.own!=='All'))return null;   // a goal is for the whole business
+  const k=TODAY.slice(0,7),goal=goalFor(k);if(!goal&&!S.admin)return null;
+  const set=()=>{const inp=h('input',{id:'goalAmt',type:'number',min:'0',step:'1000',value:goal||'',placeholder:'e.g. 800000',inputmode:'numeric'});
+    modal('Monthly revenue goal',h('div',{class:'form'},h('label',{class:'f full'},'Goal for '+mLabel(k)+' (₹ received, after platform fees)',inp),h('p',{class:'full hint',style:{margin:0}},'It stays the goal for the next months until you change it.')),
+      [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{const n=Math.round(+inp.value||0);if(n<0)return toast('Enter an amount');closeLayer();
+        setSetting('ops.revenue_goals',JSON.stringify({...goalsMap(),[k]:n}),n?'Goal saved':'Goal removed').then(()=>render())}},'Save goal')])};
+  if(!goal)return h('div',{class:'s12 goal-card glass empty'},h('span',null,'Set a revenue goal for '+mLabel(k)+' to see if the month is on track.'),h('button',{class:'btn sm admin',onclick:set},'Set goal'));
+  const m=stats(mStart(k),mEnd(k)),rest=stats(TODAY,mEnd(k)),on=m.net||0,pct=goal?on/goal:0,toGo=Math.max(0,goal-on),free=Math.max(0,(rest.avail||0)-(rest.nights||0));
+  const per=toGo&&free?toGo/free:0,done=on>=goal,tone=done?'ok':pct>=0.75?'mid':'low';
+  return h('div',{class:'s12 goal-card glass '+tone},
+    h('div',{class:'gc-top'},h('div',null,h('div',{class:'eyebrow'},'Goal · '+mLabel(k)),h('b',{class:'gc-big'},inr(on)),h('span',{class:'gc-of'},' of '+inr(goal))),
+      h('span',{class:'pill '+(done?'p-ok':pct>=0.75?'p-warn':'p-bad')},done?'Goal reached':Math.round(pct*100)+'% on the books'),S.admin?h('button',{class:'btn sm ghost',onclick:set},'Change'):null),
+    h('div',{class:'gc-bar',role:'img','aria-label':Math.round(pct*100)+'% of the goal'},h('i',{style:{width:Math.min(100,pct*100)+'%'}})),
+    h('p',{class:'gc-note'},done?`${inr(on-goal)} over the goal, with ${free} free night${free===1?'':'s'} still to sell.`
+      :free?`${inr(toGo)} to go: about ${inr(per)} a night across the ${free} free night${free===1?'':'s'} left this month.`:`${inr(toGo)} short, and no free nights left this month.`))}
 function overview(v){
   {const wc=waitingChips();if(wc)v.append(wc)}
+  {const gc=goalCard();if(gc)v.append(gc)}
   const f=S.f,s=stats(f.from,f.to),[pa,pz]=prevRange(),p=stats(pa,pz);
   const endM=f.to.slice(0,7),ks=D.months.filter(k=>k<=endM).slice(-6);const ms=ks.map(k=>mStats(k));
   const due=D.B.filter(b=>fB(b)&&(b.channel==='Direct'?b.net-b.received>1:(b.pay==='Pending'||b.pay==='Short')));const dueAmt=sum(due,b=>b.net-b.received);
@@ -3592,7 +3637,7 @@ function overview(v){
     if(second&&(lead.now[key]||0)>0){const gap=pts?((lead.now[key]-second.now[key])*100):second.now[key]>0?(lead.now[key]/second.now[key]-1)*100:null;
       lt=gap==null||gap<.5?'level':`${lead.c} leads by ${pts?gap.toFixed(0)+' pts':gap.toFixed(0)+'%'}`}
     return h('div',{class:'h2h-row'},
-      h('div',{class:'h2h-h'},h('span',null,label),lt?h('span',{class:'h2h-lead',style:lt==='level'?null:{color:cityColor(lead.c)}},lt==='level'?'Level':lt):null),
+      h('div',{class:'h2h-h'},h('span',null,label),lt?h('span',{class:'h2h-lead',style:lt==='level'?null:{color:textSafe(cityColor(lead.c))}},lt==='level'?'Level':lt):null),
       cityStats.length>1?h('div',{class:'h2h-bar'},cityStats.map((x,i)=>h('i',{style:{flexGrow:String(Math.max(vals[i]/tot,.04)),background:cityColor(x.c)}}))):null,
       h('div',{class:'h2h-v'+(cityStats.length===2?' two':'')},cityStats.map(x=>h('button',{class:'h2h-c',onclick:()=>toggleIn('cities',x.c),'data-tip':`${x.c}: ${fmt(x.now[key]||0)} · last period ${fmt(x.prev[key]||0)}`},
         h('i',{style:{background:cityColor(x.c)}}),h('span',null,x.c),h('b',{class:'num'},fmt(x.now[key]||0)),chg(x.now[key]||0,x.prev[key]||0,pts)))))};
@@ -3973,7 +4018,7 @@ function money(v){
   const lines=[['Bookings','count',x=>x],['Nights sold','nightsAttr',x=>x.toLocaleString('en-IN')],['Occupancy','occ',x=>pct(x)],['Gross booking value','gross',inr],['Platform fees','fee',x=>inr(-x)],['Net payout','net',inr,1],['Owner share','owner',x=>inr(-x)],['Expenses','exp',x=>inr(-x)],
     ...(lone.length&&ms.some(m=>m.fam)?[['Family costs share','fam',x=>inr(-Math.round(x)),0,'ghost']]:[]),['Profit','profit',inr,1],['Profit margin','margin',x=>pct(x)],['Avg nightly rate','adr',inr]];
   v.append(card('s12','Profit & loss by month',{hint:'money split by nights across months · future months = booked so far, with fixed costs',acts:[btnExport(()=>exportRows(lines.map(([l,k])=>Object.fromEntries([['Line',l],...ms.map(m=>[mLong(m.k),k==='occ'||k==='margin'?+(m[k]*100).toFixed(1):Math.round(m[k])])])),'Profit and loss'))]},
-    h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,''),ms.map(m=>h('th',{class:'r'},mLabel(m.k)+(m.k>TODAY.slice(0,7)?'*':''))))),h('tbody',null,lines.map(([l,k,fm,hl,cl])=>h('tr',{class:(hl?'hl':'')+(cl?' '+cl:''),'data-tip':cl?'Shown for comparison - kept at the family, not taken off this flat\'s profit':null},h('td',null,l),ms.map(m=>h('td',{class:'r num'},String(fm(m[k])))))))))));
+    h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,''),ms.map(m=>h('th',{class:'r'},mLabel(m.k)+(m.k>TODAY.slice(0,7)?'*':''))))),h('tbody',null,lines.map(([l,k,fm,hl,cl])=>h('tr',{class:(hl?'hl':'')+(cl?' '+cl:''),'data-tip':cl?'Shown for comparison - kept at the family, not taken off this flat\'s profit':null},h('td',null,l),ms.map(m=>h('td',{class:'r num'},String(fm(m[k])))))))))));
   // channel economics
   const att=D.B.filter(b=>fB(b)&&b.check_in>=f.from&&b.check_in<=f.to);
   const mAll=D.B.filter(fBm).map(b=>[b,share(b,f.from,f.to)]).filter(x=>x[1]>0);
@@ -3989,7 +4034,7 @@ function money(v){
     (()=>{const ex=att.filter(b=>b.extends),cv=ex.filter(b=>b.converted_from),cand=(()=>{const A=new Set(att);return extCandidates().filter(([,b])=>A.has(b))})();if(!ex.length&&!cand.length)return null;
       const by={};ex.forEach(b=>{const k=b.property_id;(by[k]=by[k]||{n:0,nights:0,gross:0,cv:0});by[k].n++;by[k].nights+=b.nights;by[k].gross+=b.gross;if(b.converted_from)by[k].cv++});
       return h('div',{class:'pf-extw'},ex.length?h('div',{class:'pf-ext'},icon('repeat'),h('span',null,`${ex.length} extension${ex.length>1?'s':''} · ${inrK(sum(ex,b=>b.gross))}`),cv.length?h('b',null,`${cv.length} moved from a platform to direct · ${inrK(sum(cv,b=>b.gross))}`):null):null,
-        ex.length?h('details',{class:'pf-extd'},h('summary',null,'Extensions by stay'),h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Stay'),h('th',{class:'r'},'Extensions'),h('th',{class:'r'},'Nights'),h('th',{class:'r'},'Gross'),h('th',{class:'r'},'To direct'))),
+        ex.length?h('details',{class:'pf-extd'},h('summary',null,'Extensions by stay'),h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},h('thead',null,h('tr',null,h('th',null,'Stay'),h('th',{class:'r'},'Extensions'),h('th',{class:'r'},'Nights'),h('th',{class:'r'},'Gross'),h('th',{class:'r'},'To direct'))),
           h('tbody',null,Object.entries(by).sort((a,b)=>b[1].gross-a[1].gross).map(([pid,x])=>h('tr',null,h('td',null,short((D.P[pid]||{}).property||pid)),h('td',{class:'r num'},x.n),h('td',{class:'r num'},x.nights),h('td',{class:'r num'},inrK(x.gross)),h('td',{class:'r num'},x.cv||'–'))))))):null,
         cand.length&&S.admin?h('div',{class:'pf-cand'},h('b',null,`${cand.length} booking${cand.length>1?'s look':' looks'} like an extension`),h('small',null,'same guest phone, same stay, starting the day the earlier one ended'),
           cand.slice(0,6).map(([a,b])=>h('div',{class:'pf-cr'},h('span',null,`${b.guest} · ${short(b.pname)} · ${b.booking_id} after ${a.booking_id}${a.channel!==b.channel?` (${a.channel} → ${b.channel})`:''}`),h('button',{class:'btn sm',onclick:()=>extLink(a,b)},'Link')))):null)})(),
@@ -4049,8 +4094,35 @@ function ops(v){
   v.append(card('s12','Maintenance',{id:'maintCard',acts:[h('button',{class:'btn sm admin',onclick:()=>openForm('issue')},icon('plus'),'Log issue'),btnExport(()=>exportRows(D.M.filter(m=>fP(D.P[m.property_id])).map(m=>({Ticket:m.ticket_id,Property:short(m.pname),City:m.city,Issue:m.issue,Priority:m.priority,'Assigned to':m.assigned_to,Status:m.status,'Reported on':m.reported_on,'Closed on':m.closed_on||'','Cost ₹':m.cost||''})),'Maintenance'))]},
     board('maint',[['Open',open.filter(m=>m.status==='Open').sort((a,b)=>pr(a)-pr(b)),mTile],['In progress',open.filter(m=>m.status==='In progress').sort((a,b)=>pr(a)-pr(b)),mTile],['Closed',sortBy(closed,['closed_on',-1]).slice(0,5),mTile]])));
   {const tc=tasksCard();if(tc)v.append(tc)}
+  if(S.admin)v.append(preventiveCard());
   v.append(blocksCard());
 }
+
+/* Preventive maintenance (Settings ops.preventive): repeat jobs per stay. Every morning the sheet turns a due job into an
+   ordinary task on the board above (source Preventive), one open at a time per stay. */
+const PM_IDEAS=[['Geyser service',180],['AC service',120],['Water tank cleaning',180],['Pest control',90],['Fire extinguisher check',365],['Deep clean',60]];
+function pmPlans(){const r=(S.data.ops||[]).filter(x=>x.key==='ops.preventive').pop();let v=r?r.value:null;if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){v=[]}}return Array.isArray(v)?v:[]}
+function pmPlaces(){const all=Object.values(D.P||{}).filter(p=>p&&!isStopped(p));const par=new Set(all.filter(p=>arrOf(p.includes).length).map(p=>p.property_id));return all.filter(p=>!par.has(p.property_id))}
+function pmDue(pl){const ids=pl.stays==='*'||!Array.isArray(pl.stays)?pmPlaces().map(p=>p.property_id):pl.stays.map(String);
+  return ids.map(id=>{const mine=(D.M||[]).filter(m=>String(m.plan_id)===String(pl.id)&&m.property_id===id),open=mine.some(m=>!/^(closed|done|resolved)$/i.test(String(m.status||'')));
+    const last=mine.map(m=>String(m.reported_on||'').slice(0,10)).sort().pop()||String(pl.since||TODAY).slice(0,10);return {id,open,due:add(last,+pl.every_days||30)}})}
+function preventiveCard(){const plans=pmPlans();
+  const save=(list,msg)=>setSetting('ops.preventive',JSON.stringify(list),msg).then(ok=>{if(ok!==false)render()});
+  const rows=plans.map(pl=>{const st=pmDue(pl),soon=st.filter(x=>!x.open).map(x=>x.due).sort()[0],openN=st.filter(x=>x.open).length;
+    return h('div',{class:'row pm-row'},h('div',{class:'t'},h('b',null,pl.name),h('small',null,`every ${pl.every_days} days · ${pl.stays==='*'?'all stays':st.map(x=>short((D.P[x.id]||{}).property||x.id)).join(', ')}`)),
+      h('div',{class:'end'},openN?h('span',{class:'pill p-warn'},`${openN} on the board`):null,soon?h('span',{class:'pill '+(soon<=TODAY?'p-bad':'p-mute')},soon<=TODAY?'due tomorrow morning':'next '+fmtD(soon)):null,
+        h('button',{class:'btn sm ghost','aria-label':'Remove '+pl.name,onclick:()=>confirmBox('Remove '+pl.name+'?','No new tasks for it. Tasks already on the board stay.','Remove',true,()=>save(plans.filter(x=>x.id!==pl.id),'Removed'))},'Remove')))});
+  return card('s12','Preventive maintenance',{hint:'repeat jobs become tasks on the board when due · checked every morning',acts:[h('button',{class:'btn sm admin',onclick:()=>pmForm(plans,save)},icon('plus'),'Add a job')]},
+    plans.length?h('div',{class:'rows'},rows):h('div',{class:'pm-empty'},h('p',{class:'hint'},'No repeat jobs yet. Common ones:'),h('div',{class:'tags'},PM_IDEAS.map(([n,d])=>h('button',{class:'btn sm',onclick:()=>pmForm(plans,save,n,d)},`${n} · ${d} d`)))))}
+function pmForm(plans,save,name,every){const places=pmPlaces();
+  const nm=h('input',{id:'pmName',value:name||'',placeholder:'e.g. Geyser service',autocomplete:'off'}),ev=h('select',{id:'pmEvery'},[30,60,90,120,180,365].map(d=>h('option',{value:d,selected:d===(every||90)||null},d===365?'every year':`every ${d} days`)));
+  const sc=h('select',{id:'pmStays'},[h('option',{value:'*'},'All stays')].concat(places.map(p=>h('option',{value:p.property_id},short(p.property)))));
+  const now=h('input',{id:'pmNow',type:'checkbox'}),pr=h('select',{id:'pmPri'},[['Low','Routine'],['Medium','Soon'],['High','Urgent']].map(([v,l])=>h('option',{value:v},l)));
+  modal('Add a repeat job',h('div',{class:'form'},h('label',{class:'f full'},'Job',nm),h('label',{class:'f'},'How often',ev),h('label',{class:'f'},'Where',sc),h('label',{class:'f'},'Priority',pr),
+      h('label',{class:'f full chk'},now,' First tasks tomorrow morning (otherwise after one full interval)')),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{const n=nm.value.trim();if(!n)return toast('Name the job');const d=+ev.value;
+      const pl={id:'pm'+Date.now().toString(36),name:n.slice(0,80),every_days:d,stays:sc.value==='*'?'*':[sc.value],since:now.checked?add(TODAY,-d):TODAY,priority:pr.value};
+      closeLayer();save(plans.concat([pl]),'Added · '+(now.checked?'tasks tomorrow morning':'first tasks '+fmtD(add(TODAY,d))))}},'Add job')])}
 
 /* approving a manager's issue: who fixes it and how soon, in one step */
 function issueApprove(m,me,now){const known=[...new Set(D.M.map(x=>x.assigned_to).filter(Boolean).concat(D.props.map(p=>p.cleaner).filter(Boolean)))].sort(),
@@ -4263,7 +4335,7 @@ function opsTeam(v){leaveCard(v);attendanceCard(v);const c=OPSC(),staff=rowsOf('
     h('div',{class:'mg-link'},icon('info'),h('span',null,'Manager app link: ',h('b',null,MGR_URL()),' · they sign in with their login id and the password you set.'),h('button',{class:'btn sm ghost',onclick:async()=>{try{await navigator.clipboard.writeText(MGR_URL());toast('Link copied ✓')}catch(e){toast(MGR_URL())}}},icon('copy'),'Copy')),
     mgrs.length?h('div',{class:'mg-grid'},mgrs.map(card_)):h('div',{class:'empty'},'No managers yet. Add one, assign their stays and set a password; they get their check-ins, check-outs, checklists, stock checks, reviews and guest alerts on their phone.')));
   if(sc.length){const cell=(a,b,c_)=>h('td',{class:'r'},h('span',{class:'sc-ok num'},a),' / ',h('span',{class:'sc-bad num'},b),c_!=null?h('small',{class:'hint'},` · ${c_} due`):null);
-    v.append(card('s12','Scorecards',{hint:`since ${fmtD(c.start)} · done is credited to who did it · missed and due follow the stays each manager has now`},h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},
+    v.append(card('s12','Scorecards',{hint:`since ${fmtD(c.start)} · done is credited to who did it · missed and due follow the stays each manager has now`},h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},
       h('thead',null,h('tr',null,h('th',null,'Manager'),h('th',{class:'r'},'Reviews received / missed'),h('th',{class:'r'},'Avg rating'),h('th',{class:'r'},'Checklists done / missed'),h('th',{class:'r'},'Stock checks done / missed'))),
       h('tbody',null,sc.map(x=>h('tr',null,h('td',null,who(x.user.name,`${x.stays.length} stay${x.stays.length===1?'':'s'}`)),cell(x.reviews.received,x.reviews.missed,x.reviews.asked+x.reviews.open),
         h('td',{class:'r'},x.reviews.avg!=null?h('span',{class:'num'},x.reviews.avg+' ★'):h('span',{class:'hint'},'–'),x.reviews.low?h('small',{class:'sc-bad'},` · ${x.reviews.low} low`):null),
@@ -4275,7 +4347,7 @@ function opsTeam(v){leaveCard(v);attendanceCard(v);const c=OPSC(),staff=rowsOf('
       shop.length?h('div',{class:'sk-shop'},cities.map(ct=>{const xs=shop.filter(x=>(x.city||'Other')===ct),tot={};xs.forEach(x=>tot[x.item]=(tot[x.item]||0)+x.need);
         return h('div',{class:'sk-city'},h('div',{class:'sk-h'},h('b',null,'To buy · '+ct),S.admin?orderBtn(ct,tot):null),h('div',{class:'sk-tot'},Object.entries(tot).map(([k,n])=>h('span',{class:'chip-s'},`${k} × ${n}`))),
           h('ul',null,xs.map(x=>h('li',null,`${short((D.P[x.property_id]||{}).property)}: ${x.item} ${x.have} of ${x.min} (counted ${fmtD(x.day)})`))))})):h('p',{class:'hint',style:{margin:0}},'Nothing below its minimum at the latest counts.'),
-      places.length?h('details',{class:'sk-trend'},h('summary',null,'Last 4 counts by stay'),h('div',{class:'tbl-wrap'},places.map(p=>{const tr=OPS.stockTrend(rowsOf('stock'),p.property_id,4),its=OPS.stockItemsFor(c,p.property_id,S.data.props).filter(i=>i.type!=='ok');
+      places.length?h('details',{class:'sk-trend'},h('summary',null,'Last 4 counts by stay'),h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},places.map(p=>{const tr=OPS.stockTrend(rowsOf('stock'),p.property_id,4),its=OPS.stockItemsFor(c,p.property_id,S.data.props).filter(i=>i.type!=='ok');
         return h('table',{class:'tbl sk-t'},h('thead',null,h('tr',null,h('th',null,short(p.property)),tr.map(r=>h('th',{class:'r'},fmtD(r.day))))),
           h('tbody',null,its.map(it=>h('tr',null,h('td',null,it.name+(it.min?` (min ${it.min})`:'')),tr.map((r,i)=>{const v_=r.counts[it.name],nx=tr[i+1]&&tr[i+1].counts[it.name];
             return h('td',{class:'r num'+(it.min&&+v_<it.min?' sc-bad':'')},v_==null?'–':v_,nx!=null&&v_!=null&&+v_!==+nx?h('small',{class:'hint'},+v_>+nx?' ↑':' ↓'):null)})))))}))):null))}
@@ -5903,7 +5975,7 @@ function claimsCard(){const all=rowsOf('claims'),pend=all.filter(c=>String(c.sta
       :h('span',{class:'pill '+(c.status==='rejected'?'p-bad':c.outcome==='added'?'p-ok':'p-acc')},c.status==='rejected'?'Rejected':c.outcome==='added'?'Added to expenses':'Settled'))};
   /* paid back to each manager by month (approved claims), the last 3 months */
   const ms=[TODAY.slice(0,7),prevM(TODAY.slice(0,7)),prevM(prevM(TODAY.slice(0,7)))],ok_=all.filter(c=>c.status==='approved'),people=[...new Set(ok_.map(c=>c.by_name||c.by))];
-  const paid=people.length?h('div',{class:'tbl-wrap'},h('table',{class:'tbl cl-paid'},h('thead',null,h('tr',null,h('th',null,'Paid back to'),ms.map(k=>h('th',{class:'r'},mLabel(k))))),
+  const paid=people.length?h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl cl-paid'},h('thead',null,h('tr',null,h('th',null,'Paid back to'),ms.map(k=>h('th',{class:'r'},mLabel(k))))),
     h('tbody',null,people.map(p=>h('tr',null,h('td',null,p),ms.map(k=>{const t=sum(ok_.filter(c=>(c.by_name||c.by)===p&&String(c.settled_on||c.decided_at||c.date).slice(0,7)===k),c=>+c.amount||0);return h('td',{class:'r num'},t?inr(t):'–')})))))):null;
   return h('details',{class:'bl-card cl-card',open:pend.length?true:null},h('summary',null,h('b',null,'Claims from managers'),h('span',null,pend.length?`${pend.length} waiting · ${inr(sum(pend,c=>+c.amount||0))}`:'nothing waiting')),
     pend.length?h('div',{class:'cl-list'},pend.map(row)):h('div',{class:'empty'},'No claims waiting.'),
@@ -6273,7 +6345,7 @@ function attendanceCard(v){const mk=S.attM||TODAY.slice(0,7),ms=[];for(let k=TOD
     const t=r._at.slice(11,16);if(!x.days[d]||t&&t<x.days[d])x.days[d]=t||x.days[d]||'';if(r.geo_flag==='far')x.far.add(d);if(r.geo_flag==='no_fix')x.nofix.add(d);if(r._at>x.last)x.last=r._at});
   const L=Object.values(by).sort((a,b)=>Object.keys(b.days).length-Object.keys(a.days).length),avgT=x=>{const ts=Object.values(x.days).filter(Boolean).map(t=>+t.slice(0,2)*60+ +t.slice(3,5));if(!ts.length)return'–';const m=Math.round(ts.reduce((a,b)=>a+b,0)/ts.length);return`${String(m/60|0).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`};
   const pick=h('select',{class:'mg-pick','aria-label':'Month',onchange:e=>{S.attM=e.target.value;render()}},ms.map(k=>h('option',{value:k,selected:k===mk||null},mLong(k))));
-  v.append(card('s12','Attendance',{hint:'days with work done at a stay · from the geotag on each submit',acts:[pick]},L.length?h('div',{class:'tbl-wrap'},h('table',{class:'tbl'},
+  v.append(card('s12','Attendance',{hint:'days with work done at a stay · from the geotag on each submit',acts:[pick]},L.length?h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl'},
     h('thead',null,h('tr',null,h('th',null,'Manager'),h('th',{class:'r'},'Days worked'),h('th',{class:'r'},'Away from the stay'),h('th',{class:'r'},'No location'),h('th',{class:'r'},'Usual first submit'),h('th',{class:'r'},'Last seen'))),
     h('tbody',null,L.map(x=>h('tr',null,h('td',null,x.name),h('td',{class:'r num'},Object.keys(x.days).length),h('td',{class:'r num'+(x.far.size?' sc-bad':'')},x.far.size),h('td',{class:'r num'},x.nofix.size),
       h('td',{class:'r num'},avgT(x)),h('td',{class:'r'},x.last?fmtD(x.last.slice(0,10))+' '+x.last.slice(11,16):'–')))))):h('div',{class:'empty'},'No geotagged work this month yet.')))}
@@ -6368,7 +6440,7 @@ function manageCosts(v,tabs){if(!S.costM)S.costM=TODAY.slice(0,7);const mk=S.cos
   /* WhatsApp */
   const wl={guest:'Guests',owner:'Owners',manager:'Managers'};
   v.append(card('s12','WhatsApp messages sent',{hint:'counted as the bot sends them'},
-    h('div',{class:'tbl-wrap'},h('table',{class:'tbl cs-t'},h('thead',null,h('tr',null,h('th',null,'To'),h('th',{class:'r'},'Messages'),h('th',{class:'r'},'of which templates'))),
+    h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Table, scrolls sideways'},h('table',{class:'tbl cs-t'},h('thead',null,h('tr',null,h('th',null,'To'),h('th',{class:'r'},'Messages'),h('th',{class:'r'},'of which templates'))),
       h('tbody',null,c.who.map(x=>h('tr',null,h('td',null,wl[x.k]),h('td',{class:'r num'},x.all.toLocaleString('en-IN')),h('td',{class:'r num'},x.tpl.toLocaleString('en-IN')))),
         h('tr',{class:'hl'},h('td',null,'All'),h('td',{class:'r num'},c.all.toLocaleString('en-IN')),h('td',{class:'r num'},c.tpl.toLocaleString('en-IN')))))),
     h('p',{class:'hint',style:{margin:'10px 0 0'}},`estimate for these messages: ${r2(c.wa)}`)));
