@@ -2034,6 +2034,35 @@ body.is-live .dev-only{display:none!important}
 .ob-accts{display:flex;flex-direction:column;gap:2px;padding:6px;border-radius:16px;background:rgba(255,255,255,0.7);background:color-mix(in srgb,var(--surface) 70%,transparent);box-shadow:inset 0 0 0 1px var(--hair)}
 .ob-acct{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;background:none;border:0;font:inherit;color:inherit;cursor:pointer;font-size:13px;border-radius:8px;text-align:left}.ob-acct:hover{background:var(--hair)}.ob-acct span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ob-settle{align-self:flex-start;margin-top:auto}
+.ex-props{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.ex-prop{--pc:var(--accent);border-radius:20px;background:linear-gradient(165deg,color-mix(in srgb,var(--pc) 6%,var(--surface)),var(--surface) 45%);border:1px solid color-mix(in srgb,var(--pc) 14%,transparent);box-shadow:0 1px 1px rgba(12,26,61,.03),0 10px 24px -18px rgba(12,26,61,.25);overflow:hidden}
+.ex-ph{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}.ex-ph>svg{width:16px;height:16px;flex:none;color:var(--muted);transition:transform .2s;fill:none;stroke:currentColor;stroke-width:2}.ex-prop.open .ex-ph>svg{transform:rotate(90deg)}
+.ex-pav{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;flex:none;background:linear-gradient(140deg,color-mix(in srgb,var(--pc) 72%,#fff),var(--pc))}
+.ex-pn{display:flex;flex-direction:column;min-width:0;flex:1}.ex-pn small{color:var(--muted);font-size:12px}.ex-pt{display:flex;flex-direction:column;align-items:flex-end}.ex-pt b{font-size:17px;white-space:nowrap}.ex-pt small{color:var(--muted);font-size:11.5px}
+.ex-pbar{display:flex;height:4px;gap:2px;margin:0 16px 10px}.ex-pbar i{border-radius:3px;min-width:3px}.ex-prop .ex-list{padding:0 8px 8px}
+.ex-settle{margin-left:auto;flex:none}.ex-row.ex-due{background:rgba(191,42,32,0.07);background:color-mix(in srgb,var(--bad) 7%,transparent);box-shadow:inset 3px 0 0 var(--bad)}
+.st-modal{max-width:640px}.st-top{display:flex;gap:10px;flex-wrap:wrap}.st-top>div{flex:1 1 140px;padding:10px 12px;border-radius:14px;background:var(--hair);display:flex;flex-direction:column;gap:2px}.st-top small{color:var(--muted);font-size:11.5px;font-weight:600}.st-top b{font-size:15px}
+.st-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media (max-width:560px){.st-cards{grid-template-columns:1fr}}
+.st-card{border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--hair-2);background:var(--surface);transition:box-shadow .2s,border-color .2s}
+.st-card.on{border-color:color-mix(in srgb,var(--sc) 45%,transparent);box-shadow:0 12px 28px -18px var(--sc)}.st-bank{--sc:var(--accent)}.st-cash{--sc:var(--ok)}
+.st-h{display:flex;align-items:center;gap:8px}.st-h small{margin-left:auto;color:var(--muted);font-size:12px}.st-ic{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--sc) 14%,transparent);color:var(--sc)}.st-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.st-amtw{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.st-amtw>span{font-size:22px;font-weight:700;color:var(--muted)}.st-amt{flex:1 1 120px;min-width:0;font-size:24px!important;font-weight:700;border:0!important;background:transparent!important;padding:2px 0!important;letter-spacing:-.02em}
+.st-q{display:flex;gap:6px}.chip{border:1px solid var(--hair-2);background:var(--surface);border-radius:99px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}.chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.st-bar{height:5px;border-radius:5px;background:var(--hair);overflow:hidden}.st-bar i{display:block;height:100%;border-radius:5px;background:var(--sc);transition:width .25s}
+.st-f{display:grid;grid-template-columns:1fr 1fr;gap:8px}.st-f>label:last-child{grid-column:1/-1}.st-f select,.st-f input{width:100%;min-width:0}
+.st-gap{padding:12px 14px;border-radius:16px;background:rgba(160,76,8,0.1);background:color-mix(in srgb,var(--warn) 10%,transparent);display:flex;flex-direction:column;gap:10px}.st-gap[hidden]{display:none}.st-gh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.st-gh .seg{margin-left:auto}
+.st-why{display:flex;flex-direction:column;gap:8px}.st-why[hidden]{display:none}.st-chips{display:flex;gap:6px;flex-wrap:wrap}
+.st-tot{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:12px 14px;border-radius:16px;background:var(--hair)}.st-tot>div{display:flex;justify-content:space-between;align-items:baseline;font-size:13px}.st-tot b{font-size:16px}
+.st-res{grid-column:1/-1;justify-content:center!important;font-weight:700;padding:6px;border-radius:10px}.st-res.ok,.st-res.adj{color:var(--ok)}.st-res.due{color:var(--bad)}.st-res.over{color:var(--accent)}
+.ex-split{display:flex;flex-direction:column;gap:6px}.ex-split-r{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ex-split[hidden]{display:none}
+.ms-split{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}.ms-mode{display:inline-flex;align-items:baseline;gap:4px;font-size:11.5px;padding:2px 8px;border-radius:99px;background:var(--hair);font-variant-numeric:tabular-nums}
+.ms-mode i{font-style:normal;font-weight:700;color:var(--muted)}.ms-mode em{font-style:normal;color:var(--muted)}.ms-mode.short{background:rgba(191,42,32,0.12);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.ms-part{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:14px;background:var(--hair)}.ms-row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.ms-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ms-sum{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:6px}.ms-sum .neg{color:var(--bad)}.ms-sum .pos{color:var(--ok)}.ms-adjbox[hidden],.ms-settle .seg[hidden]{display:none}
+.rg td,.rg th{vertical-align:middle}.rg-s{display:block;color:var(--muted);font-size:11.5px}.rg-c{padding:4px!important;min-width:112px}.rg-na{color:var(--muted);text-align:center}
+.rg-b{width:100%;display:flex;flex-direction:column;gap:2px;align-items:flex-start;border:0;border-radius:10px;padding:6px 8px;font:inherit;font-size:12px;cursor:pointer;text-align:left;font-variant-numeric:tabular-nums}
+.rg-b.p-ok{background:rgba(15,116,69,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent)}.rg-b.p-warn{background:rgba(160,76,8,0.14);background:color-mix(in srgb,var(--warn) 14%,transparent)}.rg-b.p-bad{background:rgba(191,42,32,0.12);background:color-mix(in srgb,var(--bad) 12%,transparent)}.rg-b.p-mute{background:var(--hair)}.rg-b.p-acc{background:rgba(29,91,216,0.12);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.rg-p i,.rg-key i{font-style:normal;font-weight:800;display:inline-block;width:14px;color:var(--muted)}.rg-key{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
 .ex-vseg{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 2px}.ex-vseg small{color:var(--muted);font-size:12.5px}
 .ex-row.ex-due{background:rgba(191,42,32,0.06);background:color-mix(in srgb,var(--bad) 6%,transparent)}
 .ex-recon{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--hair);display:flex;flex-direction:column;gap:3px}.ex-recon>div{display:flex;justify-content:space-between;font-weight:700}.ex-recon b{font-size:16px}.ex-recon small{color:var(--muted);font-size:12px}
@@ -2275,6 +2304,11 @@ const MONEY=(()=>{
     return out}
   /* what a plan row costs in month k after adjustments (never below 0) */
   const planned=(e,k,sm)=>{const m=((sm||{})[String(e.expense_id)]||{})[k];return Math.max(0,r2(+e.amount-(m?m.adj:0)))};
+  /* a monthly plan's usual split: split_cash (₹ paid in cash each month, the rest by bank) and cash_by (who pays the cash).
+     Without a split the whole amount goes by the plan's own mode. */
+  const splitOf=e=>{const amt=+e.amount||0,c0=e.split_cash!=null&&String(e.split_cash)!==''?+e.split_cash:(String(e.paid_via)==='Cash'?amt:0),cash=Math.max(0,Math.min(amt,c0||0));
+    return{bank:r2(amt-cash),cash:r2(cash),cashBy:String(e.cash_by||(String(e.paid_via)==='Cash'?e.paid_from||'':'')),bankFrom:String(String(e.paid_via)==='Cash'?'':e.paid_from||'')}};
+  const modeOf=row=>String(row.paid_via||'')==='Cash'?'cash':'bank';
   /* the payment lines for months from..to (YYYY-MM): one per plan row and month */
   function lines(rows,from,to,today){const sm=settleMap(rows),out=[];
     (rows||[]).filter(isPlan).forEach(e=>{let k=ym(e.date)>from?ym(e.date):from;
@@ -2282,7 +2316,8 @@ const MONEY=(()=>{
         const m=(sm[String(e.expense_id)]||{})[k]||{paid:0,adj:0,items:[]},exp=+e.amount,owe=Math.max(0,r2(exp-m.adj)),due=r2(owe-m.paid);
         const dd=Math.min(+day(e.date).slice(8)||1,+mEnd(k).slice(8)),dueOn=k+'-'+String(dd).padStart(2,'0');
         const status=due<=0.5?(due<-0.5?'over':m.paid?'paid':'waived'):m.paid||m.adj?'part':today>=dueOn?'due':'upcoming';
-        out.push({plan:e,month:k,dueOn,expected:exp,adj:m.adj,paid:m.paid,owe,left:Math.max(0,due),over:Math.max(0,-due),status,items:m.items})}});
+        const pays=m.items.filter(it=>String(it.row.kind||'payment')!=='adjustment'),paidCash=r2(pays.filter(it=>modeOf(it.row)==='cash').reduce((t,it)=>t+it.share,0));
+        out.push({plan:e,month:k,dueOn,expected:exp,adj:m.adj,paid:m.paid,owe,left:Math.max(0,due),over:Math.max(0,-due),status,items:m.items,split:splitOf(e),paidCash,paidBank:r2(m.paid-paidCash)})}});
     return out}
   /* pots ------------------------------------------------------------------------------------------------------------ */
   const CASH_UNKNOWN='Cash (who?)';
@@ -2319,7 +2354,7 @@ const MONEY=(()=>{
     fl.filter(f=>f.date<=z).forEach(f=>{const p=(by[f.pot]=by[f.pot]||{pot:f.pot,open:0,in:0,out:0,n:0});
       if(f.date<a)p.open=r2(p.open+f.amount);else{if(f.amount>0)p.in=r2(p.in+f.amount);else p.out=r2(p.out-f.amount);p.n++}});
     return Object.values(by).map(p=>({...p,person:ownerOf(p.pot,cfg,people),close:r2(p.open+p.in-p.out)}))}
-  return{ym,next,mEnd,parts,isPlan,isSettle,settleMap,planned,lines,flows,pots,potMonth,ownerOf,CASH_UNKNOWN}})();
+  return{ym,next,mEnd,parts,isPlan,isSettle,settleMap,planned,lines,splitOf,modeOf,flows,pots,potMonth,ownerOf,CASH_UNKNOWN}})();
 
 const EMPTY_DATA=()=>Object.fromEntries(Object.entries(SEED).map(([k,v])=>[k,Array.isArray(v)?[]:v]));  // the shape of the data, no rows
 </script>
@@ -3329,7 +3364,7 @@ function exportChart(holder,name){
 const ico={filter:'M4 6h16M7 12h10M10 18h4',chevL:'M15 6l-6 6 6 6',chevR:'M9 6l6 6-6 6',wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',chat:'M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z',
   check:'M5 12.5l4.5 4.5L19 7.5',user:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0',up2:'M12 16V4M7 9l5-5 5 5M4 20h16',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',
   bulb:'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z',key:'M15 7a4 4 0 11-3.9 4.9L4 19v2h3l1-1v-2h2v-2h2l1.1-1.1A4 4 0 0115 7z',
-  info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 7.5v.5',clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
+  info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 7.5v.5',clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',bank:'M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18',cash:'M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5M6 10v4M18 10v4',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
 const driveLogo=()=>{const s=sv('svg',{viewBox:'0 0 87.3 78',width:20,height:18,'aria-hidden':'true'});
   [['M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z','#0066da'],['M43.65 25L29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z','#00ac47'],
    ['M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 11.5z','#ea4335'],['M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z','#00832d'],
@@ -4249,10 +4284,69 @@ function payLinesCard(){const from=mlFrom();
     const sub=[l.plan.category,l.status==='due'||l.status==='upcoming'?'due '+fmtD(l.dueOn):null,l.paid?inr(l.paid)+' paid':null,l.adj?inr(l.adj)+' adjusted':null].filter(Boolean).join(' · ');
     return h('button',{class:'row pm-row ml-row',type:'button',onclick:()=>payLine(l)},h('div',{class:'t'},h('b',null,planName(l.plan)),h('small',null,sub)),
       h('div',{class:'end'},h('b',{class:'num'},inr(l.owe)),h('span',{class:'pill '+c},l.status==='part'?inr(l.left)+' left':l.status==='over'?'+'+inr(l.over):t)))});
-  const left=sum(L,l=>l.left),late=L.filter(l=>l.left&&l.dueOn<=TODAY).length,byStay=S.mlView!=='list';
-  const vseg=h('div',{class:'seg sm',role:'group','aria-label':'Show'},[['stay','By stay'],['list','List']].map(([v,t])=>h('button',{'aria-pressed':(v==='stay')===byStay,onclick:()=>{S.mlView=v;render()}},t)));
+  const left=sum(L,l=>l.left),late=L.filter(l=>l.left&&l.dueOn<=TODAY).length;
+  const view=['list','grid'].includes(S.mlView)?S.mlView:'stay';
+  const vseg=h('div',{class:'seg sm',role:'group','aria-label':'Show'},[['stay','By stay'],['grid','Rent grid'],['list','List']].map(([v,t])=>h('button',{'aria-pressed':v===view,onclick:()=>{S.mlView=v;render()}},t)));
   return card('s12','Monthly payments',{id:'mlCard',hint:`${mLong(k)} · ${inr(sum(L,l=>l.owe))} to pay · ${inr(sum(L,l=>l.paid))} paid${left?` · ${inr(left)} left`:''}${late?` · ${late} late`:''}`,acts:[vseg,nav]},
-    !L.length?h('div',{class:'empty'},'No monthly costs in this month. Add one in Manage › Expenses with "Repeats monthly".'):byStay?mlStays(L):h('div',{class:'rows'},rows))}
+    view==='grid'?mlGrid(from,k):!L.length?h('div',{class:'empty'},'No monthly costs in this month. Add one in Manage › Expenses with "Repeats monthly".'):view==='stay'?mlStays(L):h('div',{class:'rows'},rows))}
+/* rent by month: one row per rent, one column per month (the last 6 up to the one picked); each cell = bank / cash /
+   adjusted, coloured by status; tap a cell to settle or see it */
+function mlGrid(from,k){let a=k;for(let i=0;i<5&&a>from;i++)a=prevM(a);const ks=[];for(let m=a;m<=k;m=nextM(m))ks.push(m);
+  const L=mlLines(k).filter(l=>l.month>=a&&/rent/i.test(String(l.plan.category))),plans=[...new Map(L.map(l=>[String(l.plan.expense_id),l.plan])).values()].sort((x,y)=>planName(x).localeCompare(planName(y)));
+  if(!plans.length)return h('div',{class:'empty'},'No monthly rent yet. Add rent in Manage › Expenses with "Repeats monthly".');
+  const cell=l=>{if(!l)return h('td',{class:'rg-na'},'–');const[t,c]=ML_ST[l.status],bits=[l.paidBank?['B',l.paidBank]:null,l.paidCash?['C',l.paidCash]:null,l.adj?['A',l.adj]:null].filter(Boolean);
+    return h('td',{class:'rg-c'},h('button',{type:'button',class:'rg-b '+c,onclick:()=>payLine(l),'data-tip':`${t} · bank ${inr(l.paidBank)} · cash ${inr(l.paidCash)} · adjusted ${inr(l.adj)}${l.left?' · '+inr(l.left)+' left':''}`},
+      bits.length?bits.map(([x,v])=>h('span',{class:'rg-p'},h('i',null,x),kAmt(v))):h('span',{class:'rg-p'},l.left?kAmt(l.left)+' due':t)))};
+  return h('div',null,h('div',{class:'tbl-wrap',tabindex:'0',role:'region','aria-label':'Rent by month, scrolls sideways'},h('table',{class:'tbl rg'},
+      h('thead',null,h('tr',null,h('th',null,'Rent'),h('th',{class:'r'},'Plan'),ks.map(m=>h('th',null,mLabel(m)+' '+m.slice(2,4))))),
+      h('tbody',null,plans.map(pl=>{const sp=MONEY.splitOf(pl);return h('tr',null,h('td',null,h('b',null,planName(pl).replace(/^Rent - /,'')),h('small',{class:'rg-s'},sp.cash?`${kAmt(sp.bank)} bank + ${kAmt(sp.cash)} cash`:'all '+(String(pl.paid_via)==='Cash'?'cash':'bank'))),
+        h('td',{class:'r num'},kAmt(+pl.amount)),ks.map(m=>cell(L.find(l=>l.month===m&&String(l.plan.expense_id)===String(pl.expense_id)))))})))),
+    h('div',{class:'rg-key'},h('span',null,h('i',null,'B'),'bank'),h('span',null,h('i',null,'C'),'cash'),h('span',null,h('i',null,'A'),'adjusted'),h('small',null,'tap a cell to see it or settle the month')))}
+/* money in a grid cell or chip: ₹17.5k, not ₹18k (one decimal under ₹1 lakh, exact under ₹1,000) */
+const kAmt=v=>{v=Math.round(+v||0);return v<1000?inr(v):v<1e5?'₹'+(Math.round(v/100)/10).toLocaleString('en-IN')+'k':inrK(v)};
+/* "Plan ₹20k bank + ₹20k cash · paid ₹20k + ₹17.5k": only when the plan has a cash part, or cash was paid */
+function mlSplitLine(l){const sp=l.split||{};if(!(sp.cash>0)&&!(l.paidCash>0))return null;
+  const part=(lab,pl,pd)=>h('span',{class:'ms-mode'+(pd+0.5<pl&&l.left>0.5?' short':'')},h('i',null,lab),kAmt(pd),h('em',null,' / '+kAmt(pl)));
+  return h('div',{class:'ms-split','aria-label':`Bank paid ${inr(l.paidBank)} of ${inr(sp.bank)}, cash paid ${inr(l.paidCash)} of ${inr(sp.cash)}`},part('Bank',sp.bank,l.paidBank),part('Cash',sp.cash,l.paidCash))}
+/* settle a month in one go: the bank part, the cash part (and who paid it), and any shortfall as an adjustment with a reason */
+function settleMonth(l){const e=l.plan,sp=l.split||MONEY.splitOf(e),err=h('div',{class:'err',hidden:true});
+  const pots=potNames().filter(x=>x!==MONEY.CASH_UNKNOWN),VIA=['Bank transfer','UPI'],sel=(opts,v,ph)=>{const x=h('select',{class:'mg-pick'},ph?h('option',{value:''},ph):null,opts.map(o=>h('option',{value:o},o)));if(v&&opts.includes(v))x.value=v;return x};
+  const accts=pots.filter(x=>!/cash/i.test(x)),cashers=pots.filter(x=>!/^cash$/i.test(x));
+  const need={bank:Math.max(0,Math.round(sp.bank-l.paidBank)),cash:Math.max(0,Math.round(sp.cash-l.paidCash))};
+  if(!need.bank&&!need.cash)need.bank=Math.round(l.left);          // no split left to fill: the rest by bank
+  const part=(kind)=>{const isB=kind==='bank',amt=h('input',{type:'number',inputmode:'decimal',min:0,step:'1',value:need[kind],class:'st-amt','aria-label':(isB?'Bank':'Cash')+' amount'});
+    const dt=h('input',{type:'date',value:TODAY}),how=isB?sel(VIA,VIA.includes(e.paid_via)?e.paid_via:'Bank transfer'):null,who=isB?sel(accts,sp.bankFrom||e.paid_from,'From which account?'):sel(cashers,sp.cashBy,'Who paid the cash?');
+    const bar=h('i'),plan=isB?sp.bank-l.paidBank:sp.cash-l.paidCash;
+    const card_=h('div',{class:'st-card st-'+kind},h('div',{class:'st-h'},h('span',{class:'st-ic'},icon(isB?'bank':'cash')),h('b',null,isB?'Bank':'Cash'),
+        h('small',null,plan>0.5?`planned ${inr(Math.round(plan))}`:'nothing planned')),
+      h('div',{class:'st-amtw'},h('span',null,'₹'),amt,h('div',{class:'st-q'},plan>0.5?h('button',{type:'button',class:'chip',onclick:()=>{amt.value=Math.round(plan);sync()}},'Full'):null,h('button',{type:'button',class:'chip',onclick:()=>{amt.value=0;sync()}},'None'))),
+      h('div',{class:'st-bar'},bar),h('div',{class:'st-f'},fld('Date',dt),how?fld('Via',how):null,fld(isB?'From':'Paid by',who)));
+    return {card:card_,amt,dt,how,who,bar,plan}};
+  const B=part('bank'),C=part('cash'),REASONS=['Owner stayed','Agreed discount','Repair paid by us','Other'];let why='Owner stayed',mode='adjust';
+  const wNote=h('input',{placeholder:'e.g. owner stayed 3 nights, 12-14 Nov'}),chips=h('div',{class:'st-chips'}),modeSeg=h('div',{class:'seg sm'}),gap=h('div',{class:'st-gap'}),tot_=h('div',{class:'st-tot'});
+  const sync=()=>{const b=+B.amt.value||0,c=+C.amt.value||0,short_=Math.round((l.left-b-c)*100)/100;
+    [[B,b],[C,c]].forEach(([P,v])=>{P.bar.style.width=(P.plan>0.5?Math.min(100,v/P.plan*100):v>0?100:0)+'%';P.card.classList.toggle('on',v>0)});
+    chips.replaceChildren(...REASONS.map(r=>h('button',{type:'button',class:'chip'+(why===r?' on':''),onclick:()=>{why=r;sync()}},r)));
+    modeSeg.replaceChildren(...[['adjust','Adjust it off'],['due','Leave it due']].map(([k,t])=>h('button',{type:'button','aria-pressed':mode===k,onclick:()=>{mode=k;sync()}},t)));
+    gap.hidden=!(short_>0.5);gap.querySelector('.st-gh b').textContent=inr(Math.max(0,short_));gap.querySelector('.st-why').hidden=mode!=='adjust';
+    tot_.replaceChildren(h('div',null,h('span',null,'Paying now'),h('b',{class:'num'},inr(b+c))),h('div',null,h('span',null,'Left this month'),h('b',{class:'num'},inr(Math.round(l.left)))),
+      h('div',{class:'st-res '+(short_>0.5?(mode==='adjust'?'adj':'due'):short_<-0.5?'over':'ok')},short_>0.5?(mode==='adjust'?`${inr(short_)} adjusted · ${why.toLowerCase()} · month settled`:`${inr(short_)} stays due`):short_<-0.5?`${inr(-short_)} more than due`:'Month settled'))};
+  gap.append(h('div',{class:'st-gh'},h('span',null,'Short by '),h('b',null,''),modeSeg),h('div',{class:'st-why'},chips,wNote));
+  [B.amt,C.amt].forEach(x=>x.addEventListener('input',sync));
+  modal(`Settle ${mLabel(l.month)} · ${planName(e).replace(/^Rent - /,'')}`,h('div',{class:'form st-form'},
+      h('div',{class:'full st-top'},h('div',null,h('small',null,'Rent this month'),h('b',{class:'num'},inr(l.owe))),h('div',null,h('small',null,'Usual split'),h('b',null,sp.cash?`${kAmt(sp.bank)} bank + ${kAmt(sp.cash)} cash`:'All by '+(String(e.paid_via)==='Cash'?'cash':'bank'))),
+        l.paid||l.adj?h('div',null,h('small',null,'Already'),h('b',null,[l.paidBank?kAmt(l.paidBank)+' bank':null,l.paidCash?kAmt(l.paidCash)+' cash':null,l.adj?kAmt(l.adj)+' adjusted':null].filter(Boolean).join(' · '))):null),
+      h('div',{class:'full st-cards'},B.card,C.card),h('div',{class:'full'},gap),h('div',{class:'full'},tot_),err),
+    [h('button',{class:'btn',onclick:()=>payLine(l)},'Back'),h('button',{class:'btn primary',onclick:async ev=>{const b=Math.round((+B.amt.value||0)*100)/100,c=Math.round((+C.amt.value||0)*100)/100,short_=Math.round((l.left-b-c)*100)/100;
+      if(b<0||c<0||(!b&&!c&&!(short_>0.5&&mode==='adjust'))){err.hidden=false;err.textContent='Enter what was paid, or adjust the month.';return}
+      if(b&&!B.who.value){err.hidden=false;err.textContent='From which account was the bank part paid?';return}
+      if(c&&!C.who.value){err.hidden=false;err.textContent='Who paid the cash?';return}
+      ev.currentTarget.disabled=true;const base={property_id:e.property_id,for_stay:e.for_stay||null,category:e.category,vendor:e.vendor||null,settles:String(e.expense_id),for_month:l.month},id=()=>'EX'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+      const rows=[];if(b)rows.push({...base,expense_id:id(),date:B.dt.value||TODAY,amount:b,kind:'payment',paid_via:B.how.value,paid_from:B.who.value,notes:'Bank part'});
+      if(c)rows.push({...base,expense_id:id(),date:C.dt.value||TODAY,amount:c,kind:'payment',paid_via:'Cash',paid_from:C.who.value,notes:'Cash part'});
+      if(short_>0.5&&mode==='adjust')rows.push({...base,expense_id:id(),date:TODAY,amount:short_,kind:'adjustment',notes:[why,wNote.value.trim()].filter(Boolean).join(' · ')});
+      closeLayer();for(const r of rows){const ok=await save('expenses','append',{row:r},`${r.kind==='adjustment'?'Adjusted':'Paid'} ${inr(r.amount)} · ${planName(e)}`);if(ok===false)break}}},'Save')]);
+  $('#layer .modal')?.classList.add('ob-modal','st-modal');sync()}
 /* one card per stay: its heads (Rent, Maintenance, Maid…) with what was paid, when, how and from which account */
 function mlStays(L){const one=l=>{const ids=MONEY.parts(l.plan.property_id);return l.plan.for_stay||(ids.length===1&&ids[0]!=='*'?ids[0]:null)};
   const by={},shared=[];L.forEach(l=>{const id=one(l);if(id)(by[id]=by[id]||[]).push(l);else shared.push(l)});
@@ -4261,7 +4355,7 @@ function mlStays(L){const one=l=>{const ids=MONEY.parts(l.plan.property_id);retu
     const adj=l.items.filter(it=>String(it.row.kind)==='adjustment');
     const det=last?[fmtD(String(last.date).slice(0,10)),last.paid_via,last.paid_from].filter(Boolean).join(' · ')+(pays.length>1?` · ${pays.length} payments`:''):l.left?(l.dueOn<=TODAY?'was due ':'due ')+fmtD(l.dueOn):'';
     return h('button',{class:'ms-head',type:'button',onclick:()=>payLine(l)},
-      h('div',{class:'ms-l'},h('b',null,/^(Rent|Maintenance)$/.test(l.plan.category)?l.plan.category:(String(l.plan.vendor||'').split(' - ')[0]||l.plan.category)),h('small',null,det),adj.length?h('small',{class:'ms-adj'},`${inr(l.adj)} adjusted · ${adj.map(a=>String(a.row.notes||'').split(' · ')[0]).filter(Boolean)[0]||'adjustment'}`):null),
+      h('div',{class:'ms-l'},h('b',null,/^(Rent|Maintenance)$/.test(l.plan.category)?l.plan.category:(String(l.plan.vendor||'').split(' - ')[0]||l.plan.category)),h('small',null,det),mlSplitLine(l),adj.length?h('small',{class:'ms-adj'},`${inr(l.adj)} adjusted · ${adj.map(a=>String(a.row.notes||'').split(' · ')[0]).filter(Boolean)[0]||'adjustment'}`):null),
       h('div',{class:'ms-r'},h('b',{class:'num'},inr(l.owe)),h('span',{class:'pill '+c},l.status==='part'?inr(l.left)+' left':l.status==='over'?'+'+inr(l.over):t)))};
   const stayCard=(title,sub,ls,col)=>{const lf=sum(ls,l=>l.left);
     return h('div',{class:'ob-card ms-card'+(lf?' ms-due':''),style:'--pc:'+col},
@@ -4279,7 +4373,8 @@ function payLine(l){const e=l.plan,can=!!e.expense_id;
   modal(`${planName(e)} · ${mLong(l.month)}`,h('div',{class:'form'},h('p',{class:'full',style:{margin:0}},sumL),
       items.length?h('div',{class:'full rows'},items):h('p',{class:'full hint',style:{margin:0}},`Nothing recorded yet · due ${fmtD(l.dueOn)}.`),
       can?null:h('p',{class:'full hint'},'This monthly cost has no id yet; save it once in Manage › Expenses first.')),
-    [h('button',{class:'btn',onclick:closeLayer},'Close'),can&&l.owe?h('button',{class:'btn',onclick:()=>settleForm(l,'adjustment')},'Adjust…'):null,can&&l.left?h('button',{class:'btn primary',onclick:()=>settleForm(l,'payment')},'Record payment'):null])}
+    [h('button',{class:'btn',onclick:closeLayer},'Close'),can&&l.owe?h('button',{class:'btn',onclick:()=>settleForm(l,'adjustment')},'Adjust…'):null,can&&l.left?h('button',{class:'btn',onclick:()=>settleForm(l,'payment')},'One payment'):null,can&&l.left?h('button',{class:'btn primary',onclick:()=>settleMonth(l)},'Settle month…'):null]);
+  {const sl=mlSplitLine(l),body=document.querySelector('#layer .form');if(sl&&body)body.insertBefore(h('div',{class:'full'},h('span',{class:'pr-lab'},'Paid / planned'),sl),body.children[1]||null)}}
 function settleForm(l,kind){const e=l.plan,pay=kind==='payment',err=h('div',{class:'err',hidden:true}),VIA=['Bank transfer','UPI','Cash','Card'];
   const amt=h('input',{type:'number',inputmode:'decimal',min:0,step:'1',value:pay?l.left:''}),dt=h('input',{type:'date',value:TODAY});
   const via=h('select',null,VIA.map(x=>h('option',{value:x},x)));via.value=VIA.includes(e.paid_via)?e.paid_via:'Bank transfer';
@@ -5337,18 +5432,18 @@ async function stillRefused(k){await new Promise(r=>setTimeout(r,2000));if(k!==L
 function showLoading(){const v=$('#view');if(!v)return;v.replaceChildren(h('section',{class:'card glass s12'},h('div',{class:'loading-live'},h('span',{class:'spin-dot'}),h('div',null,h('b',null,'Loading live data from the Google Sheet…'),h('div',{class:'light-note'},'Usually 5-10 seconds; up to a minute if Google is waking up. This device will open instantly next time.')))),h('div',{class:'skel-grid','aria-hidden':'true'},...[0,1,2,3,4,5].map(i=>h('div',{class:i>3?'skel tall':'skel'}))));const b=$('#liveBadge');if(b){b.className='live-badge demo';b.querySelector('.lb-t').textContent='Updating…'}}
 async function load(){
   if(loading)return loading;
-  loading=(async()=>{const keyAt=LIVE.key;
+  loading=(async()=>{const keyAt=LIVE.key;let out=false;   // out: the session ended and sign-in is showing - draw nothing over it
     if(live()){
       // open instantly: show this device's last live copy (or a loading card), then update in the background
       if(!S.data){const c=store.get('jg_live_cache');if(c&&c.data){S.data=c.data;S.source='Live sheet';LIVE.cachedAt=c.at;S.loadedAt=new Date(c.at);refresh()}else showLoading()}
       try{S.data=await Promise.race([liveLoad(),new Promise((_,no)=>setTimeout(()=>no(new Error('Google took over 90 s')),9e4))]);
         S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null;LIVE.cachedAt=null;store.set('jg_live_cache',{at:Date.now(),data:S.data})}
       catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);const no=/unauthorized/.test(e.message);
-        if(no&&await stillRefused(keyAt)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;signInScreen()}else toast('The access key was changed - connect again.')}
+        if(no&&await stillRefused(keyAt)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;out=true;signInScreen()}else toast('The access key was changed - connect again.')}
         else if(keyAt===LIVE.key)toast(no||/try_again/.test(e.message)?'The sheet didn’t answer just now. Showing the last data.':'Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data||S.source==='Sheet unreachable'){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
     else if(CONFIG.DATA_URL){try{await needXLSX();const r=await fetch(CONFIG.DATA_URL,{cache:'no-store'});if(!r.ok)throw 0;S.data=fromWorkbook(XLSX.read(await r.arrayBuffer(),{type:'array',cellDates:true}));S.source='Live sheet'}catch(e){toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
     else if(!S.data)S.data=SEED;
-    if(!LIVE.cachedAt)S.loadedAt=new Date();refresh();
+    if(out)return;if(!LIVE.cachedAt)S.loadedAt=new Date();refresh();
   })();
   try{await loading}finally{loading=null}
 }
@@ -6087,6 +6182,11 @@ function expEditor(e0,preset){const isNew=!e0,e=e0||{date:TODAY,category:'Cleani
   const amt=h('input',{type:'number',inputmode:'decimal',min:0,step:'1',value:e.amount??'',placeholder:'0',class:'ex-amt'}),dt=h('input',{type:'date',value:String(e.date||TODAY).slice(0,10)}),
     ven=h('input',{value:e.vendor||'',placeholder:'e.g. Doon Electricals',autocomplete:'off'}),nt=h('input',{value:e.notes||'',placeholder:'Optional note',autocomplete:'off'}),
     until=h('input',{type:'month',value:String(e.repeat_until||'').slice(0,7)}),err=h('div',{class:'err',hidden:true});
+  /* a monthly cost's usual split: part by bank, part in cash, and who pays the cash (e.g. rent ₹20k bank + ₹20k cash) */
+  const sp0=MONEY.splitOf({...e,amount:+e.amount||0}),cashI=h('input',{type:'number',inputmode:'decimal',min:0,step:'1',value:e.split_cash!=null&&String(e.split_cash)!==''?e.split_cash:'',placeholder:'0'});
+  const cashBy=h('select',{class:'mg-pick'},h('option',{value:''},'Who pays the cash?'),[...new Set([...potCfg().map(x=>x.name),...potNames()])].filter(x=>x&&x!==MONEY.CASH_UNKNOWN&&!/^cash$/i.test(x)).map(x=>h('option',{value:x,selected:x===sp0.cashBy||null},x)));
+  const splitInfo=h('small',{class:'pr-hint'}),splitF=h('div',{class:'full ex-split'},h('span',{class:'pr-lab'},'Usual split each month'),h('div',{class:'ex-split-r'},h('label',null,'Cash part (₹)',cashI),h('label',null,'Cash paid by',cashBy)),splitInfo);
+  const drawSplit=()=>{const a=+amt.value||0,c=Math.min(a,Math.max(0,+cashI.value||0));splitInfo.textContent=c?`${inr(a-c)} by bank + ${inr(c)} in cash`:'All by '+(via==='Cash'?'cash':'bank / UPI')+' - add a cash part if some is paid in cash'};
   const props=D.props.filter(p=>!isStopped(p)||p.property_id===e.property_id).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
   const tops=props.filter(p=>!parentOf(p.property_id)),ids0=String(e.property_id||'').split(',').map(x=>x.trim()).filter(Boolean),multi0=ids0.length>1;
   let chosen=new Set(multi0?ids0:[]);
@@ -6113,7 +6213,7 @@ function expEditor(e0,preset){const isNew=!e0,e=e0||{date:TODAY,category:'Cleani
           h('button',{type:'button',class:'btn sm',onclick:()=>{adding=false;draw()}},'Cancel')):
         h('button',{type:'button',class:'ex-cat ex-plus',onclick:()=>{adding=true;draw();setTimeout(()=>newCat.focus(),0)}},h('span',null,'+ New category')));
     viaBox.replaceChildren(...EXP_VIA.map(x=>h('button',{type:'button','aria-pressed':String(via===x),onclick:()=>{via=x;draw()}},x)));
-    repBox.replaceChildren(...[[false,'One-time'],[true,'Every month']].map(([x,l])=>h('button',{type:'button',role:'radio','aria-checked':String(rep===x),onclick:()=>{rep=x;draw()}},l)));untilF.hidden=!rep;
+    repBox.replaceChildren(...[[false,'One-time'],[true,'Every month']].map(([x,l])=>h('button',{type:'button',role:'radio','aria-checked':String(rep===x),onclick:()=>{rep=x;draw()}},l)));untilF.hidden=!rep;splitF.hidden=!rep;drawSplit();
     /* who paid: which account for a transfer / auto-debit, whose UPI or card, who paid cash */
     fromQ.textContent={'Bank transfer':'From which account?','Auto-debit':'Debited from which account?','UPI':'Whose UPI?','Card':'Whose card?','Cash':'Who paid (optional)?'}[via]||'Paid from';
     const opts=via==='Cash'?[...new Set([...accts.map(a=>a.replace(/\s*a\/?c$/i,'').trim()),'Jabula'])]:accts;
@@ -6124,16 +6224,18 @@ function expEditor(e0,preset){const isNew=!e0,e=e0||{date:TODAY,category:'Cleani
   modal(isNew?'Add expense':'Edit expense',h('div',{class:'form ex-form'},
       h('div',{class:'full ex-amtrow'},h('span',null,'₹'),amt),h('div',{class:'full'},h('span',{class:'pr-lab'},'Category'),catBox),
       h('label',{class:'full'},'Stay',stay,pickBox,famNote),fld('Date',dt),h('label',null,'Repeats',repBox),untilF,
-      h('div',{class:'full'},h('span',{class:'pr-lab'},'Paid via'),viaBox),fromWrap,fld('Vendor',ven,1),fld('Note',nt,1),err),
+      h('div',{class:'full'},h('span',{class:'pr-lab'},'Paid via'),viaBox),fromWrap,splitF,fld('Vendor',ven,1),fld('Note',nt,1),err),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),!isNew?h('button',{class:'btn danger-t',onclick:()=>{closeLayer();expStage(e.expense_id,{deleted_at:new Date().toISOString().slice(0,16)})}},'Move to Trash'):null,
      h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){err.hidden=false;err.textContent='Add the amount.';amt.focus();return}
        if(rep&&until.value&&until.value<dt.value.slice(0,7)){err.hidden=false;err.textContent='"Until" is before the first month.';return}
        const pf=from==='__other'?fromOther.value.trim():from;if(via!=='Cash'&&!pf){err.hidden=false;err.textContent=fromQ.textContent.replace('?','')+': pick one, or Other.';return}
        if(stay.value==='__split'&&chosen.size<2){err.hidden=false;err.textContent='Pick two or more stays to split across.';return}
        const kid=parentOf(stay.value)?stay.value:null,pidV=stay.value==='__split'?[...chosen].join(','):kid?parentOf(kid):stay.value;
-       const f={date:dt.value,property_id:pidV,for_stay:kid,category:cat,amount:+amt.value,paid_via:via,paid_from:pf||null,vendor:ven.value.trim()||null,notes:nt.value.trim()||null,repeat:rep?'monthly':null,repeat_until:rep&&until.value?until.value:null};
+       const sc=rep&&cashI.value!==''?Math.min(+amt.value,Math.max(0,+cashI.value||0)):null;if(sc&&!cashBy.value&&sc<+amt.value){err.hidden=false;err.textContent='Who pays the cash part? Pick one.';return}
+       const f={date:dt.value,property_id:pidV,for_stay:kid,category:cat,amount:+amt.value,paid_via:via,paid_from:pf||null,vendor:ven.value.trim()||null,notes:nt.value.trim()||null,repeat:rep?'monthly':null,repeat_until:rep&&until.value?until.value:null,
+         split_cash:sc,cash_by:sc?cashBy.value||null:null};
        closeLayer();if(isNew){const id='EX'+Date.now().toString(36);ESTAGE[id]={__new:true,expense_id:id,...f};render()}else expStage(e.expense_id,f)}},isNew?'Add expense':'Done')]);
-  drawPick();amt.addEventListener('input',drawPick);
+  drawPick();amt.addEventListener('input',drawPick);amt.addEventListener('input',drawSplit);cashI.addEventListener('input',drawSplit);
   setTimeout(()=>amt.focus(),50)}
 /* ============ Excel upload: one template per kind; the file is read here, checked row by row and shown for confirmation
    before anything is saved. Saved in one write (bulk_append) with a batch id, so History can undo the whole upload. ============ */
@@ -6307,15 +6409,17 @@ function manageExpenses(v,tabs){
     pays.forEach(r=>list.push({...r,date:String(r.date).slice(0,10),__pay:true}));
     L.filter(l=>l.left>0.5).forEach(l=>list.push({date:l.dueOn,vendor:planName(l.plan),category:l.plan.category,property_id:l.plan.property_id,for_stay:l.plan.for_stay,amount:l.left,__due:l}));
     list.sort((a,b)=>b.date.localeCompare(a.date));
-    const paid=sum(list.filter(e=>!e.__due),e=>+e.amount),due=sum(list.filter(e=>e.__due),e=>+e.amount),adj=sum(L,l=>l.adj),over=sum(L,l=>l.over);
-    foot=h('div',{class:'ex-recon'},h('div',null,h('span',null,`${list.length} entr${list.length===1?'y':'ies'}`),h('b',{class:'num'},inr(Math.round(paid+due)))),
-      h('small',null,[`paid ${inr(Math.round(paid))}`,due?`still due ${inr(Math.round(due))}`:null,adj?`${inr(Math.round(adj))} adjusted off the plan (not paid, not a cost)`:null,over?`${inr(Math.round(over))} paid above plan`:null].filter(Boolean).join(' · ')+(Math.abs(paid+due-over-tot)<1?` · = ${mLabel(k)} costs ✓`:` · costs ${inr(Math.round(tot))}`)))}
-  const vseg=!pid&&fromK&&k>=fromK?h('div',{class:'seg sm',role:'group','aria-label':'List'},[['paid','As paid'],['stay','By stay']].map(([x,t])=>h('button',{'aria-pressed':(x==='paid')===asPaid,onclick:()=>{S.expView=x;render()}},t))):null;
+    const paid=sum(list.filter(e=>!e.__due&&!e.__est),e=>+e.amount),est=sum(list.filter(e=>e.__est),e=>+e.amount),due=sum(list.filter(e=>e.__due),e=>+e.amount),adj=sum(L,l=>l.adj),over=sum(L,l=>l.over);
+    foot=h('div',{class:'ex-recon'},h('div',null,h('span',null,`${list.length} entr${list.length===1?'y':'ies'}`),h('b',{class:'num'},inr(Math.round(paid+due+est)))),
+      h('small',null,[`paid ${inr(Math.round(paid))}`,due?`still due ${inr(Math.round(due))}`:null,est?`bills estimated ${inr(Math.round(est))} until entered`:null,adj?`${inr(Math.round(adj))} adjusted off the plan (not paid, not a cost)`:null,over?`${inr(Math.round(over))} paid above plan`:null].filter(Boolean).join(' · ')+(Math.abs(paid+due+est-over-tot)<1?` · = ${mLabel(k)} costs ✓`:` · costs ${inr(Math.round(tot))}`)))}
+  const vseg=!pid?h('div',{class:'seg sm',role:'group','aria-label':'List'},[...(fromK&&k>=fromK?[['paid','All payments']]:[]),['stay','By property']].map(([x,t])=>h('button',{'aria-pressed':(x==='paid')===!!asPaid,onclick:()=>{S.expView=x;render()}},t))):null;
+  const byProp=!pid&&!asPaid;
   const lim=S.expLim||40,shown=list.slice(0,lim),byDay={};shown.forEach(e=>(byDay[e.date]=byDay[e.date]||[]).push(e));
   const row=e=>{if(e.__pay||e.__due){const l=e.__due||mlLines(k).find(x=>x.month===k&&MONEY.parts(e.settles).includes(String(x.plan.expense_id)));
       return h('div',{class:'ex-row'+(e.__due?' ex-due':''),role:'button',tabindex:0,onclick:()=>l&&payLine(l),onkeydown:ev=>{if(ev.key==='Enter'&&l)payLine(l)}},
         h('span',{class:'ex-ic',style:{'--c':expColor(e.category)}},(e.category||'?')[0]),
         h('div',{class:'ex-tx'},h('b',null,e.vendor||e.category),h('span',null,[e.category,stayLabel(e),e.__due?'planned, not paid yet':[e.paid_via,e.paid_from].filter(Boolean).join(' · ')].filter(Boolean).join(' · '))),
+        e.__due&&S.admin?h('button',{type:'button',class:'btn sm ex-settle',onclick:ev=>{ev.stopPropagation();settleMonth(e.__due)}},'Settle'):null,
         h('span',{class:'pill '+(e.__due?'p-bad':'p-acc'),'data-tip':e.__due?'A monthly cost not paid yet - it counts in this month\'s costs':'Pays a monthly cost (rent, salary…) - counted once, not on top of it'},e.__due?'Due':'Payment'),
         h('b',{class:'num ex-amt2'},inr(+e.amount)))}
     if(e.__est)return h('div',{class:'ex-row est',role:'button',tabindex:0,onclick:()=>billEditor(e.property_id,e.category,e.bill_month)},
@@ -6337,8 +6441,8 @@ function manageExpenses(v,tabs){
     cats.length?h('div',{class:'ex-break'},h('div',{class:'ex-bar'},cats.map(([c,a])=>h('i',{style:{flexGrow:String(a/tot),background:expColor(c)},'data-tip':`${c}: ${inr(a)} (${pct(a/tot)})`}))),
       h('div',{class:'ex-leg'},cats.map(([c,a])=>h('span',null,h('i',{style:{background:expColor(c)}}),c,h('b',{class:'num'},inrK(a)))))):null,
     claimsCard(),billsChecklist(k),
-    vseg?h('div',{class:'ex-vseg'},vseg,h('small',null,asPaid?'every entry as recorded - matches your own expense sheet':'what each stay costs this month')):null,
-    list.length?h('div',{class:'ex-days'},Object.entries(byDay).map(([d,es])=>h('div',{class:'ex-day'},h('span',{class:'pr-lab'},fmtD(d,{weekday:'short',day:'numeric',month:'short'})),h('div',{class:'ex-list'},es.map(row)))),list.length>lim?h('button',{class:'btn sm',style:{justifySelf:'start'},onclick:()=>{S.expLim=lim+40;render()}},`Show ${Math.min(40,list.length-lim)} more of ${list.length}`):null,foot):
+    vseg?h('div',{class:'ex-vseg'},vseg,h('small',null,asPaid?'every payment as recorded, recurring and one-off · red = planned, not confirmed yet':'what each property cost this month · a shared cost shows as each property\'s share')):null,
+    byProp&&inM.length?expByProp(inM,tot,row):list.length?h('div',{class:'ex-days'},Object.entries(byDay).map(([d,es])=>h('div',{class:'ex-day'},h('span',{class:'pr-lab'},fmtD(d,{weekday:'short',day:'numeric',month:'short'})),h('div',{class:'ex-list'},es.map(row)))),list.length>lim?h('button',{class:'btn sm',style:{justifySelf:'start'},onclick:()=>{S.expLim=lim+40;render()}},`Show ${Math.min(40,list.length-lim)} more of ${list.length}`):null,foot):
       h('div',{class:'ex-empty'},h('span',{class:'ex-eic'},icon('wallet')),h('b',null,`No expenses in ${mLong(k)}`),h('span',null,'Add cleaning, electricity, internet, repairs or staff costs. Set the regular ones to repeat every month, so they fill in by themselves.'),
         h('button',{class:'btn primary sm',onclick:()=>expEditor(null)},icon('plus'),'Add the first')),
     h('details',{class:'ex-owner'},h('summary',null,h('b',null,'Owner shares'),h('span',null,shares?`${shares} stay${shares>1?'s':''} pay the owner a share`:'for stays you manage for someone else')),
@@ -6348,6 +6452,18 @@ function manageExpenses(v,tabs){
           h('option',{value:'net',selected:String(pstg(p).owner_share_basis||'')!=='profit'||null},'% of net payout'),h('option',{value:'profit',selected:String(pstg(p).owner_share_basis||'')==='profit'||null},'% after expenses'));
         return h('div',{class:'ex-orow'},h('span',null,short(p.property)),h('div',{class:'pr-num'},i,basis))})))));
   pendingBar(v)}
+/* By property: one section per property (a family counts once), its total and share of the month, then its entries */
+function expByProp(inM,tot,row){const g=new Map();inM.forEach(e=>{const id=e.property_id||'?';(g.get(id)||g.set(id,[]).get(id)).push(e)});
+  const open=S.expOpen||(S.expOpen={});
+  return h('div',{class:'ex-props'},[...g.entries()].map(([id,es])=>({id,es,t:sum(es,e=>+e.amount)})).sort((a,b)=>b.t-a.t).map(({id,es,t})=>{const p=D.P[id]||{},kids=kidsOf(id).length;
+    const cats={};es.forEach(e=>cats[e.category||'Other']=(cats[e.category||'Other']||0)+(+e.amount));const cs=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const isOpen=open[id]!==false;
+    return h('section',{class:'ex-prop'+(isOpen?' open':''),style:'--pc:'+avc(p.property||id)},
+      h('button',{type:'button',class:'ex-ph','aria-expanded':String(isOpen),onclick:()=>{open[id]=!isOpen;render()}},
+        h('span',{class:'ex-pav'},ini(short(p.property||id).replace(/[^A-Za-z0-9 ]+/g,' '))),h('div',{class:'ex-pn'},h('b',null,short(p.property||id)+(kids?' family':'')),h('small',null,[p.area,p.city].filter(Boolean).join(', ')+` · ${es.length} entr${es.length===1?'y':'ies'}`)),
+        h('div',{class:'ex-pt'},h('b',{class:'num'},inr(Math.round(t))),h('small',null,pct(tot?t/tot:0)+' of the month')),icon('chev')),
+      h('div',{class:'ex-pbar'},cs.map(([c,a])=>h('i',{style:{flexGrow:String(a),background:expColor(c)},'data-tip':`${c}: ${inr(Math.round(a))}`}))),
+      isOpen?h('div',{class:'ex-list'},es.sort((a,b)=>b.date.localeCompare(a.date)).map(e=>{const el=row(e);if(e.__split){const src=expRows().find(x=>x.expense_id===e.__src);
+        if(src)el.querySelector('.ex-tx span')?.append(` · share of ${inr(+src.amount)}`)}return el})):null)}))}
 function manageProps(v,tabs){
   MG.pq=MG.pq||'';MG.pstatus=MG.pstatus||'All';
   const q=MG.pq.toLowerCase(),list=[...(S.data.props||[]).map(pstg),...Object.entries(PSTAGE).filter(([,f])=>f.__new).map(([,f])=>f)]
