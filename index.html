@@ -2034,6 +2034,23 @@ body.is-live .dev-only{display:none!important}
 .ob-accts{display:flex;flex-direction:column;gap:2px;padding:6px;border-radius:16px;background:rgba(255,255,255,0.7);background:color-mix(in srgb,var(--surface) 70%,transparent);box-shadow:inset 0 0 0 1px var(--hair)}
 .ob-acct{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;background:none;border:0;font:inherit;color:inherit;cursor:pointer;font-size:13px;border-radius:8px;text-align:left}.ob-acct:hover{background:var(--hair)}.ob-acct span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ob-settle{align-self:flex-start;margin-top:auto}
+.news-modal .news{padding:6px 24px 18px;gap:22px}
+.na,.nu{display:flex;flex-direction:column;gap:10px}.na-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.na-h b{font-size:15px}.na-h small{color:var(--muted);font-size:12px;margin-left:auto}
+.na-list{display:flex;flex-direction:column;gap:10px}.na-it{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:18px;background:rgba(251,240,239,1.0);background:color-mix(in srgb,var(--bad) 7%,var(--surface));box-shadow:inset 3px 0 0 var(--bad);flex-wrap:wrap}
+.na-it.self{background:rgba(246,239,233,1.0);background:color-mix(in srgb,var(--warn) 9%,var(--surface));box-shadow:inset 3px 0 0 var(--warn)}
+.na-main{display:flex;gap:10px;align-items:center;flex:1 1 240px;min-width:0;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0}
+.na-acts{display:flex;gap:8px;align-items:center;margin-left:auto;flex:none}.na-auto{color:var(--muted);font-size:11.5px;white-space:nowrap}.na-snz{font:inherit;font-size:12.5px;padding:6px 26px 6px 12px;border-radius:99px;border:1px solid var(--hair-2);background:var(--surface);color:var(--ink);appearance:auto}
+.na-it .news-t b{font-size:13.5px}.na-it .news-t small{font-size:12px;color:var(--muted);display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.na-main{gap:12px}.na-it .news-t{min-width:0}
+.na-empty{display:flex;gap:8px;align-items:center;color:var(--ok);font-weight:600;padding:10px 12px;border-radius:14px;background:rgba(15,116,69,0.09);background:color-mix(in srgb,var(--ok) 9%,transparent)}.na-empty svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.nu-day{display:flex;flex-direction:column;gap:6px}.nu .news-it{padding:10px 12px;border-radius:14px}.na-h{padding:0 2px}.na .news-ic svg,.nu .news-ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2}.na .news-ic{color:var(--bad)}.na-it.self .news-ic{color:var(--warn)}.news-ic.sm{width:24px;height:24px}
+.ns-list{display:flex;flex-direction:column;gap:6px}.ns-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--hair);flex-wrap:wrap}.ns-row small{display:block;color:var(--muted);font-size:11.5px}
+.na-card{padding:14px 16px!important;background:linear-gradient(165deg,rgba(250,238,237,1.0),var(--surface) 55%)!important;background:linear-gradient(165deg,color-mix(in srgb,var(--bad) 8%,var(--surface)),var(--surface) 55%)!important;border:1px solid rgba(191,42,32,0.22)!important;border:1px solid color-mix(in srgb,var(--bad) 22%,transparent)!important}
+.na-ch{display:flex;align-items:center;gap:10px}.na-ch b{font-size:15px}.na-ch .btn{margin-left:auto}.na-dot{width:10px;height:10px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 4px rgba(191,42,32,0.18);box-shadow:0 0 0 4px color-mix(in srgb,var(--bad) 18%,transparent);animation:hotpulse 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.na-dot{animation:none}}
+.na-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:10px}
+.na-chip{display:flex;gap:8px;align-items:center;text-align:left;padding:9px 11px;border-radius:14px;border:1px solid var(--hair-2);background:var(--surface);font:inherit;color:inherit;cursor:pointer;min-width:0}.na-chip svg{width:16px;height:16px;flex:none;color:var(--bad);fill:none;stroke:currentColor;stroke-width:2}
+.na-chip span{display:flex;flex-direction:column;min-width:0}.na-chip b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.na-chip small{font-size:11.5px;color:var(--muted)}.na-chip.more{justify-content:center;color:var(--muted);font-weight:600}
+.bell-quiet .bell-n{background:var(--muted)!important}
 .ex-props{display:flex;flex-direction:column;gap:12px;margin-top:6px}
 .ex-prop{--pc:var(--accent);border-radius:20px;background:linear-gradient(165deg,color-mix(in srgb,var(--pc) 6%,var(--surface)),var(--surface) 45%);border:1px solid color-mix(in srgb,var(--pc) 14%,transparent);box-shadow:0 1px 1px rgba(12,26,61,.03),0 10px 24px -18px rgba(12,26,61,.25);overflow:hidden}
 .ex-ph{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}.ex-ph>svg{width:16px;height:16px;flex:none;color:var(--muted);transition:transform .2s;fill:none;stroke:currentColor;stroke-width:2}.ex-prop.open .ex-ph>svg{transform:rotate(90deg)}
@@ -2091,6 +2108,40 @@ body.is-live .dev-only{display:none!important}
 .gc-top{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.gc-top>div{flex:1 1 200px;min-width:0}.gc-big{font-size:24px;font-variant-numeric:tabular-nums}.gc-of{color:var(--muted);font-variant-numeric:tabular-nums}
 .gc-bar{height:8px;border-radius:99px;background:var(--hair);overflow:hidden}.gc-bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}.goal-card.ok .gc-bar i{background:var(--ok)}.goal-card.low .gc-bar i{background:var(--warn)}
 .gc-note{margin:0;color:var(--muted);font-size:13.5px}
+/* bell full screen: the whole page, two columns of urgent items */
+.modal.news-modal.news-full{width:min(1180px,100%);max-width:min(1180px,100%);height:calc(100dvh - 24px);max-height:none}.news-full .news{padding:8px 32px 24px}
+@media (min-width:900px){.news-full .na-list{display:grid;grid-template-columns:1fr 1fr}.news-full .nu-day{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}.news-full .nu-day .news-grp{grid-column:1/-1}}
+@media (max-width:600px){.news-modal .news{padding:12px 14px 16px!important}.news-modal .modal-f{flex-wrap:wrap;justify-content:flex-end;gap:8px}.nf-full{display:none!important}.nx-row,.na-it{padding:12px 12px!important}.na-acts{padding-left:52px}}
+
+/* notification centre: grouped floating panels, tinted icon tiles, quiet actions, thin scroll */
+.news-modal{scrollbar-width:thin;scrollbar-color:rgba(12,26,61,0.22) transparent;scrollbar-color:color-mix(in srgb,var(--ink) 22%,transparent) transparent;background:rgba(246,248,251,1.0)!important;background:color-mix(in srgb,var(--hair) 55%,var(--surface))!important}
+.news-modal::-webkit-scrollbar{width:10px}.news-modal::-webkit-scrollbar-track{background:transparent;margin:70px 0}
+.news-modal::-webkit-scrollbar-thumb{background:rgba(12,26,61,0.18);background:color-mix(in srgb,var(--ink) 18%,transparent);border-radius:99px;border:3px solid transparent;background-clip:padding-box}
+.news-modal::-webkit-scrollbar-thumb:hover{background-color:rgba(12,26,61,0.32);background-color:color-mix(in srgb,var(--ink) 32%,transparent)}
+.news-modal .modal-h{background:rgba(255,255,255,0.82);background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid var(--hair)}
+.news-modal .modal-f,.news-modal .modal-a{position:sticky;bottom:0;background:rgba(255,255,255,0.82);background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--hair)}
+.news-modal .news{padding:16px 24px 22px!important;gap:24px!important}
+.na-h{display:flex;align-items:baseline;gap:8px;padding:0 6px}.na-h b{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.na-h .pill{font-size:11px;padding:2px 8px}.na-h small{margin-left:auto;font-size:11.5px;color:var(--muted)}
+.nx-group{display:flex;flex-direction:column;gap:0!important;border-radius:20px;background:var(--surface);overflow:hidden;
+  box-shadow:0 1px 1px rgba(12,26,61,.04),0 14px 34px -22px rgba(12,26,61,.35);border:1px solid var(--hair)}
+.nx-group>*+*{border-top:1px solid var(--hair)!important}
+.na-it{background:none!important;box-shadow:none!important;border-radius:0!important;padding:14px 16px!important;transition:background .15s}.na-it:hover,.nx-row:hover{background:rgba(238,242,248,0.6)!important;background:color-mix(in srgb,var(--hair) 60%,transparent)!important}
+.na-main{gap:14px!important}.nx-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;background:rgba(191,42,32,0.12);background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.self .nx-ic{background:rgba(160,76,8,0.14);background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}.nx-ic.up{background:rgba(29,91,216,0.1);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent)}
+.nx-ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.nx-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}.nx-top{display:flex;gap:8px;align-items:baseline}.nx-top b{font-size:13.5px;font-weight:650;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.nx-top time{font-size:11px;color:var(--muted);flex:none}.nx-t small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.na-acts{gap:6px!important}.na-auto{font-size:11.5px;color:var(--muted);padding:0 4px}
+.nx-btn{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:99px;padding:6px 11px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;background:rgba(15,116,69,0.12);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.nx-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4}.nx-btn:hover{background:rgba(15,116,69,0.2);background:color-mix(in srgb,var(--ok) 20%,transparent)}
+.na-snz{border:0!important;background:var(--hair)!important;font-size:12px!important;padding:6px 24px 6px 11px!important;border-radius:99px!important;color:var(--muted)!important;cursor:pointer}
+.nx-row{display:flex;gap:14px;align-items:center;padding:13px 16px;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%;transition:background .15s}
+.nx-row.read{opacity:.62}.nx-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+.nu-day{gap:8px!important}.nu-day .news-grp{padding:0 6px;font-size:11.5px}
+.na-empty{border-radius:20px!important;padding:16px!important;background:var(--surface)!important;border:1px solid var(--hair);color:var(--ok)}
+.news-modal{overflow-x:hidden}.news-modal .na,.news-modal .nu{border:0!important;background:none!important;padding:0!important;box-shadow:none!important;align-items:stretch!important;width:100%}.news-modal .nu-day{width:100%}.news-modal .nu .nx-group{width:100%}.news-modal .news{grid-template-columns:minmax(0,1fr)}.news-modal .news>*,.na,.nu,.nx-group{min-width:0}
+.na-it{flex-direction:row!important;flex-wrap:wrap!important;row-gap:8px!important}.na-main{flex:1 1 100%!important;min-width:0}
+.na-acts{width:100%;margin-left:0!important;justify-content:flex-start;padding-left:52px}
 </style>
 </head>
 <body>
@@ -2248,22 +2299,24 @@ const OPS=(()=>{
   /* what is new from outside the app since `since` (ISO). role: 'admin' | 'manager'. ctx: {me, inScope, props} */
   function news(d,since,role,ctx){ctx=ctx||{};const cats=[],add=(key,label,items,note)=>{if(items.length)cats.push({key,label,items:items.sort((a,b)=>String(b.at).localeCompare(String(a.at))),note})};
     const nm=pid=>{const p=(d.props||[]).find(x=>x.property_id===pid);return p?String(p.property).replace(/\s*\(.*?\)/g,'').split(',')[0].trim():pid||''};
+    /* urgent kinds (ctx.urgent) look back ctx.urgentSince (they stay until handled), the rest only since the last visit */
+    const sinceFor=k=>ctx.urgent&&ctx.urgent.has(k)&&ctx.urgentSince?ctx.urgentSince:since;
     const inS=ctx.inScope||(()=>true),gName=id=>((d.bookings||[]).find(b=>String(b.booking_id)===String(id))||{}).guest||id;
     if(role==='admin'){
-      add('wa_bookings','New bookings on WhatsApp',(d.bookings||[]).filter(b=>/whatsapp/i.test(b.source||'')&&after(stamp(b),since)).map(b=>({at:stamp(b),title:`${b.guest||'Guest'} · ${nm(b.property_id)}`,sub:`${String(b.check_in).slice(0,10)} → ${String(b.check_out).slice(0,10)}`,ref:{kind:'booking',id:b.booking_id}})));
+      add('wa_bookings','New bookings on WhatsApp',(d.bookings||[]).filter(b=>/whatsapp/i.test(b.source||'')&&after(stamp(b),sinceFor('wa_bookings'))).map(b=>({at:stamp(b),title:`${b.guest||'Guest'} · ${nm(b.property_id)}`,sub:`${String(b.check_in).slice(0,10)} → ${String(b.check_out).slice(0,10)}`,ref:{kind:'booking',id:b.booking_id}})));
       add('wa_cancel','Cancelled on WhatsApp · confirm what was kept',(d.bookings||[]).filter(b=>b.refund_check==='Pending'&&!b.deleted_at).map(b=>({at:stamp(b)||'',title:`${b.guest||'Guest'} · ${nm(b.property_id)}`,sub:b.booking_id,ref:{kind:'booking',id:b.booking_id}})),'stays here until confirmed');
-      add('issues','Guest issues on WhatsApp',(d.maint||[]).filter(m=>/whatsapp/i.test(m.source||'')&&after(stamp(m),since)).map(m=>({at:stamp(m),title:m.issue,sub:`${nm(m.property_id)} · ${m.ticket_id} · ${m.priority||''}`,ref:{kind:'issue',id:m.ticket_id}})));
-      add('requests','Guest requests and flags',(d.requests||[]).filter(r=>after(stamp(r),since)).map(r=>({at:stamp(r),title:r.item||r.title||'Request',sub:[r.name,r.notes].filter(Boolean).join(' · ').slice(0,90),ref:{kind:'whatsapp'}})));
-      add('leads','New enquiries',(d.leads||[]).filter(l=>after(l.created_at,since)).map(l=>({at:l.created_at,title:l.name||'Enquiry',sub:[l.city,l.check_in&&String(l.check_in).slice(0,10)].filter(Boolean).join(' · '),ref:{kind:'whatsapp'}})));
-      add('bills','Bills sent on WhatsApp',(d.expenses||[]).filter(e=>/whatsapp/i.test(e.source||'')&&after(stamp(e),since)).map(e=>({at:stamp(e),title:`${e.category} · ₹${(+e.amount||0).toLocaleString('en-IN')}`,sub:nm(e.property_id),ref:{kind:'expense'}})));
+      add('issues','Guest issues on WhatsApp',(d.maint||[]).filter(m=>/whatsapp/i.test(m.source||'')&&after(stamp(m),sinceFor('issues'))).map(m=>({at:stamp(m),title:m.issue,sub:`${nm(m.property_id)} · ${m.ticket_id} · ${m.priority||''}`,ref:{kind:'issue',id:m.ticket_id}})));
+      add('requests','Guest requests and flags',(d.requests||[]).filter(r=>after(stamp(r),sinceFor('requests'))).map(r=>({at:stamp(r),title:r.item||r.title||'Request',sub:[r.name,r.notes].filter(Boolean).join(' · ').slice(0,90),ref:{kind:'whatsapp'}})));
+      add('leads','New enquiries',(d.leads||[]).filter(l=>after(l.created_at,sinceFor('leads'))).map(l=>({at:l.created_at,title:l.name||'Enquiry',sub:[l.city,l.check_in&&String(l.check_in).slice(0,10)].filter(Boolean).join(' · '),ref:{kind:'whatsapp'}})));
+      add('bills','Bills sent on WhatsApp',(d.expenses||[]).filter(e=>/whatsapp/i.test(e.source||'')&&after(stamp(e),sinceFor('bills'))).map(e=>({at:stamp(e),title:`${e.category} · ₹${(+e.amount||0).toLocaleString('en-IN')}`,sub:nm(e.property_id),ref:{kind:'expense'}})));
       add('mgr_issues','Issues reported by managers · approve',(d.maint||[]).filter(m=>m.status==='Pending approval').map(m=>({at:stamp(m)||'',title:m.issue,sub:`${nm(m.property_id)} · by ${m.reported_by||'manager'}`,ref:{kind:'issue',id:m.ticket_id}})),'stays here until approved or rejected');
       add('claims','Expense claims · approve',(d.claims||[]).filter(c=>String(c.status||'pending')==='pending').map(c=>({at:stamp(c)||'',title:`${c.category||'Expense'} · ₹${(+c.amount||0).toLocaleString('en-IN')}`,sub:`${nm(c.property_id)} · by ${c.by_name||c.by||'manager'}`,ref:{kind:'claim',id:c.claim_id}})),'stays here until decided');
-      add('checklists','Checklists done',(d.checklists||[]).filter(r=>after(stamp(r),since)).map(r=>({at:stamp(r),title:nm(r.property_id),sub:`checkout ${r.booking_id||''}${list(js(r.photos)||r.photos).length?' · photos':''}`,ref:{kind:'ops'}})));
-      add('stock','Stock checks done',(d.stock||[]).filter(r=>after(stamp(r),since)).map(r=>({at:stamp(r),title:nm(r.property_id),sub:r.issues?String(r.issues).slice(0,80):'all counted',ref:{kind:'ops'}})));
-      add('low','Low ratings',(d.reviews||[]).filter(r=>r.low==='Yes'&&after(r.low_at||r.rated_at,since)).map(r=>({at:r.low_at||r.rated_at,title:`${'★'.repeat(+r.rating||0)} · ${gName(r.booking_id)} · ${nm(r.property_id)}`,sub:[r.review_text&&String(r.review_text).slice(0,80),'rated by '+(r.rated_by||'manager')].filter(Boolean).join(' · '),ref:{kind:'reviews',id:r.booking_id}})));
-      add('reviews_asked','Reviews asked for',(d.reviews||[]).filter(r=>r.status==='asked'&&after(r.asked_at,since)).map(r=>({at:r.asked_at,title:`${r.booking_id} · ${nm(r.property_id)}`,sub:`asked by ${r.asked_by||'manager'} · confirm when it arrives`,ref:{kind:'reviews'}})));
-      if(ctx.missed)add('missed','Missed',ctx.missed.filter(x=>after(x.at,since)),'checklists, stock checks or reviews not done in time');
-      (ctx.extra||[]).forEach(x=>add(x.key,x.label,x.items.filter(i=>x.always||after(i.at,since)),x.note))}
+      add('checklists','Checklists done',(d.checklists||[]).filter(r=>after(stamp(r),sinceFor('checklists'))).map(r=>({at:stamp(r),title:nm(r.property_id),sub:`checkout ${r.booking_id||''}${list(js(r.photos)||r.photos).length?' · photos':''}`,ref:{kind:'ops'}})));
+      add('stock','Stock checks done',(d.stock||[]).filter(r=>after(stamp(r),sinceFor('stock'))).map(r=>({at:stamp(r),title:nm(r.property_id),sub:r.issues?String(r.issues).slice(0,80):'all counted',ref:{kind:'ops'}})));
+      add('low','Low ratings',(d.reviews||[]).filter(r=>r.low==='Yes'&&after(r.low_at||r.rated_at,sinceFor('low'))).map(r=>({at:r.low_at||r.rated_at,title:`${'★'.repeat(+r.rating||0)} · ${gName(r.booking_id)} · ${nm(r.property_id)}`,sub:[r.review_text&&String(r.review_text).slice(0,80),'rated by '+(r.rated_by||'manager')].filter(Boolean).join(' · '),ref:{kind:'reviews',id:r.booking_id}})));
+      add('reviews_asked','Reviews asked for',(d.reviews||[]).filter(r=>r.status==='asked'&&after(r.asked_at,sinceFor('reviews_asked'))).map(r=>({at:r.asked_at,title:`${r.booking_id} · ${nm(r.property_id)}`,sub:`asked by ${r.asked_by||'manager'} · confirm when it arrives`,ref:{kind:'reviews'}})));
+      if(ctx.missed)add('missed','Missed',ctx.missed.filter(x=>after(x.at,sinceFor('missed'))),'checklists, stock checks or reviews not done in time');
+      (ctx.extra||[]).forEach(x=>add(x.key,x.label,x.items.filter(i=>x.always||after(i.at,sinceFor(x.key))),x.note))}
     else{
       add('bookings','New bookings at your stays',(d.bookings||[]).filter(b=>inS(b.property_id)&&after(stamp(b),since)).map(b=>({at:stamp(b),title:`${b.guest||'Guest'} · ${nm(b.property_id)}`,sub:`${String(b.check_in).slice(0,10)} → ${String(b.check_out).slice(0,10)} · ${b.guests||''} guests`,ref:{kind:'today'}})));
       add('alerts','Guest alerts',(d.maint||[]).filter(m=>inS(m.property_id)&&/whatsapp/i.test(m.source||'')&&after(stamp(m),since)).map(m=>({at:stamp(m),title:m.issue,sub:`${nm(m.property_id)} · ${m.priority||''}`,ref:{kind:'issues'}})));
@@ -3364,7 +3417,7 @@ function exportChart(holder,name){
 const ico={filter:'M4 6h16M7 12h10M10 18h4',chevL:'M15 6l-6 6 6 6',chevR:'M9 6l6 6-6 6',wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',chat:'M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z',
   check:'M5 12.5l4.5 4.5L19 7.5',user:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0',up2:'M12 16V4M7 9l5-5 5 5M4 20h16',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',
   bulb:'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z',key:'M15 7a4 4 0 11-3.9 4.9L4 19v2h3l1-1v-2h2v-2h2l1.1-1.1A4 4 0 0115 7z',
-  info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 7.5v.5',clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',bank:'M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18',cash:'M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5M6 10v4M18 10v4',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
+  info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 7.5v.5',clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',bank:'M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5',cash:'M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5M6 10v4M18 10v4',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
 const driveLogo=()=>{const s=sv('svg',{viewBox:'0 0 87.3 78',width:20,height:18,'aria-hidden':'true'});
   [['M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z','#0066da'],['M43.65 25L29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z','#00ac47'],
    ['M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 11.5z','#ea4335'],['M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z','#00832d'],
@@ -3524,6 +3577,15 @@ function newsExtra(){const out=[],R=insRuns().runs,last=R[R.length-1];
     if(it.length)out.push({key:'geo',label:'Sent away from the stay',note:'more than 200 m from its map pin',items:it})
     const ph=rowsOf('checklists').filter(r=>String(r.done_at||'').slice(0,10)>=since&&aiCheckOf(r)&&!aiCheckOf(r).ok);
     if(ph.length)out.push({key:'photo',label:'Photos flagged by the AI check',items:ph.map(r=>({at:String(r.done_at),title:`${nm(r.property_id)} · ${String((aiCheckOf(r).flags||[])[0]||'check the photos')}`,sub:r.by_name||r.by||'manager',ref:{kind:'ops'}}))})}
+  /* double bookings: two confirmed stays on the same place (a family counts) on the same night, from today on */
+  {const fut=D.B.filter(b=>b.ok&&!b.deleted_at&&b.check_out>TODAY),seen=new Set(),it=[];
+    for(let i=0;i<fut.length;i++)for(let j=i+1;j<fut.length;j++){const a=fut[i],b=fut[j];if(a.check_in<b.check_out&&b.check_in<a.check_out&&samePlace(a.property_id,b.property_id)){const k=[a.booking_id,b.booking_id].sort().join('+');if(seen.has(k))continue;seen.add(k);
+      it.push({at:(a.check_in<b.check_in?b.check_in:a.check_in)+'T00:00',title:`${short((D.P[a.property_id]||{}).property||a.property_id)} · ${a.booking_id} and ${b.booking_id}`,sub:`${a.guest} and ${b.guest} · overlap from ${fmtD(a.check_in<b.check_in?b.check_in:a.check_in)}`,ref:{kind:'booking',id:a.booking_id}})}}
+    if(it.length)out.push({key:'clash',label:'Double bookings',always:true,note:'stays here until one is moved or cancelled',items:it})}
+  /* guests arriving in the next 7 days without a phone number: the bot and the manager can't reach them */
+  {const it=D.B.filter(b=>b.ok&&!b.deleted_at&&b.check_in>=TODAY&&b.check_in<=add(TODAY,7)&&String(b.phone||'').replace(/\D/g,'').length<10)
+      .map(b=>({at:b.check_in+'T00:00',title:`${b.guest||'Guest'} · ${short((D.P[b.property_id]||{}).property||b.property_id)}`,sub:`arrives ${fmtD(b.check_in)} · ${b.channel||''} · add their number`,ref:{kind:'booking',id:b.booking_id}}));
+    if(it.length)out.push({key:'no_phone',label:'Guests arriving without a phone number',always:true,note:'stays here until the number is added',items:it})}
   /* monthly payments past their due day (Money › Monthly payments), until paid or adjusted */
   {const od=mlLines(TODAY.slice(0,7)).filter(l=>l.left&&l.dueOn<=TODAY);
     if(od.length)out.push({key:'rent_due',label:'Monthly payments due',always:true,note:'stays here until paid or adjusted',
@@ -3534,9 +3596,28 @@ function missedItems(){const c=OPSC(),nm=pid=>short((D.P[pid]||{}).property||pid
   OPS.stock(S.data.props,rowsOf('stock'),TODAY,c).forEach(x=>x.missedAt.forEach(d=>out.push({at:d+'T00:00',title:'Stock check missed · '+nm(x.property_id),sub:'fortnight ending '+fmtD(d),ref:{kind:'ops'}})));
   OPS.reviews(S.data.bookings,rowsOf('reviews'),TODAY,c).filter(x=>x.status==='missed').forEach(x=>out.push({at:String(x.missedAt).slice(0,10)+'T00:00',title:'Review missed · '+nm(x.property_id),sub:x.booking.guest+' · '+x.booking.booking_id,ref:{kind:'reviews'}}));
   return out}
-function newsNow(){if(!S.data||!S.admin)return[];return OPS.news({...S.data,maint:S.data.maint||[]},seenAt(),'admin',{missed:missedItems(),extra:newsExtra()})}
+function newsNow(){if(!S.data||!S.admin)return[];return OPS.news({...S.data,maint:S.data.maint||[]},seenAt(),'admin',{missed:missedItems(),extra:newsExtra(),urgent:urgentSet(),urgentSince:add(TODAY,-30)})}
 /* read marks per item (this device): a read item fades and stops counting */
-const NEWS_URGENT=new Set(['rent_due','issues','mgr_issues','missed','low','bills_missing','wa_cancel','geo','leave','photo']);
+/* Needs attention vs Updates. Urgent kinds stay until resolved: the ones that are a state (a payment due, a bill missing, a
+   request to decide, a double booking) clear by themselves; the ones that are an event (a complaint, a low rating, a
+   missed checklist) stay until an admin marks them handled. Any of them can be snoozed. Updates bundle by day and clear
+   when read. Settings: ops.notif_urgent (which kinds are urgent, per client), ops.notif_state (handled / snoozed). */
+const NEWS_KINDS={issues:'Guest complaints / issues',wa_cancel:'Cancellations to confirm',missed:'Missed checklists, stock checks, reviews',low:'Low ratings',clash:'Double bookings',
+  geo:'Sent away from the stay',leave:'Leave requests',photo:'Photos flagged by the AI check',bills_missing:'Monthly bills missing',rent_due:'Monthly payments due',no_phone:'Guests arriving without a phone number',
+  mgr_issues:'Issues from managers to approve',claims:'Expense claims to decide',wa_bookings:'New WhatsApp bookings',requests:'Guest requests',leads:'New enquiries',bills:'Bills sent on WhatsApp',
+  checklists:'Checklists done',stock:'Stock checks done',reviews_asked:'Reviews asked for',ai:'New AI analysis',report:'Monthly report ready',market:'Price check due'};
+const NEWS_URGENT_DEF=['issues','wa_cancel','missed','low','clash','geo','leave','photo','bills_missing','rent_due','no_phone','mgr_issues','claims'];
+const NEWS_SELF=new Set(['rent_due','bills_missing','leave','mgr_issues','claims','wa_cancel','market','clash','no_phone']);   // clear by themselves
+const urgentSet=()=>{const v=setJ('ops.notif_urgent');return new Set(Array.isArray(v)?v:NEWS_URGENT_DEF)};
+const NEWS_URGENT={has:k=>urgentSet().has(k)};
+const nKey=(c,it)=>c+'|'+(it.ref&&it.ref.id?it.ref.kind+':'+it.ref.id:it.title)+'|'+String(it.at||'').slice(0,10);
+const notifState=()=>{const v=setJ('ops.notif_state');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}};
+async function notifSet(k,val,msg){const st={...notifState()},cut=new Date(Date.now()-60*864e5).toISOString();Object.keys(st).forEach(x=>{if(String((st[x]||{}).at||'')<cut)delete st[x]});
+  if(val)st[k]={...val,at:new Date().toISOString(),by:(LIVE.me||{}).name||(LIVE.me||{}).email||'admin'};else delete st[k];return setSetting('ops.notif_state',JSON.stringify(st),msg)}
+/* the urgent items still open: not handled, not snoozed */
+function attention(){const st=notifState(),now=new Date().toISOString(),U=urgentSet(),out=[];
+  newsNow().filter(c=>U.has(c.key)).forEach(c=>c.items.forEach(it=>{const k=nKey(c.key,it),x=st[k];if(x&&(x.s==='done'||(x.s==='snooze'&&String(x.until)>now)))return;out.push({cat:c,it,k,self:NEWS_SELF.has(c.key)})}));
+  return out.sort((a,b)=>String(b.it.at).localeCompare(String(a.it.at)))}
 /* geotag: a manager-app entry sent far from the stay (the sheet measured it against the stay's map pin) */
 /* AI photo check (console add-on): its verdict on a checklist's photos */
 const aiCheckOf=r=>{try{const x=typeof r.ai_check==='string'?JSON.parse(r.ai_check):r.ai_check;return x&&typeof x==='object'?x:null}catch(e){return null}};
@@ -3549,9 +3630,9 @@ const geoPill=r=>{const f=String((r&&r.geo_flag)||'');if(f==='far')return h('spa
 const newsKey=it=>String(it.title||'')+'|'+String(it.at||'');
 const newsRead=()=>{try{return new Set(JSON.parse(localStorage.getItem('jg_news_read')||'[]'))}catch(e){return new Set()}};
 const newsMark=keys=>{const s=newsRead();keys.forEach(k=>s.add(k));try{localStorage.setItem('jg_news_read',JSON.stringify([...s].slice(-800)))}catch(e){}};
-function paintBell(){const b=$('#bellBtn');if(!b)return;b.hidden=!S.admin;if(!S.admin)return;const rd=newsRead(),n=sum(newsNow(),c=>c.items.filter(it=>!rd.has(newsKey(it))).length),nb=b.querySelector('.bell-n');
+function paintBell(){const b=$('#bellBtn');if(!b)return;b.hidden=!S.admin;if(!S.admin)return;const rd=newsRead(),U=urgentSet(),urg=attention().length,upd=sum(newsNow().filter(c=>!U.has(c.key)),c=>c.items.filter(it=>!rd.has(newsKey(it))).length),n=urg||upd,nb=b.querySelector('.bell-n');b.classList.toggle('bell-quiet',!urg&&!!upd);
   nb.hidden=!n;nb.textContent=n>99?'99+':String(n);b.setAttribute('aria-label',n?`What's new: ${n}`:"What's new")}
-const NEWS_ICON={wa_bookings:'list',wa_cancel:'x',issues:'wrench',requests:'chat',leads:'chat',bills:'wallet',mgr_issues:'wrench',geo:'x',leave:'cal',photo:'x',claims:'wallet',checklists:'check',stock:'list',reviews_asked:'star',missed:'clock',low:'star',ai:'bulb',market:'list',bills_missing:'wallet',report:'dl',rent_due:'wallet'};
+const NEWS_ICON={wa_bookings:'list',wa_cancel:'x',issues:'wrench',requests:'chat',leads:'chat',bills:'wallet',mgr_issues:'wrench',geo:'x',leave:'cal',photo:'x',claims:'wallet',checklists:'check',stock:'list',reviews_asked:'star',missed:'clock',low:'star',ai:'bulb',market:'list',bills_missing:'wallet',report:'dl',rent_due:'wallet',clash:'cal',no_phone:'chat'};
 /* open the right screen and point at the item itself */
 function flashRef(id){if(!id)return;setTimeout(()=>{const el=document.querySelector(`[data-ref="${CSS.escape(String(id))}"]`);if(!el)return;el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2800)},260)}
 function newsGo(ref){closeLayer();if(!ref)return;const k=ref.kind;
@@ -3564,20 +3645,40 @@ function newsGo(ref){closeLayer();if(!ref)return;const k=ref.kind;
   if(k==='insights'){S.aiTab='insights';return go('insights')}
   if(k==='market'){S.aiTab='market';return go('insights')}
   if(k==='whatsapp')return go('whatsapp')}
-function openNews(){const rd=newsRead(),cats=newsNow().sort((a,b)=>(NEWS_URGENT.has(b.key)-NEWS_URGENT.has(a.key))),since=seenAt(),open=S.newsOpen||{};
-  const unread=c=>c.items.filter(it=>!rd.has(newsKey(it))).length,urgN=sum(cats.filter(c=>NEWS_URGENT.has(c.key)),unread),updN=sum(cats.filter(c=>!NEWS_URGENT.has(c.key)),unread);
+function openNews(){const rd=newsRead(),U=urgentSet(),att=attention(),cats=newsNow().filter(c=>!U.has(c.key)),open=S.newsOpen||{};
   const when=t=>{const d=new Date(String(t).replace(' ','T'));return isNaN(d)?'':d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})};
+  const dayOf=t=>{const d=String(t).slice(0,10);return d===TODAY?'Today':d===add(TODAY,-1)?'Yesterday':fmtD(d,{weekday:'short',day:'numeric',month:'short'})};
+  /* updates: one list, grouped by day, newest first */
+  const ups=cats.flatMap(c=>c.items.map(it=>({c,it,read:rd.has(newsKey(it))}))).sort((a,b)=>String(b.it.at).localeCompare(String(a.it.at)));
+  const unreadN=ups.filter(x=>!x.read).length,byDay=new Map();ups.forEach(x=>{const d=dayOf(x.it.at);(byDay.get(d)||byDay.set(d,[]).get(d)).push(x)});
+  const lim=S.newsLim||30;let shownN=0;
+  const ago=t=>{const d=(Date.now()-new Date(String(t).replace(' ','T')).getTime())/864e5;if(isNaN(d))return'';if(d<-0.5)return'in '+Math.round(-d)+'d';if(d<1/24)return'now';if(d<1)return Math.round(d*24)+'h';return Math.round(d)+'d'};
+  const attRow=x=>h('div',{class:'na-it'+(x.self?' self':'')},
+    h('button',{type:'button',class:'na-main',onclick:()=>{closeLayer();newsGo(x.it.ref)}},h('span',{class:'nx-ic'},icon(NEWS_ICON[x.cat.key]||'info')),
+      h('span',{class:'nx-t'},h('span',{class:'nx-top'},h('b',null,x.it.title),h('time',null,ago(x.it.at))),h('small',null,[x.cat.label,x.it.sub].filter(Boolean).join(' · ')))),
+    h('div',{class:'na-acts'},x.self?h('small',{class:'na-auto'},'Clears when done'):h('button',{type:'button',class:'nx-btn',onclick:()=>notifSet(x.k,{s:'done'},'Marked handled').then(()=>{paintBell();openNews()})},icon('check'),'Handled'),
+      h('select',{class:'na-snz','aria-label':'Snooze',onchange:ev=>{const d=+ev.target.value;if(!d)return;notifSet(x.k,{s:'snooze',until:new Date(Date.now()+d*864e5).toISOString()},`Snoozed ${d} day${d>1?'s':''}`).then(()=>{paintBell();openNews()})}},
+        h('option',{value:''},'Snooze'),h('option',{value:'1'},'1 day'),h('option',{value:'3'},'3 days'),h('option',{value:'7'},'1 week'))));
   const body=h('div',{class:'news'},
-    h('div',{class:'news-sum'},urgN?h('span',{class:'pill p-bad'},`${urgN} need${urgN===1?'s':''} attention`):null,updN?h('span',{class:'pill p-mute'},`${updN} update${updN>1?'s':''}`):null,
-      !urgN&&!updN?h('span',{class:'pill p-ok'},'All read'):null,h('small',null,`since ${when(since)} · WhatsApp and manager apps · your own changes are in Manage › History`)),
-    cats.length?cats.map((c,ci)=>{const all=open[c.key],shown=all?c.items:c.items.slice(0,3),urg=NEWS_URGENT.has(c.key),head=ci===0||urg!==NEWS_URGENT.has(cats[ci-1].key);
-      return [head?h('div',{class:'news-grp'},urg?'Needs attention':'Updates'):null,h('section',{class:'news-cat'+(urg?' urg':'')},h('div',{class:'news-h'},h('span',{class:'news-ic'},icon(NEWS_ICON[c.key]||'info')),h('b',null,c.label),h('span',{class:'news-n num'},unread(c)||'✓')),
-        c.note?h('small',{class:'news-note'},c.note):null,
-        h('div',{class:'news-list'},shown.map(it=>h('button',{class:'news-it'+(rd.has(newsKey(it))?' read':''),onclick:()=>{newsMark([newsKey(it)]);paintBell();newsGo(it.ref)}},h('span',{class:'news-t'},h('b',null,it.title),h('small',null,it.sub||'')),h('time',null,it.at?when(it.at):'')))),
-        c.items.length>3?h('button',{class:'btn sm ghost',onclick:()=>{S.newsOpen={...open,[c.key]:!all};openNews()}},all?'Show fewer':`Show all ${c.items.length}`):null)]})
-      :h('div',{class:'empty'},'Nothing new since you last looked.'));
-  modal("What's new",body,[h('button',{class:'btn',onclick:closeLayer},'Close'),cats.length?h('button',{class:'btn primary',onclick:()=>{newsMark(cats.flatMap(c=>c.items.map(newsKey)));markSeen();S.newsOpen={};closeLayer();render();paintBell();toast('All caught up ✓')}},'Mark all read'):null]);
-  $('#layer .modal')?.classList.add('news-modal')}
+    h('section',{class:'na'},h('div',{class:'na-h'},h('b',null,'Needs attention'),h('span',{class:'pill '+(att.length?'p-bad':'p-ok')},att.length?String(att.length):'All clear'),
+        h('small',null,'stays until resolved or marked handled')),
+      att.length?h('div',{class:'na-list nx-group'},att.map(attRow)):h('div',{class:'na-empty'},icon('check'),'Nothing urgent right now.')),
+    h('section',{class:'nu'},h('div',{class:'na-h'},h('b',null,'Updates'),h('span',{class:'pill p-mute'},unreadN?unreadN+' new':'All read'),h('small',null,'bundled by day · clear when read')),
+      ups.length?[...byDay.entries()].map(([d,xs])=>{if(shownN>=lim)return null;const take=xs.slice(0,Math.max(0,lim-shownN));shownN+=take.length;
+        return h('div',{class:'nu-day'},h('div',{class:'news-grp'},d+(xs.filter(x=>!x.read).length?` · ${xs.filter(x=>!x.read).length} new`:'')),
+          h('div',{class:'nx-group'},take.map(x=>h('button',{class:'nx-row'+(x.read?' read':''),onclick:()=>{newsMark([newsKey(x.it)]);paintBell();newsGo(x.it.ref)}},h('span',{class:'nx-ic up'},icon(NEWS_ICON[x.c.key]||'info')),
+            h('span',{class:'nx-t'},h('span',{class:'nx-top'},h('b',null,x.it.title),h('time',null,x.it.at?when(x.it.at):'')),h('small',null,[x.c.label,x.it.sub].filter(Boolean).join(' · '))),x.read?null:h('i',{class:'nx-dot'})))))}):h('div',{class:'na-empty'},icon('check'),'No updates since you last looked.'),
+      ups.length>lim?h('button',{class:'btn sm ghost',onclick:()=>{S.newsLim=lim+30;openNews()}},`Show more (${ups.length-lim})`):null));
+  modal("What's new",body,[h('button',{class:'btn ghost',onclick:()=>notifSettings()},'Customise'),h('button',{class:'btn ghost nf-full',onclick:()=>{S.newsFull=!S.newsFull;openNews()}},icon(S.newsFull?'shrink':'expand'),S.newsFull?'Compact':'Full screen'),h('button',{class:'btn',onclick:closeLayer},'Close'),
+    unreadN?h('button',{class:'btn primary',onclick:()=>{newsMark(ups.map(x=>newsKey(x.it)));markSeen();S.newsLim=30;closeLayer();render();paintBell();toast('Updates all read ✓')}},'Mark updates read'):null]);
+  $('#layer .modal')?.classList.add('news-modal','ob-modal',...(S.newsFull?['news-full']:[]))}
+/* which kinds need attention (stay until handled) and which are updates - per client */
+function notifSettings(){const U=urgentSet(),pick=new Set(U);
+  const rowsEl=h('div',{class:'ns-list'}),draw=()=>rowsEl.replaceChildren(...Object.entries(NEWS_KINDS).map(([k,l])=>h('label',{class:'ns-row'},h('span',null,l,NEWS_SELF.has(k)?h('small',null,'clears by itself'):null),
+    h('div',{class:'seg sm'},[[true,'Needs attention'],[false,'Update']].map(([u,t])=>h('button',{type:'button','aria-pressed':pick.has(k)===u,onclick:()=>{u?pick.add(k):pick.delete(k);draw()}},t))))));draw();
+  modal('Notifications',h('div',{class:'form'},h('p',{class:'full hint',style:{margin:0}},'Needs attention stays on the bell and on Overview until it is resolved or marked handled. Updates are bundled by day and clear once read.'),h('div',{class:'full'},rowsEl)),
+    [h('button',{class:'btn',onclick:()=>openNews()},'Back'),h('button',{class:'btn primary',onclick:()=>setSetting('ops.notif_urgent',JSON.stringify([...pick]),'Saved').then(()=>{paintBell();openNews()})},'Save')]);
+  $('#layer .modal')?.classList.add('ob-modal')}
 /* ---- lead: hero on Overview, editorial page head elsewhere ---- */
 const HEAD={desk:['Check-ins &','check-outs'],calendar:['Every night,','at a glance'],properties:['Your','stays'],money:['Where the money','goes'],ops:['Cleaning &','repairs'],bookings:['Every','booking'],whatsapp:['Your','WhatsApp bot'],insights:['Where to','earn more']};
 const mtn=()=>{const s=sv('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'currentColor','aria-hidden':'true'});s.append(sv('path',{d:'M2.5 18.5l6-9 3.6 5.2 2.6-3.6 6.8 7.4z'}));return s};
