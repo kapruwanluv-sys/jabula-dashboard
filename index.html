@@ -2152,6 +2152,36 @@ body.is-live .dev-only{display:none!important}
 .dir-ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(29,91,216,0.1);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);flex:none}.dir-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
 .dir-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}.dir-t b{display:flex;gap:8px;align-items:center;font-size:13.5px}.dir-kind{font-size:11px;font-weight:600;color:var(--muted);padding:2px 8px;border-radius:99px;background:var(--hair)}
 .dir-t small{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dir-acts{display:flex;gap:6px;flex:none}
+
+/* Manager app setup: full page - template + stays rail, stay tuning, preview, copy */
+.modal.su-modal{width:min(1180px,100%);max-width:min(1180px,100%);height:calc(100dvh - 24px);max-height:none;display:flex;flex-direction:column}
+.su-modal>div:not(.modal-h):not(.modal-f){flex:1;min-height:0}
+.su{display:grid;grid-template-columns:310px minmax(0,1fr);gap:0;height:100%;min-height:0;border-top:1px solid var(--hair)}
+.su-rail{overflow:auto;padding:12px;border-right:1px solid var(--hair);background:rgba(249,250,253,1.0);background:color-mix(in srgb,var(--hair) 35%,var(--surface));display:flex;flex-direction:column;gap:4px}
+.su-pane{overflow:auto;padding:18px 24px 24px;min-width:0}
+.su-it{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:14px;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%}
+.su-it:hover{background:var(--hair)}.su-it.on{background:var(--surface);box-shadow:0 1px 1px rgba(12,26,61,.05),0 8px 20px -14px rgba(12,26,61,.35)}.su-it.kid{padding-left:22px}
+.su-ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(140deg,rgba(97,140,228,1.0),var(--accent));background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 70%,#fff),var(--accent))}
+.su-ic.tpl{background:linear-gradient(140deg,rgba(87,158,125,1.0),var(--ok));background:linear-gradient(140deg,color-mix(in srgb,var(--ok) 70%,#fff),var(--ok))}.su-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.su-t{display:flex;flex-direction:column;min-width:0;flex:1}.su-t b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.su-t small{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.su-st{font-size:11px;color:var(--muted);flex:none}.su-st.cus{color:var(--accent);font-weight:700}
+.su-sep{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:12px 10px 4px}
+.su-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}.su-head h3{margin:0;font-size:20px}.su-head small{color:var(--muted);font-size:12.5px}
+.su-hacts{display:flex;gap:8px;flex-wrap:wrap}.su-tabs{margin-bottom:12px}
+.su-h4{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:16px 0 8px;font-size:14px}.su-h4 small{color:var(--muted);font-weight:400;font-size:12px}
+.su-list{display:flex;flex-direction:column;border-radius:16px;border:1px solid var(--hair);background:var(--surface);overflow:hidden}
+.su-row{display:flex;align-items:center;gap:10px;padding:9px 14px;flex-wrap:wrap}.su-row+.su-row{border-top:1px solid var(--hair)}.su-row.off .su-tg span{color:var(--muted);text-decoration:line-through}
+.su-tg{display:flex;align-items:center;gap:10px;flex:1 1 220px;min-width:0;font-size:13.5px}.su-num{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.su-num input{width:70px}
+.su-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--hair);color:var(--muted)}.su-tag.ov{background:rgba(29,91,216,0.12);background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
+.su-prev{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.su-phone{border-radius:22px;padding:14px;background:var(--surface);border:1px solid var(--hair);box-shadow:0 14px 34px -22px rgba(12,26,61,.4);display:flex;flex-direction:column;gap:4px}
+.su-phone>b{font-size:15px}.su-phone>small{color:var(--muted);font-size:12px;margin-bottom:6px}
+.su-pi{display:flex;gap:8px;align-items:center;padding:7px 4px;border-top:1px solid var(--hair);font-size:13px}.su-pi i{font-style:normal;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:var(--hair);font-size:11px;flex:none}
+.su-pi span{flex:1;min-width:0}.su-pi em{font-style:normal;font-size:11.5px;color:var(--muted)}
+.su-copy{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:rgba(239,244,252,1.0);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border:1px solid rgba(29,91,216,0.22);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);margin-bottom:14px}
+.su-cacts{display:flex;justify-content:flex-end;gap:8px}
+@media (max-width:760px){.su{grid-template-columns:1fr;grid-template-rows:auto 1fr}.su-rail{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--hair);padding:8px}.su-sep{display:none}
+  .su-it{flex:none;width:auto;max-width:220px}.su-it.kid{padding-left:10px}.su-pane{padding:14px}}
 </style>
 </head>
 <body>
@@ -2241,8 +2271,13 @@ const OPS=(()=>{
   /* the common list plus what this stay (or the whole place it belongs to) adds */
   const parentOf=(pid,props)=>((props||[]).find(p=>list(p.includes).includes(pid))||{}).property_id||null;
   const extra=(c,pid,props,k)=>[...((c.stayItems[parentOf(pid,props)]||{})[k]||[]),...((c.stayItems[pid]||{})[k]||[])];
-  function checkItemsFor(c,pid,props){return active([...c.checkItems,...extra(c,pid,props,'check')],normCheck)}
-  function stockItemsFor(c,pid,props){return active([...c.stockItems,...extra(c,pid,props,'stock')],normStock)}
+  /* per-stay tuning (and its whole place's): off = template items this stay doesn't use; set = its own count / minimum
+     for an item ({name: {expect} | {min}}, by lower-case name). Stored in ops.stay_items next to its own items. */
+  const tune=(c,pid,props,k,items)=>{const fam=[parentOf(pid,props),pid].filter(Boolean).map(x=>c.stayItems[x]||{});
+    const off=new Set(fam.flatMap(s=>((s.off||{})[k]||[]).map(n=>String(n).toLowerCase()))),set=Object.assign({},...fam.map(s=>(s.set||{})[k]||{}));
+    return items.filter(it=>!off.has(it.name.toLowerCase())).map(it=>{const o=set[it.name.toLowerCase()];return o?{...it,...o}:it})};
+  function checkItemsFor(c,pid,props){return tune(c,pid,props,'check',active([...c.checkItems,...extra(c,pid,props,'check')],normCheck))}
+  function stockItemsFor(c,pid,props){return tune(c,pid,props,'stock',active([...c.stockItems,...extra(c,pid,props,'stock')],normStock))}
   /* "Bedsheets (min 12)" / "TV working (ok)" -> {name, min} / {name, type:'ok'} */
   function parseItem(x){x=String(x).trim();if(/\(ok\)$/i.test(x))return{name:x.replace(/\s*\(ok\)$/i,''),type:'ok'};const m=/^(.*?)\s*\(min\s*(\d+)\)$/i.exec(x);return m?{name:m[1],min:+m[2]}:{name:x}}
   const itemText=it=>it.name+(it.type==='ok'?' (ok)':it.min?` (min ${it.min})`:'');
@@ -4728,36 +4763,86 @@ function chipEditor(saved,placeholder){const L=[...(saved||[])],box=h('div',{cla
   const doAdd=()=>{const v=add.value.trim();if(v&&!L.some(x=>x.toLowerCase()===v.toLowerCase()))L.push(v);add.value='';draw()};
   add.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doAdd()}});draw();
   return{el:h('div',{class:'ie'},box,h('div',{class:'ie-add'},add,h('button',{type:'button',class:'btn sm',onclick:doAdd},icon('plus'),'Add'))),value:()=>L.slice()}}
-function opsItemsEdit(){const c=OPSC();
+/* Manager app setup (full page): the template every stay starts from, and each stay's tuning on top - template items
+   switched off there, its own count / minimum for an item, its own extra items - with a "Manager sees" preview and copy to
+   other stays. Saved to ops.checkout_items / ops.stock_items / ops.guest_requests (template) and ops.stay_items (stays). */
+function opsItemsEdit(){const c=OPSC(),W={sel:'*',tab:'check',stab:'check',SI:JSON.parse(JSON.stringify(c.stayItems||{})),own:{}};
   const E={check:itemsEditor('check',c.checkItems,OPS.PRESET_CHECK),stock:itemsEditor('stock',c.stockItems,OPS.PRESET_STOCK),req:itemsEditor('req',c.reqItems,OPS.PRESET_REQ)};
-  /* what one stay adds on top of the common lists (a whole place's extras apply to its flats too) */
-  const SI=JSON.parse(JSON.stringify(c.stayItems)),props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>short(a.property).localeCompare(short(b.property)));
-  const sp=h('select',{'aria-label':'Stay'},props.map(p=>h('option',{value:p.property_id},short(p.property)+(kidsOf(p.property_id).length?' (whole place)':'')+(SI[p.property_id]?' ·  has extras':'')))),stayBox=h('div',{class:'ie-stay'});
-  let cur=null,se=null,ss=null;const keep=()=>{if(cur&&se){const a=se.value().filter(x=>!x.off),b=ss.value().filter(x=>!x.off);if(a.length||b.length)SI[cur]={check:a,stock:b};else delete SI[cur]}};
-  const show=()=>{keep();cur=sp.value;se=itemsEditor('check',(SI[cur]||{}).check||[],[]);ss=itemsEditor('stock',(SI[cur]||{}).stock||[],[]);
-    stayBox.replaceChildren(h('h4',null,'Checklist extras'),se.el,h('h4',null,'Stock extras'),ss.el)};sp.addEventListener('change',show);show();
+  /* stays in the rail: by city, a whole place followed by its flats */
+  const act=D.props.filter(p=>!isStopped(p)),byN=(a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property));
+  const props=act.filter(p=>!parentOf(p.property_id)).sort(byN).flatMap(p=>[p,...act.filter(k=>parentOf(k.property_id)===p.property_id).sort(byN)]);
+  const SIof=pid=>W.SI[pid]||(W.SI[pid]={});
+  /* own items live in an editor while open; written back into W.SI before switching, copying or saving */
+  const ownEd=(pid,k)=>{const o=W.own[pid]||(W.own[pid]={});return o[k]||(o[k]=itemsEditor(k,(SIof(pid)[k])||[],[]))};
+  const syncOwn=()=>Object.entries(W.own).forEach(([pid,o])=>['check','stock'].forEach(k=>{if(o[k])SIof(pid)[k]=o[k].value().filter(x=>!x.off)}));
+  const clean=si=>{const o={};Object.entries(si).forEach(([pid,x])=>{const y={};['check','stock'].forEach(k=>{if((x[k]||[]).length)y[k]=x[k]});
+      const off={},set={};['check','stock'].forEach(k=>{if(((x.off||{})[k]||[]).length)off[k]=x.off[k];if(Object.keys((x.set||{})[k]||{}).length)set[k]=x.set[k]});
+      if(Object.keys(off).length)y.off=off;if(Object.keys(set).length)y.set=set;if(Object.keys(y).length)o[pid]=y});return o};
+  const changes=pid=>{const x=W.SI[pid]||{},own=W.own[pid];const n=k=>((own&&own[k])?own[k].value().filter(i=>!i.off).length:(x[k]||[]).length)+((x.off||{})[k]||[]).length+Object.keys((x.set||{})[k]||{}).length;return n('check')+n('stock')};
+  const tpl=k=>E[k].value().filter(x=>!x.off).map(k==='check'?OPS.normCheck:OPS.normStock);
+  const isOff=(pid,k,name)=>((SIof(pid).off||{})[k]||[]).map(x=>String(x).toLowerCase()).includes(name.toLowerCase());
+  const setOff=(pid,k,name,off)=>{const x=SIof(pid);x.off=x.off||{};const L=(x.off[k]||[]).filter(n=>String(n).toLowerCase()!==name.toLowerCase());if(off)L.push(name);x.off[k]=L};
+  const ovOf=(pid,k,name)=>(((SIof(pid).set||{})[k]||{})[name.toLowerCase()])||{};
+  const setOv=(pid,k,name,key,v)=>{const x=SIof(pid);x.set=x.set||{};x.set[k]=x.set[k]||{};const nm=name.toLowerCase();if(v==null){delete x.set[k][nm]}else x.set[k][nm]={[key]:v}};
+  /* what the manager gets for a stay, from the working copy */
+  const effective=pid=>{syncOwn();const cfg={...c,checkItems:E.check.value(),stockItems:E.stock.value(),stayItems:W.SI};return{check:OPS.checkItemsFor(cfg,pid,D.props),stock:OPS.stockItemsFor(cfg,pid,D.props)}};
+  const rail=h('div',{class:'su-rail'}),pane=h('div',{class:'su-pane'});
+  const draw=()=>{rail.replaceChildren(
+      h('button',{type:'button',class:'su-it'+(W.sel==='*'?' on':''),onclick:()=>{syncOwn();W.sel='*';draw()}},h('span',{class:'su-ic tpl'},icon('list')),h('span',{class:'su-t'},h('b',null,'Template'),h('small',null,'what every stay starts with'))),
+      h('div',{class:'su-sep'},'Stays'),
+      ...props.map(p=>{const n=changes(p.property_id),par=parentOf(p.property_id);return h('button',{type:'button',class:'su-it'+(W.sel===p.property_id?' on':'')+(par?' kid':''),onclick:()=>{syncOwn();W.sel=p.property_id;W.stab='check';draw()}},
+        h('span',{class:'su-ic'},short(p.property).replace(/[^A-Za-z0-9 ]+/g,' ').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()),
+        h('span',{class:'su-t'},h('b',null,short(p.property)),h('small',null,[p.city,par?'flat of '+short(D.P[par].property):kidsOf(p.property_id).length?'whole place':null].filter(Boolean).join(' · '))),
+        h('span',{class:'su-st '+(n?'cus':'')},n?`${n} change${n>1?'s':''}`:'template'))}));
+    pane.replaceChildren(W.sel==='*'?tplPane():stayPane(W.sel))};
+  /* ---- the template ---- */
   const rooms=chipEditor(c.photoSlots,'Add a room, e.g. Bathroom');
   const every=h('input',{type:'number',min:7,max:60,value:c.every}),win=h('input',{type:'number',min:1,max:60,value:c.window}),chs=h('input',{value:c.channels.join(', ')}),start=h('input',{type:'date',value:c.start}),
     two=h('input',{type:'number',min:0,step:500,value:c.twoAdmin}),cin=h('input',{type:'time',value:c.checkinTime}),rmax=h('input',{type:'number',min:1,max:10,value:c.reqOpenMax});
   const P=t=>h('p',{class:'hint ie-hint'},t);
-  const panes={check:h('div',null,P('What the manager ticks after every check-out. Count: they type a number (e.g. towels, should be 6). Photo: they must add a photo of that item.'),E.check.el),
-    stock:h('div',null,P('What the manager counts at each stock check. Count with a Min: shows on To buy below it. Yes / no: anything “no” becomes an issue.'),E.stock.el),
-    req:h('div',null,P('The only things guests can ask for on WhatsApp during a stay. Each becomes a task for the stay’s manager. Anything else, the bot kindly says no and offers to pass a message to the team.'),E.req.el,
-      h('div',{class:'form'},fld('Open requests per stay at a time',rmax))),
-    stay:h('div',null,P('Extra items for one stay, on top of the lists above. A whole place’s extras apply to its flats too.'),h('label',{class:'ie-pick'},h('span',null,'Stay'),sp),stayBox),
-    more:h('div',{class:'form'},h('div',{class:'full'},h('span',{class:'pr-lab'},'Room photos at each checklist'),rooms.el),
-      fld('Stock check every (days)',every),fld('Review window (days after check-out)',win),fld('Review platforms',chs),fld('Count from (date)',start),
-      fld('Claims above this (₹) need two admins',two),fld('Next guest’s check-in time (same-day cleanings)',cin))};
-  let tab='check';const seg=h('div',{class:'seg ie-tabs',role:'tablist','aria-label':'Sections'}),pane=h('div',{class:'ie-pane'});
-  const drawTabs=()=>{seg.replaceChildren(...[['check','Checklist'],['stock','Stock'],['req','Guest requests'],['stay','One stay'],['more','Photos & timing']].map(([k,l])=>
-    h('button',{role:'tab','aria-selected':tab===k?'true':'false',onclick:()=>{tab=k;drawTabs()}},l)));pane.replaceChildren(panes[tab])};drawTabs();
-  modal('Manager app setup',h('div',{class:'ie-wrap'},seg,pane),
-    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:async()=>{keep();closeLayer();
+  const tplPanes={check:()=>h('div',null,P('Ticked after every check-out, at every stay - unless a stay switches an item off or sets its own number. Count: the manager types a number. Photo: they must add a photo of it.'),E.check.el),
+    stock:()=>h('div',null,P('Counted at each stock check, at every stay. Count with a Min shows on To buy below it; a stay can set its own minimum. Yes / no: a “no” becomes an issue.'),E.stock.el),
+    req:()=>h('div',null,P('The only things guests can ask for on WhatsApp. Each becomes a task for the stay’s manager.'),E.req.el,h('div',{class:'form'},fld('Open requests per stay at a time',rmax))),
+    more:()=>h('div',{class:'form'},h('div',{class:'full'},h('span',{class:'pr-lab'},'Room photos at each checklist'),rooms.el),fld('Stock check every (days)',every),fld('Review window (days after check-out)',win),fld('Review platforms',chs),
+      fld('Count from (date)',start),fld('Claims above this (₹) need two admins',two),fld('Next guest’s check-in time (same-day cleanings)',cin))};
+  const tabsEl=(cur,list,on)=>h('div',{class:'seg su-tabs',role:'tablist'},list.map(([k,l])=>h('button',{role:'tab','aria-selected':cur===k?'true':'false',onclick:()=>on(k)},l)));
+  function tplPane(){return h('div',null,h('div',{class:'su-head'},h('div',null,h('h3',null,'Template'),h('small',null,`used by ${props.filter(p=>!changes(p.property_id)).length} of ${props.length} stays as it is · the rest tune it`))),
+    tabsEl(W.tab,[['check','Checklist'],['stock','Stock'],['req','Guest requests'],['more','Photos & timing']],k=>{W.tab=k;draw()}),h('div',{class:'ie-pane'},tplPanes[W.tab]()))}
+  /* ---- one stay: the template's items (on / off, own number), its own items, the preview, copy ---- */
+  function stayPane(pid){const p=D.P[pid]||{},par=parentOf(pid),kids=kidsOf(pid);
+    const tune=k=>{const items=tpl(k),key=k==='check'?'expect':'min';
+      return h('div',{class:'su-list'},items.length?items.map(it=>{const off=isOff(pid,k,it.name),ov=ovOf(pid,k,it.name),isCount=k==='check'?it.type==='count':it.type!=='ok';
+        const num=isCount&&!off?h('label',{class:'su-num'},h('span',null,k==='check'?'Should be':'Min'),h('input',{type:'number',min:0,max:999,inputmode:'numeric',value:ov[key]??'',placeholder:it[key]??'–',
+          onchange:e=>{const v=e.target.value===''?null:Math.max(0,Math.round(+e.target.value));setOv(pid,k,it.name,key,v==null||v===it[key]?null:v);draw()}})):null;
+        return h('div',{class:'su-row'+(off?' off':'')+(ov[key]!=null?' ov':'')},h('label',{class:'su-tg'},h('input',{type:'checkbox',checked:!off||null,onchange:e=>{setOff(pid,k,it.name,!e.target.checked);draw()}}),h('span',null,it.name)),
+          num,off?h('span',{class:'su-tag'},'off here'):ov[key]!=null?h('span',{class:'su-tag ov'},`template ${it[key]??'–'}`):null)}):h('div',{class:'empty'},'The template has no items yet.'))};
+    const own=k=>ownEd(pid,k).el;
+    const prev=()=>{const e=effective(pid);return h('div',{class:'su-prev'},h('div',{class:'su-phone'},h('b',null,'Checkout checklist'),h('small',null,`${e.check.length} items`),
+        e.check.map(i=>h('div',{class:'su-pi'},h('i',null,i.type==='count'?'#':'✓'),h('span',null,i.name),i.type==='count'&&i.expect?h('em',null,'should be '+i.expect):null,i.photo?h('em',null,'📷'):null))),
+      h('div',{class:'su-phone'},h('b',null,'Stock check'),h('small',null,`${e.stock.length} items`),e.stock.map(i=>h('div',{class:'su-pi'},h('i',null,i.type==='ok'?'✓':'#'),h('span',null,i.name),i.min?h('em',null,'min '+i.min):null))))};
+    const panes={check:()=>[h('h4',{class:'su-h4'},'From the template',h('small',null,'untick what this stay doesn’t have · set its own number')),tune('check'),h('h4',{class:'su-h4'},'Only at this stay'),own('check')],
+      stock:()=>[h('h4',{class:'su-h4'},'From the template',h('small',null,'untick what this stay doesn’t keep · set its own minimum')),tune('stock'),h('h4',{class:'su-h4'},'Only at this stay'),own('stock')],
+      prev};
+    return h('div',null,h('div',{class:'su-head'},h('div',null,h('h3',null,short(p.property||pid)),h('small',null,par?`Flat of ${short(D.P[par].property)} · the whole place’s changes apply here too`:kids.length?`Whole place · its changes apply to its ${kids.length} flats too`:`${p.city||''}${p.area?' · '+p.area:''}`)),
+        h('div',{class:'su-hacts'},changes(pid)?h('button',{class:'btn sm ghost',onclick:()=>confirmBox(`Reset ${short(p.property)} to the template?`,'Its switched-off items, own numbers and own items are removed.','Reset',true,()=>{delete W.SI[pid];delete W.own[pid];draw()})},'Reset'):null,
+          h('button',{class:'btn sm',onclick:()=>copySetup(pid)},icon('repeat'),'Copy to other stays'))),
+      tabsEl(W.stab,[['check','Checklist'],['stock','Stock'],['prev','Manager sees']],k=>{W.stab=k;draw()}),h('div',{class:'ie-pane'},panes[W.stab]()))}
+  function copySetup(pid){syncOwn();const pick=new Set(),box=h('div',{class:'pe-chips'}),same=props.filter(p=>p.property_id!==pid&&p.city===(D.P[pid]||{}).city);
+    const drawP=()=>box.replaceChildren(...props.filter(p=>p.property_id!==pid).map(p=>h('label',{class:'pe-chip'+(pick.has(p.property_id)?' on':'')},h('input',{type:'checkbox',checked:pick.has(p.property_id)||null,onchange:e=>{e.target.checked?pick.add(p.property_id):pick.delete(p.property_id);drawP()}}),short(p.property))));drawP();
+    const sh=h('div',{class:'su-copy'},h('p',{class:'hint',style:{margin:0}},`Copies ${short(D.P[pid].property)}’s switched-off items, own numbers and own items to the stays you pick (it replaces their own tuning).`),
+      same.length?h('button',{type:'button',class:'btn sm ghost',onclick:()=>{same.forEach(p=>pick.add(p.property_id));drawP()}},`All in ${D.P[pid].city} (${same.length})`):null,box,
+      h('div',{class:'su-cacts'},h('button',{class:'btn',onclick:()=>{sh.remove()}},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!pick.size)return toast('Pick at least one stay');const src=JSON.stringify(W.SI[pid]||{});
+        pick.forEach(t=>{W.SI[t]=JSON.parse(src);delete W.own[t]});sh.remove();toast(`Copied to ${pick.size} stay${pick.size>1?'s':''} · Save to keep it`);draw()}},'Copy')));
+    pane.prepend(sh)}
+  draw();
+  modal('Manager app setup',h('div',{class:'su'},rail,pane),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:async()=>{syncOwn();const SI=clean(W.SI);closeLayer();
       await setSetting('ops.checkout_items',JSON.stringify(E.check.value()),'Checklist saved');await setSetting('ops.stock_items',JSON.stringify(E.stock.value()),'Stock items saved');
       await setSetting('ops.guest_requests',JSON.stringify(E.req.value()),'Guest requests saved');await setSetting('ops.guest_request_open_max',String(Math.max(1,+rmax.value||3)),'Saved');
-      await setSetting('ops.stay_items',JSON.stringify(SI),'Stay extras saved');await setSetting('ops.photo_slots',JSON.stringify(rooms.value()),'Photo rooms saved');
+      await setSetting('ops.stay_items',JSON.stringify(SI),'Stay setup saved');await setSetting('ops.photo_slots',JSON.stringify(rooms.value()),'Photo rooms saved');
       await setSetting('ops.stock_every_days',String(+every.value||14),'Saved');await setSetting('reviews.window_days',String(+win.value||14),'Saved');await setSetting('reviews.channels',chs.value,'Saved');await setSetting('ops.start_date',start.value,'Saved');
-      await setSetting('ops.claim_two_admin_above',String(+two.value>=0?+two.value:5000),'Saved');await setSetting('ops.checkin_time',cin.value||'13:00','Saved')}},'Save')])}
+      await setSetting('ops.claim_two_admin_above',String(+two.value>=0?+two.value:5000),'Saved');await setSetting('ops.checkin_time',cin.value||'13:00','Saved')}},'Save')]);
+  $('#layer .modal')?.classList.add('ob-modal','su-modal')}
 /* ---- leave and cover (Leaves tab). A manager asks in their app; an admin approves and picks the cover: another manager
    (their app holds the stays on those days, tagged Cover; the bot's alerts go to them) or the owner (cover mode: a banner
    and Operations › Covering). Ids: 'login:<login>' (or an email); 'owner' = the owner covers. ---- */

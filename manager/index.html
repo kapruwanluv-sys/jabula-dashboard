@@ -192,8 +192,13 @@ const OPS=(()=>{
   /* the common list plus what this stay (or the whole place it belongs to) adds */
   const parentOf=(pid,props)=>((props||[]).find(p=>list(p.includes).includes(pid))||{}).property_id||null;
   const extra=(c,pid,props,k)=>[...((c.stayItems[parentOf(pid,props)]||{})[k]||[]),...((c.stayItems[pid]||{})[k]||[])];
-  function checkItemsFor(c,pid,props){return active([...c.checkItems,...extra(c,pid,props,'check')],normCheck)}
-  function stockItemsFor(c,pid,props){return active([...c.stockItems,...extra(c,pid,props,'stock')],normStock)}
+  /* per-stay tuning (and its whole place's): off = template items this stay doesn't use; set = its own count / minimum
+     for an item ({name: {expect} | {min}}, by lower-case name). Stored in ops.stay_items next to its own items. */
+  const tune=(c,pid,props,k,items)=>{const fam=[parentOf(pid,props),pid].filter(Boolean).map(x=>c.stayItems[x]||{});
+    const off=new Set(fam.flatMap(s=>((s.off||{})[k]||[]).map(n=>String(n).toLowerCase()))),set=Object.assign({},...fam.map(s=>(s.set||{})[k]||{}));
+    return items.filter(it=>!off.has(it.name.toLowerCase())).map(it=>{const o=set[it.name.toLowerCase()];return o?{...it,...o}:it})};
+  function checkItemsFor(c,pid,props){return tune(c,pid,props,'check',active([...c.checkItems,...extra(c,pid,props,'check')],normCheck))}
+  function stockItemsFor(c,pid,props){return tune(c,pid,props,'stock',active([...c.stockItems,...extra(c,pid,props,'stock')],normStock))}
   /* "Bedsheets (min 12)" / "TV working (ok)" -> {name, min} / {name, type:'ok'} */
   function parseItem(x){x=String(x).trim();if(/\(ok\)$/i.test(x))return{name:x.replace(/\s*\(ok\)$/i,''),type:'ok'};const m=/^(.*?)\s*\(min\s*(\d+)\)$/i.exec(x);return m?{name:m[1],min:+m[2]}:{name:x}}
   const itemText=it=>it.name+(it.type==='ok'?' (ok)':it.min?` (min ${it.min})`:'');
