@@ -2142,6 +2142,16 @@ body.is-live .dev-only{display:none!important}
 .news-modal{overflow-x:hidden}.news-modal .na,.news-modal .nu{border:0!important;background:none!important;padding:0!important;box-shadow:none!important;align-items:stretch!important;width:100%}.news-modal .nu-day{width:100%}.news-modal .nu .nx-group{width:100%}.news-modal .news{grid-template-columns:minmax(0,1fr)}.news-modal .news>*,.na,.nu,.nx-group{min-width:0}
 .na-it{flex-direction:row!important;flex-wrap:wrap!important;row-gap:8px!important}.na-main{flex:1 1 100%!important;min-width:0}
 .na-acts{width:100%;margin-left:0!important;justify-content:flex-start;padding-left:52px}
+
+/* Manage › Directory */
+.dir-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.dir-top .mg-q{flex:1 1 220px}
+.dir-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.dir-g{border-radius:20px;background:var(--surface);border:1px solid var(--hair);box-shadow:0 1px 1px rgba(12,26,61,.03),0 12px 28px -20px rgba(12,26,61,.28);overflow:hidden}
+.dir-gh{display:flex;justify-content:space-between;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--hair);background:rgba(238,242,248,0.4);background:color-mix(in srgb,var(--hair) 40%,transparent)}.dir-gh small{color:var(--muted);font-size:12px}
+.dir-row{display:flex;gap:12px;align-items:center;padding:11px 16px}.dir-row+.dir-row{border-top:1px solid var(--hair)}
+.dir-ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(29,91,216,0.1);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);flex:none}.dir-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.dir-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}.dir-t b{display:flex;gap:8px;align-items:center;font-size:13.5px}.dir-kind{font-size:11px;font-weight:600;color:var(--muted);padding:2px 8px;border-radius:99px;background:var(--hair)}
+.dir-t small{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dir-acts{display:flex;gap:6px;flex:none}
 </style>
 </head>
 <body>
@@ -3417,7 +3427,7 @@ function exportChart(holder,name){
 const ico={filter:'M4 6h16M7 12h10M10 18h4',chevL:'M15 6l-6 6 6 6',chevR:'M9 6l6 6-6 6',wrench:'M14.7 6.3a4 4 0 00-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 005.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z',chat:'M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-4-1.1L4 20z',
   check:'M5 12.5l4.5 4.5L19 7.5',user:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0',up2:'M12 16V4M7 9l5-5 5 5M4 20h16',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',
   bulb:'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z',key:'M15 7a4 4 0 11-3.9 4.9L4 19v2h3l1-1v-2h2v-2h2l1.1-1.1A4 4 0 0115 7z',
-  info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 7.5v.5',clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',bank:'M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5',cash:'M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5M6 10v4M18 10v4',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
+  info:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 11v5M12 7.5v.5',clock:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',wallet:'M3 7h18v12H3zM3 7l3-3h12l3 3M16 13h2',bank:'M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18',phone:'M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5',cash:'M3 7h18v10H3zM12 9.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5M6 10v4M18 10v4',repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',tag:'M3 12V4h8l10 10-8 8zM7.5 7.5h.01',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01',eye:'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z',star:'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',edit:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',dots:'M5 12h.01M12 12h.01M19 12h.01',up:'M12 19V7M7 12l5-5 5 5M5 4h14',home:'M4 11l8-7 8 7v9h-5v-6H9v6H4z',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',dl:'M12 4v11M7 10l5 5 5-5M5 20h14',img:'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9.5a1.5 1.5 0 100-.01',copy:'M9 9h10v11H9zM5 15V4h10',x:'M6 6l12 12M18 6L6 18',back:'M15 6l-6 6 6 6',chev:'M9 6l6 6-6 6',plus:'M12 5v14M5 12h14',cal:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4'};
 const driveLogo=()=>{const s=sv('svg',{viewBox:'0 0 87.3 78',width:20,height:18,'aria-hidden':'true'});
   [['M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z','#0066da'],['M43.65 25L29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z','#00ac47'],
    ['M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 11.5z','#ea4335'],['M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z','#00832d'],
@@ -5064,7 +5074,7 @@ function normLive(d){const n=v=>v==null||v===''?0:+v||0;
   ['ideas','market','reviews','checklists','stock','staff','claims','ops','ai','movements','botstats','reports','rentals','rentaltrend','leaves','briefs','campaigns'].forEach(k=>{d[k]=d[k]||[]});
   d.market=d.market.map(r=>({...r,price:n(r.price),night:String(r.night||'').slice(0,10)}));d.claims=d.claims.map(c=>({...c,amount:n(c.amount)}));return d}
 const TABKEY={lists:'lists',properties:'props',bookings:'bookings',payouts:'payouts',expenses:'expenses',maintenance:'maint',turnovers:'turnovers',leads:'leads',requests:'requests',blocks:'blocks',
-  ideas:'ideas',market:'market',reviews:'reviews',transfers:'transfers',checklists:'checklists',stock:'stock',claims:'claims',users:'staff',movements:'movements',botstats:'botstats',reports:'reports',rentals:'rentals',rentaltrend:'rentaltrend',leaves:'leaves',briefs:'briefs',campaigns:'campaigns'};
+  ideas:'ideas',market:'market',reviews:'reviews',transfers:'transfers',directory:'directory',checklists:'checklists',stock:'stock',claims:'claims',users:'staff',movements:'movements',botstats:'botstats',reports:'reports',rentals:'rentals',rentaltrend:'rentaltrend',leaves:'leaves',briefs:'briefs',campaigns:'campaigns'};
 /* (requests is already a core tab: TABKEY.requests) */
 /* returning guests, matched by the last 10 digits of the phone: earlier stays before a date */
 const ph10=v=>String(v||'').replace(/\D/g,'').slice(-10);
@@ -6565,6 +6575,40 @@ function expByProp(inM,tot,row){const g=new Map();inM.forEach(e=>{const id=e.pro
       h('div',{class:'ex-pbar'},cs.map(([c,a])=>h('i',{style:{flexGrow:String(a),background:expColor(c)},'data-tip':`${c}: ${inr(Math.round(a))}`}))),
       isOpen?h('div',{class:'ex-list'},es.sort((a,b)=>b.date.localeCompare(a.date)).map(e=>{const el=row(e);if(e.__split){const src=expRows().find(x=>x.expense_id===e.__src);
         if(src)el.querySelector('.ex-tx span')?.append(` · share of ${inr(+src.amount)}`)}return el})):null)}))}
+/* ============ Directory: each stay's contacts (plumber, electrician, utilities, landlord…). Managers see the ones for their
+   stays (and "All stays") in the manager app, with tap-to-call. A contact can be for one stay, several, or all. ============ */
+const DIR_KINDS=['Plumber','Electrician','Carpenter','AC / geyser repair','Wi-Fi provider','Electricity board','Water','Gas','Landlord','Society office','Laundry','Maid','Taxi','Doctor','Police','Other'];
+const dirRows=()=>(S.data.directory||[]).filter(x=>!x.deleted_at);
+const dirStays=c=>{const v=String(c.property_id||'*');return v==='*'?'All stays':v.split(',').map(x=>short((D.P[x.trim()]||{}).property||x.trim())).join(', ')};
+function manageDirectory(v,tabs){const rows=dirRows(),q=(S.dirQ||'').toLowerCase(),f=rows.filter(c=>!q||[c.name,c.kind,c.phone,c.notes,dirStays(c)].join(' ').toLowerCase().includes(q));
+  const groups=new Map();f.forEach(c=>{const ids=String(c.property_id||'*')==='*'?['*']:String(c.property_id).split(',').map(x=>x.trim());ids.forEach(id=>(groups.get(id)||groups.set(id,[]).get(id)).push(c))});
+  const order=[...groups.keys()].sort((a,b)=>a==='*'?-1:b==='*'?1:short((D.P[a]||{}).property||a).localeCompare(short((D.P[b]||{}).property||b)));
+  const search=h('input',{class:'mg-q',placeholder:'Search name, trade, stay…',value:S.dirQ||'',oninput:e=>{S.dirQ=e.target.value;clearTimeout(S._dq);S._dq=setTimeout(render,250)}});
+  const crow=c=>h('div',{class:'dir-row'},h('span',{class:'dir-ic'},icon('phone')),h('div',{class:'dir-t'},h('b',null,c.name||'—',h('span',{class:'dir-kind'},c.kind||'Contact')),
+      h('small',null,[c.phone?phoneNice(c.phone):null,c.account?'A/c '+c.account:null,c.notes].filter(Boolean).join(' · '))),
+    h('div',{class:'dir-acts'},c.phone?h('a',{class:'btn sm ghost',href:'tel:'+String(c.phone).replace(/[^\d+]/g,''),'aria-label':'Call '+c.name},'Call'):null,h('button',{class:'btn sm',onclick:()=>dirForm(c)},'Edit')));
+  v.append(card('s12','Directory',{hint:'who to call for each stay · managers see their stays\' contacts in the manager app',acts:[tabs]},
+    h('div',{class:'dir-top'},search,h('button',{class:'btn primary',onclick:()=>dirForm(null)},icon('plus'),'Add contact')),
+    rows.length?h('div',{class:'dir-groups'},order.map(id=>h('section',{class:'dir-g'},h('div',{class:'dir-gh'},h('b',null,id==='*'?'All stays':short((D.P[id]||{}).property||id)),h('small',null,`${groups.get(id).length} contact${groups.get(id).length>1?'s':''}`)),
+      h('div',{class:'dir-list'},groups.get(id).sort((a,b)=>String(a.kind).localeCompare(String(b.kind))).map(crow))))):
+      h('div',{class:'ex-empty'},h('span',{class:'ex-eic'},icon('phone')),h('b',null,'No contacts yet'),h('span',null,'Add the plumber, electrician, Wi-Fi provider and landlord for each stay. Managers then call them from the app in one tap.'),
+        h('button',{class:'btn primary sm',onclick:()=>dirForm(null)},icon('plus'),'Add the first'))))}
+function dirForm(c0){const isNew=!c0,c=c0||{property_id:'*',kind:'Plumber'},err=h('div',{class:'err',hidden:true});let kind=c.kind||'Plumber';
+  const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>short(a.property).localeCompare(short(b.property)));
+  const chosen=new Set(String(c.property_id||'*')==='*'?[]:String(c.property_id).split(',').map(x=>x.trim()));let all=String(c.property_id||'*')==='*';
+  const stayBox=h('div',{class:'pe-chips'}),kinds=h('div',{class:'ex-chips'});
+  const draw=()=>{stayBox.replaceChildren(h('label',{class:'pe-chip'+(all?' on':'')},h('input',{type:'checkbox',checked:all||null,onchange:e=>{all=e.target.checked;draw()}}),'All stays'),
+      ...(all?[]:props.map(p=>h('label',{class:'pe-chip'+(chosen.has(p.property_id)?' on':'')},h('input',{type:'checkbox',checked:chosen.has(p.property_id)||null,onchange:e=>{e.target.checked?chosen.add(p.property_id):chosen.delete(p.property_id);draw()}}),short(p.property)))));
+    kinds.replaceChildren(...DIR_KINDS.map(k=>h('button',{type:'button','aria-pressed':String(kind===k),onclick:()=>{kind=k;draw()}},k)))};draw();
+  const nm_=h('input',{value:c.name||'',placeholder:'e.g. Vinod'}),ph=h('input',{type:'tel',value:c.phone||'',placeholder:'e.g. 98xxxxxx01'}),ac=h('input',{value:c.account||'',placeholder:'consumer / account no. (optional)'}),nt=h('input',{value:c.notes||'',placeholder:'e.g. comes within 2 hours, ₹300 visit'});
+  modal(isNew?'Add contact':'Edit contact',h('div',{class:'form'},h('div',{class:'full'},h('span',{class:'pr-lab'},'What for'),kinds),fld('Name',nm_),fld('Phone',ph),fld('Account / consumer no.',ac,1),fld('Note',nt,1),
+      h('div',{class:'full'},h('span',{class:'pr-lab'},'For which stays'),stayBox),err),
+    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),!isNew?h('button',{class:'btn danger-t',onclick:()=>{closeLayer();save('directory','update',{match:{contact_id:c.contact_id},fields:{deleted_at:TODAY}},'Contact removed')}},'Remove'):null,
+     h('button',{class:'btn primary',onclick:()=>{const name=nm_.value.trim(),phone=ph.value.trim();if(!name){err.hidden=false;err.textContent='Add a name.';return}
+       if(phone&&phone.replace(/\D/g,'').length<6){err.hidden=false;err.textContent='That phone number looks short.';return}if(!all&&!chosen.size){err.hidden=false;err.textContent='Pick the stays, or All stays.';return}
+       const f={property_id:all?'*':[...chosen].join(','),kind,name,phone:phone||null,account:ac.value.trim()||null,notes:nt.value.trim()||null,updated_at:new Date().toISOString().slice(0,16)};
+       closeLayer();isNew?save('directory','append',{row:{contact_id:'DC'+Date.now().toString(36).toUpperCase(),...f}},`${name} added`):save('directory','update',{match:{contact_id:c.contact_id},fields:f},`${name} saved`)}},isNew?'Add contact':'Save')]);
+  setTimeout(()=>nm_.focus(),50)}
 function manageProps(v,tabs){
   MG.pq=MG.pq||'';MG.pstatus=MG.pstatus||'All';
   const q=MG.pq.toLowerCase(),list=[...(S.data.props||[]).map(pstg),...Object.entries(PSTAGE).filter(([,f])=>f.__new).map(([,f])=>f)]
@@ -7010,12 +7054,13 @@ function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at),trashE=(S.data.expenses||[]).map(e=>ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e).filter(e=>e.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['lists','Lists',null,'list'],['costs','AI Expenses',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash'],['sync','Calendar sync',(()=>{const y=(S.data.sync||{}).ical;return y?((y.clash||[]).length+(y.missing||[]).length)||null:null})(),'cal'],['health','Data health',(()=>{const x=dataHealth();return x.out.length?x.out.reduce((a,y)=>a+y.items.length,0):null})(),'check'],['plan','Plan & billing',null,'wallet']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['directory','Directory',(S.data.directory||[]).filter(x=>!x.deleted_at).length,'phone'],['lists','Lists',null,'list'],['costs','AI Expenses',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash'],['sync','Calendar sync',(()=>{const y=(S.data.sync||{}).ical;return y?((y.clash||[]).length+(y.missing||[]).length)||null:null})(),'cal'],['health','Data health',(()=>{const x=dataHealth();return x.out.length?x.out.reduce((a,y)=>a+y.items.length,0):null})(),'check'],['plan','Plan & billing',null,'wallet']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();pushHash();render();requestAnimationFrame(()=>document.querySelector('.mg-tabs [aria-selected=true]')?.scrollIntoView({block:'nearest',inline:'center'}))}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
   if(MG.sec==='guest')return manageGuest(v,tabs);
   if(MG.sec==='lists')return manageLists(v,tabs);
+  if(MG.sec==='directory')return manageDirectory(v,tabs);
   if(MG.sec==='pricing')return managePricing(v,tabs);
   if(MG.sec==='expenses')return manageExpenses(v,tabs);
   if(MG.sec==='history')return manageHistory(v,tabs);
