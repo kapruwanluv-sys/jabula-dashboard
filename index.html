@@ -1825,6 +1825,21 @@ th.on{color:var(--accent)}
 .ex-row:hover .ex-bin{color:var(--muted)}.ex-row .ex-bin:hover,.ex-row .ex-bin:focus-visible,.ex-row .ex-bin:active{color:var(--bad);background:var(--bad-soft)}
 @media (hover:none){.ex-row .ex-bin{color:var(--muted)}}
 .ex-row .ex-bin-sp{width:32px}
+.cx-mode{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px}.cx-mode small{color:var(--muted);font-size:13px;flex:1 1 260px;line-height:1.45}
+.cx-links{margin-top:12px}
+.cx-lock{display:flex;gap:8px;align-items:flex-start;margin:0 0 4px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);color:var(--accent-ink);font-size:13px;line-height:1.45}.cx-lock svg{width:16px;height:16px;flex:none;margin-top:1px;fill:none;stroke:currentColor;stroke-width:2}
+/* Manage › Email bookings */
+.ml-top{display:flex;justify-content:flex-end;margin:-4px 0 10px}.ml-list{border:1px solid var(--hair);border-radius:14px;overflow:hidden;background:var(--surface)}
+.ml-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--hair)}
+.ml-row:first-child{border-top:0}.ml-row.need{background:rgba(252,244,244,1.0);background:color-mix(in srgb,var(--bad) 5%,var(--surface));box-shadow:inset 3px 0 0 var(--bad)}
+.ml-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.ml-tx{display:grid;gap:2px;min-width:0}.ml-tx b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ml-tx span{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.ml-tx small{color:var(--muted);font-size:12px;overflow-wrap:anywhere}.ml-tx small.ml-why{color:var(--bad)}
+.ml-end{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.ml-acts{display:flex;gap:6px}
+.ml-setup{margin-top:14px;border:1px solid var(--hair);border-radius:14px;padding:12px 14px;background:var(--surface-2)}
+.ml-setup summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;list-style:none}.ml-setup summary::-webkit-details-marker{display:none}
+.ml-setup summary span{color:var(--muted);font-size:12.5px}.ml-setup ol{margin:10px 0 6px;padding-left:20px;display:grid;gap:6px;font-size:13.5px;color:var(--ink-2)}
+@media (max-width:640px){.ml-row{grid-template-columns:34px minmax(0,1fr);gap:10px;padding:11px 12px}.ml-ic{width:34px;height:34px}.ml-end{grid-column:2;justify-content:flex-start}.ml-acts{width:100%}.ml-acts .btn{flex:1;min-height:40px;justify-content:center}}
 .ex-row.est{opacity:.85}.ex-row.est .ex-ic{background:var(--warn-soft)}
 
 /* ---------- AI insights ---------- */
@@ -3691,6 +3706,9 @@ function newsExtra(){const out=[],R=insRuns().runs,last=R[R.length-1];
   {const it=D.B.filter(b=>b.ok&&!b.deleted_at&&b.check_in>=TODAY&&b.check_in<=add(TODAY,7)&&String(b.phone||'').replace(/\D/g,'').length<10)
       .map(b=>({at:b.check_in+'T00:00',title:`${b.guest||'Guest'} · ${short((D.P[b.property_id]||{}).property||b.property_id)}`,sub:`arrives ${fmtD(b.check_in)} · ${b.channel||''} · add their number`,ref:{kind:'booking',id:b.booking_id}}));
     if(it.length)out.push({key:'no_phone',label:'Guests arriving without a phone number',always:true,note:'stays here until the number is added',items:it})}
+  /* booking emails the bot couldn't place (no stay match, a change to a typed booking, a clash): until marked done */
+  {const it=mailOpen().map(r=>({at:String(r.received_at||TODAY).slice(0,16),title:`${r.channel||'Email'} · ${r.guest||'guest'}${r.check_in?' · '+fmtD(r.check_in):''}`,sub:r.note||'check it',ref:{kind:'mail',id:r.mail_id}}));
+    if(it.length)out.push({key:'mail',label:'Booking emails that need you',always:true,note:'stays here until added or marked done',items:it})}
   /* monthly payments past their due day (Money › Monthly payments), until paid or adjusted */
   {const od=mlLines(TODAY.slice(0,7)).filter(l=>l.left&&l.dueOn<=TODAY);
     if(od.length)out.push({key:'rent_due',label:'Monthly payments due',always:true,note:'stays here until paid or adjusted',
@@ -3708,11 +3726,11 @@ function newsNow(){if(!S.data||!S.admin)return[];return OPS.news({...S.data,main
    missed checklist) stay until an admin marks them handled. Any of them can be snoozed. Updates bundle by day and clear
    when read. Settings: ops.notif_urgent (which kinds are urgent, per client), ops.notif_state (handled / snoozed). */
 const NEWS_KINDS={issues:'Guest complaints / issues',wa_cancel:'Cancellations to confirm',missed:'Missed checklists, stock checks, reviews',low:'Low ratings',clash:'Double bookings',
-  geo:'Sent away from the stay',behind_goal:'Behind this month’s goal',gaps:'Gap nights to fill',not_ready:'Not ready for the next guest',leave:'Leave requests',photo:'Photos flagged by the AI check',bills_missing:'Monthly bills missing',rent_due:'Monthly payments due',no_phone:'Guests arriving without a phone number',
+  geo:'Sent away from the stay',behind_goal:'Behind this month’s goal',gaps:'Gap nights to fill',not_ready:'Not ready for the next guest',leave:'Leave requests',photo:'Photos flagged by the AI check',bills_missing:'Monthly bills missing',rent_due:'Monthly payments due',no_phone:'Guests arriving without a phone number',mail:'Booking emails that need you',
   mgr_issues:'Issues from managers to approve',claims:'Expense claims to decide',wa_bookings:'New WhatsApp bookings',requests:'Guest requests',leads:'New enquiries',bills:'Bills sent on WhatsApp',
   checklists:'Checklists done',stock:'Stock checks done',reviews_asked:'Reviews asked for',ai:'New AI analysis',report:'Monthly report ready',market:'Price check due'};
-const NEWS_URGENT_DEF=['behind_goal','not_ready','issues','wa_cancel','missed','low','clash','geo','leave','photo','bills_missing','rent_due','no_phone','mgr_issues','claims'];
-const NEWS_SELF=new Set(['behind_goal','gaps','not_ready','rent_due','bills_missing','leave','mgr_issues','claims','wa_cancel','market','clash','no_phone']);   // clear by themselves
+const NEWS_URGENT_DEF=['mail','behind_goal','not_ready','issues','wa_cancel','missed','low','clash','geo','leave','photo','bills_missing','rent_due','no_phone','mgr_issues','claims'];
+const NEWS_SELF=new Set(['behind_goal','gaps','not_ready','rent_due','bills_missing','leave','mgr_issues','claims','wa_cancel','market','clash','no_phone','mail']);   // clear by themselves
 const urgentSet=()=>{const v=setJ('ops.notif_urgent');return new Set(Array.isArray(v)?v:NEWS_URGENT_DEF)};
 const NEWS_URGENT={has:k=>urgentSet().has(k)};
 const nKey=(c,it)=>c+'|'+(it.ref&&it.ref.id?it.ref.kind+':'+it.ref.id:it.title)+'|'+String(it.at||'').slice(0,10);
@@ -3737,7 +3755,7 @@ const newsRead=()=>{try{return new Set(JSON.parse(localStorage.getItem('jg_news_
 const newsMark=keys=>{const s=newsRead();keys.forEach(k=>s.add(k));try{localStorage.setItem('jg_news_read',JSON.stringify([...s].slice(-800)))}catch(e){}};
 function paintBell(){const b=$('#bellBtn');if(!b)return;b.hidden=!S.admin;if(!S.admin)return;const rd=newsRead(),U=urgentSet(),urg=attention().length,upd=sum(newsNow().filter(c=>!U.has(c.key)),c=>c.items.filter(it=>!rd.has(newsKey(it))).length),n=urg||upd,nb=b.querySelector('.bell-n');b.classList.toggle('bell-quiet',!urg&&!!upd);
   nb.hidden=!n;nb.textContent=n>99?'99+':String(n);b.setAttribute('aria-label',n?`What's new: ${n}`:"What's new")}
-const NEWS_ICON={behind_goal:'up',gaps:'cal',not_ready:'clock',wa_bookings:'list',wa_cancel:'x',issues:'wrench',requests:'chat',leads:'chat',bills:'wallet',mgr_issues:'wrench',geo:'x',leave:'cal',photo:'x',claims:'wallet',checklists:'check',stock:'list',reviews_asked:'star',missed:'clock',low:'star',ai:'bulb',market:'list',bills_missing:'wallet',report:'dl',rent_due:'wallet',clash:'cal',no_phone:'chat'};
+const NEWS_ICON={mail:'list',behind_goal:'up',gaps:'cal',not_ready:'clock',wa_bookings:'list',wa_cancel:'x',issues:'wrench',requests:'chat',leads:'chat',bills:'wallet',mgr_issues:'wrench',geo:'x',leave:'cal',photo:'x',claims:'wallet',checklists:'check',stock:'list',reviews_asked:'star',missed:'clock',low:'star',ai:'bulb',market:'list',bills_missing:'wallet',report:'dl',rent_due:'wallet',clash:'cal',no_phone:'chat'};
 /* open the right screen and point at the item itself */
 function flashRef(id){if(!id)return;setTimeout(()=>{const el=document.querySelector(`[data-ref="${CSS.escape(String(id))}"]`);if(!el)return;el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2800)},260)}
 function newsGo(ref){closeLayer();if(!ref)return;const k=ref.kind;
@@ -4677,7 +4695,7 @@ function potDetail(pot,f){f=f||'all';const from=mlFrom(),mon=S.obView==='month',
   const open=sum(all.filter(x=>x.date<a),x=>x.amount),L=all.filter(x=>x.date>=a);let run=open;const rows=L.map(x=>({...x,bal:(run=Math.round((run+x.amount)*100)/100)}));
   const inn=sum(L.filter(x=>x.amount>0),x=>x.amount),out=-sum(L.filter(x=>x.amount<0),x=>x.amount),close=open+inn-out;
   const shown=rows.filter(x=>f==='all'||(f==='in'?x.amount>0:x.amount<0)).reverse();
-  const openRef=r=>{if(!r||!r.ref)return;closeLayer();if(r.ref.kind==='booking'){const b=D.B.find(x=>x.booking_id===String(r.ref.id));if(b)openBooking(b)}else if(r.ref.kind==='expense'){MG.sec='expenses';go('manage')}};
+  const openRef=r=>{if(!r||!r.ref)return;closeLayer();if(r.ref.kind==='booking'){const b=D.B.find(x=>x.booking_id===String(r.ref.id));if(b)openBooking(b)}else if(r.ref.kind==='expense'){MG.sec='expenses';go('manage')}else if(r.ref.kind==='mail'){MG.sec='mail';go('manage')}};
   const seg=h('div',{class:'seg sm',role:'group','aria-label':'Show'},[['all',`All · ${L.length}`],['in','Money in'],['out','Money out']].map(([v,l])=>h('button',{'aria-pressed':f===v,onclick:()=>potDetail(pot,v)},l)));
   const who=MONEY.ownerOf(pot,potCfg(),potPeople());
   modal(pot,h('div',{class:'form ob-stmt'},
@@ -5200,7 +5218,8 @@ function openForm(kind,pid,edit,opt){
     [sel,ch,ci,co,rc,bs].forEach(i=>i.addEventListener('input',calc));sel.addEventListener('change',calc);calc();
     const need=()=>[[g,'the guest’s name'],[ph,'the guest’s mobile number'],[tf,'the tariff charged from the guest'],direct()?null:[rc,'the amount received'],[pt,'the payment terms'],[ac,'the account']].filter(Boolean);
     const extL=opt&&opt.extends?h('div',{class:'full ext-note'},icon('repeat'),h('span',null,`Extension of ${opt.extends}`+(opt.from&&opt.from!=='Direct'?` (booked on ${opt.from}). Keep the platform on Direct if the guest pays you directly: it counts as converted to direct.`:''))):null;
-    modal(edit?'Edit '+edit.booking_id:opt&&opt.extends?'Extension of '+opt.extends:'New booking',h('div',{class:'form'},extL,fld('Date of booking',bd),fld('Property',sel,1),fld('Customer',g),h('div',{class:'fld'},h('label',null,'Mobile No.'),ph,rptHint),fld('Location (optional)',loc),locL,fld('No. of guests',n),
+    const cxL=edit&&cxLocked(edit);if(cxL)[sel,ci,co,bs].forEach(x=>{x.disabled=true});   // Channex rule 4: the site's booking is changed on the site
+    modal(edit?'Edit '+edit.booking_id:opt&&opt.extends?'Extension of '+opt.extends:'New booking',h('div',{class:'form'},cxL?h('p',{class:'full cx-lock'},icon('info'),h('span',null,`From ${edit.channel||'a booking site'} via channel sync: change the dates, stay or status on ${edit.channel||'the site'}. It comes back here by itself.`)):null,extL,fld('Date of booking',bd),fld('Property',sel,1),fld('Customer',g),h('div',{class:'fld'},h('label',null,'Mobile No.'),ph,rptHint),fld('Location (optional)',loc),locL,fld('No. of guests',n),
       fld('Check-in',ci),fld('Check-out',co),fld('Platform',ch),fSrc,fTf,fPf,fGst,fRc,payBox,fld('Payment terms',pt),fld('Account details',ac),
       fld('Expected check-in time',at),edit?fld('Status',bs):null,fld('Notes (optional)',nt,1),sm,err),
       [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:async()=>{
@@ -5277,7 +5296,7 @@ function normLive(d){const n=v=>v==null||v===''?0:+v||0;
   d.leads=d.leads||[];d.requests=d.requests||[];d.blocks=d.blocks||[];d.lists=d.lists||[];d.fee_pct=d.fee_pct&&Object.keys(d.fee_pct).length?d.fee_pct:SEED.fee_pct;
   ['ideas','market','reviews','checklists','stock','staff','claims','ops','ai','movements','botstats','reports','rentals','rentaltrend','leaves','briefs','campaigns'].forEach(k=>{d[k]=d[k]||[]});
   d.market=d.market.map(r=>({...r,price:n(r.price),night:String(r.night||'').slice(0,10)}));d.claims=d.claims.map(c=>({...c,amount:n(c.amount)}));return d}
-const TABKEY={lists:'lists',properties:'props',bookings:'bookings',payouts:'payouts',expenses:'expenses',maintenance:'maint',turnovers:'turnovers',leads:'leads',requests:'requests',blocks:'blocks',
+const TABKEY={mailin:'mailin',lists:'lists',properties:'props',bookings:'bookings',payouts:'payouts',expenses:'expenses',maintenance:'maint',turnovers:'turnovers',leads:'leads',requests:'requests',blocks:'blocks',
   ideas:'ideas',market:'market',reviews:'reviews',transfers:'transfers',directory:'directory',checklists:'checklists',stock:'stock',claims:'claims',users:'staff',movements:'movements',botstats:'botstats',reports:'reports',rentals:'rentals',rentaltrend:'rentaltrend',leaves:'leaves',briefs:'briefs',campaigns:'campaigns'};
 /* (requests is already a core tab: TABKEY.requests) */
 /* returning guests, matched by the last 10 digits of the phone: earlier stays before a date */
@@ -6112,6 +6131,7 @@ function cityEditor(name){const isNew=!name,m=name?cityMeta(name):{},own=!!CLIEN
 function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),status:'Active',city:CITIES[0]};
   const inp=(v,o={})=>h('input',{value:v??'',autocomplete:'off',...o}),num=(v,o)=>inp(v,{type:'number',inputmode:'decimal',min:0,step:'1',...o});
   const lk=Object.fromEntries(LINKS.map(([k,l])=>[k,inp(p[k],{type:'url',placeholder:`https://… your ${l} listing`})]));
+  const otaI=inp(Array.isArray(p.ota_names)?p.ota_names.join(', '):p.ota_names,{placeholder:'e.g. River View Studio, Tapovan Stay 302',autocapitalize:'words'});
   const nm=inp(p.property,{placeholder:'e.g. Blue Petals (D 401)'}),ar=inp(p.area,{placeholder:'e.g. Tapovan'}),ws=inp(p.website_url,{type:'url',placeholder:'https://…'});
   const pinIn=inp(p.map_pin||(p.lat&&p.lng?`${p.lat}, ${p.lng}`:''),{placeholder:'Paste a Google Maps link (or lat, lng)'}),pinNote=h('small',{class:'pe-hint'});
   const pinShow=()=>{const x=pinFromText(pinIn.value);pinNote.textContent=!pinIn.value.trim()?'Used for guest directions, the manager app and market prices nearby.':x?`📍 ${x[0].toFixed(5)}, ${x[1].toFixed(5)} ✓`:/goo\.gl|maps\.app/.test(pinIn.value)?'Short link: open it, then copy the full address from the browser':'No location found in this link'};pinIn.addEventListener('input',pinShow);pinShow();
@@ -6146,7 +6166,7 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
     sec('Check-in'),fld('Check-in from',tIn),fld('Check-out by',tOut),
     sec('Combo listing'),h('p',{class:'full pe-hint'},'Tick the properties this listing is made of (e.g. a 4BHK let as two 2BHKs together). Booking one blocks the others.'),h('div',{class:'full'},incBox),
     sec('For guests'),fld('About',ds,1),fld('House rules',rl,1),h('div',{class:'full pe-am'},h('span',{class:'pe-lab'},'Amenities'),amBox,amNew),h('div',{class:'full pe-am-combo'},h('span',{class:'pe-lab'},'Amenities (from its parts)'),h('div',{class:'pe-chips ro'})),fld('Website listing link',ws,1),fld('Map pin',h('div',null,pinIn,pinNote),1),
-    sec('Listing links'),h('p',{class:'full pe-hint'},'Your own listing on each platform (kept for reference and quick checks).'),LINKS.map(([k,l])=>fld(l,lk[k],1)),
+    sec('Listing links'),h('p',{class:'full pe-hint'},'Your own listing on each platform (kept for reference and quick checks).'),LINKS.map(([k,l])=>fld(l,lk[k],1)),fld('Names on booking sites',otaI,1),h('p',{class:'full pe-hint'},'How this stay is named on Airbnb, Booking.com, MakeMyTrip… (a comma between names). Booking emails find the stay by these.'),
     sec(`Photos${photos.length?' · '+photos.length:''}`),h('p',{class:'full pe-hint'},'The cover (★) shows on cards, WhatsApp and the brochure; the bot remakes the brochure after you save.'),
     h('div',{class:'full'},phBox,upIn,h('div',{class:'pe-drive'},driveLogo(),h('div',null,h('b',null,'Saved to Google Drive'),h('span',null,`Photos you add from your phone go to the "${CLIENT.brand||'Register'} photos" folder in the Register's Google Drive. You can also paste a Google Drive share link or any https image link below.`))),phNew),err),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{
@@ -6158,7 +6178,7 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
       const par_=parentOf(p.property_id);if(par_&&D.P[par_]&&D.P[par_].city!==cityV)return fail(`This flat is part of ${short(D.P[par_].property)} in ${D.P[par_].city}; both must be in the same city.`);
       if(ct.value==='__new'&&!CITIES.some(c=>c.toLowerCase()===cityV.toLowerCase()))setSetting('ops.cities',JSON.stringify([...cityExtra(),{name:cityV,scene:'hills',color:CITY_MORE[Math.max(0,CITIES.length-3)%CITY_MORE.length],steps:/mussoorie/i.test(cityV)?[MUSSOORIE_STEP]:[],events:[]}]),cityV+' added to cities');
       const f={property:nm.value.trim(),city:cityV,area:ar.value.trim()||null,type:ty.value||null,status:p0&&!p0.status&&stt.value==='Active'?null:stt.value,bedrooms:v(bd),bathrooms:v(ba),base_guests:v(bg),max_guests:v(mg),
-        base_rate:v(br),extra_guest_fee:v(eg),pet_fee:v(pf),check_in_time:tIn.value||null,check_out_time:tOut.value||null,includes:inc.size?[...inc]:null,
+        base_rate:v(br),extra_guest_fee:v(eg),pet_fee:v(pf),check_in_time:tIn.value||null,check_out_time:tOut.value||null,includes:inc.size?[...inc]:null,ota_names:otaI.value.split(',').map(x=>x.trim().replace(/\s+/g,' ')).filter(Boolean).join(', ')||null,
         description:ds.value.trim()||null,rules:rl.value.trim()||null,amenities:inc.size?(comboAmenities({includes:[...inc]}).length?comboAmenities({includes:[...inc]}):null):am.size?[...am]:null,website_url:ws.value.trim()||null,...(()=>{const x=pinFromText(pinIn.value);return pinIn.value.trim()?(x?{map_pin:pinIn.value.trim(),lat:x[0],lng:x[1]}:{map_pin:pinIn.value.trim()}):{map_pin:null,lat:null,lng:null}})(),
         ...Object.fromEntries(LINKS.map(([k])=>[k,lk[k].value.trim()||null])),
         photos:photos.length?photos:null,photo_thumbs:thumbs.length?thumbs:null,photo:cover||null};
@@ -7126,6 +7146,39 @@ const SYNC_HOW={airbnb:'Airbnb: Calendar › Availability › Connect calendars 
 let SYNC_EDIT=null,SYNC_BUSY=false;
 const syncAgo=t=>{const m=Math.max(0,Math.round((Date.now()-new Date(t).getTime())/6e4));return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
 function syncChannels(){const L=bookingLists();return(L.channels||[]).filter(c=>!/direct|walk|whatsapp|phone|referr|repeat|owner/i.test(c)).slice(0,6)}
+/* ============ Manage › Email bookings (engine v1.64): what the bot read from the booking sites' emails in the bookings
+   Gmail. Added / changed / cancelled bookings link to the booking; "needs you" ones (no stay match, a change to a booking
+   typed by hand, a clash) wait here with Add booking (the form filled from the email) and Done. ============ */
+const MAIL_ST={added:['Added','p-ok'],updated:['Changed','p-acc'],cancelled:['Cancelled','p-mute'],already:['Already in','p-mute'],needs_you:['Needs you','p-bad'],clash:['Double booking','p-bad'],handled:['Done','p-mute']};
+const mailRows=()=>((S.data&&S.data.mailin)||[]).filter(r=>r&&r.mail_id).slice().sort((a,b)=>String(b.received_at||'').localeCompare(String(a.received_at||'')));
+const mailOpen=()=>mailRows().filter(r=>r.status==='needs_you'||r.status==='clash');
+function manageMail(v,tabs){const all=mailRows(),open=mailOpen(),f=S.mailF||(open.length?'open':'all'),rows=f==='open'?open:all;
+  const last=all[0],nm=id=>short((D.P[id]||{}).property||id||'');
+  const seg=h('div',{class:'seg sm',role:'group','aria-label':'Show'},[['open',`Needs you · ${open.length}`],['all',`All · ${all.length}`]].map(([k,l])=>h('button',{'aria-pressed':f===k,onclick:()=>{S.mailF=k;render()}},l)));
+  const done=r=>save('mailin','update',{match:{mail_id:r.mail_id},fields:{status:'handled',handled_by:(LIVE.me||{}).name||(LIVE.me||{}).email||'admin',handled_at:new Date().toISOString().slice(0,16)}},'Marked done');
+  const addIt=r=>openForm('booking',r.property_id||null,null,{prefill:{guest:r.guest||'',guests:r.guests||2,check_in:String(r.check_in||TOMORROW).slice(0,10),check_out:String(r.check_out||add(TOMORROW,2)).slice(0,10),
+    channel:r.channel||'',notes:`From the ${r.channel||'booking site'} email${r.code?' ('+r.code+')':''}`}});
+  const row=r=>{const[t,c]=MAIL_ST[r.status]||[r.status||'?','p-mute'],b=r.booking_id?D.B.find(x=>x.booking_id===String(r.booking_id)):null,need=r.status==='needs_you'||r.status==='clash';
+    return h('div',{class:'ml-row'+(need?' need':'')},
+      h('span',{class:'ml-ic',style:{'--c':chColor(r.channel)}},String(r.channel||'?')[0]),
+      h('div',{class:'ml-tx'},h('b',null,[r.guest||'Guest',r.property_id?nm(r.property_id):null].filter(Boolean).join(' · ')),
+        h('span',null,[r.channel,r.check_in?`${fmtD(r.check_in)} → ${fmtD(r.check_out)}`:null,r.guests?r.guests+' guests':null,r.amount?inr(+r.amount):null].filter(Boolean).join(' · ')),
+        r.note?h('small',{class:need?'ml-why':null},r.note):null),
+      h('div',{class:'ml-end'},h('span',{class:'pill '+c},t),
+        b?h('button',{type:'button',class:'btn sm ghost',onclick:()=>openBooking(b)},r.booking_id):r.booking_id?h('small',{class:'pr-hint'},r.booking_id):null,
+        need&&S.admin?h('div',{class:'ml-acts'},r.status==='needs_you'&&!b?h('button',{type:'button',class:'btn sm primary',onclick:()=>addIt(r)},icon('plus'),'Add booking'):null,
+          h('button',{type:'button',class:'btn sm',onclick:()=>done(r)},'Done')):null))};
+  const howTo=h('details',{class:'ml-setup',open:!all.length||null},h('summary',null,h('b',null,all.length?'How booking emails work':'Turn on booking emails'),h('span',null,last?`last email read ${fmtD(String(last.received_at).slice(0,10))}`:'not set up yet')),
+    h('ol',null,h('li',null,'Booking sites email your bookings Gmail. A small script there passes those emails to your WhatsApp bot every 10 minutes.'),
+      h('li',null,'New bookings are added by themselves, changes move the dates, cancellations cancel. You get a WhatsApp message for each.'),
+      h('li',null,'Anything unclear waits here as "Needs you". Give each stay its names on the booking sites (Manage › Properties › edit › Names on booking sites) so emails find it.'),
+      h('li',null,'Emails rarely include the guest\'s phone: you get a reminder 2 days before check-in to add it.')),
+    h('p',{class:'pr-hint'},'Setup is one step for scalewithluv: the script in the bookings Gmail. Nothing in your Gmail is deleted or marked read.'));
+  v.append(card('s12','Email bookings',{hint:'bookings read from Airbnb, Booking.com, MakeMyTrip and Agoda emails',acts:[tabs]},
+    h('div',{class:'ml-top'},seg),
+    rows.length?h('div',{class:'ml-list'},rows.slice(0,S.mailLim||60).map(row)):h('div',{class:'ex-empty'},h('span',{class:'ex-eic'},icon('check')),h('b',null,f==='open'?'Nothing needs you':'No booking emails yet'),
+      h('span',null,f==='open'?'Every booking email so far was handled by itself.':'They show here once the bookings Gmail is connected.')),
+    rows.length>(S.mailLim||60)?h('button',{class:'btn sm',onclick:()=>{S.mailLim=(S.mailLim||60)+60;render()}},`Show more of ${rows.length}`):null,howTo))}
 function manageSync(v,tabs){const Y=S.data.sync||{},I=Y.ical||null,chs=syncChannels(),live=D.props.filter(p=>!isStopped(p)&&!arrOf(p.includes).length);
   if(!SYNC_EDIT){SYNC_EDIT={};(Y.feeds||[]).forEach(f=>{SYNC_EDIT[f.property_id+'|'+f.channel]=f.url})}
   const st=(pid,ch)=>(I&&I.feeds||[]).find(f=>f.property_id===pid&&f.channel===ch),n=Object.values(SYNC_EDIT).filter(Boolean).length;
@@ -7153,7 +7206,34 @@ function manageSync(v,tabs){const Y=S.data.sync||{},I=Y.ical||null,chs=syncChann
     h('div',{class:'sy-list'},live.map(row)),
     h('details',{class:'sy-help'},h('summary',null,'Where to find each link'),h('ul',null,Object.values(SYNC_HOW).map(t=>h('li',null,t))),
       h('p',{class:'hint'},'Bookings found on an OTA but not here block those nights for the WhatsApp bot and show in Data health with an Add button. Adding the booking removes the block.'))));
+  if(S.admin)v.append(cxCard());
   return pendingBar(v)}
+/* Channel manager (Channex, engine v1.65): on when scalewithluv sets this client's sync mode to channex. Each stay is linked
+   to its Channex property by id (ops.channex_map); the bot then pushes availability, prices and minimum nights every
+   10 minutes and brings OTA bookings in. Health comes from the bot's daily counters. */
+const syncMode=()=>String((S.data.sync||{}).mode||'manual');
+const cxLocked=b=>syncMode()==='channex'&&b&&String(b.source||'')==='Channex';
+let CX_EDIT=null;
+function cxCard(){const mode=syncMode(),map=setJ('ops.channex_map')||{},live=D.props.filter(p=>!isStopped(p));
+  if(!CX_EDIT)CX_EDIT={...(map&&typeof map==='object'?map:{})};
+  const dirty=JSON.stringify(Object.entries(CX_EDIT).filter(([,v])=>String(v||'').trim()).sort())!==JSON.stringify(Object.entries(map||{}).filter(([,v])=>String(v||'').trim()).sort());
+  const bs=rowsOf('botstats').slice().sort((a,b)=>String(b.day).localeCompare(String(a.day))),last7=bs.slice(0,7),t=k=>sum(last7,r=>+r[k]||0);
+  const n=Object.values(CX_EDIT).filter(v=>String(v||'').trim()).length,on=mode==='channex';
+  const k=(v,l,cls)=>h('div',{class:'sy-k'+(cls?' '+cls:'')},h('b',{class:'num'},v),h('span',null,l));
+  const sum_=on?h('div',{class:'sy-sum'},k(n+'/'+live.length,'stays linked',n<live.length?'warn':''),k(t('cx_imported'),'bookings in · 7 days'),k(t('cx_pushes'),'updates out · 7 days'),
+      k(t('cx_errors'),'failures · 7 days',t('cx_errors')?'bad':'')):null;
+  const save=async()=>{const clean=Object.fromEntries(Object.entries(CX_EDIT).map(([k,v])=>[k,String(v||'').trim()]).filter(([,v])=>v));
+    if(Object.values(clean).some(v=>!/^[0-9a-f-]{36}$/i.test(v)))return toast('A Channex property id looks like 8-4-4-4-12 letters and digits (copy it from Channex)');
+    await setSetting('ops.channex_map',JSON.stringify(clean),'Channel manager links saved');CX_EDIT=null;render()};
+  return card('s12','Channel manager',{hint:on?'two-way sync with Airbnb, Booking.com and MakeMyTrip through Channex · every 10 minutes':'not switched on for this business'},
+    h('div',{class:'cx-mode'},h('span',{class:'pill '+(on?'p-ok':'p-mute')},{channex:'Channex · on',ical:'Calendar links',manual:'Manual'}[mode]||mode),
+      h('small',null,on?'Prices, availability and minimum nights go out by themselves; bookings from the sites come in by themselves. Change a site\'s booking on that site: it syncs back here.'
+        :'scalewithluv switches this on when your Channex account is ready. Until then the calendar links above keep the sites in step.')),
+    sum_,
+    h('details',{class:'sy-row cx-links',open:on&&n<live.length||null},h('summary',null,h('b',null,'Link each stay to Channex'),h('small',{class:'hint'},`${n} of ${live.length} linked`)),
+      h('div',{class:'sy-fields'},live.map(p=>h('label',{class:'sy-f'},h('span',null,short(p.property)),
+        h('input',{autocomplete:'off',spellcheck:'false',placeholder:'Channex property id',value:CX_EDIT[p.property_id]||'',oninput:e=>{CX_EDIT[p.property_id]=e.target.value.trim()},onchange:()=>render()})))),
+      h('div',{class:'sy-acts'},h('button',{class:'btn primary',disabled:!dirty||null,onclick:save},'Save links'),dirty?h('small',{class:'hint'},'Unsaved changes'):null)))}
 /* a manager's day at a glance: what is still to do at their stays, anything not ready, when they last sent work */
 function mgrToday(u){const set=OPS.scope(u.properties,S.data.props),inS=pid=>set.has(pid),c=OPSC(),id=mgrId(u);
   const cl=OPS.checklists(S.data.bookings,rowsOf('checklists'),TODAY,c,inS,S.data.props).filter(x=>x.status!=='done').length,nr=OPS.notReady(S.data.bookings,rowsOf('checklists'),TODAY,c,S.data.props,0).filter(x=>inS(x.prev.property_id)).length;
@@ -7306,7 +7386,7 @@ function manage(v){
   if(!S.admin){v.append(card('s12','Manage',{},h('div',{class:'empty'},'Only admins can change bookings.')));return}
   const all=(S.data.bookings||[]).map(stg),trash=all.filter(b=>b.deleted_at),trashE=(S.data.expenses||[]).map(e=>ESTAGE[e.expense_id]?{...e,...ESTAGE[e.expense_id]}:e).filter(e=>e.deleted_at);
   const nB=all.filter(b=>!b.deleted_at).length,nP=(S.data.props||[]).length;
-  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['directory','Directory',(S.data.directory||[]).filter(x=>!x.deleted_at).length,'phone'],['lists','Lists',null,'list'],['costs','AI Expenses',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash'],['sync','Calendar sync',(()=>{const y=(S.data.sync||{}).ical;return y?((y.clash||[]).length+(y.missing||[]).length)||null:null})(),'cal'],['health','Data health',(()=>{const x=dataHealth();return x.out.length?x.out.reduce((a,y)=>a+y.items.length,0):null})(),'check'],['plan','Plan & billing',null,'wallet']].map(([k,l,n,ic])=>
+  const tabs=h('div',{class:'mg-tabs',role:'tablist'},[['bookings','Bookings',nB,'list'],['properties','Properties',nP,'home'],['guest','Guest info',null,'wifi'],['pricing','Pricing',null,'tag'],['expenses','Expenses',null,'wallet'],['directory','Directory',(S.data.directory||[]).filter(x=>!x.deleted_at).length,'phone'],['lists','Lists',null,'list'],['costs','AI Expenses',null,'wallet'],['history','History',null,'clock'],['trash','Trash',trash.length+trashE.length,'trash'],['mail','Email bookings',mailOpen().length||null,'list'],['sync','Calendar sync',(()=>{const y=(S.data.sync||{}).ical;return y?((y.clash||[]).length+(y.missing||[]).length)||null:null})(),'cal'],['health','Data health',(()=>{const x=dataHealth();return x.out.length?x.out.reduce((a,y)=>a+y.items.length,0):null})(),'check'],['plan','Plan & billing',null,'wallet']].map(([k,l,n,ic])=>
     h('button',{role:'tab','aria-selected':String(MG.sec===k),onclick:()=>{MG.sec=k;MG.sel.clear();pushHash();render();requestAnimationFrame(()=>document.querySelector('.mg-tabs [aria-selected=true]')?.scrollIntoView({block:'nearest',inline:'center'}))}},icon(ic),h('span',null,l),n==null?null:h('b',{class:'num'},n.toLocaleString('en-IN')))));
   setTimeout(()=>{const on=tabs.querySelector('[aria-selected=true]');if(on&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=on.offsetLeft-(tabs.clientWidth-on.offsetWidth)/2},0);  // phones: keep the open tab in view
   if(MG.sec==='properties')return manageProps(v,tabs);
@@ -7320,6 +7400,7 @@ function manage(v){
   if(MG.sec==='plan')return managePlan(v,tabs);
   if(MG.sec==='health')return manageHealth(v,tabs);
   if(MG.sec==='sync')return manageSync(v,tabs);
+  if(MG.sec==='mail')return manageMail(v,tabs);
   if(MG.sec==='trash'){
     const list=sortBy(trash,['deleted_at',-1]);
     v.append(card('s12','Trash',{hint:'restore within 30 days · then removed for good',acts:[tabs]},list.length?h('div',{class:'mg-list'},list.map(b=>{const left=30-diff(String(b.deleted_at).slice(0,10),TODAY);
