@@ -47,7 +47,7 @@ main{display:grid;gap:14px;padding:14px max(16px,env(safe-area-inset-right,0px))
   background:rgba(255,255,255,0.92);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--hair)}
 .tabs button{display:grid;justify-items:center;gap:2px;border:0;background:none;padding:6px 2px;font-size:10.5px;font-weight:650;color:var(--muted);cursor:pointer;position:relative}
 .tabs svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.tabs button[aria-current=page]{color:var(--accent)}
-.tabs .badge{top:0;right:calc(50% - 22px)}
+.tabs .badge{top:0;right:calc(50% - 22px)}.tabs button{position:relative;min-width:0}.tabs .badge{max-width:calc(50% + 18px)}html.locked,html.locked body{overflow:hidden;overscroll-behavior:none}.t,.t b,.t span,.card h2,.hint,.sheet h3{overflow-wrap:anywhere;min-width:0}button[aria-pressed]>.badge{position:static;display:inline-grid;margin-left:6px;vertical-align:1px}
 .form{display:grid;gap:12px}.form label{display:grid;gap:5px;font-size:12.5px;font-weight:650;color:var(--ink-2)}
 .form input,.form select,.form textarea{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--hair-2);background:var(--surface);font-size:15px}
 .ck{display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;border:1px solid var(--hair-2);background:var(--surface);cursor:pointer;font-size:14px;font-weight:500}
@@ -367,7 +367,9 @@ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest
   const box=a.closest('.pd-photos,.cl-pics,[data-pv-group]')||a.parentElement,as=[...box.querySelectorAll('a[href],[data-pv]')];
   e.preventDefault();e.stopPropagation();photoViewer(as.map(x=>x.dataset.pv||x.getAttribute('href')),as.indexOf(a),box.dataset.cap||a.dataset.cap||'')},true);
 window.photoViewer=photoViewer;
-function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(v==null||v===false)continue;if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else if(x==='class')e.className=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x in e&&typeof v!=='string')e[x]=v;else e.setAttribute(x,v===true?'':v)}
+/* links never carry script: javascript:, vbscript: or non-image data: urls are dropped (security F8) */
+const BAD_URL=/^[\s\u0000-\u001f]*(javascript|vbscript):|^[\s\u0000-\u001f]*data:(?!image\/)/i;
+function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if((x==="href"||x==="src"||x==="action"||x==="formaction")&&typeof v==="string"&&BAD_URL.test(v))continue;if(v==null||v===false)continue;if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else if(x==='class')e.className=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x in e&&typeof v!=='string')e[x]=v;else e.setAttribute(x,v===true?'':v)}
   k.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)))});return e}
 const NS='http://www.w3.org/2000/svg';
 const ICO={today:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4',check:'M5 12.5l4.5 4.5L19 7.5',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',
@@ -664,7 +666,7 @@ function checksScreen(m,u){const k=S.chk==='stock'?'stock':'check',nC=u.check.fi
   m.append(h('div',{class:'seg'},[['check',T('Checkout'),nC],['stock',T('Stock'),nS]].map(([x,l,n])=>h('button',{'aria-pressed':String(k===x),onclick:()=>{S.chk=x;render()}},l,n?h('span',{class:'badge'},n):null))));
   (k==='stock'?stockScreen:checkScreen)(m,u)}
 /* ============ forms ============ */
-function sheet(title,...body){const esc=e=>{if(e.key==='Escape'&&w.isConnected&&w===[...document.querySelectorAll('.sheet')].pop())close()},close=()=>{w.remove();removeEventListener('keydown',esc)};addEventListener('keydown',esc);const w=h('div',{class:'sheet',onclick:e=>{if(e.target===w)close()}},h('div',{class:'in',role:'dialog','aria-modal':'true','aria-label':title},h('h3',null,title,h('button',{class:'x','aria-label':'Close',onclick:close},'✕')),...body));document.body.append(w);return close}
+function sheet(title,...body){const esc=e=>{if(e.key==='Escape'&&w.isConnected&&w===[...document.querySelectorAll('.sheet')].pop())close()},close=()=>{w.remove();removeEventListener('keydown',esc);if(!document.querySelector('.sheet'))document.documentElement.classList.remove('locked')};addEventListener('keydown',esc);document.documentElement.classList.add('locked');const w=h('div',{class:'sheet',onclick:e=>{if(e.target===w)close()}},h('div',{class:'in',role:'dialog','aria-modal':'true','aria-label':title},h('h3',null,title,h('button',{class:'x','aria-label':'Close',onclick:close},'✕')),...body));document.body.append(w);return close}
 /* photos: resized on the phone (longest side 1280 px, JPEG) before upload, so they go fast on mobile data */
 function shrink(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
   c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',0.72).split(',')[1])};im.onerror=()=>no(new Error('not an image'));im.src=u})}
