@@ -1811,7 +1811,20 @@ th.on{color:var(--accent)}
 .bl-card .foot-note{padding:4px 16px 14px}.bl-card code{font-size:12px;background:var(--fill-2);padding:1px 6px;border-radius:6px}
 @media (max-width:640px){.bl-r{grid-template-columns:repeat(4,minmax(0,1fr));min-width:0;padding:8px 0;border-top:1px solid var(--g-edge)}.bl-n{grid-column:1/-1}.bl-h{display:none}
   .bl-c::before{content:attr(data-l);display:block;font-size:10px;font-weight:600;opacity:.75;margin-bottom:1px}}
-.ex-bin{color:var(--muted)}.ex-bin:hover,.ex-bin:focus-visible{color:var(--bad);background:rgba(191,42,32,0.1);background:color-mix(in srgb,var(--bad) 10%,transparent)}
+.rm-q{margin:0;color:var(--ink-2);display:grid;gap:4px}.rm-amt{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.01em}.rm-amt small{font-size:13px;font-weight:500;color:var(--muted)}
+.rm-opts{display:grid;gap:8px}
+.rm-opt{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:center;text-align:left;padding:12px 14px;border:1px solid var(--hair-2);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;min-height:56px;transition:border-color .15s,background .15s,transform .15s}
+.rm-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.rm-ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rm-tx{display:grid;gap:2px;min-width:0}.rm-opt b{font-size:14px;font-weight:650}.rm-opt small{color:var(--muted);font-size:12.5px;line-height:1.35}
+.rm-opt:hover:not(:disabled),.rm-opt:focus-visible{border-color:var(--accent);background:rgba(244,247,253,1.0);background:color-mix(in srgb,var(--accent) 5%,var(--surface))}.rm-opt:active:not(:disabled){transform:scale(.99)}
+.rm-opt.bad .rm-ic{background:var(--bad-soft);color:var(--bad)}.rm-opt.bad b{color:var(--bad)}
+.rm-opt.bad:hover,.rm-opt.bad:focus-visible{border-color:var(--bad);background:rgba(252,244,244,1.0);background:color-mix(in srgb,var(--bad) 5%,var(--surface))}.rm-opt:disabled{opacity:.5;cursor:default}
+.ex-row .ex-bin{width:32px;height:32px;padding:0;display:grid;place-items:center;border-color:transparent;background:transparent;box-shadow:none;color:var(--faint);transition:color .15s,background .15s}
+.ex-row .ex-bin svg{width:16px;height:16px;stroke-width:2}
+.ex-row:hover .ex-bin{color:var(--muted)}.ex-row .ex-bin:hover,.ex-row .ex-bin:focus-visible,.ex-row .ex-bin:active{color:var(--bad);background:var(--bad-soft)}
+@media (hover:none){.ex-row .ex-bin{color:var(--muted)}}
+.ex-row .ex-bin-sp{width:32px}
 .ex-row.est{opacity:.85}.ex-row.est .ex-ic{background:var(--warn-soft)}
 
 /* ---------- AI insights ---------- */
@@ -2629,7 +2642,7 @@ function expandExpenses(rows,props){const out=[],nowK=TODAY.slice(0,7);
       while(k<=end&&k<=lastK&&dates.length<120){const last=+mEnd(k).slice(8);dates.push(k+'-'+String(Math.min(day,last)).padStart(2,'0'));k=nextM(k)}}
     /* a split is equal per stay listed; a flat's part goes to its family, so two flats of one family give it two parts */
     dates.forEach(dt=>{const listed=e.property_id==='*'?sharers(dt):[...new Set(parts(e.property_id))],w={};listed.forEach(x=>{w[fam(x)]=(w[fam(x)]||0)+1});const pids=Object.keys(w);
-      const base=MONEY.isPlan(e)?MONEY.planned(e,dt.slice(0,7),SM):+e.amount;
+      const base=MONEY.isPlan(e)?MONEY.planned(e,dt.slice(0,7),SM):+e.amount;if(!base)return;   // a month adjusted to ₹0 is not a cost line
       pids.forEach(pid=>out.push({...e,property_id:pid,date:dt,amount:Math.round(base*w[pid]/listed.length*100)/100,__src:e.expense_id||null,__split:pids.length>1,__rep:dates.length>1||String(e.repeat||'')==='monthly'}))})});
   /* monthly bills not entered yet: the last amount of that bill at that stay stands in, marked estimated - from its first
      real bill up to this month, unless the stay has that bill switched off - so profit isn't overstated while waiting */
@@ -5972,7 +5985,7 @@ function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE
   const ovbody=OVOPS.length?h('div',{class:'mg-rev'},h('b',null,`Prices on dates · ${OVOPS.length} change${OVOPS.length>1?'s':''}`),[...new Set(OVOPS.map(o=>o.label))].map(l=>h('div',{class:'mg-chg'},h('em',null,l)))):null;
   const ebody=Object.entries(ESTAGE).map(([id,f])=>{const raw=(S.data.expenses||[]).find(x=>x.expense_id===id)||{},e={...raw,...f};
     return h('div',{class:'mg-rev'},h('b',null,`Expense · ${e.category||''} · ${inr(+e.amount||0)}`),h('span',{class:'mg-revp'},`${e.property_id!=='*'&&String(e.property_id||'').includes(',')?stayLabel(e):e.property_id==='*'?'All stays':short((D.P[e.property_id]||{}).property||e.property_id)} · ${fmtD(e.date)}${String(e.repeat||'')==='monthly'?' · every month':''}`),
-      h('div',{class:'mg-chg'},h('em',null,f.__new?'New expense':f.deleted_at?'Moved to Trash':'Changed: '+Object.keys(f).filter(k=>!k.startsWith('__')).map(k=>EXP_L[k]||k).join(', '))))});
+      h('div',{class:'mg-chg'},h('em',null,f.__new?(f.kind==='adjustment'?'Taken off '+mLabel(f.for_month)+' only':'New expense'):f.deleted_at?'Moved to Trash':'Changed: '+Object.keys(f).filter(k=>!k.startsWith('__')).map(k=>EXP_L[k]||k).join(', '))))});
   const brk=(OVOPS.length||Object.keys(PRSTAGE).length||Object.values(PSTAGE).some(f=>'base_rate' in f))?heldBreaks((p,d)=>nightPrice(pstg(p),d).price):[];
   const ovr=h('input',{type:'checkbox'}),saveB=h('button',{class:'btn primary',disabled:brk.length?true:null,onclick:async e=>{e.target.disabled=true;e.target.textContent='Saving…';closeLayer();await mgSave()}},`Save ${total} change${total>1?'s':''}`);
   ovr.addEventListener('change',()=>{saveB.disabled=!ovr.checked});
@@ -6487,12 +6500,24 @@ function expStage(id,f){const raw=(S.data.expenses||[]).find(x=>x.expense_id===i
   if(raw&&!next.__new)for(const k of Object.keys(next))if(!k.startsWith('__')&&String(next[k]??'')===String(raw[k]??''))delete next[k];
   if(Object.keys(next).filter(k=>!k.startsWith('__')).length||next.__new)ESTAGE[id]=next;else delete ESTAGE[id];render()}
 /* a bin on every saved expense line: staged like the editor's Move to Trash, so it's reviewed before saving and Trash can restore it */
-function expBin(src,what){if(!S.admin||!src||!src.expense_id)return null;const id=src.expense_id,unsaved=(ESTAGE[id]||{}).__new;
+/* a monthly cost: just this month (an adjustment takes the month to ₹0, like "Adjust it off"), from this month on
+   (repeat_until = the month before), every month (Trash), or edit it - all staged for Review & save */
+function planBin(src,k){const id=src.expense_id,first=MONEY.ym(src.date),left=MONEY.planned(src,k,MONEY.settleMap(expRows())),name=planName(src);
+  const opt=(ic,t,sub,fn,cls)=>h('button',{type:'button',class:'rm-opt'+(cls?' '+cls:''),disabled:fn?null:true,onclick:fn?()=>{closeLayer();fn()}:null},h('span',{class:'rm-ic','aria-hidden':'true'},icon(ic)),h('span',{class:'rm-tx'},h('b',null,t),h('small',null,sub)));
+  modal(`Remove ${name}?`,h('div',{class:'form'},h('p',{class:'full rm-q'},h('span',{class:'rm-amt num'},inr(+src.amount),h('small',null,' / month')),'It repeats every month. What should go?'),
+    h('div',{class:'full rm-opts'},
+      opt('cal',`Just ${mLong(k)}`,left>0?`${inr(left)} taken off ${mLabel(k)} only; other months stay`:`Already nothing to pay in ${mLabel(k)}`,left>0?()=>{const nid='EX'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+        ESTAGE[nid]={__new:true,expense_id:nid,date:TODAY,property_id:src.property_id,for_stay:src.for_stay||null,category:src.category,vendor:src.vendor||null,settles:String(id),for_month:k,amount:left,kind:'adjustment',notes:'Removed for this month only',source:'dashboard'};render()}:null),
+      k>first?opt('clock',`From ${mLong(k)} on`,`Stops after ${mLong(prevM(k))}; earlier months stay as they are`,()=>expStage(id,{repeat_until:prevM(k)})):null,
+      opt('trash','Every month','Moves the whole monthly cost to Trash (restore within 30 days)',()=>expStage(id,{deleted_at:new Date().toISOString().slice(0,16)}),'bad'),
+      opt('edit','Edit it instead','Change the amount, stay or end month',()=>expEditor(src))),
+    h('p',{class:'full pr-hint'},'Nothing changes until you save.')),[h('button',{class:'btn',onclick:closeLayer},'Keep')])}
+function expBin(src,what,k){if(!S.admin)return null;if(!src||!src.expense_id)return h('span',{class:'ex-bin-sp','aria-hidden':'true'});/* keeps amounts lined up */const id=src.expense_id,unsaved=(ESTAGE[id]||{}).__new;
   const n=String(src.property_id||'').split(',').filter(Boolean).length,rep=String(src.repeat||'')==='monthly';
   const text=unsaved?'It was never saved, so it is simply dropped.':[rep?'It repeats every month, so Trash removes it from every month. To stop it from now on instead, open it and set "Until".':null,
     src.property_id==='*'||n>1?`It is shared across stays: the whole ${inr(+src.amount)} goes, not one stay's share.`:null,'Nothing changes until you save; Manage › Trash can restore it for 30 days.'].filter(Boolean).join(' ');
-  return h('button',{type:'button',class:'btn icon sm ex-bin','aria-label':'Move to Trash: '+(what||src.vendor||src.category||'expense'),'data-tip':'Move to Trash',
-    onclick:ev=>{ev.stopPropagation();confirmBox(`Move ${what||src.vendor||src.category||'this expense'} (${inr(+src.amount)}) to Trash?`,text,'Move to Trash',true,
+  return h('button',{type:'button',class:'btn icon sm ex-bin','aria-label':'Remove: '+(what||src.vendor||src.category||'expense'),title:'Remove',
+    onclick:ev=>{ev.stopPropagation();if(!unsaved&&MONEY.isPlan(src)&&k)return planBin(src,k);confirmBox(`Move ${what||src.vendor||src.category||'this expense'} (${inr(+src.amount)}) to Trash?`,text,'Move to Trash',true,
       ()=>{if(unsaved){delete ESTAGE[id];render()}else expStage(id,{deleted_at:new Date().toISOString().slice(0,16)})})},
     onkeydown:ev=>ev.stopPropagation()},icon('trash'))}
 function expEditor(e0,preset){const isNew=!e0,e=e0||{date:TODAY,category:'Cleaning',paid_via:'UPI',property_id:S.expPid||'*',...(preset||{})};
@@ -6739,17 +6764,17 @@ function manageExpenses(v,tabs){
         h('div',{class:'ex-tx'},h('b',null,e.vendor||e.category),h('span',null,[e.category,stayLabel(e),e.__due?'planned, not paid yet':[e.paid_via,e.paid_from].filter(Boolean).join(' · ')].filter(Boolean).join(' · '))),
         e.__due&&S.admin?h('button',{type:'button',class:'btn sm ex-settle',onclick:ev=>{ev.stopPropagation();settleMonth(e.__due)}},'Settle'):null,
         h('span',{class:'pill '+(e.__due?'p-bad':'p-acc'),'data-tip':e.__due?'A monthly cost not paid yet - it counts in this month\'s costs':'Pays a monthly cost (rent, salary…) - counted once, not on top of it'},e.__due?'Due':'Payment'),
-        h('b',{class:'num ex-amt2'},inr(+e.amount)),e.__due?expBin(e.__due.plan,'the monthly '+planName(e.__due.plan)):expBin(expRows().find(x=>x.expense_id===e.expense_id),'this payment'))}
+        h('b',{class:'num ex-amt2'},inr(+e.amount)),e.__due?expBin(e.__due.plan,'the monthly '+planName(e.__due.plan),e.__due.month):expBin(expRows().find(x=>x.expense_id===e.expense_id),'this payment'))}
     if(e.__est)return h('div',{class:'ex-row est',role:'button',tabindex:0,onclick:()=>billEditor(e.property_id,e.category,e.bill_month)},
       h('span',{class:'ex-ic',style:{'--c':expColor(e.category)}},(e.category||'?')[0]),h('div',{class:'ex-tx'},h('b',null,BILL_L[e.category]+' (estimated)'),h('span',null,`${stayLabel(e)} · last bill, until the real one is entered`)),
-      h('span',{class:'pill p-warn'},'Estimate'),h('b',{class:'num ex-amt2'},inr(+e.amount)));
+      h('span',{class:'pill p-warn'},'Estimate'),h('b',{class:'num ex-amt2'},inr(+e.amount)),expBin(null));
     const src=expRows().find(x=>x.expense_id===(e.__src||e.expense_id))||e,ed=ESTAGE[src.expense_id];
     const open=()=>src.expense_id?expEditor(src):toast('This expense was added before expenses had ids - change it in the sheet.');
     return h('div',{class:'ex-row'+(ed?' mg-edit':''),role:'button',tabindex:0,onclick:open,onkeydown:ev=>{if(ev.key==='Enter')open()}},
       h('span',{class:'ex-ic',style:{'--c':expColor(e.category)}},(e.category||'?')[0]),
       h('div',{class:'ex-tx'},h('b',null,e.vendor||e.category||'Expense'),h('span',null,[e.vendor?e.category:null,stayLabel(e),[e.paid_via,e.paid_from].filter(Boolean).join(' · ')].filter(Boolean).join(' · '))),
       e.__rep?h('span',{class:'ex-rep','data-tip':'Repeats every month'},icon('repeat')):null,ed?h('span',{class:'pill p-warn'},ed.__new?'New':'Not saved'):null,
-      h('b',{class:'num ex-amt2'},inr(+e.amount)),expBin(src.expense_id?src:null))};
+      h('b',{class:'num ex-amt2'},inr(+e.amount)),expBin(src.expense_id?src:null,null,String(e.date||'').slice(0,7)))};
   const shares=D.props.filter(p=>!isStopped(p)&&(+pstg(p).owner_share>0)).length;
   v.append(card('s12','Expenses',{hint:'what each stay costs · profit across the dashboard uses these',acts:[tabs]},
     h('div',{class:'ex-top'},h('div',{class:'ex-filters'},pick,nav),h('div',{class:'ex-topb'},...uplBtns('expenses'),h('button',{class:'btn primary',onclick:()=>expEditor(null)},icon('plus'),'Add expense'))),
