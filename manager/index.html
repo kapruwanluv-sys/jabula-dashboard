@@ -369,7 +369,7 @@ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest
 window.photoViewer=photoViewer;
 /* links never carry script: javascript:, vbscript: or non-image data: urls are dropped (security F8) */
 const BAD_URL=/^[\s\u0000-\u001f]*(javascript|vbscript):|^[\s\u0000-\u001f]*data:(?!image\/)/i;
-function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if((x==="href"||x==="src"||x==="action"||x==="formaction")&&typeof v==="string"&&BAD_URL.test(v))continue;if(v==null||v===false)continue;if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else if(x==='class')e.className=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x in e&&typeof v!=='string')e[x]=v;else e.setAttribute(x,v===true?'':v)}
+function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if((x==="href"||x==="src"||x==="action"||x==="formaction")&&typeof v==="string"&&BAD_URL.test(v))continue;if(v==null||v===false)continue;if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else if(x==='class')e.className=v;else if(x==='style'&&typeof v==='object')for(const[q,w]of Object.entries(v))q.startsWith('--')?e.style.setProperty(q,w):e.style[q]=w;else if(x in e&&typeof v!=='string')e[x]=v;else e.setAttribute(x,v===true?'':v)}
   k.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)))});return e}
 const NS='http://www.w3.org/2000/svg';
 const ICO={today:'M4 6h16v14H4zM4 10h16M9 3v4M15 3v4',check:'M5 12.5l4.5 4.5L19 7.5',box:'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',

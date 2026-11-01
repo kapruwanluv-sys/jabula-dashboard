@@ -827,7 +827,7 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .ex-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px}.ex-leg span{display:inline-flex;align-items:center;gap:6px}.ex-leg i{width:9px;height:9px;border-radius:50%}.ex-leg b{color:var(--muted);font-weight:600}
 .ex-days{display:grid;gap:14px}.ex-day{display:grid;gap:4px}
 .ex-list{display:grid;border:1px solid var(--hair);border-radius:18px;overflow:hidden;background:var(--surface)}
-.ex-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:11px 14px;cursor:pointer;border-top:1px solid var(--hair)}
+.ex-row{display:grid;grid-template-columns:38px minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:auto;gap:12px;align-items:center;padding:11px 14px;cursor:pointer;border-top:1px solid var(--hair)}
 .ex-row:first-child{border-top:0}.ex-row:hover{background:rgba(12,26,61,0.03);background:color-mix(in srgb,var(--ink) 3%,transparent)}.ex-row.mg-edit{background:var(--warn-soft)}
 .ex-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
 .ex-tx{display:grid;gap:1px;min-width:0}.ex-tx b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ex-tx span{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -858,7 +858,7 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .ex-chips{display:flex;flex-wrap:wrap;gap:6px}.ex-chips button{display:inline-flex;align-items:center;justify-content:center;height:34px;line-height:1;border:1px solid var(--hair-2);background:transparent;border-radius:99px;padding:0 13px;font-family:inherit;font-weight:600;font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap}
 .ex-chips button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 @media (max-width:900px){.ex-kpis{grid-template-columns:1fr 1fr}}
-@media (max-width:640px){.ex-k b{font-size:18px}.ex-row{grid-template-columns:34px minmax(0,1fr) auto;padding:10px 12px}.ex-row .ex-rep,.ex-row .pill{display:none}.ex-ic{width:34px;height:34px}
+@media (max-width:640px){.ex-k b{font-size:18px}.ex-row{grid-template-columns:34px minmax(0,1fr);gap:8px;padding:10px 12px}.ex-row .ex-rep,.ex-row .pill{display:none}.ex-ic{width:34px;height:34px}
   .ex-top .btn.primary{width:100%;justify-content:center}.ex-filters{width:100%}.ex-filters .mg-pick{flex:1;max-width:none!important}}
 /* missing details + uploads */
 .gap-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:rgba(160,76,8,0.1);background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid rgba(160,76,8,0.3);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
@@ -1811,6 +1811,7 @@ th.on{color:var(--accent)}
 .bl-card .foot-note{padding:4px 16px 14px}.bl-card code{font-size:12px;background:var(--fill-2);padding:1px 6px;border-radius:6px}
 @media (max-width:640px){.bl-r{grid-template-columns:repeat(4,minmax(0,1fr));min-width:0;padding:8px 0;border-top:1px solid var(--g-edge)}.bl-n{grid-column:1/-1}.bl-h{display:none}
   .bl-c::before{content:attr(data-l);display:block;font-size:10px;font-weight:600;opacity:.75;margin-bottom:1px}}
+.ex-bin{color:var(--muted)}.ex-bin:hover,.ex-bin:focus-visible{color:var(--bad);background:rgba(191,42,32,0.1);background:color-mix(in srgb,var(--bad) 10%,transparent)}
 .ex-row.est{opacity:.85}.ex-row.est .ex-ic{background:var(--warn-soft)}
 
 /* ---------- AI insights ---------- */
@@ -2538,7 +2539,7 @@ for(const P_ of [Element.prototype,DocumentFragment.prototype])for(const m_ of [
 const $=s=>document.querySelector(s);
 /* links never carry script: javascript:, vbscript: or non-image data: urls are dropped (security F8) */
 const BAD_URL=/^[\s\u0000-\u001f]*(javascript|vbscript):|^[\s\u0000-\u001f]*data:(?!image\/)/i;
-function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if((x==="href"||x==="src"||x==="action"||x==="formaction")&&typeof v==="string"&&BAD_URL.test(v))continue;if(v!=null&&/^aria-(pressed|selected|checked|expanded)$/.test(x)){e.setAttribute(x,String(v===true||v==='true'));continue}if(v==null||v===false)continue;if(x==='class')e.className=v;else if(x==='text')e.textContent=v;else if(x==='style'&&typeof v==='object')Object.assign(e.style,v);else if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else e.setAttribute(x,v===true?'':v)}for(const c of k.flat(9)){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}
+function h(t,a,...k){const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if((x==="href"||x==="src"||x==="action"||x==="formaction")&&typeof v==="string"&&BAD_URL.test(v))continue;if(v!=null&&/^aria-(pressed|selected|checked|expanded)$/.test(x)){e.setAttribute(x,String(v===true||v==='true'));continue}if(v==null||v===false)continue;if(x==='class')e.className=v;else if(x==='text')e.textContent=v;else if(x==='style'&&typeof v==='object')for(const[q,w]of Object.entries(v))q.startsWith('--')?e.style.setProperty(q,w):e.style[q]=w;else if(x.startsWith('on')&&typeof v==='function')e.addEventListener(x.slice(2),v);else e.setAttribute(x,v===true?'':v)}for(const c of k.flat(9)){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(String(c)))}
   if(a&&typeof a.onclick==='function'&&!/^(button|a|input|select|label|summary|textarea)$/.test(t)&&!e.hasAttribute('role')){e.setAttribute('role','button');e.tabIndex=0;e.addEventListener('keydown',ev=>{if(ev.target===e&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}})}
   return e}
 const NS='http://www.w3.org/2000/svg';
@@ -6485,6 +6486,15 @@ const expRows=()=>{const rows=(S.data.expenses||[]).map(e=>e.expense_id&&ESTAGE[
 function expStage(id,f){const raw=(S.data.expenses||[]).find(x=>x.expense_id===id),next={...(ESTAGE[id]||{}),...f};
   if(raw&&!next.__new)for(const k of Object.keys(next))if(!k.startsWith('__')&&String(next[k]??'')===String(raw[k]??''))delete next[k];
   if(Object.keys(next).filter(k=>!k.startsWith('__')).length||next.__new)ESTAGE[id]=next;else delete ESTAGE[id];render()}
+/* a bin on every saved expense line: staged like the editor's Move to Trash, so it's reviewed before saving and Trash can restore it */
+function expBin(src,what){if(!S.admin||!src||!src.expense_id)return null;const id=src.expense_id,unsaved=(ESTAGE[id]||{}).__new;
+  const n=String(src.property_id||'').split(',').filter(Boolean).length,rep=String(src.repeat||'')==='monthly';
+  const text=unsaved?'It was never saved, so it is simply dropped.':[rep?'It repeats every month, so Trash removes it from every month. To stop it from now on instead, open it and set "Until".':null,
+    src.property_id==='*'||n>1?`It is shared across stays: the whole ${inr(+src.amount)} goes, not one stay's share.`:null,'Nothing changes until you save; Manage › Trash can restore it for 30 days.'].filter(Boolean).join(' ');
+  return h('button',{type:'button',class:'btn icon sm ex-bin','aria-label':'Move to Trash: '+(what||src.vendor||src.category||'expense'),'data-tip':'Move to Trash',
+    onclick:ev=>{ev.stopPropagation();confirmBox(`Move ${what||src.vendor||src.category||'this expense'} (${inr(+src.amount)}) to Trash?`,text,'Move to Trash',true,
+      ()=>{if(unsaved){delete ESTAGE[id];render()}else expStage(id,{deleted_at:new Date().toISOString().slice(0,16)})})},
+    onkeydown:ev=>ev.stopPropagation()},icon('trash'))}
 function expEditor(e0,preset){const isNew=!e0,e=e0||{date:TODAY,category:'Cleaning',paid_via:'UPI',property_id:S.expPid||'*',...(preset||{})};
   let cat=e.category||'Cleaning',via=e.paid_via||'UPI',rep=String(e.repeat||'')==='monthly',from=e.paid_from||'',adding=false;
   const amt=h('input',{type:'number',inputmode:'decimal',min:0,step:'1',value:e.amount??'',placeholder:'0',class:'ex-amt'}),dt=h('input',{type:'date',value:String(e.date||TODAY).slice(0,10)}),
@@ -6729,7 +6739,7 @@ function manageExpenses(v,tabs){
         h('div',{class:'ex-tx'},h('b',null,e.vendor||e.category),h('span',null,[e.category,stayLabel(e),e.__due?'planned, not paid yet':[e.paid_via,e.paid_from].filter(Boolean).join(' · ')].filter(Boolean).join(' · '))),
         e.__due&&S.admin?h('button',{type:'button',class:'btn sm ex-settle',onclick:ev=>{ev.stopPropagation();settleMonth(e.__due)}},'Settle'):null,
         h('span',{class:'pill '+(e.__due?'p-bad':'p-acc'),'data-tip':e.__due?'A monthly cost not paid yet - it counts in this month\'s costs':'Pays a monthly cost (rent, salary…) - counted once, not on top of it'},e.__due?'Due':'Payment'),
-        h('b',{class:'num ex-amt2'},inr(+e.amount)))}
+        h('b',{class:'num ex-amt2'},inr(+e.amount)),e.__due?expBin(e.__due.plan,'the monthly '+planName(e.__due.plan)):expBin(expRows().find(x=>x.expense_id===e.expense_id),'this payment'))}
     if(e.__est)return h('div',{class:'ex-row est',role:'button',tabindex:0,onclick:()=>billEditor(e.property_id,e.category,e.bill_month)},
       h('span',{class:'ex-ic',style:{'--c':expColor(e.category)}},(e.category||'?')[0]),h('div',{class:'ex-tx'},h('b',null,BILL_L[e.category]+' (estimated)'),h('span',null,`${stayLabel(e)} · last bill, until the real one is entered`)),
       h('span',{class:'pill p-warn'},'Estimate'),h('b',{class:'num ex-amt2'},inr(+e.amount)));
@@ -6739,7 +6749,7 @@ function manageExpenses(v,tabs){
       h('span',{class:'ex-ic',style:{'--c':expColor(e.category)}},(e.category||'?')[0]),
       h('div',{class:'ex-tx'},h('b',null,e.vendor||e.category||'Expense'),h('span',null,[e.vendor?e.category:null,stayLabel(e),[e.paid_via,e.paid_from].filter(Boolean).join(' · ')].filter(Boolean).join(' · '))),
       e.__rep?h('span',{class:'ex-rep','data-tip':'Repeats every month'},icon('repeat')):null,ed?h('span',{class:'pill p-warn'},ed.__new?'New':'Not saved'):null,
-      h('b',{class:'num ex-amt2'},inr(+e.amount)))};
+      h('b',{class:'num ex-amt2'},inr(+e.amount)),expBin(src.expense_id?src:null))};
   const shares=D.props.filter(p=>!isStopped(p)&&(+pstg(p).owner_share>0)).length;
   v.append(card('s12','Expenses',{hint:'what each stay costs · profit across the dashboard uses these',acts:[tabs]},
     h('div',{class:'ex-top'},h('div',{class:'ex-filters'},pick,nav),h('div',{class:'ex-topb'},...uplBtns('expenses'),h('button',{class:'btn primary',onclick:()=>expEditor(null)},icon('plus'),'Add expense'))),
