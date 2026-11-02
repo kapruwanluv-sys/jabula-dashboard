@@ -1829,7 +1829,19 @@ th.on{color:var(--accent)}
 .cx-links{margin-top:12px}
 .cx-lock{display:flex;gap:8px;align-items:flex-start;margin:0 0 4px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);color:var(--accent-ink);font-size:13px;line-height:1.45}.cx-lock svg{width:16px;height:16px;flex:none;margin-top:1px;fill:none;stroke:currentColor;stroke-width:2}
 /* Manage › Email bookings */
-.ml-top{display:flex;justify-content:flex-end;margin:-4px 0 10px}.ml-list{border:1px solid var(--hair);border-radius:14px;overflow:hidden;background:var(--surface)}
+.ml-top{display:flex;justify-content:flex-end;margin:-4px 0 10px}
+.ml-row{cursor:pointer}.ml-row:hover{background:rgba(248,248,249,1.0);background:color-mix(in srgb,var(--ink) 3%,var(--surface))}.ml-row.need:hover{background:rgba(250,238,237,1.0);background:color-mix(in srgb,var(--bad) 8%,var(--surface))}
+.ml-row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.ml-sum{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.ml-k{display:grid;gap:2px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--hair)}
+.ml-k b{font-size:20px;font-weight:800;color:var(--ink)}.ml-k span{font-size:12px;color:var(--muted);line-height:1.3}
+.ml-k.ok b{color:var(--ok)}.ml-k.bad{background:var(--bad-soft);border-color:rgba(191,42,32,0.25);border-color:color-mix(in srgb,var(--bad) 25%,transparent)}.ml-k.bad b,.ml-k.bad span{color:var(--bad)}
+@media (max-width:900px){.ml-sum{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ml-call{display:grid;gap:6px;padding:12px 14px;border-radius:14px;font-size:13.5px;line-height:1.45;background:var(--ok-soft);color:var(--ink)}
+.ml-call.bad{background:var(--bad-soft)}.ml-call.bad b{color:var(--bad)}.ml-call.mute{background:var(--surface-2)}.ml-call span{color:var(--ink-2)}
+.ml-call-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ml-call-h small{color:var(--muted);font-size:12px}
+.form input.ml-ro,.form textarea.ml-ro{background:var(--surface-2);color:var(--ink);cursor:default}.form textarea.ml-ex{font-size:12.5px;line-height:1.5;resize:vertical}
+.ml-miss{display:grid;gap:6px}.ml-chips{display:flex;gap:6px;flex-wrap:wrap}.ml-list{border:1px solid var(--hair);border-radius:14px;overflow:hidden;background:var(--surface)}
 .ml-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--hair)}
 .ml-row:first-child{border-top:0}.ml-row.need{background:rgba(252,244,244,1.0);background:color-mix(in srgb,var(--bad) 5%,var(--surface));box-shadow:inset 3px 0 0 var(--bad)}
 .ml-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
@@ -2753,7 +2765,7 @@ function stats0(from,to,pid,fam){
   s.exp=sum(SE.filter(e=>ids.has(e.property_id)&&e.date>=from&&e.date<=to),e=>+e.amount||0);s.owner=ownerCut(ids,mb,from,to);
   /* a flat's nightly rate is its own money over its own nights (its whole place's nights fill it, but earn on the whole place) */
   const ownN=one&&par?sum(SB.filter(b=>chOk(b)&&b.property_id===pid&&b.check_in<=to&&b.check_out>from),b=>overlap(b,from,to)):nights;
-  s.occ=avail?nights/avail:0;s.roomStay=sum(mb.filter(([b])=>b.ok),([b,w])=>b.room*w);s.adr=ownN?s.roomStay/ownN:0;s.revpar=avail?s.roomStay/avail:0;s.profit=s.net-s.exp-s.owner;
+  s.occ=avail?nights/avail:0;s.roomStay=sum(mb.filter(([b])=>b.ok&&opIds.has(b.property_id)),([b,w])=>b.room*w);/* rate: live stays' income over their nights - a stopped stay's money stays in net payout, not in the rate */s.adr=ownN?s.roomStay/ownN:0;s.revpar=avail?s.roomStay/avail:0;s.profit=s.net-s.exp-s.owner;
   if(pid){const par=parentOf(pid);
     if(par){s.profit=null;s.inFamily=par}                                     // a flat's costs sit with its family
     else if(kidsOf(pid).length){const fm=famMoney(from,to,pid);s.family=fm;s.profit=fm.net-fm.exp-fm.owner}}  // the parent speaks for the family
@@ -4695,7 +4707,7 @@ function potDetail(pot,f){f=f||'all';const from=mlFrom(),mon=S.obView==='month',
   const open=sum(all.filter(x=>x.date<a),x=>x.amount),L=all.filter(x=>x.date>=a);let run=open;const rows=L.map(x=>({...x,bal:(run=Math.round((run+x.amount)*100)/100)}));
   const inn=sum(L.filter(x=>x.amount>0),x=>x.amount),out=-sum(L.filter(x=>x.amount<0),x=>x.amount),close=open+inn-out;
   const shown=rows.filter(x=>f==='all'||(f==='in'?x.amount>0:x.amount<0)).reverse();
-  const openRef=r=>{if(!r||!r.ref)return;closeLayer();if(r.ref.kind==='booking'){const b=D.B.find(x=>x.booking_id===String(r.ref.id));if(b)openBooking(b)}else if(r.ref.kind==='expense'){MG.sec='expenses';go('manage')}else if(r.ref.kind==='mail'){MG.sec='mail';go('manage')}};
+  const openRef=r=>{if(!r||!r.ref)return;closeLayer();if(r.ref.kind==='booking'){const b=D.B.find(x=>x.booking_id===String(r.ref.id));if(b)openBooking(b)}else if(r.ref.kind==='expense'){MG.sec='expenses';go('manage')}else if(r.ref.kind==='mail'){MG.sec='mail';go('manage');const m=mailRows().find(x=>x.mail_id===r.ref.id);if(m)setTimeout(()=>mailSheet(m),50)}};
   const seg=h('div',{class:'seg sm',role:'group','aria-label':'Show'},[['all',`All · ${L.length}`],['in','Money in'],['out','Money out']].map(([v,l])=>h('button',{'aria-pressed':f===v,onclick:()=>potDetail(pot,v)},l)));
   const who=MONEY.ownerOf(pot,potCfg(),potPeople());
   modal(pot,h('div',{class:'form ob-stmt'},
@@ -7152,6 +7164,54 @@ function syncChannels(){const L=bookingLists();return(L.channels||[]).filter(c=>
 const MAIL_ST={added:['Added','p-ok'],updated:['Changed','p-acc'],cancelled:['Cancelled','p-mute'],already:['Already in','p-mute'],needs_you:['Needs you','p-bad'],clash:['Double booking','p-bad'],handled:['Done','p-mute']};
 const mailRows=()=>((S.data&&S.data.mailin)||[]).filter(r=>r&&r.mail_id).slice().sort((a,b)=>String(b.received_at||'').localeCompare(String(a.received_at||'')));
 const mailOpen=()=>mailRows().filter(r=>r.status==='needs_you'||r.status==='clash');
+/* One booking email in the same window as the booking form: what the email said (read-only fields), what the bot did
+   and what to do now (the callout), then the buttons for exactly that case. A clash is never settled by the bot: it
+   kept the second booking out of the Register and waits for a person to decide which guest stays. */
+const MAIL_WHY={
+  added:r=>['ok','Added to Bookings by itself.',r.note&&/missing:/.test(r.note)?'Fill in what is still missing (below) when you open the booking.':'Nothing else to do.'],
+  updated:r=>['ok','The booking site changed this booking; the bot updated it to match.','Nothing to do. The change is in History.'],
+  cancelled:r=>['ok','Cancelled on the booking site; the bot cancelled it here and the nights are free again.','Nothing to do.'],
+  already:r=>['ok','This booking was already in Bookings (typed by hand), so it was not added twice.',/added:/.test(r.note||'')?'Empty details were filled from the email; nothing you typed was changed.':'Nothing to do.'],
+  clash:r=>['bad',`NOT added: ${r.clash_with?r.clash_with+' already has':'another booking already has'} these nights. The Register stays correct, but ${r.channel||'the site'} has a confirmed guest, so someone will arrive.`,
+    `Decide which guest stays: open ${r.clash_with||'the other booking'}, then move or cancel one (on ${r.channel||'the site'} for theirs). If this one stays, add it with Add booking. Mark it sorted when done.`],
+  needs_you:r=>['bad',/which stay/i.test(r.note||'')?'The bot could not tell which stay this email is for, so nothing was added.':/typed by hand/i.test(r.note||'')?'This change or cancellation is for a booking typed by hand. The bot never changes those itself.':/doesn.t give/i.test(r.note||'')?'The email is missing details the booking needs, so nothing was added.':'The bot could not handle this email by itself.',
+    /which stay/i.test(r.note||'')?'Add the booking yourself (the form is filled from the email). To stop this happening, add the stay\'s name on the booking site in Manage › Properties › Names on booking sites.':
+    /typed by hand/i.test(r.note||'')?'Open the booking and make the same change there, then mark this done.':'Check the email in Gmail, add the booking if it is real, then mark this done.'],
+  handled:r=>['mute','Marked done by '+(r.handled_by||'an admin')+(r.handled_at?' on '+fmtD(String(r.handled_at).slice(0,10)):'')+'.','']};
+function mailSheet(r){const[t,c]=MAIL_ST[r.status]||[r.status||'?','p-mute'],[tone,what,todo]=(MAIL_WHY[r.status]||MAIL_WHY.needs_you)(r);
+  const b=r.booking_id?D.B.find(x=>x.booking_id===String(r.booking_id)):null,other=r.clash_with?D.B.find(x=>x.booking_id===String(r.clash_with)):null;
+  const ro=(v,o)=>h('input',{value:v==null||v===''?'—':String(v),readonly:true,tabindex:-1,class:'ml-ro',...(o||{})});
+  const miss=((/missing: ([^·]+)/.exec(r.note||'')||[])[1]||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const need=r.status==='needs_you'||r.status==='clash';
+  const done=()=>{closeLayer();save('mailin','update',{match:{mail_id:r.mail_id},fields:{status:'handled',handled_by:(LIVE.me||{}).name||(LIVE.me||{}).email||'admin',handled_at:new Date().toISOString().slice(0,16)}},r.status==='clash'?'Marked sorted':'Marked done')};
+  const addIt=()=>{closeLayer();openForm('booking',r.property_id||null,null,{prefill:{guest:r.guest||'',guests:r.guests||2,check_in:String(r.check_in||TOMORROW).slice(0,10),check_out:String(r.check_out||add(TOMORROW,2)).slice(0,10),
+    channel:r.channel||'',notes:`From the ${r.channel||'booking site'} email${r.code?' ('+r.code+')':''}`}})};
+  const open=x=>{closeLayer();openBooking(x)};
+  const acts=[h('button',{class:'btn',onclick:closeLayer},'Close')];
+  if(need&&S.admin)acts.push(h('button',{class:'btn',onclick:done},r.status==='clash'?'Sorted · mark done':'Done'));
+  if(other)acts.push(h('button',{class:'btn'+(r.status==='clash'?' primary':''),onclick:()=>open(other)},'Open '+other.booking_id));
+  if(need&&S.admin&&!b&&r.status!=='handled'&&!/typed by hand/i.test(r.note||''))acts.push(h('button',{class:'btn'+(r.status==='needs_you'?' primary':''),onclick:addIt},icon('plus'),'Add booking'));
+  if(b)acts.push(h('button',{class:'btn primary',onclick:()=>open(b)},'Open '+b.booking_id));
+  modal(`${r.channel||'Booking'} email · ${r.guest||'guest'}`,h('div',{class:'form ml-sheet'},
+      h('div',{class:'full ml-call '+tone},h('div',{class:'ml-call-h'},h('span',{class:'pill '+c},t),r.received_at?h('small',null,'read '+fmtD(String(r.received_at).slice(0,10),{day:'numeric',month:'short',year:'numeric'})):null),
+        h('b',null,what),todo?h('span',null,todo):null),
+      fld('Booking site',ro(r.channel)),fld('Booking code',ro(r.code)),
+      fld('Guest',ro(r.guest)),fld('Stay',ro(r.property_id?short((D.P[r.property_id]||{}).property||r.property_id):'Not found')),
+      fld('Check-in',ro(r.check_in?fmtD(String(r.check_in).slice(0,10),{day:'numeric',month:'short',year:'numeric'}):'')),
+      fld('Check-out',ro(r.check_out?fmtD(String(r.check_out).slice(0,10),{day:'numeric',month:'short',year:'numeric'}):'')),
+      fld('No. of guests',ro(r.guests)),fld('Amount in the email',ro(r.amount?inr(+r.amount):'')),
+      fld('Booking in Bookings',ro(r.booking_id||'—')),fld('Read by',ro({rules:'Rules (free)',ai:'AI (Haiku)','rules+ai':'Rules + AI',channex:'Channel sync'}[r.parsed_by]||r.parsed_by)),
+      miss.length?h('div',{class:'full ml-miss'},h('span',{class:'pr-lab'},'Still missing on the booking'),h('div',{class:'ml-chips'},miss.map(x=>h('span',{class:'chip-s warn'},x)))):null,
+      fld('Email',ro((r.sender?r.sender+' · ':'')+(r.subject||'')),1),
+      r.excerpt?fld('Start of the email',h('textarea',{readonly:true,rows:6,class:'ml-ro ml-ex'},r.excerpt),1):null,
+      r.note&&!miss.length?h('p',{class:'full pe-hint'},'Bot note: '+r.note):null),acts);
+  $('#layer .modal')?.classList.add('ml-modal');setTimeout(()=>{const f=document.activeElement;if(f&&f.classList.contains('ml-ro'))f.blur()},0)}   // read-only: no field takes the focus
+/* the top of Email bookings: what the bot read in the last 7 days and what came of it */
+function mailSummary(all){const since=add(TODAY,-6),wk=all.filter(r=>String(r.received_at||'').slice(0,10)>=since),cnt=s=>wk.filter(r=>r.status===s).length;
+  const bs=rowsOf('botstats').filter(x=>String(x.day||'')>=since),seen=sum(bs,x=>+x.mail_seen||0),ign=sum(bs,x=>+x.mail_ignored||0);
+  const open=mailOpen().length,k=(v,l,cls)=>h('div',{class:'ml-k'+(cls?' '+cls:'')},h('b',{class:'num'},v),h('span',null,l));
+  return h('div',{class:'ml-sum'},k(Math.max(seen,wk.length+ign),'emails checked'),k(cnt('added'),'bookings added','ok'),k(cnt('updated')+cnt('cancelled'),'changed or cancelled'),
+    k(cnt('already'),'already in'),k(ign,'not bookings'),k(open,open===1?'needs you':'need you',open?'bad':''))}
 function manageMail(v,tabs){const all=mailRows(),open=mailOpen(),f=S.mailF||(open.length?'open':'all'),rows=f==='open'?open:all;
   const last=all[0],nm=id=>short((D.P[id]||{}).property||id||'');
   const seg=h('div',{class:'seg sm',role:'group','aria-label':'Show'},[['open',`Needs you · ${open.length}`],['all',`All · ${all.length}`]].map(([k,l])=>h('button',{'aria-pressed':f===k,onclick:()=>{S.mailF=k;render()}},l)));
@@ -7159,15 +7219,15 @@ function manageMail(v,tabs){const all=mailRows(),open=mailOpen(),f=S.mailF||(ope
   const addIt=r=>openForm('booking',r.property_id||null,null,{prefill:{guest:r.guest||'',guests:r.guests||2,check_in:String(r.check_in||TOMORROW).slice(0,10),check_out:String(r.check_out||add(TOMORROW,2)).slice(0,10),
     channel:r.channel||'',notes:`From the ${r.channel||'booking site'} email${r.code?' ('+r.code+')':''}`}});
   const row=r=>{const[t,c]=MAIL_ST[r.status]||[r.status||'?','p-mute'],b=r.booking_id?D.B.find(x=>x.booking_id===String(r.booking_id)):null,need=r.status==='needs_you'||r.status==='clash';
-    return h('div',{class:'ml-row'+(need?' need':'')},
+    return h('div',{class:'ml-row'+(need?' need':''),role:'button',tabindex:0,onclick:()=>mailSheet(r),onkeydown:ev=>{if(ev.key==='Enter')mailSheet(r)}},
       h('span',{class:'ml-ic',style:{'--c':chColor(r.channel)}},String(r.channel||'?')[0]),
       h('div',{class:'ml-tx'},h('b',null,[r.guest||'Guest',r.property_id?nm(r.property_id):null].filter(Boolean).join(' · ')),
         h('span',null,[r.channel,r.check_in?`${fmtD(r.check_in)} → ${fmtD(r.check_out)}`:null,r.guests?r.guests+' guests':null,r.amount?inr(+r.amount):null].filter(Boolean).join(' · ')),
         r.note?h('small',{class:need?'ml-why':null},r.note):null),
       h('div',{class:'ml-end'},h('span',{class:'pill '+c},t),
-        b?h('button',{type:'button',class:'btn sm ghost',onclick:()=>openBooking(b)},r.booking_id):r.booking_id?h('small',{class:'pr-hint'},r.booking_id):null,
-        need&&S.admin?h('div',{class:'ml-acts'},r.status==='needs_you'&&!b?h('button',{type:'button',class:'btn sm primary',onclick:()=>addIt(r)},icon('plus'),'Add booking'):null,
-          h('button',{type:'button',class:'btn sm',onclick:()=>done(r)},'Done')):null))};
+        b?h('button',{type:'button',class:'btn sm ghost',onclick:ev=>{ev.stopPropagation();openBooking(b)}},r.booking_id):r.booking_id?h('small',{class:'pr-hint'},r.booking_id):null,
+        need&&S.admin?h('div',{class:'ml-acts'},r.status==='needs_you'&&!b&&!/typed by hand/i.test(r.note||'')?h('button',{type:'button',class:'btn sm primary',onclick:ev=>{ev.stopPropagation();addIt(r)}},icon('plus'),'Add booking'):null,
+          h('button',{type:'button',class:'btn sm',onclick:ev=>{ev.stopPropagation();done(r)}},r.status==='clash'?'Sorted':'Done')):null))};
   const howTo=h('details',{class:'ml-setup',open:!all.length||null},h('summary',null,h('b',null,all.length?'How booking emails work':'Turn on booking emails'),h('span',null,last?`last email read ${fmtD(String(last.received_at).slice(0,10))}`:'not set up yet')),
     h('ol',null,h('li',null,'Booking sites email your bookings Gmail. A small script there passes those emails to your WhatsApp bot every 10 minutes.'),
       h('li',null,'New bookings are added by themselves, changes move the dates, cancellations cancel. You get a WhatsApp message for each.'),
@@ -7175,7 +7235,7 @@ function manageMail(v,tabs){const all=mailRows(),open=mailOpen(),f=S.mailF||(ope
       h('li',null,'Emails rarely include the guest\'s phone: you get a reminder 2 days before check-in to add it.')),
     h('p',{class:'pr-hint'},'Setup is one step for scalewithluv: the script in the bookings Gmail. Nothing in your Gmail is deleted or marked read.'));
   v.append(card('s12','Email bookings',{hint:'bookings read from Airbnb, Booking.com, MakeMyTrip and Agoda emails',acts:[tabs]},
-    h('div',{class:'ml-top'},seg),
+    mailSummary(all),h('div',{class:'ml-top'},seg),
     rows.length?h('div',{class:'ml-list'},rows.slice(0,S.mailLim||60).map(row)):h('div',{class:'ex-empty'},h('span',{class:'ex-eic'},icon('check')),h('b',null,f==='open'?'Nothing needs you':'No booking emails yet'),
       h('span',null,f==='open'?'Every booking email so far was handled by itself.':'They show here once the bookings Gmail is connected.')),
     rows.length>(S.mailLim||60)?h('button',{class:'btn sm',onclick:()=>{S.mailLim=(S.mailLim||60)+60;render()}},`Show more of ${rows.length}`):null,howTo))}
