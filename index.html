@@ -6176,7 +6176,7 @@ function propEditor(p0){const isNew=!p0,p=p0?pstg(p0):{property_id:nextPid(),sta
   let upTile=null;
   const phBox=h('div',{class:'pe-photos'}),drawPh=()=>phBox.replaceChildren(...photos.map((u,i)=>{const isC=u===cover||(!cover&&i===0);
       return h('div',{class:'pe-ph'+(isC?' cover':'')},photoFit(thumbs[i]||u,''),isC?h('span',{class:'pe-cv'},icon('star'),'Cover'):null,
-        h('div',{class:'pe-ov'},isC?null:h('button',{type:'button','aria-label':'Make cover','data-tip':'Make cover',onclick:()=>{photos.unshift(...photos.splice(i,1));thumbs.unshift(...thumbs.splice(i,1));cover=photos[0];drawPh()}},icon('star')),
+        h('div',{class:'pe-ov'},isC?null:h('button',{type:'button','aria-label':'Make cover','data-tip':'Make cover · first photo on WhatsApp',onclick:()=>{photos.unshift(...photos.splice(i,1));thumbs.unshift(...thumbs.splice(i,1));cover=photos[0];drawPh()}},icon('star')),
           h('button',{type:'button','aria-label':'Remove photo','data-tip':'Remove',onclick:()=>{const was=photos[i]===cover;photos.splice(i,1);thumbs.splice(i,1);if(was)cover=photos[0]||'';drawPh()}},icon('trash'))))}),upTile);
   const upSt=h('span',{class:'pe-up-st'}),[upIn,upBtn]=pickPhotos('Upload',async fs=>{upTile.classList.add('busy');const got=await uploadPhotos(fs,short(p.property||'property'),(a,b)=>upSt.textContent=`${a} of ${b}…`);
     got.forEach(r=>{photos.push(r.url);thumbs.push(r.thumb);if(!cover)cover=r.url});upSt.textContent='';upTile.classList.remove('busy');drawPh()});
