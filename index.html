@@ -784,7 +784,8 @@ details.mp-off>summary::-webkit-details-marker{display:none}details.mp-off[open]
 .pr-bk{display:none}.pr-c.k-custom .pr-bk{background:#fff}.pr-hd{background:var(--warn,#d97706)}
 .pr-panel{position:relative;display:grid;gap:10px;padding:16px;border-radius:18px;background:var(--surface);border:1px solid rgba(29,91,216,0.3);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);box-shadow:0 12px 32px rgba(12,26,61,.12)}
 .pr-ph{display:grid;gap:2px}.pr-ph b{font-size:15px}.pr-ph span{font-size:12.5px;color:var(--muted)}
-.pr-set{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pr-set input{width:140px;min-width:0;font-weight:700}.pr-set>span{font-size:13px;color:var(--muted)}.pr-cur{font-weight:700;color:var(--ink)!important}
+.pr-set{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pr-set input{width:140px;min-width:0;font-weight:700}.pr-set>span{font-size:13px;color:var(--muted)}
+.pr-min{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}.pr-min input{width:72px}.pr-cur{font-weight:700;color:var(--ink)!important}
 .pr-custom{display:grid;gap:6px}.pr-cu{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:rgba(29,91,216,0.07);background:color-mix(in srgb,var(--accent) 7%,transparent);font-size:13px}.pr-cu b{margin-left:auto}
 .pr-set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 0}.pr-set-row>div:first-child{display:grid;gap:2px}.pr-set-row b{font-size:13.5px}.pr-set-row span{font-size:11.5px;color:var(--muted)}
 .pr-num{display:flex;align-items:center;gap:6px;flex:none}.pr-num input{width:74px;text-align:right;font-weight:700}.pr-num span{font-weight:600;color:var(--muted);white-space:nowrap}
@@ -6378,8 +6379,8 @@ const ovId=()=>'OV'+Date.now().toString(36)+Math.random().toString(36).slice(2,5
 /* one night's price for a stay, the same rule the bot uses */
 function nightPrice(p,day){const base=+p.base_rate||0,w=prVal('weekend_nights'),dow=DOW[(pd(day).getDay()+6)%7],isW=w.includes(dow),wk=isW?1+prVal('weekend_markup_pct')/100:1;
   const hits=prRules().filter(o=>(o.unit_id==='*'||o.unit_id===p.property_id||o.unit_id===p.property_id+'-E')&&o.from<=day&&day<=o.to&&!(o.unit_id==='*'&&o.city&&o.city!==p.city));
-  const fixed=hits.filter(o=>o.rate!=null&&o.rate!==''&&o.unit_id!=='*');if(fixed.length)return{price:Math.round(+fixed[fixed.length-1].rate/10)*10,kind:'custom',rule:fixed[fixed.length-1]};
-  const pcts=hits.filter(o=>o.unit_id==='*'||o.rate==null||o.rate==='').map(o=>+o.pct||0),hol=hits.find(o=>o.unit_id==='*'&&(o.rate==null||o.rate===''));
+  const fixed=hits.filter(o=>o.rate!=null&&o.rate!==''&&o.unit_id!=='*');if(fixed.length)return{price:Math.round(+fixed[fixed.length-1].rate*100)/100,kind:'custom',rule:fixed[fixed.length-1]};   /* a typed price is the price (only %-based prices round to Rs 10) */
+  const isPct=o=>o.pct!=null&&o.pct!=='',pcts=hits.filter(o=>(o.unit_id==='*'||o.rate==null||o.rate==='')&&isPct(o)).map(o=>+o.pct||0),hol=hits.find(o=>o.unit_id==='*'&&(o.rate==null||o.rate==='')&&isPct(o));
   let rate=base*wk,kind=isW?'weekend':'base';if(pcts.length){const pct=1+Math.max(...pcts)/100;rate=prVal('weekend_stacks_with_overrides')?rate*pct:base*Math.max(wk,pct);kind='holiday'}
   return{price:Math.round(rate/10)*10,kind,holiday:hol&&hol.note}}
 /* stage new custom prices for days of one stay: existing custom rules for the stay are rebuilt around the change */
@@ -6391,6 +6392,18 @@ function setCustom(p,days,price){const pid=p.property_id,mine=prRules().filter(o
   const label=`${short(p.property)} · ${fmtD(days[0])}${days.length>1?' → '+fmtD(days[days.length-1]):''}: ${price==null?'back to the usual pattern':inr(price)+' per night'}`;
   mine.filter(o=>!keep.has(o)).forEach(o=>{const i=OVOPS.findIndex(x=>x.op==='add'&&x.row===o);if(i>=0)OVOPS.splice(i,1);else OVOPS.push({op:'del',row:o,label})});
   segs.filter(sg=>!mine.some(o=>keep.has(o)&&same(o,sg))).forEach(sg=>OVOPS.push({op:'add',row:{ov_id:ovId(),unit_id:pid,from:sg.from,to:sg.to,rate:sg.rate,note:'Custom price'},label}));
+  render()}
+/* minimum nights for arrivals on these days (Overrides rows with min_nights, no rate): the bot refuses shorter stays and
+   sends it to the booking sites as minimum stay on arrival. n = null puts the days back to the stay's usual minimum */
+function minNights(p,day){const r=prRules().filter(o=>(o.unit_id===p.property_id||o.unit_id===p.property_id+'-E')&&o.min_nights!=null&&o.min_nights!==''&&o.from<=day&&day<=o.to);return r.length?+r[r.length-1].min_nights:0}
+function setMinNights(p,days,n){const pid=p.property_id,mine=prRules().filter(o=>o.unit_id===pid&&o.min_nights!=null&&o.min_nights!==''),map={};
+  mine.forEach(o=>{for(let d=o.from;d<=o.to;d=add(d,1))map[d]=+o.min_nights});days.forEach(d=>{if(n==null)delete map[d];else map[d]=n});
+  const segs=[];Object.keys(map).sort().forEach(d=>{const last=segs[segs.length-1];if(last&&add(last.to,1)===d&&last.n===map[d])last.to=d;else segs.push({from:d,to:d,n:map[d]})});
+  const keep=new Set(),same=(o,sg)=>o.from===sg.from&&o.to===sg.to&&+o.min_nights===+sg.n;
+  segs.forEach(sg=>{const ex=mine.find(o=>same(o,sg));if(ex)keep.add(ex)});
+  const label=`${short(p.property)} · ${fmtD(days[0])}${days.length>1?' → '+fmtD(days[days.length-1]):''}: ${n==null?'usual minimum stay':'minimum '+n+' nights for arrivals'}`;
+  mine.filter(o=>!keep.has(o)).forEach(o=>{const i=OVOPS.findIndex(x=>x.op==='add'&&x.row===o);if(i>=0)OVOPS.splice(i,1);else OVOPS.push({op:'del',row:o,label})});
+  segs.filter(sg=>!mine.some(o=>keep.has(o)&&same(o,sg))).forEach(sg=>OVOPS.push({op:'add',row:{ov_id:ovId(),unit_id:pid,from:sg.from,to:sg.to,min_nights:sg.n,note:'Minimum nights'},label}));
   render()}
 const PRC={pid:null,m:null,a:null,b:null,drag:false};
 function prCalendar(){const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
@@ -6404,7 +6417,7 @@ function prCalendar(){const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>S
   const cells=[...Array(lead)].map(()=>h('div',{class:'pr-c pr-x'}));
   for(let d=first;d<=last;d=add(d,1)){const np=nightPrice(p,d),bk=nightBooking(p.property_id,d),past=d<TODAY;
     cells.push(h('div',{class:`pr-c k-${np.kind}`+(inSel(d)?' sel':'')+(past?' past':'')+(bk?' bk':''),'data-d':d,role:'button',tabindex:past?-1:0,
-      'data-tip':`${fmtD(d,{weekday:'long',day:'numeric',month:'short'})}\n${inr(np.price)} · ${{custom:'custom price',holiday:'holiday'+(np.holiday?' ('+np.holiday+')':''),weekend:'weekend',base:'base price'}[np.kind]}${bk?'\nBooked: '+bk.guest:''}`},
+      'data-tip':`${fmtD(d,{weekday:'long',day:'numeric',month:'short'})}\n${inr(np.price)} · ${{custom:'custom price',holiday:'holiday'+(np.holiday?' ('+np.holiday+')':''),weekend:'weekend',base:'base price'}[np.kind]}${minNights(p,d)?'\nMinimum '+minNights(p,d)+' nights for arrivals':''}${bk?'\nBooked: '+bk.guest:''}`},
       h('span',{class:'pr-d'},+d.slice(8)),h('b',{class:'num'},PHONE()?(np.price>=1e5?Math.round(np.price/1e3):Math.round(np.price/100)/10)+'k':np.price.toLocaleString('en-IN')),bk?h('i',{class:'pr-bk'}):np.kind==='holiday'?h('i',{class:'pr-hd'}):null))}
   const grid=h('div',{class:'pr-grid'},...['M','T','W','T','F','S','S'].map(x=>h('div',{class:'pr-w'},x)),...cells);
   /* pick: tap a day, tap another for a range, or drag across days */
@@ -6420,17 +6433,23 @@ function prCalendar(){const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>S
   const end=()=>{if(!PRC.drag)return;PRC.drag=false;if(mode==='clear'&&!moved)PRC.a=PRC.b=null;mode=null;render()};grid.addEventListener('pointerup',end);grid.addEventListener('pointercancel',end);
   let panel=null;
   if(sel){const days=[];for(let d=sel[0];d<=sel[1];d=add(d,1))days.push(d);const prices=days.map(d=>nightPrice(p,d)),lo=Math.min(...prices.map(x=>x.price)),hi=Math.max(...prices.map(x=>x.price));
-    const hasCustom=prices.some(x=>x.kind==='custom'),inp=h('input',{type:'number',inputmode:'numeric',min:0,step:'50',placeholder:String(lo),value:lo===hi?lo:''});
+    const hasCustom=prices.some(x=>x.kind==='custom'),inp=h('input',{type:'number',inputmode:'decimal',min:0,step:'any','aria-label':'Price per night',placeholder:String(lo),value:lo===hi?lo:''});
+    const mins=days.map(d=>minNights(p,d)),mn0=Math.max(...mins),hasMin=mins.some(x=>x>0),
+      mInp=h('input',{type:'number',inputmode:'numeric',min:1,max:30,step:1,'aria-label':'Minimum nights',placeholder:String(Math.max(1,+(p.min_nights||1))),value:hasMin&&mins.every(x=>x===mn0)?mn0:''});
     const booked=days.filter(d=>nightBooking(p.property_id,d)).length;
     panel=h('div',{class:'pr-panel'},h('button',{class:'btn icon sm pr-x2','aria-label':'Clear selection',onclick:()=>{PRC.a=PRC.b=null;render()}},icon('x')),h('div',{class:'pr-ph'},h('b',null,`${fmtD(sel[0],{weekday:'short',day:'numeric',month:'short'})}${days.length>1?' → '+fmtD(sel[1],{weekday:'short',day:'numeric',month:'short'}):''}`),
         h('span',null,`${days.length} night${days.length>1?'s':''} · now ${lo===hi?inr(lo):inr(lo)+' – '+inr(hi)}${booked?` · ${booked} already booked (their price doesn’t change)`:''}`)),
       h('div',{class:'pr-set'},h('span',{class:'pr-cur'},'₹'),inp,h('span',null,'per night'),
-        h('button',{class:'btn primary sm',onclick:()=>{const v=+inp.value;if(!(v>0)){inp.focus();return}setCustom(p,days,Math.round(v));PRC.a=PRC.b=null;render()}},'Set price'),
+        h('button',{class:'btn primary sm',onclick:()=>{const v=+inp.value;if(!(v>0)){inp.focus();return}setCustom(p,days,Math.round(v*100)/100);PRC.a=PRC.b=null;render()}},'Set price'),
         hasCustom?h('button',{class:'btn sm',onclick:()=>{setCustom(p,days,null);PRC.a=PRC.b=null;render()}},'Back to usual'):null,
         PHONE()?null:h('button',{class:'btn sm ghost',onclick:()=>{PRC.a=PRC.b=null;render()}},'Cancel')),
+      h('div',{class:'pr-set pr-min'},h('span',null,'Min.'),mInp,h('span',null,'nights for arrivals'),
+        h('button',{class:'btn sm',onclick:()=>{const v=Math.round(+mInp.value);if(!(v>=1&&v<=30)){mInp.focus();return}setMinNights(p,days,v);PRC.a=PRC.b=null;render()}},'Set minimum'),
+        hasMin?h('button',{class:'btn sm',onclick:()=>{setMinNights(p,days,null);PRC.a=PRC.b=null;render()}},'Usual minimum'):null),
       PHONE()?h('small',{class:'pr-hint'},days.length===1?'Tap another day to pick a range · tap this day again to clear':'Final price for these nights · the bot quotes it'):h('small',{class:'pr-hint'},'This price is final for these nights: no weekend or holiday % on top. The bot quotes it for new bookings. Tap another day to extend, or the same day to clear.'));
     if(!PHONE())setTimeout(()=>inp.focus&&inp.focus(),0)}  // phones: no keyboard until they tap the price, so the range can still be picked
   const customs=prRules().filter(o=>o.unit_id===p.property_id&&o.rate!=null&&o.rate!==''&&o.to>=TODAY).sort((a,b)=>a.from.localeCompare(b.from));
+  const minsAhead=prRules().filter(o=>o.unit_id===p.property_id&&o.min_nights!=null&&o.min_nights!==''&&o.to>=TODAY).sort((a,b)=>a.from.localeCompare(b.from));
   const ph=p.photo||arrOf(p.photos)[0],wn=prVal('weekend_nights');
   const stay=h('div',{class:'pr-stay'},h('span',{class:'pr-sph'},ph?photoFit(ph,''):scene(p,96,96)),h('div',{class:'pr-stx'},h('span',{class:'pr-lab'},'Stay'),pick,
     h('span',{class:'pr-base'},'Base price ',h('b',{class:'num'},inr(+p.base_rate||0)),' · ',h('button',{class:'linkish',onclick:()=>openPropInManage(p.property_id)},'change in Properties'))));
@@ -6445,7 +6464,9 @@ function prCalendar(){const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>S
   return h('div',{class:'pr-cal'+(panel?' has-sel':'')},h('div',{class:'pr-left'},stay,mkChip,h('div',{class:'pr-top'},rules,nav),grid),
     h('div',{class:'pr-right'},panel||h('div',{class:'pr-tipbox'},h('b',null,'Set a special price'),h('p',{class:'pr-hint'},PHONE()?'Tap a day, then another day for a range.':'Click a day, or drag across days. The price you set is final for those nights; every other night keeps the pattern.')),
     customs.length?h('div',{class:'pr-custom'},h('span',{class:'pe-lab'},'Custom prices ahead'),customs.map(o=>h('div',{class:'pr-cu'},h('span',null,`${fmtD(o.from)}${o.to!==o.from?' → '+fmtD(o.to):''}`),h('b',{class:'num'},inr(+o.rate)+'/night'),
-      h('button',{class:'btn sm',onclick:()=>{const ds=[];for(let d=o.from;d<=o.to;d=add(d,1))ds.push(d);setCustom(p,ds,null)}},'Remove')))):null))}
+      h('button',{class:'btn sm',onclick:()=>{const ds=[];for(let d=o.from;d<=o.to;d=add(d,1))ds.push(d);setCustom(p,ds,null)}},'Remove')))):null,
+    minsAhead.length?h('div',{class:'pr-custom'},h('span',{class:'pe-lab'},'Minimum stays ahead'),minsAhead.map(o=>h('div',{class:'pr-cu'},h('span',null,`${fmtD(o.from)}${o.to!==o.from?' → '+fmtD(o.to):''}`),h('b',{class:'num'},`min ${+o.min_nights} nights`),
+      h('button',{class:'btn sm',onclick:()=>{const ds=[];for(let d=o.from;d<=o.to;d=add(d,1))ds.push(d);setMinNights(p,ds,null)}},'Remove')))):null))}
 const EV_KIND=[['festival','Festival'],['long_weekend','Long weekend'],['event','Local event'],['risky','Risky period (roads, weather)']];
 /* how an event did last year: the same-named event 10-14 months earlier (else the same dates a year back), in its city */
 function eventLastYear(o,pool){const name=String(o.note||'').split(' ')[0].toLowerCase(),fromD=pd(o.from);
