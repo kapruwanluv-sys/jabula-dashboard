@@ -157,7 +157,7 @@ button{cursor:pointer}
 body:not(.is-admin) .hero-plus{display:none}
 .float-card .n{margin-left:auto;width:42px;height:42px;border-radius:50%;background:#1d5bd8;color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .float-card b{font-size:13.5px;font-weight:700;display:block}
-.float-card small{font-size:12px;color:#5a6681}
+.float-card small{font-size:12px;color:#5a6681;overflow-wrap:anywhere}   /* QA 6 Nov: a long unbroken stay name pushed the phone page to 560px */
 .avs{display:flex}
 .avs .av{width:30px;height:30px;border:2px solid #fff;margin-left:-8px;font-size:10.5px}
 .avs .av:first-child{margin-left:0}
@@ -2334,6 +2334,8 @@ const OPS=(()=>{
   const itemText=it=>it.name+(it.type==='ok'?' (ok)':it.min?` (min ${it.min})`:'');
   /* two stays share nights when they are the same place, or one is the whole place over the other */
   const overlap=(a,b,props)=>a===b||parentOf(a,props)===b||parentOf(b,props)===a; /* two flats of one place are separate */
+  /* the same test with each stay's whole place looked up once per call (a scan of every stay per pair was the slow part at scale) */
+  const overlapOf=props=>{const m=new Map(),par=id=>{let v=m.get(id);if(v===undefined){v=parentOf(id,props);m.set(id,v)}return v};return(a,b)=>a===b||par(a)===b||par(b)===a};
   const live=b=>b&&!b.deleted_at&&String(b.booking_status||'Confirmed')!=='Cancelled'&&b.check_in&&b.check_out;
   /* a manager's stays: their list plus the whole place over their flats and the flats of a whole place they manage */
   function scope(ids,props){ids=list(ids);const set=new Set(ids);(props||[]).forEach(p=>{const inc=list(p.includes);
@@ -2341,10 +2343,10 @@ const OPS=(()=>{
   /* checkout checklists: one per stay that ended since the start date */
   /* a same-day turnover (the next guest checks in the day this one leaves) must be ready by check-in time: urgent */
   function checklists(bookings,rows,today,c,inScope,props){const byB={};(rows||[]).forEach(r=>{if(r.booking_id)byB[String(r.booking_id)]=r});
-    const L=(bookings||[]).filter(live);
+    const L=(bookings||[]).filter(live),ov=overlapOf(props),byIn=new Map();L.forEach(x=>{const k=String(x.check_in).slice(0,10);(byIn.get(k)||byIn.set(k,[]).get(k)).push(x)});   // arrivals by day, in list order
     return L.filter(b=>String(b.check_out).slice(0,10)>=c.start&&String(b.check_out).slice(0,10)<=today&&(!inScope||inScope(b.property_id)))
       .map(b=>{const co=String(b.check_out).slice(0,10),r=byB[String(b.booking_id)],due=addD(co,c.grace);
-        const next=L.find(x=>x!==b&&String(x.check_in).slice(0,10)===co&&overlap(x.property_id,b.property_id,props));
+        const next=(byIn.get(co)||[]).find(x=>x!==b&&ov(x.property_id,b.property_id));
         return{booking:b,property_id:b.property_id,check_out:co,due,row:r||null,status:r?'done':today>due?'missed':'due',missedAt:r?null:due,
           sameDay:!!next,next:next||null,urgent:!!next&&!r&&co===today,dueTime:next?String(next.arrival_time||c.checkinTime||'13:00').slice(0,5):null}})
       .sort((a,b)=>(b.urgent-a.urgent)||b.check_out.localeCompare(a.check_out))}
@@ -2388,16 +2390,20 @@ const OPS=(()=>{
       stock:{done:(data.stock||[]).filter(r=>start(r)&&mine(r,'by','by_name')).length,missed:sk.reduce((t,x)=>t+x.missed,0),due:sk.filter(x=>x.current&&x.current.status==='due').length}}})}
   /* turnover time: check-out time to the checklist being sent, in hours; on time = before the next guest's arrival */
   const at=(day,t)=>new Date(String(day).slice(0,10)+'T'+String(t||'00:00').slice(0,5)+':00').getTime();
-  function turnovers(bookings,rows,c,props){const L=(bookings||[]).filter(live),byB={};(rows||[]).forEach(r=>{if(r.booking_id&&r.done_at)byB[String(r.booking_id)]=r});
+  function turnovers(bookings,rows,c,props){const L=(bookings||[]).filter(live),byB={},ov=overlapOf(props);(rows||[]).forEach(r=>{if(r.booking_id&&r.done_at)byB[String(r.booking_id)]=r});
     return L.filter(b=>byB[String(b.booking_id)]).map(b=>{const r=byB[String(b.booking_id)],co=String(b.check_out).slice(0,10),done=new Date(String(r.done_at).replace(' ','T')).getTime();
-      const next=L.filter(x=>x!==b&&String(x.check_in).slice(0,10)>=co&&overlap(x.property_id,b.property_id,props)).sort((x,y)=>String(x.check_in).localeCompare(String(y.check_in)))[0];
+      const next=L.filter(x=>x!==b&&String(x.check_in).slice(0,10)>=co&&ov(x.property_id,b.property_id)).sort((x,y)=>String(x.check_in).localeCompare(String(y.check_in)))[0];
       const ready=next?at(next.check_in,next.arrival_time||c.checkinTime):null,hours=isNaN(done)?null:Math.max(0,Math.round((done-at(co,c.checkoutTime))/36e5*10)/10);
       return{booking_id:String(b.booking_id),property_id:b.property_id,check_out:co,by:r.by||null,by_name:r.by_name||null,done_at:String(r.done_at),hours,
         next:next?String(next.booking_id):null,onTime:ready==null||isNaN(done)?null:done<=ready}})}
   /* not ready: a guest arrives today (or by `ahead` days) and the stay's last check-out has no checklist yet */
-  function notReady(bookings,rows,today,c,props,ahead){const L=(bookings||[]).filter(live),done=new Set((rows||[]).map(r=>String(r.booking_id||''))),last=addD(today,ahead||0);
+  function notReady(bookings,rows,today,c,props,ahead){const L=(bookings||[]).filter(live),ov=overlapOf(props),CO=L.map(b=>String(b.check_out).slice(0,10)),byP=new Map(),fam=new Map(),done=new Set((rows||[]).map(r=>String(r.booking_id||''))),last=addD(today,ahead||0);
+    /* the bookings that can share nights with a stay (itself, its whole place, its flats), as positions in L in list
+       order: the same rows the scan over every booking found, without the scan (one per arrival was slow at scale) */
+    L.forEach((b,i)=>{const p=b.property_id;(byP.get(p)||byP.set(p,[]).get(p)).push(i)});
+    const near=pid=>{let v=fam.get(pid);if(!v){v=[];byP.forEach((ix,q)=>{if(ov(q,pid))v=v.concat(ix)});v.sort((x,y)=>x-y);fam.set(pid,v)}return v};
     return L.filter(n=>{const ci=String(n.check_in).slice(0,10);return ci>=today&&ci<=last}).map(n=>{const ci=String(n.check_in).slice(0,10);
-      const prev=L.filter(b=>b!==n&&String(b.check_out).slice(0,10)<=ci&&String(b.check_out).slice(0,10)>=c.start&&overlap(b.property_id,n.property_id,props))
+      const prev=near(n.property_id).filter(i=>L[i]!==n&&CO[i]<=ci&&CO[i]>=c.start&&ov(L[i].property_id,n.property_id)).map(i=>L[i])
         .sort((x,y)=>String(y.check_out).localeCompare(String(x.check_out)))[0];
       return prev&&!done.has(String(prev.booking_id))?{next:n,prev,property_id:n.property_id,check_in:ci,readyBy:String(n.arrival_time||c.checkinTime).slice(0,5)}:null}).filter(Boolean)}
   /* a manager's month: the scorecard for that month plus turnover time, issues, damage and days worked */
@@ -2449,6 +2455,59 @@ const OPS=(()=>{
   /* arrival steps for a city (a local registration, say), from Manage › Properties › Cities */
   const cityStepsOf=(c,city)=>((c.cities||[]).find(x=>x.name===city)||{}).steps||[];
   return{cityStepsOf,cfg,scope,checklists,stock,reviews,scorecards,turnovers,notReady,monthKPIs,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,DEF_REQ,PRESET_CHECK,PRESET_STOCK,PRESET_REQ,normCheck,normStock,normReq,checkDone,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
+/* Speed helpers (dashboard and manager app): same answers as the plain scans they replace, worked out once per data
+   load instead of once per night / per drawing. Pure; checked against the old code in tests/test_perf.js. */
+const PERF=(()=>{
+  const ISO=/^\d{4}-\d{2}-\d{2}$/,VD=new Map();
+  const ND=new Map(),nextDay=s=>{let v=ND.get(s);if(v===undefined){const d=new Date(s+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+1);v=d.toISOString().slice(0,10);if(ND.size>50000)ND.clear();ND.set(s,v)}return v};   // remembered per day
+  /* a real calendar day written YYYY-MM-DD (only those can be looked up by day; anything else takes the plain scan) */
+  const validDay=s=>{if(typeof s!=='string'||!ISO.test(s))return false;let v=VD.get(s);if(v==null){const d=new Date(s+'T00:00:00Z');v=!isNaN(d)&&d.toISOString().slice(0,10)===s;if(VD.size>20000)VD.clear();VD.set(s,v)}return v};
+  /* samePlace(a,b) of the dashboard (a stay, its whole place, its flats), with each stay's "includes" split once */
+  function samePlace(P){const m=new Map();
+    const inc=x=>{let v=m.get(x);if(v===undefined){const w=(P[x]||{}).includes;v=Array.isArray(w)?w:String(w||'').split(',').map(t=>t.trim()).filter(Boolean);m.set(x,v)}return v};
+    return(a,b)=>a===b||inc(a).includes(b)||inc(b).includes(a)}
+  /* "which row covers this night at this stay": the first row (in list order) with keep(row), same(pid(row), stay) and
+     from(row) <= day < to(row) - exactly Array.find over every row, answered from a per-stay map of nights built once */
+  function occIndex(rows,o){const groups=new Map();
+    rows.forEach((r,i)=>{if(!o.keep(r))return;const p=o.pid(r);if(!p)return;(groups.get(p)||groups.set(p,[]).get(p)).push(i)});
+    const per=new Map();
+    const build=q=>{let idx=[];groups.forEach((ix,p)=>{if(o.same(p,q))idx=idx.concat(ix)});idx.sort((a,b)=>a-b);
+      const day=new Map(),odd=[];
+      idx.forEach(i=>{const r=rows[i],f=o.from(r),t=o.to(r);
+        if(!validDay(f)||typeof t!=='string'){odd.push(i);return}
+        let n=0;for(let d=f;d<t;d=nextDay(d)){if(++n>4000){odd.push(i);break}if(!day.has(d))day.set(d,i)}});
+      return{idx,day,odd}};
+    const at=(q,d)=>{let e=per.get(q);if(!e){e=build(q);per.set(q,e)}
+      if(!validDay(d)){for(const i of e.idx){const r=rows[i];if(o.from(r)<=d&&o.to(r)>d)return r}return undefined}
+      let best=e.day.has(d)?e.day.get(d):-1;
+      for(const i of e.odd){if(best>=0&&i>best)break;const r=rows[i];if(o.from(r)<=d&&o.to(r)>d){best=i;break}}
+      return best>=0?rows[best]:undefined};
+    return at}
+  /* double bookings: pairs [i,j] (i<j, in the order the pairwise loop finds them) of rows at the same place whose dates
+     overlap - only rows at related stays are compared, not every row with every row */
+  function clashPairs(fut,same){const byP=new Map();fut.forEach((b,i)=>{const p=b.property_id;(byP.get(p)||byP.set(p,[]).get(p)).push(i)});
+    const pids=[...byP.keys()],out=[];
+    fut.forEach((a,i)=>pids.forEach(p=>{if(!same(a.property_id,p))return;byP.get(p).forEach(j=>{if(j<=i)return;const b=fut[j];if(a.check_in<b.check_out&&b.check_in<a.check_out)out.push([i,j])})}));
+    return out.sort((x,y)=>x[0]-y[0]||x[1]-y[1])}
+  /* remember one answer until any of its inputs changes (compared with ===) */
+  function memo(fn){let keys=null,val;const f=(...k)=>{if(keys&&keys.length===k.length&&k.every((x,i)=>x===keys[i]))return val;val=fn(...k);keys=k;return val};f.reset=()=>{keys=null};return f}
+  /* data versions: a read may send since=<the version we hold>; the sheet may answer {unchanged:true} with no data.
+     Ask only when we hold data from that version; trust "unchanged" only when we asked. An older sheet sends no
+     version, so nothing changes there. */
+  const sinceOf=(ver,have)=>have&&ver!=null&&ver!==''?String(ver):null;
+  const outcome=(r,since)=>r&&r.unchanged===true?(since!=null?'unchanged':'bad'):'data';
+  /* the version to keep after the two parallel reads (dashboard + blocks): only when both answered the same version -
+     blocks read before a change (or a failed blocks read, shown as none) must not be kept behind "unchanged" (QA s20) */
+  const pairVer=(a,b)=>a!=null&&a!==''&&b!=null&&String(a)===String(b)?a:null;
+  /* run fn over items, at most n at a time; results in item order. The first failure stops new starts and is thrown
+     once the ones already running have finished (so nothing is left uploading behind the error). */
+  function pool(items,n,fn){return new Promise((ok,no)=>{const out=new Array(items.length);let next=0,run=0,err=null,done=0;
+    if(!items.length)return ok(out);
+    const kick=()=>{while(!err&&run<n&&next<items.length){const i=next++;run++;
+      Promise.resolve().then(()=>fn(items[i],i)).then(v=>{out[i]=v},e=>{if(!err)err=e}).then(()=>{run--;done++;
+        if(err){if(!run)no(err)}else if(done===items.length)ok(out);else kick()})}};
+    kick()})}
+  return{validDay,nextDay,samePlace,occIndex,clashPairs,memo,sinceOf,outcome,pairVer,pool}})();
 
 /* Money ledger (dashboard only): monthly payments against their plan, and money pots. Pure functions over register rows.
    - A monthly expense row (repeat: "monthly") is the PLAN: rent, salaries, maintenance. Profit counts it every month.
@@ -2593,10 +2652,12 @@ const pct=(n,d=0)=>!isFinite(n)?'–':Math.abs(n)>=10?(n<0?'−':'')+'10×+':(n*
 const DAY=864e5;
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const pd=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
-const add=(s,n)=>iso(new Date(pd(s).getTime()+n*DAY+2*36e5));
-const diff=(a,b)=>Math.round((pd(b)-pd(a))/DAY);
+const ADD_C=new Map(),add=(s,n)=>{const k=s+'|'+n;let v=ADD_C.get(k);if(v===undefined){v=iso(new Date(pd(s).getTime()+n*DAY+2*36e5));if(ADD_C.size>2e5)ADD_C.clear();ADD_C.set(k,v)}return v};   // remembered per (date, days): the same answer, worked out once
+/* a date's time, worked out once per date text: the same answer as pd(s).getTime() (diff ran pd millions of times at 200 stays) */
+const PDT=new Map(),pdT=s=>{let v=PDT.get(s);if(v===undefined){v=pd(s).getTime();if(PDT.size>2e5)PDT.clear();PDT.set(s,v)}return v};
+const diff=(a,b)=>Math.round((pdT(b)-pdT(a))/DAY);
 const fmtD=(s,o)=>s?pd(String(s).slice(0,10)).toLocaleDateString('en-IN',o||{day:'numeric',month:'short'}):'–';   // a missing date shows a dash, never breaks the page
-const mStart=k=>k+'-01', mEnd=k=>{const[a,b]=k.split('-').map(Number);return iso(new Date(a,b,0))};
+const MEND_C=new Map(),mStart=k=>k+'-01', mEnd=k=>{let v=MEND_C.get(k);if(v===undefined){const[a,b]=k.split('-').map(Number);v=iso(new Date(a,b,0));if(MEND_C.size>5e4)MEND_C.clear();MEND_C.set(k,v)}return v};
 const mLabel=k=>pd(k+'-01').toLocaleDateString('en-IN',{month:'short'});
 const mLong=k=>pd(k+'-01').toLocaleDateString('en-IN',{month:'long',year:'numeric'});
 const prevM=k=>iso(new Date(pd(k+'-01').getFullYear(),pd(k+'-01').getMonth()-1,1)).slice(0,7);
@@ -2628,7 +2689,6 @@ const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){retu
 const TODAY=(()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:(window.CLIENT&&CLIENT.timezone)||'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}catch(e){return iso(new Date())}})();
 const TOMORROW=add(TODAY,1);
 const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
-const esc=s=>String(s).replace(/[,"\n]/g,m=>m);
 
 /* ============ state ============ */
 const DEF_F=()=>({preset:'month',from:TODAY.slice(0,8)+'01',to:mEnd(TODAY.slice(0,7)),cities:[],props:[],channels:[],own:'All'});
@@ -2733,6 +2793,17 @@ const fBm=b=>{const f=F();return b.money&&fP(D.P[b.property_id])&&(!f.channels.l
 function share(b,from,to){if(!b.ok||b.nights<=0)return b.check_in>=from&&b.check_in<=to?1:0;return overlap(b,from,to)/b.nights}
 const placeOf=(x,sep)=>[x&&x.area,x&&x.city].filter(v=>v&&v!=='null').join(sep||', ');
 const overlap=(b,a,z)=>Math.max(0,Math.min(diff(a,b.check_out),diff(a,z)+1)-Math.max(0,diff(a,b.check_in)));
+/* Speed at scale: only bookings that touch a period can add to it. A booking with real YYYY-MM-DD dates touches [from,to]
+   when it starts by `to` and ends after `from` (or starts inside it); one with odd dates (a time, a day that doesn't exist,
+   no zero padding) always goes through the full sums, as before - so every figure stays exactly the same. */
+const OKD=new Map(),okDay=s=>{if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;let v=OKD.get(s);if(v===undefined){v=iso(pd(s))===s;if(OKD.size>5e4)OKD.clear();OKD.set(s,v)}return v};
+const oddB=()=>D._odd||(D._odd=new Set(D.B.filter(b=>!okDay(b.check_in)||!okDay(b.check_out))));
+const inWin=(from,to)=>{if(!okDay(from)||!okDay(to))return()=>true;const odd=oddB();return b=>(b.check_in<=to&&(b.check_out>from||b.check_in>=from))||odd.has(b)};
+/* D.B.filter(inWin(from,to)), same rows in the same order: a period inside one month reads that month's list (built once
+   per data load: each booking under every month from its check-in to its check-out) instead of every booking */
+function touching(from,to){const W=inWin(from,to);if(!okDay(from)||!okDay(to)||from.slice(0,7)!==to.slice(0,7)||oddB().size)return D.B.filter(W);
+  if(!D._mb){const mb=new Map();let long=false;D.B.forEach(b=>{let k=b.check_in.slice(0,7);const z=b.check_out.slice(0,7);for(let n=0;;n++){if(n>=600){long=true;break}(mb.get(k)||mb.set(k,[]).get(k)).push(b);if(k>=z)break;k=nextM(k)}});D._mb=long?'all':mb}   // a stay over 50 years: every booking is checked, as before
+  return D._mb==='all'?D.B.filter(W):(D._mb.get(from.slice(0,7))||[]).filter(W)}
 /* Speed at scale: bookings and expenses indexed by stay (rebuilt with every new data, as D is replaced), and each
    stats() answer remembered for the rest of one drawing - a 200-stay business drew Overview in 40 s without this. */
 const byStay=(rows,k)=>{const m=new Map();rows.forEach(r=>{const id=r.property_id;(m.get(id)||m.set(id,[]).get(id)).push(r)});return m};
@@ -2748,12 +2819,12 @@ function stats0(from,to,pid,fam){
   const ids=new Set(all.map(p=>p.property_id)),opIds=new Set(props.map(p=>p.property_id));  // money: all; occupancy: live
   /* occupancy counts real places: a whole-place listing (combo) is its flats, so it adds no capacity of its own, and a
      night it is booked fills each of its flats. A flat's own page counts the nights its whole place was booked too. */
-  const incOf=id=>arrOf((D.P[id]||{}).includes);
+  const incC=D._inc||(D._inc=new Map()),incOf=id=>{const v=(D.P[id]||{}).includes;if(Array.isArray(v))return v;let a=incC.get(v);if(!a){a=arrOf(v);incC.set(v,a)}return a};   // split once per data load
   let phys=one?props:props.filter(p=>!incOf(p.property_id).length);if(!phys.length)phys=props;
   const physIds=new Set(phys.map(p=>p.property_id)),chOk=b=>b.ok&&(!F().channels.length||F().channels.includes(b.channel));
   const days=diff(from,to)+1,avail=phys.length*days;
   /* one stay (or family): only its own bookings and its whole place's can count, so look at those alone */
-  const SB=pid?(()=>{const w=new Set([...ids,...opIds]);const p0=one?parentOf(pid):null;if(p0)w.add(p0);return[...w].flatMap(id=>BP().get(id)||[])})():D.B;
+  const SB=(pid?(()=>{const w=new Set([...ids,...opIds]);const p0=one?parentOf(pid):null;if(p0)w.add(p0);return[...w].flatMap(id=>BP().get(id)||[]).filter(inWin(from,to))})():touching(from,to));   // only bookings that touch the period (inWin)
   const SE=pid?[...ids].flatMap(id=>EP().get(id)||[]):D.E;
   const chM=b=>!F().channels.length||F().channels.includes(b.channel);   // the Channel filter applies to one stay's figures too
   const bs=SB.filter(b=>opIds.has(b.property_id)&&(pid?b.ok&&chM(b):fB(b)));
@@ -2776,7 +2847,8 @@ function stats0(from,to,pid,fam){
 /* families: a combo listing (the parent) and the flats it includes (its children). Costs are kept once, at the parent.
    A child keeps its own bookings, nights and charts; the parent's profit covers every booking in the family. */
 const kidsOf=pid=>arrOf((D.P[pid]||{}).includes).filter(k=>D.P[k]);
-const parentOf=pid=>{for(const p of D.props)if(arrOf(p.includes).includes(pid))return p.property_id;return null};
+/* each stay's whole place, looked up once per data load (D is replaced with every new data or save) */
+const parentOf=pid=>{const c=D._par||(D._par=new Map());if(c.has(pid))return c.get(pid);let v=null;for(const p of D.props)if(arrOf(p.includes).includes(pid)){v=p.property_id;break}c.set(pid,v);return v};
 /* what the owner gets: a share of net payout (per booking), or - owner_share_basis "profit" (co-owned) - a share of
    what is left after that stay's expenses in the period */
 function ownerCut(ids,mb,from,to){let o=sum(mb.filter(([b])=>ids.has(b.property_id)),([b,w])=>b.owner*w);
@@ -2862,7 +2934,12 @@ function sceneSvg(p,w=640,hgt=400){
 }
 
 /* ============ tooltips ============ */
-document.addEventListener('mousemove',e=>{const t=$('#tip'),n=e.target.closest&&e.target.closest('[data-tip]');if(!n){t.hidden=true;return}t.textContent=n.getAttribute('data-tip');t.hidden=false;const x=Math.min(e.clientX+14,innerWidth-t.offsetWidth-10),y=Math.min(e.clientY+16,innerHeight-t.offsetHeight-10);t.style.left=x+'px';t.style.top=y+'px'});
+/* the tip's text and size are set only when the pointer reaches another tip (or its text changed); moving within one
+   only moves it - no layout read on every mouse move */
+{let tn=null,tt=null,tw=0,th=0;
+document.addEventListener('mousemove',e=>{const t=$('#tip'),n=e.target.closest&&e.target.closest('[data-tip]');if(!n){t.hidden=true;return}const txt=n.getAttribute('data-tip');
+  if(n!==tn||txt!==tt||t.textContent!==txt){t.textContent=txt;t.hidden=false;tn=n;tt=txt;tw=t.offsetWidth;th=t.offsetHeight}else if(t.hidden){t.hidden=false;tw=t.offsetWidth;th=t.offsetHeight}
+  const x=Math.min(e.clientX+14,innerWidth-tw-10),y=Math.min(e.clientY+16,innerHeight-th-10);t.style.left=x+'px';t.style.top=y+'px'})}
 document.addEventListener('scroll',()=>$('#tip').hidden=true,true);
 
 /* ============ charts (SVG, no library) ============ */
@@ -2914,13 +2991,6 @@ function countBars(w,{cats,series,stack=true,hh=220}){
   return s;
 }
 function roundTop(x,y,w,hh,r){r=Math.min(r,w/2,hh);return`M${x} ${y+hh}L${x} ${y+r}Q${x} ${y} ${x+r} ${y}L${x+w-r} ${y}Q${x+w} ${y} ${x+w} ${y+r}L${x+w} ${y+hh}Z`}
-function grouped(w,{cats,series,fmt,hh=210}){
-  const l=48,r=10,t=12,b=30,s=svgRoot(w,hh);const mx=niceMax(Math.max(...series.flatMap(x=>x.vals),1)*1.05);const y=axisY(s,{l,r,t,b,w,hh,max:mx,fmt});
-  const bw=(w-l-r)/cats.length,gw=Math.min(64,bw*.7),one=gw/series.length;const ink=css('--ink');
-  cats.forEach((c,i)=>{series.forEach((se,j)=>{const v=se.vals[i],x=l+i*bw+(bw-gw)/2+j*one+1;s.append(sv('path',{d:roundTop(x,y(v),one-3,y(0)-y(v),5),fill:se.color,'data-tip':`${c}\n${se.name}: ${se.tipFmt?se.tipFmt(v):fmt(v)}`}))});
-    s.append(sv('text',{x:l+i*bw+bw/2,y:hh-10,'text-anchor':'middle',fill:ink,'font-weight':600},c))});
-  return s;
-}
 function donut(size,{parts,center,sub,onClick}){
   const s=svgRoot(size,size),c=size/2,R=size/2-4,ri=R*.7;const tot=sum(parts,p=>p.value)||1;let a=-Math.PI/2;const gap=parts.filter(p=>p.value>0).length>1?.03:0;
   parts.forEach(p=>{if(p.value<=0)return;const a1=a+p.value/tot*Math.PI*2;const e=a1-gap;const lg=e-a>Math.PI?1:0;const P=(an,rr)=>`${c+rr*Math.cos(an)} ${c+rr*Math.sin(an)}`;
@@ -2982,9 +3052,12 @@ function insCharge(model){const own=insRuns().runs.map(r=>r.I._meta||{}).filter(
   return{inr:usdInr(+(INS_MODELS.find(x=>x[0]===model)||[])[2]||0),basis:'typical run'}}
 /* Insights tab rows: run_id | section | data. Runs oldest first (the last 12 are kept); _request / _batch are control rows.
    A tab from before runs reads as one run, "legacy". */
-function insRuns(){const runs=[],by={},ctl={};((S.data&&S.data.insights)||[]).forEach(r=>{let x=r.data;if(typeof x==='string'){try{x=JSON.parse(x)}catch(e){x=null}}
+/* parsed once per data load (the AI runs are large JSON; the bell, progress and insights pages ask many times) */
+let INS_C=null;
+function insRuns(){const src=(S.data&&S.data.insights)||[];if(INS_C&&INS_C.src===src&&INS_C.n===src.length&&INS_C.last===src[src.length-1])return INS_C.v;
+  const runs=[],by={},ctl={};src.forEach(r=>{let x=r.data;if(typeof x==='string'){try{x=JSON.parse(x)}catch(e){x=null}}
   const sec=String(r.section||''),rid=String(r.run_id||'');if(!rid&&(sec==='_request'||sec==='_batch')){ctl[sec]=x;return}
-  const id=rid||'legacy';if(!by[id]){by[id]={};runs.push(id)}by[id][sec]=x});return{runs:runs.map(id=>({id,I:by[id]})),ctl}}
+  const id=rid||'legacy';if(!by[id]){by[id]={};runs.push(id)}by[id][sec]=x});const v={runs:runs.map(id=>({id,I:by[id]})),ctl};INS_C={src,n:src.length,last:src[src.length-1],v};return v}
 function insData(){const R=insRuns(),pick=R.runs.find(r=>r.id===S.insRun)||R.runs[R.runs.length-1];return{...(pick?pick.I:{}),_request:R.ctl._request||{},_batch:R.ctl._batch||null,_runId:pick?pick.id:null,_latest:!S.insRun||!pick||pick===R.runs[R.runs.length-1]}}
 const ideaKey=x=>String(x.id||x.title||'').slice(0,120);
 const hasIdea=k=>rowsOf('ideas').some(i=>String(i.insight_key||'')===k);
@@ -3224,14 +3297,6 @@ function aiPricing(v){prLoad();const I=insData(),items=I.pricing||[],verdict=Obj
       h('button',{class:'btn sm'+(savedV?' ghost':''),disabled:savedV||null,onclick:()=>saveIdea({id:key,title:`${short((p||{}).property||S.apid)} · ${mLong(S.am)}: ${vd.headline||lv[0]}`,detail:(vd.why||[]).join(' · '),stay_id:S.apid,category:'pricing',run:I._runId})},icon(savedV?'check':'bulb'),savedV?'On idea board':'Save to ideas')));
   v.append(card('s12','Nights, prices and the market',{hint:'listed · booked · suggested per night',acts:[pick]},h('div',{class:'ap-top'},mseg,legend),h('div',{class:'ap-wrap'},grid,side)))}
 /* ---- AI › Market: the comparison set the team keeps (5-8 lookalike listings per stay, prices checked weekly) ---- */
-function mkEditOld(pid){const props=D.props.filter(p=>!isStopped(p)),sel=h('select',null,props.map(p=>h('option',{value:p.property_id,selected:p.property_id===(pid||S.mkPid)||null},short(p.property))));
-  const comps=[...new Set(rowsOf('market').map(r=>r.comp_name))],cn=h('input',{list:'mkComps',placeholder:'e.g. Pine Nest Cottage',autocomplete:'off'}),dl=h('datalist',{id:'mkComps'},comps.map(c=>h('option',{value:c})));
-  const url=h('input',{placeholder:'https://www.airbnb.co.in/rooms/…',autocomplete:'off'}),plat=h('select',null,['Airbnb','Booking.com','MakeMyTrip','Other'].map(x=>h('option',null,x))),
-    br=h('input',{type:'number',min:1,max:20,inputmode:'numeric'}),night=h('input',{type:'date',value:TOMORROW}),pr=h('input',{type:'number',min:0,step:'50',inputmode:'numeric',placeholder:'e.g. 6200'}),nt=h('input',{placeholder:'Optional',autocomplete:'off'}),err=h('div',{class:'err',hidden:true});
-  cn.addEventListener('change',()=>{const r=rowsOf('market').filter(x=>x.comp_name===cn.value).pop();if(r){url.value=r.comp_url||'';if(r.platform)plat.value=r.platform;br.value=r.bedrooms||''}});
-  modal('Add a market price',h('div',{class:'form'},fld('Our stay',sel,1),fld('Comparable listing',cn,1),dl,fld('Link',url,1),fld('Platform',plat),fld('Bedrooms',br),fld('Night',night),fld('Price shown for that night (₹)',pr),fld('Note',nt,1),err),
-    [h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!cn.value.trim()){err.hidden=false;err.textContent='Name the comparable listing.';return}if(!(+pr.value>0)){err.hidden=false;err.textContent='Add the price.';return}
-      closeLayer();save('market','append',{row:{obs_id:'MK'+Date.now().toString(36),property_id:sel.value,comp_name:cn.value.trim(),comp_url:url.value.trim()||null,platform:plat.value,bedrooms:+br.value||null,night:night.value,price:+pr.value,observed_on:TODAY,notes:nt.value.trim()||null,by:(LIVE.me||{}).email||'admin'}},'Market price added')}},'Add')])}
 const mkAI=r=>String(r.source||'')==='AI web search';
 addEventListener('resize',(()=>{let w=innerWidth<700,t;return()=>{clearTimeout(t);t=setTimeout(()=>{const n=innerWidth<700;if(n!==w&&S.view==='insights'){w=n;render()}},200)}})());
 /* live progress of the AI jobs (the bot keeps it in the Register script; reading it touches no sheet) */
@@ -3267,8 +3332,6 @@ function progBar(kind){const p=PROG[kind],req=kind==='market'?tms(aiVal('ai.mark
   if(p.state==='skipped'&&Date.now()-tms(p.started_at)<30*6e4)return bar(100,'No new analysis',p.why||'','done');
   if(p.state==='failed'&&Date.now()-tms(p.started_at)<30*6e4)return bar(100,'The analysis didn’t finish','try again in a few minutes','bad');
   return null}
-/* what one market check costs here: the average of this account's own checks, else about ₹3.5 a stay */
-function marketCharge(n){const bs=rowsOf('botstats').filter(r=>+r.market_scans>0),sc=sum(bs,r=>+r.market_scans),inrT=sum(bs,r=>+r.market_cost_inr||0);return Math.max(1,Math.round(sc?inrT/sc:usdInr(n*0.05)))}
 /* ---- AI › Market: Google holiday-rental prices around each stay (SerpApi, no AI) ---- */
 const RK=r=>({...r,name:String(r.name||'').replace(/\\n|\n/g,' ').replace(/\s+/g,' ').trim(),price:+r.price||null,bedrooms:r.bedrooms===''||r.bedrooms==null?null:+r.bedrooms,lat:+r.lat,lng:+r.lng,rating:+r.rating||null,reviews:+r.reviews||null,night:String(r.night).slice(0,10)});
 const kmB=(a,b)=>{const R=Math.PI/180,x=Math.sin((b[0]-a[0])*R/2)**2+Math.cos(a[0]*R)*Math.cos(b[0]*R)*Math.sin((b[1]-a[1])*R/2)**2;return 12742*Math.asin(Math.sqrt(x))};
@@ -3726,8 +3789,9 @@ function newsExtra(){const out=[],R=insRuns().runs,last=R[R.length-1];
     if(ph.length)out.push({key:'photo',label:'Photos flagged by the AI check',items:ph.map(r=>({at:String(r.done_at),title:`${nm(r.property_id)} · ${String((aiCheckOf(r).flags||[])[0]||'check the photos')}`,sub:r.by_name||r.by||'manager',ref:{kind:'ops'}}))})}
   /* double bookings: two confirmed stays on the same place (a family counts) on the same night, from today on */
   {const fut=D.B.filter(b=>b.ok&&!b.deleted_at&&b.check_out>TODAY),seen=new Set(),it=[];
-    for(let i=0;i<fut.length;i++)for(let j=i+1;j<fut.length;j++){const a=fut[i],b=fut[j];if(a.check_in<b.check_out&&b.check_in<a.check_out&&samePlace(a.property_id,b.property_id)){const k=[a.booking_id,b.booking_id].sort().join('+');if(seen.has(k))continue;seen.add(k);
-      it.push({at:(a.check_in<b.check_in?b.check_in:a.check_in)+'T00:00',title:`${short((D.P[a.property_id]||{}).property||a.property_id)} · ${a.booking_id} and ${b.booking_id}`,sub:`${a.guest} and ${b.guest} · overlap from ${fmtD(a.check_in<b.check_in?b.check_in:a.check_in)}`,ref:{kind:'booking',id:a.booking_id}})}}
+    /* only bookings at related stays are compared (PERF.clashPairs: the same pairs, in the same order, as every-with-every) */
+    PERF.clashPairs(fut,samePlace).forEach(([i,j])=>{const a=fut[i],b=fut[j];{const k=[a.booking_id,b.booking_id].sort().join('+');if(seen.has(k))return;seen.add(k);
+      it.push({at:(a.check_in<b.check_in?b.check_in:a.check_in)+'T00:00',title:`${short((D.P[a.property_id]||{}).property||a.property_id)} · ${a.booking_id} and ${b.booking_id}`,sub:`${a.guest} and ${b.guest} · overlap from ${fmtD(a.check_in<b.check_in?b.check_in:a.check_in)}`,ref:{kind:'booking',id:a.booking_id}})}});
     if(it.length)out.push({key:'clash',label:'Double bookings',always:true,note:'stays here until one is moved or cancelled',items:it})}
   /* guests arriving in the next 7 days without a phone number: the bot and the manager can't reach them */
   {const it=D.B.filter(b=>b.ok&&!b.deleted_at&&b.check_in>=TODAY&&b.check_in<=add(TODAY,7)&&String(b.phone||'').replace(/\D/g,'').length<10)
@@ -3746,7 +3810,14 @@ function missedItems(){const c=OPSC(),nm=pid=>short((D.P[pid]||{}).property||pid
   OPS.stock(S.data.props,rowsOf('stock'),TODAY,c).forEach(x=>x.missedAt.forEach(d=>out.push({at:d+'T00:00',title:'Stock check missed · '+nm(x.property_id),sub:'fortnight ending '+fmtD(d),ref:{kind:'ops'}})));
   OPS.reviews(S.data.bookings,rowsOf('reviews'),TODAY,c).filter(x=>x.status==='missed').forEach(x=>out.push({at:String(x.missedAt).slice(0,10)+'T00:00',title:'Review missed · '+nm(x.property_id),sub:x.booking.guest+' · '+x.booking.booking_id,ref:{kind:'reviews'}}));
   return out}
-function newsNow(){if(!S.data||!S.admin)return[];return OPS.news({...S.data,maint:S.data.maint||[]},seenAt(),'admin',{missed:missedItems(),extra:newsExtra(),urgent:urgentSet(),urgentSince:add(TODAY,-30)})}
+/* worked out once per change of what it reads (the data, the day, when you last looked, the filters, the settings,
+   staged bills and stays), not on every drawing: the bell asked twice per render before */
+let NEWS_C=null;
+function newsNow(){if(!S.data||!S.admin)return[];
+  const sig=[TODAY,seenAt(),JSON.stringify(S.f),JSON.stringify(rowsOf('ops')),JSON.stringify(rowsOf('ai')),JSON.stringify(ESTAGE),JSON.stringify(PSTAGE)].join('\u0001');
+  if(NEWS_C&&NEWS_C.D===D&&NEWS_C.data===S.data&&NEWS_C.sig===sig)return NEWS_C.v;
+  const v=OPS.news({...S.data,maint:S.data.maint||[]},seenAt(),'admin',{missed:missedItems(),extra:newsExtra(),urgent:urgentSet(),urgentSince:add(TODAY,-30)});
+  NEWS_C={D,data:S.data,sig,v};return v}
 /* read marks per item (this device): a read item fades and stops counting */
 /* Needs attention vs Updates. Urgent kinds stay until resolved: the ones that are a state (a payment due, a bill missing, a
    request to decide, a double booking) clear by themselves; the ones that are an event (a complaint, a low rating, a
@@ -3759,7 +3830,6 @@ const NEWS_KINDS={issues:'Guest complaints / issues',wa_cancel:'Cancellations to
 const NEWS_URGENT_DEF=['mail','behind_goal','not_ready','issues','wa_cancel','missed','low','clash','geo','leave','photo','bills_missing','rent_due','no_phone','mgr_issues','claims'];
 const NEWS_SELF=new Set(['behind_goal','gaps','not_ready','rent_due','bills_missing','leave','mgr_issues','claims','wa_cancel','market','clash','no_phone','mail']);   // clear by themselves
 const urgentSet=()=>{const v=setJ('ops.notif_urgent');return new Set(Array.isArray(v)?v:NEWS_URGENT_DEF)};
-const NEWS_URGENT={has:k=>urgentSet().has(k)};
 const nKey=(c,it)=>c+'|'+(it.ref&&it.ref.id?it.ref.kind+':'+it.ref.id:it.title)+'|'+String(it.at||'').slice(0,10);
 const notifState=()=>{const v=setJ('ops.notif_state');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}};
 async function notifSet(k,val,msg){const st={...notifState()},cut=new Date(Date.now()-60*864e5).toISOString();Object.keys(st).forEach(x=>{if(String((st[x]||{}).at||'')<cut)delete st[x]});
@@ -4036,8 +4106,8 @@ function overview(v){
   // trend: a window of months you swipe through (phones 6, laptops 15), not every month squeezed in
   const all=D.months,nowK=TODAY.slice(0,7),cities=liveCities().filter(c=>!f.cities.length||f.cities.includes(c));
   /* each month's net per city in one pass over the bookings (was one pass per city per month: 27 s at 200 stays) */
-  const FBM=D.B.filter(b=>fBm(b)),NC=new Map();
-  const netC=(c,k)=>{let m=NC.get(k);if(!m){m=new Map();const a=mStart(k),z=mEnd(k);for(const b of FBM){const w=share(b,a,z);if(w)m.set(b.city,(m.get(b.city)||0)+b.net*w)}NC.set(k,m)}return m.get(c)||0};
+  const NC=new Map();
+  const netC=(c,k)=>{let m=NC.get(k);if(!m){m=new Map();const a=mStart(k),z=mEnd(k);for(const b of touching(a,z)){if(!fBm(b))continue;const w=share(b,a,z);if(w)m.set(b.city,(m.get(b.city)||0)+b.net*w)}NC.set(k,m)}return m.get(c)||0};
   const lyK=k=>(+k.slice(0,4)-1)+k.slice(4),fyOf=k=>{const y=+k.slice(0,4);return +k.slice(5)>=4?y:y-1},fyL=y=>`FY ${String(y).slice(2)}-${String(y+1).slice(2)}`;
   const wN=PHONE()?6:15;let wk;
   if(S.revFY!=null)wk=all.filter(k=>fyOf(k)===S.revFY);
@@ -4116,8 +4186,8 @@ function overview(v){
   // pace: nights booked so far for this month and the next two, against what was usually booked by this date
   const curK=nowK,fut=[nextM(curK),nextM(nextM(curK)),nextM(nextM(nextM(curK)))],listings=props.length;  // months still ahead: pace means nothing for one that is mostly over
   const bookedOn=b=>String(b.booking_date||b.submitted_at||'').slice(0,10);
-  const PB=D.B.filter(b=>fB(b)&&active(D.P[b.property_id])&&bookedOn(b));   // filtered once, not per month
-  const bookedBy=(k,cut)=>sum(PB.filter(b=>bookedOn(b)<=cut&&b.check_in<=mEnd(k)&&b.check_out>mStart(k)),b=>overlap(b,mStart(k),mEnd(k)));
+  const PB=D.B.filter(b=>fB(b)&&active(D.P[b.property_id])&&bookedOn(b)),PBo=new Map(PB.map(b=>[b,bookedOn(b)]));   // filtered once, not per month
+  const bookedBy=(k,cut)=>sum(PB.filter(b=>PBo.get(b)<=cut&&b.check_in<=mEnd(k)&&b.check_out>mStart(k)),b=>overlap(b,mStart(k),mEnd(k)));
   const pace=fut.map(k=>{const lead=diff(TODAY,mStart(k)),prior=[lyK(k),prevM(k),prevM(prevM(k))].filter(q=>q>=all[0]&&q<curK);
     const vals=prior.map(q=>bookedBy(q,add(mStart(q),-lead))),typ=vals.length?sum(vals,x=>x)/vals.length:0,now=bookedBy(k,TODAY),cap=listings*(diff(mStart(k),mEnd(k))+1)||1;
     const d=typ>=1?(now-typ)/typ:null,verdict=d==null?'New':d>=.1?'Ahead':d<=-.1?'Behind':'On pace';return{k,now,typ,cap,d,verdict}});
@@ -4147,7 +4217,8 @@ function overview(v){
     enTop.length?h('div',{class:'en-list'},h('span',{class:'en-lh'},'Most to gain'),enTop.map(x=>h('button',{class:'en-row',onclick:()=>openAvail(x.p.property_id)},h('span',null,short(x.p.property)),h('span',{class:'num'},`${x.next} n · ${inrK(x.nextV)}`)))):h('div',{class:'empty'},'Fully booked for the next 30 days.'),
     h('div',{class:'foot-note'},'Usual rate = the stay’s average nightly rate over the last 90 days. Blocked dates and combo listings (counted through their parts) are left out.')));
   // leaders
-  const rowsP=props.filter(p=>!parentOf(p.property_id)).map(p=>{const st=stats(f.from,f.to,p.property_id,1);const bs=D.B.filter(b=>b.ok&&b.property_id===p.property_id);const rated=bs.filter(b=>b.rating);return{id:p.property_id,name:short(p.property),city:p.city,area:p.area,occ:st.occ,adr:st.adr,net:st.net,profit:st.profit,rating:rated.length?sum(rated,b=>b.rating)/rated.length:null,issues:D.M.filter(m=>m.property_id===p.property_id&&m.status!=='Closed').length}});
+  const openIs=new Map();D.M.forEach(m=>{if(m.status!=='Closed')openIs.set(m.property_id,(openIs.get(m.property_id)||0)+1)});   // open issues per stay, counted once
+  const rowsP=props.filter(p=>!parentOf(p.property_id)).map(p=>{const st=stats(f.from,f.to,p.property_id,1);const bs=(BP().get(p.property_id)||[]).filter(b=>b.ok);const rated=bs.filter(b=>b.rating);return{id:p.property_id,name:short(p.property),city:p.city,area:p.area,occ:st.occ,adr:st.adr,net:st.net,profit:st.profit,rating:rated.length?sum(rated,b=>b.rating)/rated.length:null,issues:openIs.get(p.property_id)||0}});
   const ranked=sortBy(rowsP,['profit',-1]);const nL=PHONE()?3:6,list=S.leaders==='top'?ranked.slice(0,nL):ranked.slice(-nL).reverse();
   const colsL=[{t:'Property',f:r=>who(r.name,`${placeOf(r)}`)},{t:'Occupancy',r:1,f:r=>pct(r.occ)},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Profit',r:1,f:r=>profitCell(r.profit)},{t:'Rating',r:1,f:r=>r.rating?'★ '+r.rating.toFixed(1):'–'},{t:'Issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'}];
   v.append(card('s7','Property ranking',{hint:'by profit in this period',acts:[h('div',{class:'seg'},h('button',{'aria-pressed':S.leaders==='top',onclick:()=>{S.leaders='top';render()}},'Best'),h('button',{'aria-pressed':S.leaders==='bottom',onclick:()=>{S.leaders='bottom';render()}},'Needs attention')),btnExport(()=>exportRows(ranked.map(r=>({Property:r.name,Area:r.area,City:r.city,'Occupancy %':+(r.occ*100).toFixed(1),'Avg nightly rate':Math.round(r.adr),'Net payout':r.net,Profit:r.profit,Rating:r.rating?+r.rating.toFixed(2):'','Open issues':r.issues})),'Property ranking'))]},
@@ -4236,9 +4307,11 @@ async function deskImage(rows,d){
 
 /* ============ CALENDAR ============ */
 /* Night-level availability for one stay (combo listings count their halves and the other way round). */
-function nightBooking(pid,d){return D.B.find(b=>b.ok&&samePlace(b.property_id,pid)&&b.check_in<=d&&b.check_out>d)}
+/* Speed: answered from an index of nights built once per data load (PERF.occIndex), the same booking Array.find over
+   every booking would pick - a 60-night x 20-stay card used to scan all bookings 1,200 times */
+function nightBooking(pid,d){return(D._occ||(D._occ=PERF.occIndex(D.B,{keep:b=>b.ok,pid:b=>b.property_id,from:b=>b.check_in,to:b=>b.check_out,same:samePlace})))(pid,d)}
 const blockPid=k=>String(k.property_id||String(k.unit_id||'').split('-')[0]||'');
-function nightBlock(pid,d){return(S.data.blocks||[]).find(k=>blockPid(k)&&samePlace(blockPid(k),pid)&&String(k.from).slice(0,10)<=d&&String(k.to).slice(0,10)>d)}
+function nightBlock(pid,d){const arr=S.data.blocks||[];if(!D._blk||D._blk.arr!==arr||D._blk.n!==arr.length)D._blk={arr,n:arr.length,at:PERF.occIndex(arr,{keep:()=>true,pid:blockPid,from:k=>String(k.from).slice(0,10),to:k=>String(k.to).slice(0,10),same:samePlace})};return D._blk.at(pid,d)}
 /* tonight for one stay: 'own' = its own guests are in, 'linked' = a linked stay (its combo or one of its parts) is booked, so
    it can't be sold either; null = free. b = the booking that decides it. */
 const linkName=pid=>short((D.P[pid]||{}).property||pid).replace(/\s*\([^)]*\)\s*$/,'');  // 'Upper Test Home (2 BHK, upper floor)' -> 'Upper Test Home'
@@ -4296,15 +4369,15 @@ function calendar(v){
   days.forEach((ds,i)=>{const dw=pd(ds).getDay();head.append(h('div',{class:'cal-d'+(dw===0||dw===6?' we':'')+(ds===TODAY?' td':''),style:{gridColumn:i+2,gridRow:1}},label(ds,i)?[h('div',{style:{fontSize:'9px',opacity:.75}},zm==='w'?['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dw]:'SMTWTFS'[dw]),h('span',null,+ds.slice(8))]:null))});
   if(!narrow)head.append(h('div',{class:'cal-d',style:{gridColumn:n+2,gridRow:1}},'Occ.'));wrap.append(head);let tot=0;
   const isWhole=p=>arrOf(p.includes).length>0,realRows=props.filter(p=>!isWhole(p));let realN=0;
-  props.forEach(p=>{const bs=D.B.filter(b=>fBo(b)&&b.property_id===p.property_id&&b.check_in<=end&&b.check_out>start);
-    const par=parentOf(p.property_id),sold=par?D.B.filter(b=>b.ok&&b.property_id===par&&b.check_in<=end&&b.check_out>start):[];  // whole place booked = this flat sold
+  props.forEach(p=>{const bs=(BP().get(p.property_id)||[]).filter(b=>fBo(b)&&b.check_in<=end&&b.check_out>start);   // this stay's own bookings (BP keeps their order)
+    const par=parentOf(p.property_id),sold=par?(BP().get(par)||[]).filter(b=>b.ok&&b.check_in<=end&&b.check_out>start):[];  // whole place booked = this flat sold
     const nights=sum(bs,b=>overlap(b,start,end))+sum(sold,b=>overlap(b,start,end));if(!isWhole(p)||!realRows.length){tot+=nights;realN++}const o=nights/n,oc=o>=.7?'var(--ok)':o<.3?'var(--warn)':'var(--ink)';
     const row=h('div',{class:'cal-row',style:{gridTemplateColumns:cols,minWidth:minW?minW+'px':null}},h('div',{class:'cal-name',style:{cursor:'pointer'},onclick:()=>go('property',{propId:p.property_id})},short(p.property),h('span',null,narrow?h('b',{class:'num',style:{color:oc}},pct(o)):null,narrow?(p.city?` · ${p.city}`:''):placeOf(p,' · '))));
     days.forEach((ds,i)=>row.append(h('div',{class:'cal-cell'+(ds===TODAY?' td':'')+([0,6].includes(pd(ds).getDay())?' we':''),style:{gridColumn:i+2}})));
     bs.forEach(b=>{const s0=Math.max(0,diff(start,b.check_in)),e0=Math.min(n,diff(start,b.check_out));
       row.append(h('button',{class:'cal-bar'+(b.check_in<start?' ol':'')+(b.check_out>add(end,1)?' or':''),style:{gridColumn:`${s0+2}/${e0+2}`,background:chColor(b.channel)},onclick:()=>openBooking(b),'aria-label':`${b.guest}, ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`,'data-tip':`${b.guest}\n${fmtD(b.check_in)} → ${fmtD(b.check_out)} · ${b.channel}`},(narrow&&!two)?'':e0-s0>=2?b.guest.split(' ')[0]:zm==='w'?ini(b.guest):''))});
     /* nights this stay can't be sold because a linked stay (its combo, or one of its parts) is booked */
-    D.B.filter(b=>b.ok&&b.property_id!==p.property_id&&samePlace(b.property_id,p.property_id)&&b.check_in<=end&&b.check_out>start).forEach(b=>{
+    (D.props.some(q=>q.property_id!==p.property_id&&samePlace(q.property_id,p.property_id))?D.B.filter(b=>b.ok&&b.property_id!==p.property_id&&samePlace(b.property_id,p.property_id)&&b.check_in<=end&&b.check_out>start):[]).forEach(b=>{   // only stays that have linked stays look
       const s0=Math.max(0,diff(start,b.check_in)),e0=Math.min(n,diff(start,b.check_out)),via=linkName(b.property_id);
       row.append(h('button',{class:'cal-bar cal-linked',style:{gridColumn:`${s0+2}/${e0+2}`},onclick:()=>openBooking(b),'aria-label':`Not available: ${via} is booked ${fmtD(b.check_in)} to ${fmtD(b.check_out)}`,
         'data-tip':`${via} is booked · ${b.guest}`},narrow?'':'via '+via))});
@@ -4332,7 +4405,8 @@ function calHeat(k,props){
       h('div',{class:'ch-sum'},h('b',{class:'num'},pct(xs.length/(base.length||1))),h('span',null,`${xs.length} of ${base.length} stays booked · ${ins.length} check-in${ins.length===1?'':'s'} · ${outs.length} check-out${outs.length===1?'':'s'}`)),
       xs.length?h('div',{class:'ch-list'},xs.map(row)):h('div',{class:'empty'},'Every stay is free this night.')),[h('button',{class:'btn',onclick:closeLayer},'Close')])};
   const cells=[...Array(lead)].map(()=>h('div',{class:'ch-c ch-pad'}));
-  for(let i=0;i<n;i++){const d=add(first,i),xs=inOn(d),o=xs.length/(base.length||1),ins=D.B.filter(b=>b.ok&&ids.has(b.property_id)&&b.check_in===d).length;
+  const insBy=new Map();D.B.forEach(b=>{if(b.ok&&ids.has(b.property_id))insBy.set(b.check_in,(insBy.get(b.check_in)||0)+1)});   // arrivals per day: one pass, not one per day
+  for(let i=0;i<n;i++){const d=add(first,i),xs=inOn(d),o=xs.length/(base.length||1),ins=insBy.get(d)||0;
     cells.push(h('button',{class:`ch-c l${lvl(o)}`+(d===TODAY?' td':'')+(d<TODAY?' gone':''),onclick:()=>daySheet(d),'aria-label':`${fmtD(d)}: ${xs.length} of ${base.length} booked`},
       h('span',{class:'ch-n'},+d.slice(8)),h('b',{class:'num'},xs.length?pct(o):''),ins?h('em',{title:`${ins} check-in${ins>1?'s':''}`},'↘'+ins):null))}
   return h('div',{class:'ch'},h('div',{class:'ch-g ch-wk'},['M','T','W','T','F','S','S'].map(x=>h('div',null,x))),h('div',{class:'ch-g'},cells),
@@ -4809,10 +4883,12 @@ function issueApprove(m,me,now){const known=[...new Set(D.M.map(x=>x.assigned_to
     pr=h('select',null,[['High','Urgent'],['Medium','Soon'],['Low','Routine']].map(([v,l])=>h('option',{value:v,selected:(m.priority||'Medium')===v||null},l)));
   modal('Approve issue',h('div',{class:'form'},h('p',{class:'full hint',style:{margin:0}},`${m.issue} · ${short(m.pname)} · reported by ${m.reported_by||'manager'}`),fld('Who fixes it',as,1),dl,fld('How soon',pr)),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{closeLayer();save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{status:'Open',priority:pr.value,assigned_to:as.value.trim()||null,decided_at:now,decided_by:me}},m.ticket_id+' added to the board')}},'Approve')])}
+/* a number box left invalid (letters, a minus): say so and keep the popup open (QA s23 UI-D-0444/0437) */
+const badN=(x,lab)=>{if(x.validity&&x.validity.badInput||x.value!==''&&!(+x.value>=0)){toast(lab+' must be a number of 0 or more.');x.focus();return true}return false};
 /* closing an issue: what it cost, optionally booked as a Repairs expense of that stay */
 function issueClose(m){const cost=h('input',{type:'number',min:0,step:50,inputmode:'numeric',value:m.cost||'',placeholder:'e.g. 1200'}),ex=h('input',{type:'checkbox',checked:true}),via=h('select',null,['Cash','UPI','Bank','Card'].map(x=>h('option',null,x)));
   modal('Close '+m.ticket_id,h('div',{class:'form'},h('p',{class:'full hint',style:{margin:0}},`${m.issue} · ${short(m.pname)}`),fld('What it cost (₹, optional)',cost),fld('Paid by',via),h('label',{class:'full ck-l'},ex,'Add it to this stay’s expenses as Repairs')),
-    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:async()=>{closeLayer();const amt=+cost.value||0;
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:async()=>{if(badN(cost,'What it cost'))return;closeLayer();const amt=+cost.value||0;
       const ok=await save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{status:'Closed',closed_on:TODAY,cost:amt||null}},m.ticket_id+' closed');
       if(ok&&amt&&ex.checked){const pid=parentOf(m.property_id)||m.property_id;save('expenses','append',{row:{expense_id:'EX'+Date.now().toString(36),date:TODAY,property_id:pid,for_stay:parentOf(m.property_id)?m.property_id:null,category:'Repairs',amount:amt,paid_via:via.value,notes:`${m.ticket_id}: ${m.issue}`,source:'dashboard',ticket_id:m.ticket_id}},'Repairs expense added')}}},'Close issue')])}
 /* damage after a stay: who stayed, and what is being recovered from the guest or the platform */
@@ -4828,7 +4904,7 @@ function dmgRecovery(m){const b=D.B.find(x=>x.booking_id===String(m.booking_id))
   const draw=()=>{seg.replaceChildren(...Object.entries(REC).map(([k,[l]])=>h('button',{type:'button','aria-pressed':st===k,onclick:()=>{st=k;draw()}},l)));amtF.hidden=st!=='recovered';fromF.hidden=st==='to_claim'||st==='written_off'};draw();
   modal('Damage recovery · '+m.ticket_id,h('div',{class:'form'},h('p',{class:'full hint',style:{margin:0}},`${String(m.issue||'').replace(/^Damage: /,'')} · ${short(m.pname)} · ${dmgWho(m)}${m.est_cost?' · est. '+inr(+m.est_cost):''}`),
       h('div',{class:'full'},seg),amtF,fromF,fld('Note',nt,1)),
-    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{closeLayer();save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{recovery_status:st,recovered_amount:st==='recovered'?(+amt.value||null):null,recovered_from:st==='claimed'||st==='recovered'?from.value:null,recovery_note:nt.value.trim()||null}},'Recovery saved')}},'Save')])}
+    [h('button',{class:'btn',onclick:closeLayer},'Back'),h('button',{class:'btn primary',onclick:()=>{if(st==='recovered'&&badN(amt,'Recovered'))return;closeLayer();save('maintenance','update',{match:{ticket_id:m.ticket_id},fields:{recovery_status:st,recovered_amount:st==='recovered'?(+amt.value||null):null,recovered_from:st==='claimed'||st==='recovered'?from.value:null,recovery_note:nt.value.trim()||null}},'Recovery saved')}},'Save')])}
 function mTile2(m){return h('div',{class:'tile','data-ref':m.ticket_id},h('div',{class:'row'},h('b',null,m.issue),h('span',{class:'end'},dmgPill(m)||pillPrio(m.priority))),h('div',{class:'m'},`${short(m.pname)} · ${m.ticket_id} · ${diff(m.reported_on,TODAY)} days open`),mgrUp(m),
   h('div',{class:'row'},who(m.assigned_to||'Not assigned'),h('button',{class:'btn sm admin end',onclick:()=>issueClose(m)},'Close')))}
 /* ---- Operations › Reviews: platform stays (Airbnb by default) can be reviewed for 14 days after check-out. The manager
@@ -5176,7 +5252,7 @@ function monthSplit(ci,co,amt){const n=diff(ci,co),out=[];let left=Math.round(am
 /* combo listings: a property whose `includes` lists other property ids (e.g. a 4BHK made of two 2BHKs) blocks them and vice versa */
 /* someone checks in where this guest checks out, the same day - a whole place and its flats count as one place */
 const sameDayTurn=b=>D.B.some(x=>x.ok&&x.booking_id!==b.booking_id&&x.check_in===b.check_out&&samePlace(x.property_id,b.property_id));
-function samePlace(a,b){if(a===b)return true;const inc=x=>{const v=(D.P[x]||{}).includes;return Array.isArray(v)?v:String(v||'').split(',').map(t=>t.trim()).filter(Boolean)};return inc(a).includes(b)||inc(b).includes(a)}
+function samePlace(a,b){if(a===b)return true;return(D._sp||(D._sp=PERF.samePlace(D.P)))(a,b)}   // each stay's "includes" split once per data load
 function openForm(kind,pid,edit,opt){
   if(!S.admin)return;const keep=pid||S.propId,act=D.props.filter(p=>!isStopped(p)||p.property_id===keep),props=act.filter(fP).length?act.filter(fP):act;pid=pid||S.propId||props[0].property_id;
   const sel=h('select',{id:'fProp'},CITIES.filter(c=>props.some(p=>p.city===c)).map(c=>h('optgroup',{label:c},props.filter(p=>p.city===c).map(p=>h('option',{value:p.property_id,selected:p.property_id===pid||null},`${short(p.property)} — ${p.area}`)))));
@@ -5280,8 +5356,6 @@ function openForm(kind,pid,edit,opt){
           :await(id=>save('bookings','append',{row:{booking_id:id,submitted_at:new Date().toISOString().slice(0,16),...row,booking_status:'Confirmed',rating:null},newId:'booking_id'},id+' saved'))(nextId(S.data.bookings,'booking_id','BK'));
         if(done||!box||!box.isConnected)closeLayer();else{box.style.display='';fail('Not saved (the reason is in the message at the bottom). Everything you typed is still here - tap Save again.')}}},edit?'Save changes':'Save booking')]);
   } else if(kind==='expense'){return expEditor(null,pid?{property_id:pid}:{});
-    const cat=h('select',{id:'fCat'},['Cleaning','Laundry','Electricity','Internet','Supplies','Repairs','Staff salary','Other'].map(c=>h('option',null,c))),amt=h('input',{id:'fAmt',type:'number',inputmode:'numeric',min:1,placeholder:'e.g. 1500'}),dt=h('input',{id:'fDt',type:'date',value:TODAY}),ven=h('input',{id:'fVen',placeholder:'e.g. Doon Electricals',autocomplete:'off'}),via=h('select',{id:'fVia'},['UPI','Cash','Bank transfer','Card','Auto-debit'].map(c=>h('option',null,c)));
-    modal('Add expense',h('div',{class:'form'},fld('Property',sel,1),fld('Category',cat),fld('Amount (₹)',amt),fld('Date',dt),fld('Paid via',via),fld('Vendor',ven,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){fail('Enter an amount above zero.');return}closeLayer();save('expenses','append',{row:{expense_id:'EX'+Date.now().toString(36),date:dt.value,property_id:sel.value,category:cat.value,amount:+amt.value,vendor:ven.value,paid_via:via.value,notes:null}},'Expense added')}},'Save expense')]);
   } else {
     const is=h('input',{id:'fIs',placeholder:'e.g. Geyser not heating…',autocomplete:'off'}),pr=h('select',{id:'fPr'},h('option',{value:'High'},'Urgent'),h('option',{value:'Medium',selected:true},'Soon'),h('option',{value:'Low'},'Routine')),as=h('select',{id:'fAs'},['Caretaker','Electrician','Plumber','Carpenter','AC service','ISP'].map(c=>h('option',null,c)));
     modal('Log maintenance issue',h('div',{class:'form'},fld('Property',sel,1),fld('Issue',is,1),fld('Priority',pr),fld('Assign to',as),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!is.value.trim()){fail('Describe the issue.');return}const id=nextId(S.data.maint,'ticket_id','MT');closeLayer();save('maintenance','append',{row:{ticket_id:id,property_id:sel.value,reported_on:TODAY,issue:is.value.trim(),priority:pr.value,assigned_to:as.value,status:'Open',cost:null,closed_on:null,source:'Dashboard'},newId:'ticket_id'},id+' logged')}},'Log issue')]);
@@ -5303,13 +5377,22 @@ async function apiGet(params){const r=SIGNIN?await fetch(CONFIG.API_URL,{method:
 const DEVICE=(()=>{const u=navigator.userAgent||'';const os=/iPhone/.test(u)?'iPhone':/iPad/.test(u)?'iPad':/Android/.test(u)?'Android':/Macintosh/.test(u)?'Mac':/Windows/.test(u)?'Windows':'Device';
   const br=/Edg\//.test(u)?'Edge':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox/.test(u)?'Firefox':/Safari\//.test(u)?'Safari':'';return br?os+' · '+br:os})();
 async function apiPost(body){LIVE.busy++;syncBusy();try{const r=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:LIVE.key,device:DEVICE,...body})});const j=await r.json();
-  if(!['read','login'].includes(body.action)&&typeof HI!=='undefined')HI.rows=null;  // History shows a change (or a refused attempt) at once
+  if(!['read','login','progress','seen','me'].includes(body.action)&&typeof HI!=='undefined')HI.rows=null;  // History shows a change (or a refused attempt) at once; a progress poll or "seen" changes nothing there
   if(j.error){if(/^limit:/.test(j.error)&&S.admin)setTimeout(()=>toast(j.error.replace(/^limit:\s*/,''),()=>{MG.sec='plan';go('manage')},'See plan'),60);throw new Error(j.error)}   // E1: a plan limit -> the plan page
   return j}finally{LIVE.busy--;syncBusy()}}
 function syncBusy(){const el=$('#syncText');if(el&&LIVE.busy)el.textContent='Saving to the sheet…'}
-async function liveLoad(){const[d,b]=await Promise.all([apiGet({format:'dashboard'}),apiGet({tabs:'blocks'}).catch(()=>({tabs:{blocks:[]}}))]);d.blocks=(b.tabs||{}).blocks||[];return normLive(d)}
+/* Data versions: a refresh sends since=<the version this page holds>; a sheet that has the version answers
+   {unchanged:true} with no data, and the page keeps what it has (returned as the same S.data object). An older sheet
+   sends no version: then every refresh is a full read, as before. */
+async function liveLoad(since){const q=since!=null?{since}:{};
+  const[d,b]=await Promise.all([apiGet({format:'dashboard',...q}),apiGet({tabs:'blocks',...q}).catch(()=>({tabs:{blocks:[]}}))]);
+  const o=PERF.outcome(d,since);if(o==='bad')throw new Error('try_again');
+  if(o==='unchanged'){if(d.me)meFrom(d.me);if(d.ver!=null)LIVE.ver=d.ver;return S.data}
+  d.blocks=PERF.outcome(b,since)==='unchanged'?((S.data&&S.data.blocks)||[]):(b.tabs||{}).blocks||[];
+  const ver=d.ver;delete d.ver;delete d.unchanged;const out=normLive(d);LIVE.ver=PERF.pairVer(ver,b&&b.ver);LIVE.verKey=LIVE.key;return out}   // QA s20: blocks read at another version (or failed): the next refresh is a full one
+function meFrom(me){LIVE.me=me;store.set('jg_me',me);S.admin=String(me.role||'').toLowerCase()==='admin'}
 function normLive(d){const n=v=>v==null||v===''?0:+v||0;
-  if(d.me){LIVE.me=d.me;store.set('jg_me',d.me);S.admin=String(d.me.role||'').toLowerCase()==='admin'}
+  if(d.me)meFrom(d.me);
   delete d.guest_info;delete d.me;  // private guest info is fetched only where it is edited, never cached here
   const js=v=>{if(Array.isArray(v))return v;try{const x=JSON.parse(v);return Array.isArray(x)?x:[]}catch(e){return v?[String(v)]:[]}};
   d.props=(d.props||[]).map(p=>({...p,photos:js(p.photos),photo_thumbs:js(p.photo_thumbs),photo:p.photo||js(p.photos)[0]||null,bedrooms:n(p.bedrooms),base_rate:n(p.base_rate),cleaning_fee:n(p.cleaning_fee),owner_share:p.owner_share==null||p.owner_share===''?null:+p.owner_share}));
@@ -5342,22 +5425,29 @@ async function setSetting(key,value,msg){if(readOnly()&&live()){toast('Read-only
     if(!r){r=await apiPost({action:'update',tab:'settings',match:{key},fields:{value}});if(!r.updated)await apiPost({action:'append',tab:'settings',row:{key,value}})}   // a Register from before setting_put
     toast((msg||'Saved')+' ✓');return true}
   catch(e){if(row)row.value=old;else S.data[grp]=arr.filter(r=>r.key!==key);render();toast('Couldn’t save: '+e.message);return false}}
-function applyLocal(tab,op,a){const k=TABKEY[tab],arr=S.data[k]||(S.data[k]=[]);
+/* undo (optional): collects what the change touched - {i, obj, copy} per row, oldest position first - so a refusal
+   puts back just those rows instead of a copy of the whole tab */
+function applyLocal(tab,op,a,undo){const k=TABKEY[tab],arr=S.data[k]||(S.data[k]=[]);
   if(op==='append'){arr.push(a.row);return 1}
-  const[f,v]=Object.entries(a.match)[0];let n=0;for(let i=arr.length-1;i>=0;i--)if(String(arr[i][f])===String(v)){n++;op==='delete'?arr.splice(i,1):Object.assign(arr[i],a.fields)}return n}
-/* Every change: shown at once, written to the sheet, rolled back with a message if the sheet refuses. */
-async function save(tab,op,a,msg){
+  const[f,v]=Object.entries(a.match)[0];let n=0;for(let i=arr.length-1;i>=0;i--)if(String(arr[i][f])===String(v)){n++;if(undo)undo.unshift({i,obj:arr[i],copy:{...arr[i]}});op==='delete'?arr.splice(i,1):Object.assign(arr[i],a.fields)}return n}
+function undoLocal(k,arr,op,a,undo){if(S.data[k]!==arr)return;   // the tab was re-read from the sheet meanwhile: that is already the truth
+  if(op==='append'){const i=arr.lastIndexOf(a.row);if(i>=0)arr.splice(i,1);return}
+  if(op==='delete'){undo.forEach(u=>arr.splice(Math.min(u.i,arr.length),0,u.obj));return}
+  undo.forEach(u=>{for(const x of Object.keys(u.obj))delete u.obj[x];Object.assign(u.obj,u.copy)})}
+/* Every change: shown at once, written to the sheet, rolled back with a message if the sheet refuses.
+   opt.quiet: work out the numbers but leave the redraw to the caller (Manage › Save draws once at the end) */
+async function save(tab,op,a,msg,opt){const quiet=!!(opt&&opt.quiet);
   if(readOnly()&&live()){toast('Read-only while the subscription is paused · nothing was changed');return false}
-  const k=TABKEY[tab],before=JSON.stringify(S.data[k]||[]);applyLocal(tab,op,a);refresh();
-  if(!live()){hiLocal(tab,op,a,JSON.parse(before));toast((msg||'Saved')+' · demo only - connect live data to save to the sheet');return true}
+  const k=TABKEY[tab],undo=[];applyLocal(tab,op,a,undo);const arr=S.data[k];refresh(quiet);
+  if(!live()){hiLocal(tab,op,a,undo.map(u=>u.copy));toast((msg||'Saved')+' · demo only - connect live data to save to the sheet');return true}
   try{const r=await apiPost({action:op,tab,undo_of:HI.undoing||undefined,new_id:a.newId||undefined,...(op==='append'?{row:a.row}:op==='update'?{match:a.match,fields:a.fields}:{match:a.match})});
     if(op!=='append'&&!(r.updated||r.deleted))throw new Error('that row is no longer in the sheet');
     /* new numbered rows (BK277…): the sheet settles the number - another person may have just used ours */
     if(op==='append'&&a.newId){const was=a.row[a.newId];
-      if(r.id&&String(r.id)!==String(was)){a.row[a.newId]=r.id;if(msg)msg=msg.split(was).join(r.id)+` (${was} was just taken)`;refresh()}
+      if(r.id&&String(r.id)!==String(was)){a.row[a.newId]=r.id;if(msg)msg=msg.split(was).join(r.id)+` (${was} was just taken)`;refresh(quiet)}
       else if(r.duplicate&&!r.id){TAKEN.add(String(was));throw new Error(`${was} was just used by someone else`)}}
     LIVE.lastR=r;toast((msg||'Saved')+' ✓');return true}
-  catch(e){S.data[k]=JSON.parse(before);refresh();const m=String(e.message);
+  catch(e){undoLocal(k,arr,op,a,undo);refresh(quiet);const m=String(e.message);
     toast(/^(double booking|dates blocked)/.test(m)?`Couldn’t save: those dates were just taken - ${m.replace(/^double booking: /,'').replace(/^dates blocked: /,'blocked: ').replace(/\d{4}-\d{2}-\d{2}/g,d=>fmtD(d))}. Nothing was changed; refresh to see it.`:'Couldn’t save: '+m+'. Nothing was changed.');return false}}
 function signInScreen(){
   const err=h('div',{class:'err',hidden:true}),btn=h('div',{class:'gsi-btn'}),note=h('p',{class:'signin-note'},'Use the Google account your team added for you.');
@@ -5408,8 +5498,6 @@ function bookingActions(b){
   return h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap'}},h('button',{class:'btn sm primary',onclick:()=>openInManage(b.booking_id)},'Edit in Manage',icon('chev')));
 }
 function openInManage(id){closeLayer();Object.assign(MG,{sec:'bookings',q:String(id),prop:'',chan:'',status:'All',month:'',lim:40});MG.sel.clear();go('manage')}
-function openPayment(b){const amt=h('input',{type:'number',inputmode:'numeric',min:1,value:Math.max(0,Math.round(b.net-b.received))}),dt=h('input',{type:'date',value:TODAY}),ref=h('input',{placeholder:'e.g. UPI ref / Airbnb payout id',autocomplete:'off'}),err=h('div',{class:'err',hidden:true});
-  modal('Record payment · '+b.booking_id,h('div',{class:'form'},fld('Amount received (₹)',amt),fld('Received on',dt),fld('Reference',ref,1),err),[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{if(!(+amt.value>0)){err.hidden=false;err.textContent='Enter an amount above zero.';return}closeLayer();save('payouts','append',{row:{booking_id:b.booking_id,received_on:dt.value,amount_received:+amt.value,reference:ref.value.trim()||null}},'Payment recorded')}},'Save payment')])}
 
 /* ============ blocked dates (owner stays, repairs) ============ */
 function blocksCard(){
@@ -5434,11 +5522,15 @@ const BOT={state:CONFIG.BOT_URL?'checking':'none',at:0};
 function liveState(){if(!live())return'demo';if(LIVE.ok===null)return'syncing';return LIVE.ok&&Date.now()-LIVE.okAt<12*6e4?'live':'offline'}
 async function checkBot(){if(!CONFIG.BOT_URL||document.hidden)return;const c=new AbortController(),t=setTimeout(()=>c.abort(),15000);
   try{const r=await fetch(CONFIG.BOT_URL.replace(/\/$/,'')+'/',{cache:'no-store',signal:c.signal});BOT.state=r.ok?'up':'stuck'}catch(e){BOT.state='down'}finally{clearTimeout(t);BOT.at=Date.now();paintStatus()}}
-function lastBotActivity(){if(!live())return null;const ts=[];
-  (S.data.leads||[]).forEach(l=>{ts.push(l.stage_at,l.created_at)});(S.data.requests||[]).forEach(r=>ts.push(r.created_at));
-  (S.data.bookings||[]).filter(b=>b.source==='WhatsApp').forEach(b=>ts.push(b.submitted_at));
-  (S.data.maint||[]).filter(m=>m.source==='WhatsApp').forEach(m=>ts.push(m.reported_at?new Date(+m.reported_at*1000).toISOString().slice(0,16):m.reported_on));
-  const now=new Date(),v=ts.filter(Boolean).map(String).map(x=>new Date(x.length<=10?x+'T12:00':x)).filter(d=>!isNaN(d)&&d<=now).sort((a,b)=>a-b).pop();return v||null}
+/* the times are sorted once per data load; each check only finds the newest one that isn't in the future */
+let BOTACT_C=null;
+function lastBotActivity(){if(!live())return null;
+  if(!BOTACT_C||BOTACT_C.D!==D||BOTACT_C.data!==S.data){const ts=[];
+    (S.data.leads||[]).forEach(l=>{ts.push(l.stage_at,l.created_at)});(S.data.requests||[]).forEach(r=>ts.push(r.created_at));
+    (S.data.bookings||[]).filter(b=>b.source==='WhatsApp').forEach(b=>ts.push(b.submitted_at));
+    (S.data.maint||[]).filter(m=>m.source==='WhatsApp').forEach(m=>ts.push(m.reported_at?new Date(+m.reported_at*1000).toISOString().slice(0,16):m.reported_on));
+    BOTACT_C={D,data:S.data,v:ts.filter(Boolean).map(String).map(x=>new Date(x.length<=10?x+'T12:00':x)).filter(d=>!isNaN(d)).sort((a,b)=>a-b)}}
+  const now=new Date(),all=BOTACT_C.v;for(let i=all.length-1;i>=0;i--)if(all[i]<=now)return all[i];return null}
 const agoTxt=d=>{if(!d)return'–';const m=Math.round((Date.now()-d)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
 /* what an admin has switched off on the bot (Manage › AI Expenses) */
 function botOffParts(){const p=[];if(!swOn('ai.guest_replies'))p.push('AI replies');[['msgs.to_guests','guests'],['msgs.to_owners','owners'],['msgs.to_managers','managers']].forEach(([k,l])=>{if(!swOn(k))p.push('messages to '+l)});return p}
@@ -5715,7 +5807,7 @@ function guestSummary(p){
   if(tix.length)out.push({t:`reported ${tix.length} issue${tix.length>1?'s':''}`});
   return out}
 /* several sheet updates as one action: shown at once, one message, stops on the first refusal */
-async function saveMany(tab,items,msg){for(const[match,fields]of items){const ok=await save(tab,'update',{match,fields},null);if(!ok)return false}if(items.length)toast(msg+(live()?' ✓':' · demo only'));return true}
+async function saveMany(tab,items,msg){try{for(const[match,fields]of items){const ok=await save(tab,'update',{match,fields},null,{quiet:true});if(!ok)return false}}finally{if(items.length)render()}if(items.length)toast(msg+(live()?' ✓':' · demo only'));return true}   // one redraw at the end
 function openPerson(p){
   const l=p.latest,dig=p.key,same=x=>dig&&String(x.phone||'').replace(/\D/g,'').slice(-10)===dig;
   const bks=D.B.filter(same),reqs=(S.data.requests||[]).filter(same),tix=D.M.filter(same);
@@ -5792,21 +5884,32 @@ async function stillRefused(k){await new Promise(r=>setTimeout(r,2000));if(k!==L
 function showLoading(){const v=$('#view');if(!v)return;v.replaceChildren(h('section',{class:'card glass s12'},h('div',{class:'loading-live'},h('span',{class:'spin-dot'}),h('div',null,h('b',null,'Loading live data from the Google Sheet…'),h('div',{class:'light-note'},'Usually 5-10 seconds; up to a minute if Google is waking up. This device will open instantly next time.')))),h('div',{class:'skel-grid','aria-hidden':'true'},...[0,1,2,3,4,5].map(i=>h('div',{class:i>3?'skel tall':'skel'}))));const b=$('#liveBadge');if(b){b.className='live-badge demo';b.querySelector('.lb-t').textContent='Updating…'}}
 async function load(){
   if(loading)return loading;
-  loading=(async()=>{const keyAt=LIVE.key;let out=false;   // out: the session ended and sign-in is showing - draw nothing over it
+  loading=(async()=>{const keyAt=LIVE.key;let out=false,same=false;   // out: the session ended and sign-in is showing - draw nothing over it
     if(live()){
       // open instantly: show this device's last live copy (or a loading card), then update in the background
       if(!S.data){const c=store.get('jg_live_cache');if(c&&c.data){S.data=c.data;S.source='Live sheet';LIVE.cachedAt=c.at;S.loadedAt=new Date(c.at);refresh()}else showLoading()}
-      try{S.data=await Promise.race([liveLoad(),new Promise((_,no)=>setTimeout(()=>no(new Error('Google took over 90 s')),9e4))]);
-        S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null;LIVE.cachedAt=null;store.set('jg_live_cache',{at:Date.now(),data:S.data})}
+      /* since: only for data this page itself read live in this session (never for the instant-open copy) */
+      const since=PERF.sinceOf(LIVE.verKey===LIVE.key?LIVE.ver:null,!!S.data&&S.source==='Live sheet'&&!LIVE.cachedAt),was=S.data,me0=JSON.stringify(LIVE.me||null);
+      try{S.data=await Promise.race([liveLoad(since),new Promise((_,no)=>setTimeout(()=>no(new Error('Google took over 90 s')),9e4))]);
+        same=since!=null&&S.data===was&&JSON.stringify(LIVE.me||null)===me0;   // nothing changed on the sheet: no redraw, no cache write
+        S.source='Live sheet';LIVE.ok=true;LIVE.okAt=Date.now();LIVE.err=null;LIVE.cachedAt=null;if(!same)cacheLive(S.data)}
       catch(e){LIVE.ok=false;LIVE.err=String(e.message||e).slice(0,60);const no=/unauthorized/.test(e.message);
         if(no&&await stillRefused(keyAt)){LIVE.key='';store.set(KEYNAME,'');store.set('jg_live_cache',null);if(SIGNIN){S.data=SEED;out=true;signInScreen()}else toast('The access key was changed - connect again.')}
         else if(keyAt===LIVE.key)toast(no||/try_again/.test(e.message)?'The sheet didn’t answer just now. Showing the last data.':'Couldn’t reach the sheet ('+LIVE.err+'). Showing the last data.');if(!S.data||S.source==='Sheet unreachable'){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
     else if(CONFIG.DATA_URL){try{await needXLSX();const r=await fetch(CONFIG.DATA_URL,{cache:'no-store'});if(!r.ok)throw 0;S.data=fromWorkbook(XLSX.read(await r.arrayBuffer(),{type:'array',cellDates:true}));S.source='Live sheet'}catch(e){toast('Couldn’t reach the sheet. Showing the last data.');if(!S.data){S.data=EMPTY_DATA();S.source='Sheet unreachable'}}}
     else if(!S.data)S.data=SEED;
-    if(out)return;if(!LIVE.cachedAt)S.loadedAt=new Date();refresh();
+    if(out)return;if(!LIVE.cachedAt)S.loadedAt=new Date();if(same&&D)renderChrome();else refresh();
   })();
   try{await loading}finally{loading=null}
 }
+/* "opens instantly next time": this device's copy of the live data, written only when the data changed, after the
+   screen is drawn (not in the middle of it). Phone storage full (iPhone Safari keeps ~5 MB): keep a copy without the
+   AI runs and the rentals pages' tabs (they arrive with the live read a moment later) instead of no copy at all. */
+function cacheLive(data){const key=LIVE.key;
+  const write=()=>{if(LIVE.key!==key||S.data!==data||!live())return;const at=Date.now();
+    try{localStorage.setItem('jg_live_cache',JSON.stringify({at,data}))}
+    catch(e){try{const slim={...data};['insights','rentals','rentaltrend','campaigns'].forEach(k=>{if(slim[k])slim[k]=[]});localStorage.setItem('jg_live_cache',JSON.stringify({at,data:slim}))}catch(x){}}};
+  if(window.requestIdleCallback)requestIdleCallback(write,{timeout:4000});else setTimeout(write,50)}
 async function manualRefresh(btn){btn&&btn.classList.add('spin');await load();setTimeout(()=>btn&&btn.classList.remove('spin'),500);if(live()&&LIVE.ok===false)return;toast('Up to date · '+S.loadedAt.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}))}
 $('#xlsxIn').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{await needXLSX()}catch(x){}if(!window.XLSX){toast('Excel reader didn’t load. Check your connection.');return}try{S.data=fromWorkbook(XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}));S.source=file.name;S.loadedAt=new Date();refresh();toast('Loaded '+file.name)}catch(err){toast('This file doesn’t match the tracker layout: '+err.message)}e.target.value=''});
 $('#refreshBtn').addEventListener('click',()=>manualRefresh());
@@ -5825,7 +5928,7 @@ setTimeout(tabPeek,600);
 document.querySelectorAll('[data-new]').forEach(b=>b.addEventListener('click',()=>openForm(b.dataset.new)));
 
 /* ============ render ============ */
-function refresh(){D=derive(S.data);{const cs=new Set(D.props.map(p=>p.city));S.f.cities=(S.f.cities||[]).filter(c=>cs.has(c));S.f.props=(S.f.props||[]).filter(id=>D.P[id])}if(S.f.preset!=='custom')applyPreset(S.f.preset);render()}
+function refresh(quiet){D=derive(S.data);{const cs=new Set(D.props.map(p=>p.city));S.f.cities=(S.f.cities||[]).filter(c=>cs.has(c));S.f.props=(S.f.props||[]).filter(id=>D.P[id])}if(S.f.preset!=='custom')applyPreset(S.f.preset);if(quiet!==true)render()}
 /* ============ Manage (admins only): change bookings safely. Every change is collected first, reviewed as old -> new,
    then saved in one go. Cancelling frees the dates but keeps the money (it still counts, in the check-in month);
    Trash hides a booking everywhere and frees its dates, restorable for 30 days, then removed for good. */
@@ -6040,21 +6143,21 @@ function mgReview(){const rows=Object.entries(STAGE),prows=Object.entries(PSTAGE
   modal(`Review ${total} change${total>1?'s':''}`,h('div',{class:'mg-revlist'},warn,body,pbody,gbody,lbody,prbody,ovbody,ebody),
     [h('button',{class:'btn',onclick:closeLayer},'Back'),saveB])}
 async function mgSave(){let ok=0,fail=null;
-  for(const[id,f]of Object.entries(STAGE)){const done=await save('bookings','update',{match:{booking_id:id},fields:f},null);if(done){delete STAGE[id];ok++}else{fail=id;break}}
+  for(const[id,f]of Object.entries(STAGE)){const done=await save('bookings','update',{match:{booking_id:id},fields:f},null,{quiet:true});if(done){delete STAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(PSTAGE)){const{__new,...fields}=f;
-    const row={property_id:id,...fields},done=__new?await save('properties','append',{row,newId:'property_id'},null):await save('properties','update',{match:{property_id:id},fields},null);
+    const row={property_id:id,...fields},done=__new?await save('properties','append',{row,newId:'property_id'},null,{quiet:true}):await save('properties','update',{match:{property_id:id},fields},null,{quiet:true});
     if(done&&row.property_id!==id&&GSTAGE[id]){GSTAGE[row.property_id]=GSTAGE[id];delete GSTAGE[id]}  // the sheet gave the new stay another id
     if(done){delete PSTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(GSTAGE)){const done=await giSave(id,f);if(done){delete GSTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[k,v]of Object.entries(PRSTAGE)){const done=await prSave(k,v);if(done){delete PRSTAGE[k];ok++}else{fail=k;break}}
   if(!fail&&OVOPS.length){const done=await ovSave();if(done)ok++;else fail='date prices'}
   if(!fail)for(const[id,f]of Object.entries(ESTAGE)){const{__new,...fields}=f;
-    const done=__new?await save('expenses','append',{row:fields},null):await save('expenses','update',{match:{expense_id:id},fields},null);
+    const done=__new?await save('expenses','append',{row:fields},null,{quiet:true}):await save('expenses','update',{match:{expense_id:id},fields},null,{quiet:true});
     if(done){delete ESTAGE[id];ok++}else{fail=id;break}}
   if(!fail)for(const[id,f]of Object.entries(LSTAGE)){const{__new,__from,...fields}=f;let done;
-    if(__new)done=await save('lists','append',{row:{row_id:nextListId(),active:'Yes',...fields},newId:'row_id'},null);
-    else{done=await save('lists','update',{match:{row_id:id},fields},null);
-      if(done&&__from&&fields.value&&__from!==fields.value){if(f.list==='expense_category'){if(listUse(f.list,__from))done=await save('expenses','update',{match:{category:__from},fields:{category:fields.value}},null)}else{const col=BK_COL[f.list];if(col&&listUse(f.list,__from))done=await save('bookings','update',{match:{[col]:__from},fields:{[col]:fields.value}},null)}}}
+    if(__new)done=await save('lists','append',{row:{row_id:nextListId(),active:'Yes',...fields},newId:'row_id'},null,{quiet:true});
+    else{done=await save('lists','update',{match:{row_id:id},fields},null,{quiet:true});
+      if(done&&__from&&fields.value&&__from!==fields.value){if(f.list==='expense_category'){if(listUse(f.list,__from))done=await save('expenses','update',{match:{category:__from},fields:{category:fields.value}},null,{quiet:true})}else{const col=BK_COL[f.list];if(col&&listUse(f.list,__from))done=await save('bookings','update',{match:{[col]:__from},fields:{[col]:fields.value}},null,{quiet:true})}}}
     if(done){delete LSTAGE[id];ok++}else{fail=id;break}}
   render();toast(fail?`Saved ${ok}; stopped at ${fail} - nothing else changed. Try again.`:`${ok} change${ok>1?'s':''} saved${live()?' ✓':' · demo only'}`)}
 function mgDiscard(){confirmBox('Discard all changes?',`${stagedCount()} change${stagedCount()>1?'s':''} go back to how they are in the sheet.`,'Discard',true,()=>{for(const k of Object.keys(STAGE))delete STAGE[k];for(const k of Object.keys(PSTAGE))delete PSTAGE[k];for(const k of Object.keys(GSTAGE))delete GSTAGE[k];for(const k of Object.keys(LSTAGE))delete LSTAGE[k];for(const k of Object.keys(PRSTAGE))delete PRSTAGE[k];OVOPS.length=0;APPLY_IDEAS.length=0;for(const k of Object.keys(ESTAGE))delete ESTAGE[k];render()})}
@@ -6374,7 +6477,11 @@ async function ovSave(){const ops=OVOPS.splice(0);
       PROV=o.op==='add'?[...(PROV||[]),o.row]:(PROV||[]).filter(x=>x!==o.row)}catch(e){toast('Couldn’t save date prices: '+e.message);OVOPS.unshift(...ops.slice(ops.indexOf(o)));return false}}
   if(ops.length)applyDone();return true}
 /* the date rules as they will be after the staged operations */
-function prRules(){let rows=(PROV||[]).slice();OVOPS.forEach(o=>{if(o.op==='add')rows.push(o.row);else rows=rows.filter(x=>x!==o.row)});return rows}
+/* worked out once until the rules or the staged operations change (a month's price calendar asked ~150 times per drawing) */
+let PRR=null;
+function prRules(){if(PRR&&PRR.prov===PROV&&PRR.ops.length===OVOPS.length&&OVOPS.every((o,i)=>PRR.ops[i]===o&&PRR.op[i]===o.op&&PRR.row[i]===o.row))return PRR.v;
+  let rows=(PROV||[]).slice();OVOPS.forEach(o=>{if(o.op==='add')rows.push(o.row);else rows=rows.filter(x=>x!==o.row)});
+  PRR={prov:PROV,ops:OVOPS.slice(),op:OVOPS.map(o=>o.op),row:OVOPS.map(o=>o.row),v:rows};return rows}
 const ovId=()=>'OV'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 /* one night's price for a stay, the same rule the bot uses */
 function nightPrice(p,day){const base=+p.base_rate||0,w=prVal('weekend_nights'),dow=DOW[(pd(day).getDay()+6)%7],isW=w.includes(dow),wk=isW?1+prVal('weekend_markup_pct')/100:1;
@@ -6384,7 +6491,7 @@ function nightPrice(p,day){const base=+p.base_rate||0,w=prVal('weekend_nights'),
   let rate=base*wk,kind=isW?'weekend':'base';if(pcts.length){const pct=1+Math.max(...pcts)/100;rate=prVal('weekend_stacks_with_overrides')?rate*pct:base*Math.max(wk,pct);kind='holiday'}
   return{price:Math.round(rate/10)*10,kind,holiday:hol&&hol.note}}
 /* stage new custom prices for days of one stay: existing custom rules for the stay are rebuilt around the change */
-function setCustom(p,days,price){const pid=p.property_id,mine=prRules().filter(o=>o.unit_id===pid&&o.rate!=null&&o.rate!==''),map={};
+function setCustom(p,days,price,noDraw){const pid=p.property_id,mine=prRules().filter(o=>o.unit_id===pid&&o.rate!=null&&o.rate!==''),map={};
   mine.forEach(o=>{for(let d=o.from;d<=o.to;d=add(d,1))map[d]=+o.rate});days.forEach(d=>{if(price==null)delete map[d];else map[d]=price});
   const segs=[];Object.keys(map).sort().forEach(d=>{const last=segs[segs.length-1];if(last&&add(last.to,1)===d&&last.rate===map[d])last.to=d;else segs.push({from:d,to:d,rate:map[d]})});
   const keep=new Set(),same=(o,s)=>o.from===s.from&&o.to===s.to&&+o.rate===+s.rate;
@@ -6392,11 +6499,11 @@ function setCustom(p,days,price){const pid=p.property_id,mine=prRules().filter(o
   const label=`${short(p.property)} · ${fmtD(days[0])}${days.length>1?' → '+fmtD(days[days.length-1]):''}: ${price==null?'back to the usual pattern':inr(price)+' per night'}`;
   mine.filter(o=>!keep.has(o)).forEach(o=>{const i=OVOPS.findIndex(x=>x.op==='add'&&x.row===o);if(i>=0)OVOPS.splice(i,1);else OVOPS.push({op:'del',row:o,label})});
   segs.filter(sg=>!mine.some(o=>keep.has(o)&&same(o,sg))).forEach(sg=>OVOPS.push({op:'add',row:{ov_id:ovId(),unit_id:pid,from:sg.from,to:sg.to,rate:sg.rate,note:'Custom price'},label}));
-  render()}
+  if(!noDraw)render()}   // noDraw: the caller redraws once itself
 /* minimum nights for arrivals on these days (Overrides rows with min_nights, no rate): the bot refuses shorter stays and
    sends it to the booking sites as minimum stay on arrival. n = null puts the days back to the stay's usual minimum */
 function minNights(p,day){const r=prRules().filter(o=>(o.unit_id===p.property_id||o.unit_id===p.property_id+'-E')&&o.min_nights!=null&&o.min_nights!==''&&o.from<=day&&day<=o.to);return r.length?+r[r.length-1].min_nights:0}
-function setMinNights(p,days,n){const pid=p.property_id,mine=prRules().filter(o=>o.unit_id===pid&&o.min_nights!=null&&o.min_nights!==''),map={};
+function setMinNights(p,days,n,noDraw){const pid=p.property_id,mine=prRules().filter(o=>o.unit_id===pid&&o.min_nights!=null&&o.min_nights!==''),map={};
   mine.forEach(o=>{for(let d=o.from;d<=o.to;d=add(d,1))map[d]=+o.min_nights});days.forEach(d=>{if(n==null)delete map[d];else map[d]=n});
   const segs=[];Object.keys(map).sort().forEach(d=>{const last=segs[segs.length-1];if(last&&add(last.to,1)===d&&last.n===map[d])last.to=d;else segs.push({from:d,to:d,n:map[d]})});
   const keep=new Set(),same=(o,sg)=>o.from===sg.from&&o.to===sg.to&&+o.min_nights===+sg.n;
@@ -6404,7 +6511,7 @@ function setMinNights(p,days,n){const pid=p.property_id,mine=prRules().filter(o=
   const label=`${short(p.property)} · ${fmtD(days[0])}${days.length>1?' → '+fmtD(days[days.length-1]):''}: ${n==null?'usual minimum stay':'minimum '+n+' nights for arrivals'}`;
   mine.filter(o=>!keep.has(o)).forEach(o=>{const i=OVOPS.findIndex(x=>x.op==='add'&&x.row===o);if(i>=0)OVOPS.splice(i,1);else OVOPS.push({op:'del',row:o,label})});
   segs.filter(sg=>!mine.some(o=>keep.has(o)&&same(o,sg))).forEach(sg=>OVOPS.push({op:'add',row:{ov_id:ovId(),unit_id:pid,from:sg.from,to:sg.to,min_nights:sg.n,note:'Minimum nights'},label}));
-  render()}
+  if(!noDraw)render()}
 const PRC={pid:null,m:null,a:null,b:null,drag:false};
 function prCalendar(){const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>String(a.city).localeCompare(String(b.city))||short(a.property).localeCompare(short(b.property)));
   if(!props.length)return h('div',{class:'empty'},'No active stays.');
@@ -6440,18 +6547,18 @@ function prCalendar(){const props=D.props.filter(p=>!isStopped(p)).sort((a,b)=>S
     panel=h('div',{class:'pr-panel'},h('button',{class:'btn icon sm pr-x2','aria-label':'Clear selection',onclick:()=>{PRC.a=PRC.b=null;render()}},icon('x')),h('div',{class:'pr-ph'},h('b',null,`${fmtD(sel[0],{weekday:'short',day:'numeric',month:'short'})}${days.length>1?' → '+fmtD(sel[1],{weekday:'short',day:'numeric',month:'short'}):''}`),
         h('span',null,`${days.length} night${days.length>1?'s':''} · now ${lo===hi?inr(lo):inr(lo)+' – '+inr(hi)}${booked?` · ${booked} already booked (their price doesn’t change)`:''}`)),
       h('div',{class:'pr-set'},h('span',{class:'pr-cur'},'₹'),inp,h('span',null,'per night'),
-        h('button',{class:'btn primary sm',onclick:()=>{const v=+inp.value;if(!(v>0)){inp.focus();return}setCustom(p,days,Math.round(v*100)/100);PRC.a=PRC.b=null;render()}},'Set price'),
-        hasCustom?h('button',{class:'btn sm',onclick:()=>{setCustom(p,days,null);PRC.a=PRC.b=null;render()}},'Back to usual'):null,
+        h('button',{class:'btn primary sm',onclick:()=>{const v=+inp.value;if(!(v>0)){inp.focus();return}setCustom(p,days,Math.round(v*100)/100,true);PRC.a=PRC.b=null;render()}},'Set price'),
+        hasCustom?h('button',{class:'btn sm',onclick:()=>{setCustom(p,days,null,true);PRC.a=PRC.b=null;render()}},'Back to usual'):null,
         PHONE()?null:h('button',{class:'btn sm ghost',onclick:()=>{PRC.a=PRC.b=null;render()}},'Cancel')),
       h('div',{class:'pr-set pr-min'},h('span',null,'Min.'),mInp,h('span',null,'nights for arrivals'),
-        h('button',{class:'btn sm',onclick:()=>{const v=Math.round(+mInp.value);if(!(v>=1&&v<=30)){mInp.focus();return}setMinNights(p,days,v);PRC.a=PRC.b=null;render()}},'Set minimum'),
-        hasMin?h('button',{class:'btn sm',onclick:()=>{setMinNights(p,days,null);PRC.a=PRC.b=null;render()}},'Usual minimum'):null),
+        h('button',{class:'btn sm',onclick:()=>{const v=Math.round(+mInp.value);if(!(v>=1&&v<=30)){mInp.focus();return}setMinNights(p,days,v,true);PRC.a=PRC.b=null;render()}},'Set minimum'),
+        hasMin?h('button',{class:'btn sm',onclick:()=>{setMinNights(p,days,null,true);PRC.a=PRC.b=null;render()}},'Usual minimum'):null),
       PHONE()?h('small',{class:'pr-hint'},days.length===1?'Tap another day to pick a range · tap this day again to clear':'Final price for these nights · the bot quotes it'):h('small',{class:'pr-hint'},'This price is final for these nights: no weekend or holiday % on top. The bot quotes it for new bookings. Tap another day to extend, or the same day to clear.'));
     if(!PHONE())setTimeout(()=>inp.focus&&inp.focus(),0)}  // phones: no keyboard until they tap the price, so the range can still be picked
   const customs=prRules().filter(o=>o.unit_id===p.property_id&&o.rate!=null&&o.rate!==''&&o.to>=TODAY).sort((a,b)=>a.from.localeCompare(b.from));
   const minsAhead=prRules().filter(o=>o.unit_id===p.property_id&&o.min_nights!=null&&o.min_nights!==''&&o.to>=TODAY).sort((a,b)=>a.from.localeCompare(b.from));
   const ph=p.photo||arrOf(p.photos)[0],wn=prVal('weekend_nights');
-  const stay=h('div',{class:'pr-stay'},h('span',{class:'pr-sph'},ph?photoFit(ph,''):scene(p,96,96)),h('div',{class:'pr-stx'},h('span',{class:'pr-lab'},'Stay'),pick,
+  const stay=h('div',{class:'pr-stay'},h('span',{class:'pr-sph'},ph?photoFit((()=>{const i=arrOf(p.photos).indexOf(ph),t=arrOf(p.photo_thumbs)[i];return i>=0&&t||ph})(),'',()=>photoFit(ph,'')):scene(p,96,96)),h('div',{class:'pr-stx'},h('span',{class:'pr-lab'},'Stay'),pick,
     h('span',{class:'pr-base'},'Base price ',h('b',{class:'num'},inr(+p.base_rate||0)),' · ',h('button',{class:'linkish',onclick:()=>openPropInManage(p.property_id)},'change in Properties'))));
   const rules=h('div',{class:'pr-rules'},h('button',{class:'k-weekend',onclick:()=>{S.prTab='rules';render()}},`Weekend +${prVal('weekend_markup_pct')}% · ${wn.map(x=>x[0].toUpperCase()+x.slice(1,3)).join(' ')}`),
     h('button',{class:'k-holiday',onclick:()=>{S.prTab='holidays';render()}},`Holidays +${prVal('holiday_markup_pct')}%`),h('span',{class:'k-custom'},'Custom price'),h('span',{class:'bk'},'Booked'));
@@ -7320,11 +7427,15 @@ function cxCard(){const mode=syncMode(),map=setJ('ops.channex_map')||{},live=D.p
   const save=async()=>{const clean=Object.fromEntries(Object.entries(CX_EDIT).map(([k,v])=>[k,String(v||'').trim()]).filter(([,v])=>v));
     if(Object.values(clean).some(v=>!/^[0-9a-f-]{36}$/i.test(v)))return toast('A Channex property id looks like 8-4-4-4-12 letters and digits (copy it from Channex)');
     await setSetting('ops.channex_map',JSON.stringify(clean),'Channel manager links saved');CX_EDIT=null;render()};
-  return card('s12','Channel manager',{hint:on?'two-way sync with Airbnb, Booking.com and MakeMyTrip through Channex · every 10 minutes':'not switched on for this business'},
+  /* certification 'full sync at any time' (Channex docs audit C6): every linked stay's calendar again, inside Channex's limits */
+  const resend=()=>confirmBox('Send everything again?','Every linked stay’s prices, free nights and minimum nights go to Channex again. It takes a few minutes; use it only when a booking site looks out of step.','Send again',false,
+    async()=>{try{const r=await apiPost({action:'cx_resync'});toast(r.error?r.error:'Sending everything again ✓')}catch(e){toast('Couldn’t reach the bot: '+e.message)}});
+  return card('s12','Channel manager',{hint:on?'two-way sync with Airbnb, Booking.com and MakeMyTrip through Channex · within seconds of each save':'not switched on for this business'},
     h('div',{class:'cx-mode'},h('span',{class:'pill '+(on?'p-ok':'p-mute')},{channex:'Channex · on',ical:'Calendar links',manual:'Manual'}[mode]||mode),
       h('small',null,on?'Prices, availability and minimum nights go out by themselves; bookings from the sites come in by themselves. Change a site\'s booking on that site: it syncs back here.'
         :'scalewithluv switches this on when your Channex account is ready. Until then the calendar links above keep the sites in step.')),
     sum_,
+    on?h('div',{class:'sy-acts'},h('button',{class:'btn',onclick:resend},icon('repeat'),'Send everything again'),h('small',{class:'hint'},'Only if a site looks out of step')):null,
     h('details',{class:'sy-row cx-links',open:on&&n<live.length||null},h('summary',null,h('b',null,'Link each stay to Channex'),h('small',{class:'hint'},`${n} of ${live.length} linked`)),
       h('div',{class:'sy-fields'},live.map(p=>h('label',{class:'sy-f'},h('span',null,short(p.property)),
         h('input',{autocomplete:'off',spellcheck:'false',placeholder:'Channex property id',value:CX_EDIT[p.property_id]||'',oninput:e=>{CX_EDIT[p.property_id]=e.target.value.trim()},onchange:()=>render()})))),
@@ -7678,9 +7789,11 @@ addEventListener('scroll',()=>{const cal=document.querySelector('#view .cal');if
       if(go){ind.style.transition='transform .35s cubic-bezier(.32,.72,0,1)';ind.classList.add('go');ind.style.transform='translateY(14px)';$('#refreshBtn').click();setTimeout(()=>{ind.classList.remove('go');reset()},1400)}else reset()},{passive:true})}}
 load();
 /* Live data: hourly while open, plus on return to the tab if the data is older than the refresh window. */
-setInterval(load,CONFIG.REFRESH_MINUTES*6e4);
+/* a hidden tab doesn't read (the return-to-tab check below catches up); each read sends since=<version>, so a sheet
+   with nothing new answers in a few bytes and nothing is redrawn - the WhatsApp tab's 2-minute check included */
+setInterval(()=>{if(!document.hidden)load()},CONFIG.REFRESH_MINUTES*6e4);
 setInterval(()=>{if(live()&&S.view==='whatsapp'&&!document.hidden)load()},12e4);
-setInterval(checkBot,12e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&progActive())pollProgress()});setInterval(paintStatus,3e4);setTimeout(checkBot,1500);
+setInterval(checkBot,12e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&progActive())pollProgress()});setInterval(()=>{if(!document.hidden)paintStatus()},3e4);setTimeout(checkBot,1500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkBot();paintStatus()}});
 $('#liveBadge').addEventListener('click',()=>{const s=liveState();s==='demo'?connectModal():s==='offline'?manualRefresh():go('whatsapp')});
 $('#helpBtn')?.addEventListener('click',()=>{setMenu(false);if(!live())return toast('Sign in to ask for help');openHelp()});
@@ -7701,7 +7814,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now(
      it offers the refresh instead. */
   let myBuild=null;const verNow=()=>fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j&&j.build).catch(()=>null);
   verNow().then(b=>{myBuild=b});
-  const checkUpdate=async()=>{if(!myBuild||document.hidden)return;const b=await verNow();if(!b||b===myBuild)return;
+  let lastChk=0;   // a return to the app fires both visibilitychange and focus: ask once
+  const checkUpdate=async()=>{if(!myBuild||document.hidden||Date.now()-lastChk<1e4)return;lastChk=Date.now();const b=await verNow();if(!b||b===myBuild)return;
     try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update()}catch(e){}
     const lay=document.getElementById('layer'),busy=(typeof window.jgStaged==='function'&&window.jgStaged())||(lay&&lay.children.length);  // this script can't see the app's own helpers
     if(busy&&typeof window.jgToast==='function'){window.jgToast('A new version of the dashboard is ready',()=>location.reload(),'Refresh')}else if(!busy)location.reload()};

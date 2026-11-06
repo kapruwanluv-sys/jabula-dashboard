@@ -209,6 +209,8 @@ const OPS=(()=>{
   const itemText=it=>it.name+(it.type==='ok'?' (ok)':it.min?` (min ${it.min})`:'');
   /* two stays share nights when they are the same place, or one is the whole place over the other */
   const overlap=(a,b,props)=>a===b||parentOf(a,props)===b||parentOf(b,props)===a; /* two flats of one place are separate */
+  /* the same test with each stay's whole place looked up once per call (a scan of every stay per pair was the slow part at scale) */
+  const overlapOf=props=>{const m=new Map(),par=id=>{let v=m.get(id);if(v===undefined){v=parentOf(id,props);m.set(id,v)}return v};return(a,b)=>a===b||par(a)===b||par(b)===a};
   const live=b=>b&&!b.deleted_at&&String(b.booking_status||'Confirmed')!=='Cancelled'&&b.check_in&&b.check_out;
   /* a manager's stays: their list plus the whole place over their flats and the flats of a whole place they manage */
   function scope(ids,props){ids=list(ids);const set=new Set(ids);(props||[]).forEach(p=>{const inc=list(p.includes);
@@ -216,10 +218,10 @@ const OPS=(()=>{
   /* checkout checklists: one per stay that ended since the start date */
   /* a same-day turnover (the next guest checks in the day this one leaves) must be ready by check-in time: urgent */
   function checklists(bookings,rows,today,c,inScope,props){const byB={};(rows||[]).forEach(r=>{if(r.booking_id)byB[String(r.booking_id)]=r});
-    const L=(bookings||[]).filter(live);
+    const L=(bookings||[]).filter(live),ov=overlapOf(props),byIn=new Map();L.forEach(x=>{const k=String(x.check_in).slice(0,10);(byIn.get(k)||byIn.set(k,[]).get(k)).push(x)});   // arrivals by day, in list order
     return L.filter(b=>String(b.check_out).slice(0,10)>=c.start&&String(b.check_out).slice(0,10)<=today&&(!inScope||inScope(b.property_id)))
       .map(b=>{const co=String(b.check_out).slice(0,10),r=byB[String(b.booking_id)],due=addD(co,c.grace);
-        const next=L.find(x=>x!==b&&String(x.check_in).slice(0,10)===co&&overlap(x.property_id,b.property_id,props));
+        const next=(byIn.get(co)||[]).find(x=>x!==b&&ov(x.property_id,b.property_id));
         return{booking:b,property_id:b.property_id,check_out:co,due,row:r||null,status:r?'done':today>due?'missed':'due',missedAt:r?null:due,
           sameDay:!!next,next:next||null,urgent:!!next&&!r&&co===today,dueTime:next?String(next.arrival_time||c.checkinTime||'13:00').slice(0,5):null}})
       .sort((a,b)=>(b.urgent-a.urgent)||b.check_out.localeCompare(a.check_out))}
@@ -263,16 +265,20 @@ const OPS=(()=>{
       stock:{done:(data.stock||[]).filter(r=>start(r)&&mine(r,'by','by_name')).length,missed:sk.reduce((t,x)=>t+x.missed,0),due:sk.filter(x=>x.current&&x.current.status==='due').length}}})}
   /* turnover time: check-out time to the checklist being sent, in hours; on time = before the next guest's arrival */
   const at=(day,t)=>new Date(String(day).slice(0,10)+'T'+String(t||'00:00').slice(0,5)+':00').getTime();
-  function turnovers(bookings,rows,c,props){const L=(bookings||[]).filter(live),byB={};(rows||[]).forEach(r=>{if(r.booking_id&&r.done_at)byB[String(r.booking_id)]=r});
+  function turnovers(bookings,rows,c,props){const L=(bookings||[]).filter(live),byB={},ov=overlapOf(props);(rows||[]).forEach(r=>{if(r.booking_id&&r.done_at)byB[String(r.booking_id)]=r});
     return L.filter(b=>byB[String(b.booking_id)]).map(b=>{const r=byB[String(b.booking_id)],co=String(b.check_out).slice(0,10),done=new Date(String(r.done_at).replace(' ','T')).getTime();
-      const next=L.filter(x=>x!==b&&String(x.check_in).slice(0,10)>=co&&overlap(x.property_id,b.property_id,props)).sort((x,y)=>String(x.check_in).localeCompare(String(y.check_in)))[0];
+      const next=L.filter(x=>x!==b&&String(x.check_in).slice(0,10)>=co&&ov(x.property_id,b.property_id)).sort((x,y)=>String(x.check_in).localeCompare(String(y.check_in)))[0];
       const ready=next?at(next.check_in,next.arrival_time||c.checkinTime):null,hours=isNaN(done)?null:Math.max(0,Math.round((done-at(co,c.checkoutTime))/36e5*10)/10);
       return{booking_id:String(b.booking_id),property_id:b.property_id,check_out:co,by:r.by||null,by_name:r.by_name||null,done_at:String(r.done_at),hours,
         next:next?String(next.booking_id):null,onTime:ready==null||isNaN(done)?null:done<=ready}})}
   /* not ready: a guest arrives today (or by `ahead` days) and the stay's last check-out has no checklist yet */
-  function notReady(bookings,rows,today,c,props,ahead){const L=(bookings||[]).filter(live),done=new Set((rows||[]).map(r=>String(r.booking_id||''))),last=addD(today,ahead||0);
+  function notReady(bookings,rows,today,c,props,ahead){const L=(bookings||[]).filter(live),ov=overlapOf(props),CO=L.map(b=>String(b.check_out).slice(0,10)),byP=new Map(),fam=new Map(),done=new Set((rows||[]).map(r=>String(r.booking_id||''))),last=addD(today,ahead||0);
+    /* the bookings that can share nights with a stay (itself, its whole place, its flats), as positions in L in list
+       order: the same rows the scan over every booking found, without the scan (one per arrival was slow at scale) */
+    L.forEach((b,i)=>{const p=b.property_id;(byP.get(p)||byP.set(p,[]).get(p)).push(i)});
+    const near=pid=>{let v=fam.get(pid);if(!v){v=[];byP.forEach((ix,q)=>{if(ov(q,pid))v=v.concat(ix)});v.sort((x,y)=>x-y);fam.set(pid,v)}return v};
     return L.filter(n=>{const ci=String(n.check_in).slice(0,10);return ci>=today&&ci<=last}).map(n=>{const ci=String(n.check_in).slice(0,10);
-      const prev=L.filter(b=>b!==n&&String(b.check_out).slice(0,10)<=ci&&String(b.check_out).slice(0,10)>=c.start&&overlap(b.property_id,n.property_id,props))
+      const prev=near(n.property_id).filter(i=>L[i]!==n&&CO[i]<=ci&&CO[i]>=c.start&&ov(L[i].property_id,n.property_id)).map(i=>L[i])
         .sort((x,y)=>String(y.check_out).localeCompare(String(x.check_out)))[0];
       return prev&&!done.has(String(prev.booking_id))?{next:n,prev,property_id:n.property_id,check_in:ci,readyBy:String(n.arrival_time||c.checkinTime).slice(0,5)}:null}).filter(Boolean)}
   /* a manager's month: the scorecard for that month plus turnover time, issues, damage and days worked */
@@ -324,6 +330,59 @@ const OPS=(()=>{
   /* arrival steps for a city (a local registration, say), from Manage › Properties › Cities */
   const cityStepsOf=(c,city)=>((c.cities||[]).find(x=>x.name===city)||{}).steps||[];
   return{cityStepsOf,cfg,scope,checklists,stock,reviews,scorecards,turnovers,notReady,monthKPIs,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,DEF_REQ,PRESET_CHECK,PRESET_STOCK,PRESET_REQ,normCheck,normStock,normReq,checkDone,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
+/* Speed helpers (dashboard and manager app): same answers as the plain scans they replace, worked out once per data
+   load instead of once per night / per drawing. Pure; checked against the old code in tests/test_perf.js. */
+const PERF=(()=>{
+  const ISO=/^\d{4}-\d{2}-\d{2}$/,VD=new Map();
+  const ND=new Map(),nextDay=s=>{let v=ND.get(s);if(v===undefined){const d=new Date(s+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+1);v=d.toISOString().slice(0,10);if(ND.size>50000)ND.clear();ND.set(s,v)}return v};   // remembered per day
+  /* a real calendar day written YYYY-MM-DD (only those can be looked up by day; anything else takes the plain scan) */
+  const validDay=s=>{if(typeof s!=='string'||!ISO.test(s))return false;let v=VD.get(s);if(v==null){const d=new Date(s+'T00:00:00Z');v=!isNaN(d)&&d.toISOString().slice(0,10)===s;if(VD.size>20000)VD.clear();VD.set(s,v)}return v};
+  /* samePlace(a,b) of the dashboard (a stay, its whole place, its flats), with each stay's "includes" split once */
+  function samePlace(P){const m=new Map();
+    const inc=x=>{let v=m.get(x);if(v===undefined){const w=(P[x]||{}).includes;v=Array.isArray(w)?w:String(w||'').split(',').map(t=>t.trim()).filter(Boolean);m.set(x,v)}return v};
+    return(a,b)=>a===b||inc(a).includes(b)||inc(b).includes(a)}
+  /* "which row covers this night at this stay": the first row (in list order) with keep(row), same(pid(row), stay) and
+     from(row) <= day < to(row) - exactly Array.find over every row, answered from a per-stay map of nights built once */
+  function occIndex(rows,o){const groups=new Map();
+    rows.forEach((r,i)=>{if(!o.keep(r))return;const p=o.pid(r);if(!p)return;(groups.get(p)||groups.set(p,[]).get(p)).push(i)});
+    const per=new Map();
+    const build=q=>{let idx=[];groups.forEach((ix,p)=>{if(o.same(p,q))idx=idx.concat(ix)});idx.sort((a,b)=>a-b);
+      const day=new Map(),odd=[];
+      idx.forEach(i=>{const r=rows[i],f=o.from(r),t=o.to(r);
+        if(!validDay(f)||typeof t!=='string'){odd.push(i);return}
+        let n=0;for(let d=f;d<t;d=nextDay(d)){if(++n>4000){odd.push(i);break}if(!day.has(d))day.set(d,i)}});
+      return{idx,day,odd}};
+    const at=(q,d)=>{let e=per.get(q);if(!e){e=build(q);per.set(q,e)}
+      if(!validDay(d)){for(const i of e.idx){const r=rows[i];if(o.from(r)<=d&&o.to(r)>d)return r}return undefined}
+      let best=e.day.has(d)?e.day.get(d):-1;
+      for(const i of e.odd){if(best>=0&&i>best)break;const r=rows[i];if(o.from(r)<=d&&o.to(r)>d){best=i;break}}
+      return best>=0?rows[best]:undefined};
+    return at}
+  /* double bookings: pairs [i,j] (i<j, in the order the pairwise loop finds them) of rows at the same place whose dates
+     overlap - only rows at related stays are compared, not every row with every row */
+  function clashPairs(fut,same){const byP=new Map();fut.forEach((b,i)=>{const p=b.property_id;(byP.get(p)||byP.set(p,[]).get(p)).push(i)});
+    const pids=[...byP.keys()],out=[];
+    fut.forEach((a,i)=>pids.forEach(p=>{if(!same(a.property_id,p))return;byP.get(p).forEach(j=>{if(j<=i)return;const b=fut[j];if(a.check_in<b.check_out&&b.check_in<a.check_out)out.push([i,j])})}));
+    return out.sort((x,y)=>x[0]-y[0]||x[1]-y[1])}
+  /* remember one answer until any of its inputs changes (compared with ===) */
+  function memo(fn){let keys=null,val;const f=(...k)=>{if(keys&&keys.length===k.length&&k.every((x,i)=>x===keys[i]))return val;val=fn(...k);keys=k;return val};f.reset=()=>{keys=null};return f}
+  /* data versions: a read may send since=<the version we hold>; the sheet may answer {unchanged:true} with no data.
+     Ask only when we hold data from that version; trust "unchanged" only when we asked. An older sheet sends no
+     version, so nothing changes there. */
+  const sinceOf=(ver,have)=>have&&ver!=null&&ver!==''?String(ver):null;
+  const outcome=(r,since)=>r&&r.unchanged===true?(since!=null?'unchanged':'bad'):'data';
+  /* the version to keep after the two parallel reads (dashboard + blocks): only when both answered the same version -
+     blocks read before a change (or a failed blocks read, shown as none) must not be kept behind "unchanged" (QA s20) */
+  const pairVer=(a,b)=>a!=null&&a!==''&&b!=null&&String(a)===String(b)?a:null;
+  /* run fn over items, at most n at a time; results in item order. The first failure stops new starts and is thrown
+     once the ones already running have finished (so nothing is left uploading behind the error). */
+  function pool(items,n,fn){return new Promise((ok,no)=>{const out=new Array(items.length);let next=0,run=0,err=null,done=0;
+    if(!items.length)return ok(out);
+    const kick=()=>{while(!err&&run<n&&next<items.length){const i=next++;run++;
+      Promise.resolve().then(()=>fn(items[i],i)).then(v=>{out[i]=v},e=>{if(!err)err=e}).then(()=>{run--;done++;
+        if(err){if(!run)no(err)}else if(done===items.length)ok(out);else kick()})}};
+    kick()})}
+  return{validDay,nextDay,samePlace,occIndex,clashPairs,memo,sinceOf,outcome,pairVer,pool}})();
 
 /* ============ basics ============ */
 const $=s=>document.querySelector(s);
@@ -414,12 +473,25 @@ async function post(body,ms){if(navigator.onLine===false)throw offErr();const ac
   try{const r=await fetch(CLIENT.api_url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),signal:ac?ac.signal:undefined});return await r.json()}
   catch(e){throw offErr()}finally{clearTimeout(tm)}}
 async function api(body,ms){const j=await post({key:S.key,device:'Manager app',...body},ms);if(j.error){const x=new Error(j.error);x.server=true;throw x}return j}
-async function load(){S.busy=true;const k0=S.key;try{const d=await api({action:'read',format:'dashboard'});if(S.key!==k0)return;   // signed out meanwhile: keep nothing
+/* data versions: after this session's first full read, each read sends since=<version>; a sheet with nothing new
+   answers {unchanged:true} (a few bytes): the screen, the copy on the phone and the data stay as they are. An older
+   sheet sends no version: every read is a full one, as before. */
+async function load(){S.busy=true;const k0=S.key,q0=S.q;let same=false;try{const since=PERF.sinceOf(S.verKey===S.key?S.ver:null,!!S.d);
+    const d=await api({action:'read',format:'dashboard',...(since!=null?{since}:{})});if(S.key!==k0)return;   // signed out meanwhile: keep nothing
+    const o=PERF.outcome(d,since);if(o==='bad')throw new Error('try_again');
+    if(o==='unchanged'){const me0=JSON.stringify(S.me||null);if(d.me){S.me=d.me;store.set('mg_me',d.me)}if(d.ver!=null)S.ver=d.ver;S.d.at=Date.now();await queued();same=JSON.stringify(S.me||null)===me0&&S.q===q0;return}
+    S.ver=d.ver!=null&&d.ver!==''?d.ver:null;S.verKey=k0;
     S.d={props:d.props||[],bookings:(d.bookings||[]).map(b=>({...b,booking_id:String(b.booking_id),check_in:String(b.check_in).slice(0,10),check_out:String(b.check_out).slice(0,10)})),maint:d.maint||[],reviews:d.reviews||[],
       checklists:d.checklists||[],requests:d.requests||[],stock:d.stock||[],turnovers:d.turnovers||[],claims:d.claims||[],movements:d.movements||[],ops:d.ops||[],leaves:d.leaves||[],plan:d.plan||null,checkin_info:d.checkin_info||[],directory:d.directory||[],at:Date.now()};
     if(d.me){S.me=d.me;store.set('mg_me',d.me)}store.set('mg_cache',S.d);await queued()}
   catch(e){if(/unauthorized/.test(e.message)){try{await api({action:'me'})}catch(x){if(/unauthorized/.test(x.message))return signOut('Your sign-in ended. Sign in again.')}}
-    toast(S.d?'Couldn’t refresh just now · showing the last data':'Couldn’t reach the sheet. Check the connection.')}finally{S.busy=false;render()}}
+    toast(S.d?'Couldn’t refresh just now · showing the last data':'Couldn’t reach the sheet. Check the connection.')}finally{S.busy=false;if(!same)render()}}
+/* after a change was sent: it is already on screen (localApply); one read a moment later brings what the sheet added
+   (numbers, statuses) - several quick changes share that one read instead of a full reload each */
+let soonT=0,soonDue=false;   // soonDue: that read was due while the phone was offline - it runs when back online
+function soonLoad(){render();clearTimeout(soonT);const later=()=>{if(!S.key)return;if(navigator.onLine===false){soonDue=true;return}if(S.busy||flushing){soonT=setTimeout(later,1500);return}load()};soonT=setTimeout(later,2500)}
+/* send what waits in the outbox, then read once: flush reads by itself when it sent something */
+async function sync(){if(!S.key||flushing)return;const n=await flush(true);if(!n)await load()}
 function signOut(msg){api({action:'logout'}).catch(()=>{});S.key='';S.me=null;S.d=null;store.set('mg_session','');store.set('mg_me',null);store.set('mg_cache',null);loginScreen(msg)}
 /* ============ outbox: anything saved without a connection waits on the phone (with its photos) and is sent when the
    connection is back. A refusal from the sheet (not your stay, etc.) is shown and dropped: retrying would not help. ============ */
@@ -432,14 +504,16 @@ const OB=(()=>{let dbP=null;const db=()=>dbP=dbP||new Promise((ok,no)=>{if(!wind
 /* each saved change carries who made it; only theirs is sent or counted, so a shared phone never sends A's work as B (M-33) */
 const mineQ=it=>!it.by||it.by===myId();
 async function queued(){const a=(await OB.all()).filter(mineQ);S.q=a.length;return a}
+/* photos go up two at a time (already shrunk to 1280 px on the phone); their links keep the photos' order */
 async function sendOne(it){const p=JSON.parse(JSON.stringify(it.payload));
-  if(it.photos&&it.photos.length){const urls=[],slots={};for(let i=0;i<it.photos.length;i++){const ph=it.photos[i],r=await api({action:'upload',kind:it.kind||'checklist',name:`${it.name||'photo'} ${i+1}`,mime:'image/jpeg',data:ph.b64},TMO_UP);const u=r.thumb||r.url;urls.push(u);if(ph.slot)(slots[ph.slot]=slots[ph.slot]||[]).push(u)}
+  if(it.photos&&it.photos.length){const urls=await PERF.pool(it.photos,2,async(ph,i)=>{const r=await api({action:'upload',kind:it.kind||'checklist',name:`${it.name||'photo'} ${i+1}`,mime:'image/jpeg',data:ph.b64},TMO_UP);return r.thumb||r.url}),slots={};
+    it.photos.forEach((ph,i)=>{if(ph.slot)(slots[ph.slot]=slots[ph.slot]||[]).push(urls[i])});
     if(p.fields)p.fields[it.photoField||'photos']=urls.length===1?urls[0]:JSON.stringify(urls);   // an update (a task's done photo)
     else{p.row[it.photoField||'photos']=JSON.stringify(urls);if(Object.keys(slots).length)p.row.photo_slots=JSON.stringify(slots)}}
-  await api({action:it.op,tab:it.tab,...p})}
+  await api({action:it.op,tab:it.tab,...p});return p}
 let flushing=false;
-async function flush(){if(flushing||!S.key)return;flushing=true;let sent=0;try{for(const it of(await OB.all()).filter(mineQ).sort((a,b)=>a.id.localeCompare(b.id))){try{await sendOne(it);await OB.del(it.id);sent++}
-    catch(e){if(e.offline)break;await OB.del(it.id);toast(`${it.label||'A change'} wasn’t accepted: ${e.message.replace(/^not allowed: /,'')}`)}}}finally{flushing=false;await queued();if(sent){toast(`${sent} saved change${sent>1?'s':''} sent ✓`);load()}else render()}}
+async function flush(quiet){if(flushing||!S.key)return 0;flushing=true;let sent=0;try{for(const it of(await OB.all()).filter(mineQ).sort((a,b)=>a.id.localeCompare(b.id))){try{await sendOne(it);await OB.del(it.id);sent++}
+    catch(e){if(e.offline)break;await OB.del(it.id);toast(`${it.label||'A change'} wasn’t accepted: ${e.message.replace(/^not allowed: /,'')}`)}}}finally{flushing=false;await queued();if(sent){toast(`${sent} saved change${sent>1?'s':''} sent ✓`);load()}else if(!quiet)render()}return sent}
 /* Geotag: where the phone is when a checklist, stock check or issue is sent. The sheet works out the distance to the
    stay's map pin and flags anything over 200 m to the admin. Location refused = it can't be sent; no GPS fix in 15 s =
    sent anyway, marked "no location". Off when the admin sets ops.geotag = off. */
@@ -452,12 +526,13 @@ async function geoFields(err){if(!geoOn())return{};const g=await geoNow();
   return g.flag?{geo_flag:g.flag,geo_at:nowIso()}:{geo_lat:g.lat,geo_lng:g.lng,geo_acc_m:g.acc,geo_at:nowIso()}}
 /* send now; without a connection keep it in the outbox and show it as done */
 async function write(op,tab,payload,msg,extra){if(['readonly','off'].includes(String(((S.d||{}).plan||{}).status||''))){toast(T('Read-only for now · ask your admin'));return false}const it={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),by:myId(),op,tab,payload,label:msg,...(extra||{})};
-  try{if(navigator.onLine===false)throw offErr();await sendOne(it);toast(T(msg)+' ✓');return'sent'}
+  try{if(navigator.onLine===false)throw offErr();const p=await sendOne(it);localApply(op,tab,p,true);toast(T(msg)+' ✓');return'sent'}
   catch(e){if(!e.offline){toast('Not saved: '+e.message.replace(/^not allowed: /,''));return false}
     await OB.add(it);await queued();localApply(op,tab,payload);toast(T('Saved on the phone · sends when online'));return'queued'}}
-function localApply(op,tab,p){const k={maintenance:'maint'}[tab]||tab;if(!S.d||!S.d[k])return;
-  if(op==='append')S.d[k].push({...p.row,status:tab==='maintenance'?'Pending approval':tab==='claims'?'pending':p.row.status,_queued:true});
-  else{const r=S.d[k].find(x=>Object.entries(p.match).every(([a,b])=>String(x[a])===String(b)));if(r)Object.assign(r,p.fields,{_queued:true})}store.set('mg_cache',S.d)}
+/* sent: the sheet has it (shown now; the read that follows brings the sheet's own copy). Otherwise it waits in the outbox. */
+function localApply(op,tab,p,sent){const k={maintenance:'maint'}[tab]||tab;if(!S.d||!S.d[k])return;const q=sent?{}:{_queued:true};
+  if(op==='append')S.d[k].push({...p.row,status:tab==='maintenance'?'Pending approval':tab==='claims'?'pending':p.row.status,...(tab==='maintenance'?{source:'Manager'}:{}),...q});   // as the sheet saves a report from a manager (Code.gs)
+  else{const r=S.d[k].find(x=>Object.entries(p.match).every(([a,b])=>String(x[a])===String(b)));if(r)Object.assign(r,p.fields,q)}if(!sent)store.set('mg_cache',S.d)}
 /* ============ sign-in ============ */
 function loginScreen(msg){const id=h('input',{autocomplete:'username',autocapitalize:'none',spellcheck:'false',placeholder:T('Login id')}),pw=h('input',{type:'password',autocomplete:'current-password',placeholder:T('Password')}),err=h('div',{class:'err',hidden:!msg},msg||'');
   const go=h('button',{class:'btn primary full',type:'submit'},T('Sign in'));
@@ -473,7 +548,7 @@ function loginScreen(msg){const id=h('input',{autocomplete:'username',autocapita
 const langBtn=()=>h('div',{class:'lang'},h('span',null,T('Language')),h('div',{class:'yn'},[['en','English'],['hi','हिंदी']].map(([k,l])=>h('button',{type:'button','aria-pressed':LANG===k,onclick:()=>{LANG=k;store.set('mg_lang',k);document.documentElement.lang=k;S.key?render():loginScreen()}},l))));
 /* ============ what this manager covers ============ */
 const C=()=>OPS.cfg((S.d||{}).ops,CLIENT);
-const myStays=()=>new Set(S.me&&S.me.properties||[]);
+let MYS={me:undefined,s:null};const myStays=()=>{if(MYS.me!==S.me||!MYS.s)MYS={me:S.me,s:new Set(S.me&&S.me.properties||[])};return MYS.s};   // one Set per signed-in person, not one per row
 const inS=pid=>myStays().has(pid);
 const P=pid=>((S.d||{}).props||[]).find(p=>p.property_id===pid)||{};
 const nm=pid=>String(P(pid).property||pid||'').replace(/\s*\(.*?\)/g,'').split(',')[0].trim();
@@ -506,7 +581,7 @@ function leaveSheet(){const f=h('input',{type:'date',min:TODAY,value:TOMORROW}),
   go.addEventListener('click',async()=>{if(!f.value||!t.value||t.value<f.value){err.hidden=false;err.textContent=T('Pick the first and the last day off.');return}
     if(t.value<TODAY){err.hidden=false;err.textContent=T('Those dates are over.');return}go.disabled=true;
     const ok=await write('append','leaves',{row:{leave_id:'LV'+Date.now().toString(36).toUpperCase(),from:f.value,to:t.value,reason:why.value.trim()||null,requested_at:nowIso()}},'Leave request sent');
-    if(ok){close();ok==='sent'?load():render()}else go.disabled=false})}
+    if(ok){close();ok==='sent'?soonLoad():render()}else go.disabled=false})}
 /* ============ screens ============ */
 const TABS=[['today','Today','today'],['stays','Stays','home'],['check','Checks','check'],['reviews','Reviews','star'],['issues','Issues','wrench']];
 function render(){if(!S.key)return loginScreen();if(!S.d){$('#app').replaceChildren(h('div',{class:'skel','aria-busy':'true','aria-label':T('Loading your stays…')},h('i',{class:'sk-h'}),h('i',{class:'sk-b'}),h('i',{class:'sk-c'}),h('i',{class:'sk-c'}),h('p',{class:'hint'},T('Loading your stays…'))));return}
@@ -533,9 +608,9 @@ function taskDone(r){let ph=null;const pv=h('div',{class:'pv'}),fi=h('input',{ty
   fi.addEventListener('change',async()=>{const f=fi.files[0];if(!f)return;try{const b64=await shrink(f);ph={b64};pv.replaceChildren(h('img',{src:'data:image/jpeg;base64,'+b64,alt:T('Done photo'),style:{maxWidth:'100%',borderRadius:'12px'}}))}catch(e){toast(T('That file isn’t a photo'))}});
   const close=sheet(T('Done')+' · '+r.addon,h('p',{class:'hint'},nm(r.property_id)+' · '+T('a photo of the finished job helps (optional)')),fi,pv,
     h('div',{class:'acts'},h('button',{class:'btn',onclick:()=>fi.click()},T('Add a photo')),h('button',{class:'btn primary',onclick:()=>{close();
-      write('update','requests',{match:{request_id:r.request_id},fields:{status:'Done'}},T('Done · the guest is told'),ph?{photos:[ph],photoField:'done_photo',kind:'task',name:'Done '+r.addon}:null).then(ok=>{if(ok==='sent')load();else render()})}},T('Done'))))}
+      write('update','requests',{match:{request_id:r.request_id},fields:{status:'Done'}},T('Done · the guest is told'),ph?{photos:[ph],photoField:'done_photo',kind:'task',name:'Done '+r.addon}:null).then(ok=>{if(ok==='sent')soonLoad();else render()})}},T('Done'))))}
 const ago=t=>{const m=Math.max(0,Math.round((Date.now()-new Date(String(t).replace(' ','T')).getTime())/6e4));return isNaN(m)?'':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
-function taskSet(r,status){write('update','requests',{match:{request_id:r.request_id},fields:{status}},status==='Done'?'Done · the guest is told':'Marked on it').then(ok=>{if(ok==='sent')load();else render()})}
+function taskSet(r,status){write('update','requests',{match:{request_id:r.request_id},fields:{status}},status==='Done'?'Done · the guest is told':'Marked on it').then(ok=>{if(ok==='sent')soonLoad();else render()})}
 /* the stay's map link: its own maps_url, else one from its pin (lat/lng, or a pasted Google Maps link) */
 const mapOf=p=>{if(!p)return null;if(p.maps_url)return p.maps_url;let la=+p.lat,lo=+p.lng;if(!(la&&lo)){const s=String(p.map_pin||''),m=[...s.matchAll(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/g)].pop()||s.match(/[?&](?:q|query|ll)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/)||s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);if(m){la=+m[1];lo=+m[2]}}
   return la&&lo?`https://www.google.com/maps/search/?api=1&query=${la},${lo}`:null};
@@ -545,7 +620,7 @@ function moveMark(b,kind,steps){const st_=kind==='arrived'?OPS.cityStepsOf(C(),P
   if(st_.length&&!steps){const ticks={},err=h('div',{class:'err',hidden:true}),go=h('button',{class:'btn primary full'},T('Arrived'));
     const close=sheet(T('Arrived')+' · '+(b.guest||'Guest'),h('p',{class:'hint'},`${nm(b.property_id)} · steps for ${P(b.property_id).city}`),h('div',{class:'form'},...st_.map(sx=>{const cb=h('input',{type:'checkbox',onchange:e=>{ticks[sx]=e.target.checked;lab.classList.toggle('on',e.target.checked)}}),lab=h('label',{class:'ck'},cb,sx);return lab}),err,go));
     go.addEventListener('click',()=>{const miss=st_.filter(sx=>!ticks[sx]);if(miss.length&&!go.dataset.ok){go.dataset.ok='1';err.hidden=false;err.textContent=`${miss.length} step${miss.length>1?'s':''} not ticked. Tap again to mark arrived anyway.`;return}close();moveMark(b,kind,Object.fromEntries(st_.map(sx=>[sx,!!ticks[sx]])))});return}
-  write('append','movements',{row:{move_id:'MV'+Date.now().toString(36).toUpperCase(),booking_id:b.booking_id,property_id:b.property_id,kind,at:TODAY+'T'+hhmm(),steps:steps?JSON.stringify(steps):null}},kind==='arrived'?'Marked arrived':'Marked checked out').then(ok=>{if(ok==='sent')load();else render()})}
+  write('append','movements',{row:{move_id:'MV'+Date.now().toString(36).toUpperCase(),booking_id:b.booking_id,property_id:b.property_id,kind,at:TODAY+'T'+hhmm(),steps:steps?JSON.stringify(steps):null}},kind==='arrived'?'Marked arrived':'Marked checked out').then(ok=>{if(ok==='sent')soonLoad();else render()})}
 /* check-in steps for the guest's stay (or the whole place it belongs to): never door codes or Wi-Fi passwords */
 const infoFor=pid=>(S.d.checkin_info||[]).find(x=>x.property_id===pid)||(S.d.checkin_info||[]).find(x=>x.property_id===OPS.parentOf(pid,S.d.props))||null;
 function coverBanners(m){const lv=leaveNow();
@@ -587,7 +662,7 @@ const coT=b=>{const p=P(b.property_id)||{},par=P(OPS.parentOf(b.property_id,S.d.
 (function pullToRefresh(){let y0=null,dy=0;const tip=h('div',{class:'ptr','aria-hidden':'true'},icon('sync'));document.body.append(tip);
   addEventListener('touchstart',e=>{y0=scrollY<=0&&!document.querySelector('.sheet,.modal')&&e.touches.length===1?e.touches[0].clientY:null;dy=0},{passive:true});
   addEventListener('touchmove',e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);tip.style.transform=`translate(-50%,${Math.min(dy,110)-50}px) rotate(${dy*3}deg)`;tip.classList.toggle('go',dy>80)},{passive:true});
-  addEventListener('touchend',()=>{if(y0!=null&&dy>80&&S.key){flush();load();toast(T('Refreshing…'))}y0=null;dy=0;tip.style.transform='';tip.classList.remove('go')},{passive:true})})();
+  addEventListener('touchend',()=>{if(y0!=null&&dy>80&&S.key){sync();toast(T('Refreshing…'))}y0=null;dy=0;tip.style.transform='';tip.classList.remove('go')},{passive:true})})();
 /* the morning brief: the day in one card, each number opens its tab */
 const openJobs=()=>(S.d.maint||[]).filter(x=>inS(x.property_id)&&/^(open|in progress)$/i.test(x.status||'Open')&&x.mgr_status!=='fixed');
 function brief(u,ins,outs,tom){const hr=new Date().getHours(),hi=T(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening');
@@ -603,7 +678,7 @@ function brief(u,ins,outs,tom){const hr=new Date().getHours(),hi=T(hr<12?'Good m
 function jobSheet(x,st){let ph=null;const pv=h('div',{class:'pv'}),fi=h('input',{type:'file',accept:'image/*',capture:'environment',hidden:true,'aria-label':T('Add a photo')}),note=h('input',{placeholder:T('What was done (optional)')});
   fi.addEventListener('change',async()=>{const f=fi.files[0];if(!f)return;try{const b64=await shrink(f);ph={b64};pv.replaceChildren(h('img',{src:'data:image/jpeg;base64,'+b64,alt:T('Done photo'),style:{maxWidth:'100%',borderRadius:'12px'}}))}catch(e){toast(T('That file isn’t a photo'))}});
   const send=()=>write('update','maintenance',{match:{ticket_id:x.ticket_id},fields:{mgr_status:st,mgr_note:note.value.trim()||null}},T(st==='fixed'?'Sent · your admin closes it':'Marked on it'),
-    ph?{photos:[ph],photoField:'mgr_photo',kind:'task',name:'Fixed '+String(x.issue||'').slice(0,40)}:null).then(ok=>{if(ok==='sent')load();else render()});
+    ph?{photos:[ph],photoField:'mgr_photo',kind:'task',name:'Fixed '+String(x.issue||'').slice(0,40)}:null).then(ok=>{if(ok==='sent')soonLoad();else render()});
   if(st==='on_it')return send();
   const close=sheet(T('Fixed')+' · '+String(x.issue||'').replace(/^Damage: /,''),h('p',{class:'hint'},nm(x.property_id)+' · '+T('a photo of the finished job helps (optional)')),h('div',{class:'form'},note),fi,pv,
     h('div',{class:'acts'},h('button',{class:'btn',onclick:()=>fi.click()},T('Add a photo')),h('button',{class:'btn primary',onclick:()=>{close();send()}},T('Send'))))}
@@ -689,8 +764,18 @@ function sheet(title,...body){const esc=e=>{if(e.key==='Escape'&&w.isConnected&&
   document.body.append(w);try{history.pushState({mgSheet:1},'')}catch(e){}SHEETS.push(close);close.el=w;return close}
 /* drafts: a checklist or stock count in progress is kept on this phone (per user, checklist and booking) as you go, so a
    stray tap, the back button or Android closing the app loses nothing; opening it again offers to continue (M-11) */
-const DR={k:(kind,id)=>`mg_draft|${myId()}|${kind}|${id}`,get:k=>store.get(k),del:k=>{try{localStorage.removeItem(k)}catch(e){}},
-  put:(k,d)=>{try{localStorage.setItem(k,JSON.stringify(d))}catch(e){try{localStorage.setItem(k,JSON.stringify({...d,photos:[],noPics:true}))}catch(x){}}},   // phone storage full: keep the ticks, not the photos
+/* the photos sit under their own key, written only when a photo is added or removed - not with every tick (a draft
+   with 8 photos was ~3 MB written on every tap) */
+const DR_PICS={};   // draft key -> the photos last written ({b64, slot}) and whether they fitted
+const DR={k:(kind,id)=>`mg_draft|${myId()}|${kind}|${id}`,
+  get:k=>{const d=store.get(k);if(d&&d.pk){const ph=store.get(k+'|pics');if(Array.isArray(ph))d.photos=ph;else{d.photos=[];d.noPics=true}delete d.pk}return d},
+  del:k=>{delete DR_PICS[k];try{localStorage.removeItem(k);localStorage.removeItem(k+'|pics')}catch(e){}},
+  put:(k,d)=>{const ph=d.photos||[],was=DR_PICS[k];let fit=was?was.fit:true;
+    if(!was||was.ph.length!==ph.length||ph.some((p,i)=>p.b64!==was.ph[i].b64||(p.slot||null)!==(was.ph[i].slot||null))){
+      try{localStorage.setItem(k+'|pics',JSON.stringify(ph));fit=true}catch(e){fit=false;try{localStorage.removeItem(k+'|pics')}catch(x){}}
+      DR_PICS[k]={ph:ph.map(p=>({b64:p.b64,slot:p.slot||null})),fit}}
+    const{photos,...rest}=d;
+    try{localStorage.setItem(k,JSON.stringify(fit?{...rest,pk:1}:{...rest,photos:[],noPics:true}))}catch(e){try{localStorage.setItem(k,JSON.stringify({...rest,photos:[],noPics:true}))}catch(x){}}},   // phone storage full: keep the ticks, not the photos
   pics:d=>((d&&d.photos)||[]).map(p=>({b64:p.b64,slot:p.slot||null,preview:'data:image/jpeg;base64,'+p.b64}))};
 function draftKit(k,old,snap,has,reopen){let t=null;
   const bar=old?h('div',{class:'draft',role:'status'},h('div',{class:'t'},h('b',null,T('Continue where you left off?')),h('span',null,`${T('Saved on this phone')} · ${new Date(old.at).toLocaleString(LANG==='hi'?'hi-IN':'en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}`)),
@@ -745,7 +830,7 @@ function checklistForm(b,d0){const dk=DR.k('checklist',b.booking_id),old=d0?null
     /* what wasn't done becomes an issue for the admin to approve */
     if(missing.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:b.property_id,issue:'Checklist not done: '+missing.join(', ').slice(0,180),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),booking_id:b.booking_id,...geo}},'Issue sent to admin');
     if(!(S.d.turnovers||[]).some(t=>String(t.booking_id)===b.booking_id))write('append','turnovers',{row:{booking_id:b.booking_id,status:'Done',done_at:nowIso(),done_by:S.me&&S.me.name||''}},'Marked clean');
-    close();ok==='sent'?load():render()})}
+    close();ok==='sent'?soonLoad():render()})}
 function stockForm(pid,d0){const dk=DR.k('stock',pid),old=d0?null:DR.get(dk);d0=d0||{};
   const c=C(),items=OPS.stockItemsFor(c,pid,S.d.props),last=OPS.stockTrend(S.d.stock,pid,4),vals={...(d0.vals||{})},photos=DR.pics(d0),inotes={...(d0.inotes||{})},err=h('div',{class:'err',hidden:true}),issues=h('textarea',{rows:2,placeholder:T('Anything else broken, missing or running low?')}),save_=h('button',{class:'btn primary full'},T('Submit stock check'));
   const pr=progress(),upd=()=>pr.set(items.filter(i=>vals[i.name]!=null).length,items.length);
@@ -766,15 +851,15 @@ function stockForm(pid,d0){const dk=DR.k('stock',pid),old=d0?null:DR.get(dk);d0=
       photos.length?{photos:strip(photos),kind:'checklist',name:nm(pid)+' stock'}:null);
     if(!ok){save_.disabled=false;save_.textContent=T('Submit stock check');return}kit.done();
     if(bad.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:pid,issue:'Not working: '+bad.join(', ')+(bad.some(x=>cm[x])?' ('+bad.filter(x=>cm[x]).map(x=>x+': '+cm[x]).join('; ')+')':''),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),...geo}},'Issue sent to admin');
-    close();ok==='sent'?load():render()})}
+    close();ok==='sent'?soonLoad():render()})}
 async function askedReview(x){const ok=x.row?await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked')
-  :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked');if(ok==='sent')load();else if(ok)render()}
+  :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked');if(ok==='sent')soonLoad();else if(ok)render()}
 /* after the admin confirms the review arrived: the stars it got (3 or less is logged as low) and what the guest wrote */
 function rateForm(x){const r=x.row||{};let n=+r.rating||0;const box=h('div',{class:'stars'}),draw=()=>box.replaceChildren(...[1,2,3,4,5].map(k=>h('button',{type:'button','aria-label':k+' stars','aria-pressed':k<=n,onclick:()=>{n=k;draw();lowN.hidden=!(n&&n<=C().lowAt)}},'★')));
   const txt=h('textarea',{rows:3,value:r.review_text||'',placeholder:'e.g. Lovely views, geyser was slow'}),lowN=h('p',{class:'err',hidden:!(n&&n<=C().lowAt)},`${C().lowAt} stars or less is flagged to your admin as a low rating.`),err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Save rating'));draw();
   const close=sheet(T('Rating')+' · '+(x.booking.guest||'Guest'),h('p',{class:'hint'},`${nm(x.property_id)} · out ${fmtD(x.check_out)} · ${x.booking.channel||''}`),h('div',{class:'form'},box,lowN,h('label',null,T('What the guest wrote (optional)'),txt),err,save_));
   save_.addEventListener('click',async()=>{if(!n){err.hidden=false;err.textContent='Tap the stars it got.';return}save_.disabled=true;
-    const ok=await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{rating:n,review_text:txt.value.trim()||null}},'Rating saved');if(!ok){save_.disabled=false;return}close();ok==='sent'?load():render()})}
+    const ok=await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{rating:n,review_text:txt.value.trim()||null}},'Rating saved');if(!ok){save_.disabled=false;return}close();ok==='sent'?soonLoad():render()})}
 const staySel=()=>h('select',null,[...myStays()].filter(pid=>P(pid).property_id).map(pid=>h('option',{value:pid},nm(pid))));
 function issueForm(){const st=staySel(),is=h('input',{placeholder:'e.g. Geyser not heating in the upper bathroom'}),pr=h('select',null,h('option',{value:'High'},T('Urgent')),h('option',{value:'Medium',selected:true},T('Soon')),h('option',{value:'Low'},T('Routine'))),photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Send to admin'));
   const close=sheet(T('Report an issue'),h('div',{class:'form'},h('label',null,T('Stay'),st),h('label',null,T('What’s wrong'),is),h('label',null,T('How soon'),pr),h('label',null,'Photo (optional)',picker(photos)),h('p',{class:'hint'},'Your admin approves it before it goes on the repairs board.'),err,save_));
@@ -782,7 +867,7 @@ function issueForm(){const st=staySel(),is=h('input',{placeholder:'e.g. Geyser n
     const geo=await geoFields(err);if(!geo){save_.disabled=false;return}
     const ok=await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:st.value,issue:is.value.trim(),priority:pr.value,reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),...geo}},'Sent to admin',
       photos.length?{photos:strip(photos),kind:'checklist',name:nm(st.value)+' issue'}:null);
-    if(ok){close();ok==='sent'?load():render()}else save_.disabled=false})}
+    if(ok){close();ok==='sent'?soonLoad():render()}else save_.disabled=false})}
 /* damage after a stay: what, an estimate, photos (required), linked to the booking - the admin decides and claims it */
 function damageForm(b0){const since=OPS.addD(TODAY,-7),bk=(S.d.bookings||[]).filter(b=>live(b)&&inS(b.property_id)&&b.check_out>=since&&b.check_in<=TODAY).sort((a,b)=>(a.check_out>TODAY)-(b.check_out>TODAY)||b.check_out.localeCompare(a.check_out));
   if(b0&&!bk.includes(b0))bk.unshift(b0);if(!bk.length)return toast(T('No recent stays to report on'));
@@ -794,7 +879,7 @@ function damageForm(b0){const since=OPS.addD(TODAY,-7),bk=(S.d.bookings||[]).fil
     go.disabled=true;const b=bk.find(x=>x.booking_id===sel.value)||bk[0],geo=await geoFields(err);if(!geo){go.disabled=false;return}
     const ok=await write('append','maintenance',{row:{ticket_id:'DM'+Date.now().toString(36).toUpperCase(),property_id:b.property_id,booking_id:b.booking_id,kind:'damage',issue:'Damage: '+what.value.trim(),est_cost:+est.value||null,priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),...geo}},'Damage reported',
       {photos:strip(photos),kind:'checklist',name:nm(b.property_id)+' damage'});
-    if(ok){close();ok==='sent'?load():render()}else go.disabled=false})}
+    if(ok){close();ok==='sent'?soonLoad():render()}else go.disabled=false})}
 function claimForm(){const st=staySel(),dt=h('input',{type:'date',value:TODAY}),cat=h('select',null,['Repairs','Cleaning','Supplies','Laundry','Groceries','Transport','Other'].map(c=>h('option',null,c))),amt=h('input',{type:'number',inputmode:'decimal',min:1,placeholder:'e.g. 850'}),
     note=h('input',{placeholder:'e.g. Tap washer and plumber visit'}),photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Send claim'));
   const close=sheet(T('Log an expense'),h('div',{class:'form'},h('label',null,T('Stay'),st),h('label',null,T('Date'),dt),h('label',null,T('Category'),cat),h('label',null,T('Amount (₹)'),amt),h('label',null,T('What it was'),note),h('label',null,T('Receipt photo'),picker(photos,'Add the receipt')),h('p',{class:'hint'},'Your admin approves it, then pays you back.'),err,save_));
@@ -805,7 +890,7 @@ function claimForm(){const st=staySel(),dt=h('input',{type:'date',value:TODAY}),
     save_.disabled=true;
     const ok=await write('append','claims',{row:{claim_id:'CL'+Date.now().toString(36).toUpperCase(),property_id:st.value,date:dt.value,category:cat.value,amount:+amt.value,note:note.value.trim(),submitted_at:nowIso()}},'Claim sent',
       photos.length?{photos:strip(photos),kind:'checklist',name:nm(st.value)+' receipt'}:null);
-    if(ok){close();ok==='sent'?load():render()}else save_.disabled=false})}
+    if(ok){close();ok==='sent'?soonLoad():render()}else save_.disabled=false})}
 const OPENC={};
 function openNews(){const cats=news(),since=seenAt(),w=t=>{const d=new Date(String(t).replace(' ','T'));return isNaN(d)?'':d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})};
   const close=sheet(T("What's new"),h('p',{class:'hint'},'Since '+w(since)),...(cats.length?cats.map(c=>h('div',{class:'news-c'},h('b',null,c.label,h('span',null,c.items.length)),...c.items.slice(0,OPENC[c.key]?99:4).map(it=>h('div',{class:'news-i'},h('span',null,it.title),h('small',null,[it.sub,w(it.at)].filter(Boolean).join(' · ')))),
@@ -815,7 +900,7 @@ function openMenu(){const close=sheet(T('Menu'),h('div',{class:'form'},h('p',{cl
   S.q?h('p',{class:'hint'},`${S.q} ${T('waiting to send')}.`):null,langBtn(),
   h('button',{class:'btn full',onclick:()=>{close();leaveSheet()}},icon('today'),T('Leave')),
   h('button',{class:'btn full',onclick:()=>{close();helpSheet()}},T('Help')),
-  h('button',{class:'btn full',onclick:()=>{close();flush();load();toast('Refreshing…')}},icon('sync'),T('Refresh now')),h('button',{class:'btn full',onclick:()=>{close();askSignOut()}},T('Sign out'))))}
+  h('button',{class:'btn full',onclick:()=>{close();sync();toast('Refreshing…')}},icon('sync'),T('Refresh now')),h('button',{class:'btn full',onclick:()=>{close();askSignOut()}},T('Sign out'))))}
 /* signing out with changes still on the phone: send them now, or leave them for the next time this person signs in */
 async function askSignOut(){const n=(await queued()).length;if(!n)return signOut();
   const close=sheet(T('Sign out'),h('p',{class:'hint'},`${n} ${T(n===1?'change not sent yet':'changes not sent yet')}. ${T('They stay on this phone and send the next time you sign in.')}`),
@@ -823,10 +908,10 @@ async function askSignOut(){const n=(await queued()).length;if(!n)return signOut
       h('button',{class:'btn full',onclick:()=>{close();signOut()}},T('Sign out anyway'))))}
 /* ============ start ============ */
 document.documentElement.lang=LANG;
-render();if(S.key){queued().then(()=>{flush();load()})}
-setInterval(()=>{if(S.key&&!document.hidden&&!S.busy){flush();load()}},3*60*1000);
-addEventListener('online',()=>{if(S.key)flush()});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.key&&S.d&&Date.now()-S.d.at>60000){flush();load()}});
+render();if(S.key){queued().then(sync)}
+setInterval(()=>{if(S.key&&!document.hidden&&!S.busy)sync()},3*60*1000);   // with since: a few bytes when nothing changed
+addEventListener('online',()=>{if(!S.key)return;if(soonDue){soonDue=false;sync()}else flush()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.key&&S.d&&Date.now()-S.d.at>60000)sync()});
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
