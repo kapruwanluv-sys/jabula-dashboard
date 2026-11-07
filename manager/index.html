@@ -54,6 +54,7 @@ main{display:grid;gap:14px;padding:14px max(16px,env(safe-area-inset-right,0px))
 .ck input{width:22px;height:22px;accent-color:var(--accent);flex:none}.ck.on{border-color:rgba(128,188,174,1.0);border-color:color-mix(in srgb,var(--ok) 45%,var(--hair-2));background:rgba(241,248,245,1.0);background:color-mix(in srgb,var(--ok) 6%,#fff)}
 .cnt{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--hair)}.cnt input{width:96px;text-align:center}
 .yn{display:inline-flex;border:1px solid var(--hair-2);border-radius:12px;overflow:hidden}.yn button{border:0;background:var(--surface);padding:9px 14px;font-weight:650;cursor:pointer}.yn button[aria-pressed=true]{background:var(--accent);color:#fff}
+.rv-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.sheet .form label.rv-ck,.rv-ck{display:flex;flex-direction:row;gap:12px;align-items:center;padding:12px 14px;font-weight:600}.rv-ck input{width:22px;height:22px;flex:none;margin:0}.rv-paid .row{padding:8px 0}
 .pics{display:flex;gap:8px;flex-wrap:wrap}.pics img{width:72px;height:72px;object-fit:cover;border-radius:12px;border:1px solid var(--hair-2)}
 .addpic{width:72px;height:72px;border-radius:12px;border:1.5px dashed var(--hair-2);display:grid;place-items:center;color:var(--muted);font-size:24px;cursor:pointer;background:var(--surface)}
 .err{color:var(--bad);font-size:13px;font-weight:600}
@@ -87,9 +88,9 @@ main{display:grid;gap:14px;padding:14px max(16px,env(safe-area-inset-right,0px))
 .ci-b svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
 .ci-b.has{color:var(--accent);border-color:var(--accent)}.ci-b b{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;display:grid;place-items:center;padding:0 4px}
 .ci.need .ci-b:first-of-type+.ci-b{border-color:var(--warn);color:var(--warn)}
-.tk{width:44px;height:44px;flex:none;border-radius:50%;border:2px solid var(--hair-2);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:transparent;transition:all .15s}
-.tk svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-.tk[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#fff}
+.tk{width:34px;height:34px;flex:none;border-radius:50%;border:1.5px solid rgba(60,70,95,.28);background:#fff;box-shadow:0 1px 2px rgba(12,26,61,.07),inset 0 1px 1px rgba(12,26,61,.03);display:grid;place-items:center;cursor:pointer;color:transparent;margin:5px;transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .14s cubic-bezier(.3,1.4,.5,1)}.tk:active{transform:scale(.88)}
+.tk svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.tk[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:0 2px 6px rgba(15,138,95,0.4);box-shadow:0 2px 6px color-mix(in srgb,var(--ok) 40%,transparent)}
 .stp{display:inline-flex;align-items:center;border:1px solid var(--hair-2);border-radius:14px;overflow:hidden;background:var(--surface)}
 .stp button{width:44px;height:44px;border:0;background:var(--surface-2);font-size:22px;font-weight:600;cursor:pointer;color:var(--ink)}
 .stp input{width:58px;height:44px;border:0;text-align:center;font-size:17px;font-weight:650;padding:0;-moz-appearance:textfield;background:transparent}
@@ -148,6 +149,58 @@ a.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center;
 .ic-btn.dmg{color:var(--bad)}.chips .btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;margin-right:6px;vertical-align:-3px}
 .bf{background:linear-gradient(135deg,var(--accent-soft),var(--surface) 70%)}.bf-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}.bf-h b{display:block;font-size:19px;font-family:var(--serif,inherit)}.bf-h span{color:var(--muted);font-size:13.5px}.bf-d{font-size:12px!important;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--hair-2);white-space:nowrap}.bf-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.bf-t{border:1px solid var(--hair-2);background:var(--surface);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:64px;font:inherit;color:inherit;cursor:pointer}.bf-t b{font-size:20px;line-height:1.1}.bf-t span{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.2}.bf-t.z{opacity:.55}.bf-t.hot{border-color:var(--bad);box-shadow:0 0 0 2px rgba(194,55,47,0.18);box-shadow:0 0 0 2px color-mix(in srgb,var(--bad) 18%,transparent)}.bf-t.hot b{color:var(--bad)}.bf-m{margin-top:12px}.bf-m small{display:block;color:var(--muted);font-weight:600;margin-bottom:6px}@media(max-width:360px){.bf-g{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .skel{padding:16px;display:grid;gap:12px}.skel i{display:block;border-radius:18px;background:linear-gradient(90deg,var(--surface-2) 25%,var(--hair) 50%,var(--surface-2) 75%);background-size:300% 100%;animation:shim 1.4s ease-in-out infinite}.sk-h{height:44px;width:60%}.sk-b{height:170px}.sk-c{height:120px}.skel .hint{text-align:center}@keyframes shim{0%{background-position:100% 0}100%{background-position:0 0}}@media(prefers-reduced-motion:reduce){.skel i{animation:none}}.ptr{position:fixed;top:0;left:50%;z-index:50;width:40px;height:40px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;transform:translate(-50%,-60px);transition:transform .2s;pointer-events:none}.ptr svg{width:20px;height:20px;fill:none;stroke:var(--muted);stroke-width:2}.ptr.go svg{stroke:var(--accent)}
+/* ===== Form controls v2 (7 Nov 2026): one calm, Apple-like style for every text / number / date box, select,
+   checkbox and radio. Soft fill, hairline edge, 12px corners, quiet placeholders, a clear focus ring; custom checkbox
+   (rounded square, white tick) and radio (iOS dot). Borderless inline editors (.ex-amt, .rp-slot, .stp) and switches
+   (.toggle) keep their own look. ===== */
+:root{--ctl-bg:#f5f7fb;--ctl-bg-h:#f0f3f9;--ctl-line:rgba(12,26,61,.11);--ctl-line-h:rgba(12,26,61,.2);--ctl-ph:#9aa3b6;
+  --ctl-ring:rgba(29,91,216,0.17);--ctl-ring:color-mix(in srgb,var(--ctl-acc,var(--accent,#1d5bd8)) 17%,transparent);--ctl-r:12px;
+  --ctl-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='%238a94a8' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.5 7 2.6l3 2.9M4 8.5l3 2.9 3-2.9'/%3E%3C/svg%3E");
+  --ctl-tick:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.2 7.4 5.9 10 10.9 4.2'/%3E%3C/svg%3E");
+  --ctl-dash:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M3.8 7h6.4'/%3E%3C/svg%3E")}
+:is(input:is([type=text],[type=search],[type=email],[type=tel],[type=number],[type=date],[type=time],[type=datetime-local],[type=month],[type=password],[type=url],:not([type])),select,textarea):not(.ex-amt):not(:is(.rp-slot,.stp,.toggle,.cmdk) *){
+  background-color:var(--ctl-bg);border:1px solid var(--ctl-line);border-radius:var(--ctl-r);color:var(--ink,#0c1a3d);font-weight:500;
+  box-shadow:inset 0 1px 1.5px rgba(12,26,61,.035);outline:none;
+  transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease}
+:is(input:is([type=text],[type=search],[type=email],[type=tel],[type=number],[type=date],[type=time],[type=datetime-local],[type=month],[type=password],[type=url],:not([type])),select,textarea):not(.ex-amt):not(:is(.rp-slot,.stp,.toggle,.cmdk) *):hover:not(:focus):not(:disabled){
+  background-color:var(--ctl-bg-h);border-color:var(--ctl-line-h)}
+:is(input:is([type=text],[type=search],[type=email],[type=tel],[type=number],[type=date],[type=time],[type=datetime-local],[type=month],[type=password],[type=url],:not([type])),select,textarea):not(.ex-amt):not(:is(.rp-slot,.stp,.toggle,.cmdk) *):focus{
+  background-color:#fff;border-color:var(--ctl-acc,var(--accent,#1d5bd8));box-shadow:0 0 0 4px var(--ctl-ring),0 1px 2px rgba(12,26,61,.06)}
+:is(input:is([type=text],[type=search],[type=email],[type=tel],[type=number],[type=date],[type=time],[type=datetime-local],[type=month],[type=password],[type=url],:not([type])),select,textarea):not(.ex-amt):not(:is(.rp-slot,.stp,.toggle,.cmdk) *):disabled{
+  opacity:.55;cursor:not-allowed}
+:is(input:is([type=text],[type=search],[type=email],[type=tel],[type=number],[type=date],[type=time],[type=datetime-local],[type=month],[type=password],[type=url],:not([type])),select,textarea):not(.ex-amt):not(:is(.rp-slot,.stp,.toggle,.cmdk) *):user-invalid{
+  border-color:#e5484d;box-shadow:0 0 0 4px rgba(229,72,77,.12)}
+input::placeholder,textarea::placeholder{color:var(--ctl-ph);font-weight:400;opacity:1}
+/* inside forms, popups and sheets: one comfortable size (16px text: iOS never zooms) */
+:is(.form,.modal,.sheet) :is(input:is([type=text],[type=search],[type=email],[type=tel],[type=number],[type=date],[type=time],[type=datetime-local],[type=month],[type=password],[type=url],:not([type])),select):not(.ex-amt):not(:is(.rp-slot,.stp,.toggle,.cmdk) *){
+  min-height:46px;padding:11px 14px;font-size:16px;line-height:1.3}
+:is(.form,.modal,.sheet) textarea:not(:is(.rp-slot,.stp) *){padding:12px 14px;font-size:16px;line-height:1.45;min-height:92px}
+/* selects: a quiet up / down chevron instead of the browser's arrow */
+select:not(:is(.rp-slot,.stp,.toggle,.cmdk) *){-webkit-appearance:none;appearance:none;background-image:var(--ctl-chev)!important;background-repeat:no-repeat!important;
+  background-position:right 12px center!important;background-size:14px 14px!important;padding-right:36px!important;cursor:pointer;text-overflow:ellipsis}
+/* dates and times: the picker icon tinted, numbers without spinners */
+input:is([type=date],[type=time],[type=datetime-local],[type=month])::-webkit-calendar-picker-indicator{opacity:.42;cursor:pointer;transition:opacity .15s}
+input:is([type=date],[type=time],[type=datetime-local],[type=month]):hover::-webkit-calendar-picker-indicator{opacity:.75}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* checkbox: a 20px rounded square; checked = the accent with a white tick */
+input[type=checkbox]:not(:is(.toggle,.sw) *):not([role=switch]){-webkit-appearance:none;appearance:none;width:20px!important;height:20px!important;min-width:20px;min-height:0!important;
+  padding:0!important;margin:0;flex:none;display:inline-block;vertical-align:middle;border-radius:6px;border:1.5px solid rgba(60,70,95,.3);
+  background:#fff center/14px 14px no-repeat;box-shadow:0 1px 2px rgba(12,26,61,.07);cursor:pointer;
+  transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease}
+input[type=checkbox]:not(:is(.toggle,.sw) *):not([role=switch]):hover:not(:disabled){border-color:rgba(29,91,216,0.6);border-color:color-mix(in srgb,var(--ctl-acc,var(--accent,#1d5bd8)) 60%,transparent)}
+input[type=checkbox]:not(:is(.toggle,.sw) *):not([role=switch]):checked{background-color:var(--ctl-acc,var(--accent,#1d5bd8));border-color:var(--ctl-acc,var(--accent,#1d5bd8));background-image:var(--ctl-tick);
+  box-shadow:0 1px 3px rgba(29,91,216,0.35);box-shadow:0 1px 3px color-mix(in srgb,var(--ctl-acc,var(--accent,#1d5bd8)) 35%,transparent)}
+input[type=checkbox]:not(:is(.toggle,.sw) *):not([role=switch]):indeterminate{background-color:var(--ctl-acc,var(--accent,#1d5bd8));border-color:var(--ctl-acc,var(--accent,#1d5bd8));background-image:var(--ctl-dash)}
+/* radio: a 20px circle; checked = the accent ring around a white dot */
+input[type=radio]:not(:is(.toggle,.sw) *){-webkit-appearance:none;appearance:none;width:20px!important;height:20px!important;min-width:20px;min-height:0!important;padding:0!important;margin:0;
+  flex:none;display:inline-block;vertical-align:middle;border-radius:50%;border:1.5px solid rgba(60,70,95,.3);background:#fff;box-shadow:0 1px 2px rgba(12,26,61,.07);cursor:pointer;
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease}
+input[type=radio]:not(:is(.toggle,.sw) *):checked{border-color:var(--ctl-acc,var(--accent,#1d5bd8));background:radial-gradient(circle,#fff 0 3.6px,var(--ctl-acc,var(--accent,#1d5bd8)) 4.2px)}
+:is(input[type=checkbox],input[type=radio]):not(:is(.toggle,.sw) *):not([role=switch]):focus-visible{outline:none;box-shadow:0 0 0 4px var(--ctl-ring)}
+:is(input[type=checkbox],input[type=radio]):not(:is(.toggle,.sw) *):not([role=switch]):active:not(:disabled){transform:scale(.9)}
+:is(input[type=checkbox],input[type=radio]):not(:is(.toggle,.sw) *):not([role=switch]):disabled{opacity:.4;cursor:not-allowed}
+@media (prefers-reduced-motion:reduce){:is(input,select,textarea){transition:none!important}}
 </style>
 </head>
 <body>
@@ -193,7 +246,11 @@ const OPS=(()=>{
       reqItems:items('ops.guest_requests')||DEF_REQ,reqOpenMax:num('ops.guest_request_open_max',3),
       checkinTime:String(m['ops.checkin_time']||client.check_in_time||'13:00'),checkoutTime:String(m['ops.checkout_time']||client.check_out_time||'11:00'),twoAdmin:num('ops.claim_two_admin_above',5000),
       cities:(()=>{const v=js(m['ops.cities']);return Array.isArray(v)?v.filter(x=>x&&x.name):[]})(),
-      channels:list(m['reviews.channels']||'Airbnb'),window:num('reviews.window_days',14),lowAt:num('reviews.low_at',3)}}
+      channels:list(m['reviews.channels']||'Airbnb'),window:num('reviews.window_days',14),lowAt:num('reviews.low_at',3),
+      /* v1.77 review incentives: from this check-out date every booking gets its site's review (any channel but Direct)
+         and a Google review; before it, only reviews.channels as before (no back-pay, no new 'missed') */
+      typesFrom:String(m['reviews.types_from']||client.reviews_types_from||'2026-11-08').slice(0,10),
+      payPlatform:num('reviews.pay_platform',100),payGoogle:num('reviews.pay_google',10)}}
   /* the common list plus what this stay (or the whole place it belongs to) adds */
   const parentOf=(pid,props)=>((props||[]).find(p=>list(p.includes).includes(pid))||{}).property_id||null;
   const extra=(c,pid,props,k)=>[...((c.stayItems[parentOf(pid,props)]||{})[k]||[]),...((c.stayItems[pid]||{})[k]||[])];
@@ -242,13 +299,29 @@ const OPS=(()=>{
   function shopping(props,rows,c){const out=[];(props||[]).filter(p=>!list(p.includes).length&&!/^(stopped|inactive)$/i.test(String(p.status||''))).forEach(p=>{
     const last=stockTrend(rows,p.property_id,1)[0];if(!last)return;stockItemsFor(c,p.property_id,props).filter(it=>it.min&&it.type!=='ok').forEach(it=>{const have=+last.counts[it.name];
       if(isFinite(have)&&have<it.min)out.push({property_id:p.property_id,city:p.city||'',item:it.name,have,min:it.min,need:it.min-have,day:last.day})})});return out}
-  /* guest reviews: platform stays (Airbnb by default) have a window after check-out to be reviewed */
+  /* guest reviews after check-out (a window of c.window days). Two kinds from c.typesFrom: the booking site's own review
+     (any channel but Direct) and a Google review (every booking); before it, the old rule: reviews.channels only. */
+  const isDirect=b=>{const ch=String((b&&b.channel)||'').trim().toLowerCase();return!ch||ch==='direct'};
+  const reviewKinds=(b,c)=>String(b.check_out).slice(0,10)>=c.typesFrom?{platform:isDirect(b)?null:String(b.channel),google:true}
+    :{platform:c.channels.includes(String(b.channel))?String(b.channel):null,google:false};
   function reviews(bookings,rows,today,c,inScope){const byB={};(rows||[]).forEach(r=>{if(r.booking_id)byB[String(r.booking_id)]=r});
-    return(bookings||[]).filter(b=>live(b)&&c.channels.includes(String(b.channel))&&String(b.check_out).slice(0,10)>=c.start&&String(b.check_out).slice(0,10)<=today&&(!inScope||inScope(b.property_id)))
+    return(bookings||[]).filter(b=>{const co=String(b.check_out).slice(0,10);return live(b)&&(co>=c.typesFrom||c.channels.includes(String(b.channel)))&&co>=c.start&&co<=today&&(!inScope||inScope(b.property_id))})
       .map(b=>{const co=String(b.check_out).slice(0,10),r=byB[String(b.booking_id)]||null,end=addD(co,c.window),left=dayDiff(today,end),st=String(r&&r.status||'');
         const status=st==='received'?'received':st==='missed'||(left<0&&st!=='received')?'missed':st==='asked'?'asked':'open';
-        return{booking:b,property_id:b.property_id,check_out:co,ends:end,left,row:r,status,missedAt:status==='missed'?(r&&r.decided_at)||end:null}})
+        return{booking:b,property_id:b.property_id,check_out:co,ends:end,left,row:r,status,kinds:reviewKinds(b,c),missedAt:status==='missed'?(r&&r.decided_at)||end:null}})
       .sort((a,b)=>a.ends.localeCompare(b.ends))}
+  /* review earnings: per manager (who submitted) and month (approved in). Rates are the ones locked on each review when it
+     was approved; a paid review removed later is a minus line in the month it was removed. */
+  function reviewMoney(rows,today){const out={},key=(id,m)=>id+'|'+m,
+      get=(r,m)=>{const id=String(r.asked_by_id||'').toLowerCase(),k=key(id,m);return out[k]||(out[k]={user:id,name:r.asked_by||id,month:m,reviews:0,platform:0,google:0,earned:0,minus:0,
+        unpaid:0,paidRef:null,paidAt:null,items:[]})};
+    (rows||[]).forEach(r=>{if(!r.asked_by_id)return;const pp=+r.platform_pay||0,gp=+r.google_pay||0;
+      if(r.pay_month&&pp+gp>0){const x=get(r,String(r.pay_month));x.reviews++;x.platform+=pp>0?1:0;x.google+=gp>0?1:0;x.earned+=pp+gp;
+        x.items.push({booking_id:String(r.booking_id),property_id:r.property_id,platform:pp,google:gp,paid:!!r.paid_in,approved_at:r.approved_at||null});
+        if(r.paid_in){x.paidRef=r.paid_in;x.paidAt=r.paid_at||x.paidAt}else x.unpaid+=pp+gp}
+      if(r.adjust_month&&+r.adjust_amount<0){const x=get(r,String(r.adjust_month));x.minus+=+r.adjust_amount;if(!r.adjust_paid_in)x.unpaid+=+r.adjust_amount;
+        x.items.push({booking_id:String(r.booking_id),property_id:r.property_id,removed:r.removed,amount:+r.adjust_amount,paid:!!r.adjust_paid_in})}});
+    return Object.values(out).map(x=>({...x,total:x.earned+x.minus,settled:!!x.paidRef&&x.unpaid<=0})).sort((a,b)=>b.month.localeCompare(a.month)||a.name.localeCompare(b.name))}
   /* who a manager is in the rows the server writes: their email, else login:<id> */
   const idOf=u=>String(u.email||(u.login?'login:'+u.login:'')).toLowerCase();
   /* per manager: work done is credited to whoever did it (even at a stay they no longer have); missed and due follow
@@ -329,7 +402,7 @@ const OPS=(()=>{
     return cats}
   /* arrival steps for a city (a local registration, say), from Manage › Properties › Cities */
   const cityStepsOf=(c,city)=>((c.cities||[]).find(x=>x.name===city)||{}).steps||[];
-  return{cityStepsOf,cfg,scope,checklists,stock,reviews,scorecards,turnovers,notReady,monthKPIs,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,DEF_REQ,PRESET_CHECK,PRESET_STOCK,PRESET_REQ,normCheck,normStock,normReq,checkDone,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
+  return{cityStepsOf,cfg,scope,checklists,stock,reviews,reviewMoney,reviewKinds,isDirect,scorecards,turnovers,notReady,monthKPIs,news,stamp,list,js,addD,dayDiff,DEF_CHECK,DEF_STOCK,DEF_REQ,PRESET_CHECK,PRESET_STOCK,PRESET_REQ,normCheck,normStock,normReq,checkDone,checkItemsFor,stockItemsFor,parseItem,itemText,stockTrend,shopping,parentOf,idOf}})();
 /* Speed helpers (dashboard and manager app): same answers as the plain scans they replace, worked out once per data
    load instead of once per night / per drawing. Pure; checked against the old code in tests/test_perf.js. */
 const PERF=(()=>{
@@ -699,15 +772,50 @@ function stockScreen(m,u){m.append(card('Stock checks',`${T('every')} ${G(C().ev
   /* below the minimum at my stays' latest counts */
   const shop=OPS.shopping(S.d.props,S.d.stock,C()).filter(x=>inS(x.property_id));
   if(shop.length)m.append(card('To buy',String(shop.length),shop.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.item} × ${x.need}`),h('span',null,`${nm(x.property_id)} · ${x.have} ${T('of')} ${x.min}`))))))}
-function reviewScreen(m,u){const open=u.rev.filter(x=>x.status==='open'),asked=u.rev.filter(x=>x.status==='asked'),rate=toRate(u),hist=u.rev.filter(x=>(x.status==='received'&&x.row&&+x.row.rating>0)||x.status==='missed').slice(-12).reverse();
-  m.append(h('p',{class:'hint'},`${C().channels.join(', ')}: ${T('guests can leave a review for')} ${G(C().window,'day')} ${T('after check-out. Ask them, then tick it here. Once your admin confirms it arrived, add the stars it got.')}`));
-  if(rate.length)m.append(card('Add the stars',String(rate.length),rate.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,`${T('out')} ${fmtD(x.check_out)} · ${T('confirmed by admin')}`)),
+/* v1.77 review incentives: per stay the booking site's review (any site but Direct) and a Google review. The manager ticks
+   what the guest left (a screenshot is optional) and submits; the admin checks and approves either or both - that is what
+   counts. Earnings: the rates locked when approved, paid out at the end of the month (then back to ₹0). */
+const kindsOf=x=>x.kinds||{platform:x.booking.channel||null,google:false};
+const rvChips=x=>{const r=x.row||{},k=kindsOf(x),done=x.status==='received'||x.status==='missed',out=[];
+  const one=(lab,taken,okv,pay)=>h('span',{class:'pill '+(done?(okv==='Yes'?'p-ok':'p-mute'):(taken==='Yes'?'p-acc':'p-mute'))},
+    lab+(done?(okv==='Yes'?' ✓ '+inr(pay):' ✗'):(taken==='Yes'?' ✓':'')));
+  if(k.platform)out.push(one(k.platform,r.platform_taken,r.platform_ok,r.platform_pay));
+  if(k.google)out.push(one('Google',r.google_taken,r.google_ok,r.google_pay));
+  return h('span',{class:'rv-chips'},...out)};
+function myEarnings(){const all=OPS.reviewMoney((S.d.reviews||[]).filter(r=>String(r.asked_by_id||'').toLowerCase()===myId())),M=TODAY.slice(0,7);
+  const toPay=all.reduce((t,x)=>t+x.unpaid,0),cur=all.find(x=>x.month===M),paid=all.filter(x=>x.paidRef).slice(0,3);
+  const wait=(S.d.reviews||[]).filter(r=>String(r.asked_by_id||'').toLowerCase()===myId()&&String(r.status)==='asked');
+  const c=C(),maxW=wait.reduce((t,r)=>t+(r.platform_taken==='Yes'?c.payPlatform:0)+(r.google_taken==='Yes'?c.payGoogle:0),0);
+  return card('My review earnings',inr(toPay),
+    h('div',{class:'stats'},[[inr(toPay),'To be paid'],[cur?inr(cur.earned):inr(0),'Approved this month'],[wait.length,'Waiting for approval']].map(([v,l])=>h('div',{class:'stat'},h('b',null,v),h('span',null,T(l))))),
+    h('p',{class:'hint'},`${T('Platform review')} ${inr(c.payPlatform)} · Google ${inr(c.payGoogle)} · ${T('counts once your admin approves it, paid at the end of the month')}`+(maxW?` · ${T('waiting')}: ${T('up to')} ${inr(maxW)}`:'')),
+    paid.length?h('div',{class:'rv-paid'},paid.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,new Date(x.month+'-15').toLocaleDateString(LANG==='hi'?'hi-IN':'en-IN',{month:'long',year:'numeric'})),
+      h('span',null,`${x.reviews} ${T('reviews')}${x.minus?' · '+inr(x.minus)+' '+T('removed'):''}${x.paidAt?' · '+T('paid')+' '+fmtD(x.paidAt):''}`)),h('span',{class:'pill p-ok'},inr(x.total-(x.unpaid||0)))))):null)}
+function reviewScreen(m,u){const open=u.rev.filter(x=>x.status==='open'),asked=u.rev.filter(x=>x.status==='asked'),rate=toRate(u),hist=u.rev.filter(x=>x.status==='received'||x.status==='missed').slice(-12).reverse();
+  m.append(myEarnings());
+  m.append(h('p',{class:'hint'},`${T('Guests can leave a review for')} ${G(C().window,'day')} ${T('after check-out: on the site they booked on, and on Google (direct guests: Google only). Ask them, then tick what they left here.')}`));
+  if(rate.length)m.append(card('Add the stars',String(rate.length),rate.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,`${T('out')} ${fmtD(x.check_out)} · ${T('approved by admin')}`)),
     h('button',{class:'btn sm primary',onclick:()=>rateForm(x)},T('Rating'))))));
-  m.append(card('Ask for a review',open.length?String(open.length):'',open.length?open.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,`${T('out')} ${fmtD(x.check_out)} · ${G(x.left,'day')} ${T('left')}`)),
-      h('button',{class:'btn sm primary',onclick:()=>askedReview(x)},T('I asked')))):h('div',{class:'empty'},T('No reviews to ask for right now.'))));
-  m.append(card('Waiting for admin',asked.length?String(asked.length):'',asked.length?asked.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,`${T('asked')} ${x.row&&x.row.asked_at?fmtD(x.row.asked_at):''} · ${G(x.left,'day')} ${T('left')}`)),h('span',{class:'pill p-acc'},'Asked'))):h('div',{class:'empty'},T('Nothing waiting.'))));
-  if(hist.length)m.append(card('Recent',null,hist.map(x=>{const r=x.row||{},low=r.low==='Yes';return h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),h('span',null,'out '+fmtD(x.check_out)+(r.review_text?' · “'+String(r.review_text).slice(0,60)+'”':''))),
-    x.status==='received'?h('button',{class:'pill '+(low?'p-bad':'p-ok'),onclick:()=>rateForm(x),'aria-label':'Change rating'},'★ '+r.rating):h('span',{class:'pill p-bad'},'Missed'))})))}
+  m.append(card('Ask for a review',open.length?String(open.length):'',open.length?open.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),
+      h('span',null,`${T('out')} ${fmtD(x.check_out)} · ${G(x.left,'day')} ${T('left')} · ${[kindsOf(x).platform,kindsOf(x).google?'Google':null].filter(Boolean).join(' + ')}`)),
+      h('button',{class:'btn sm primary',onclick:()=>reviewForm(x)},T('Review taken')))):h('div',{class:'empty'},T('No reviews to ask for right now.'))));
+  m.append(card('Waiting for admin',asked.length?String(asked.length):'',asked.length?asked.map(x=>h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),
+      h('span',null,`${T('sent')} ${x.row&&x.row.asked_at?fmtD(x.row.asked_at):''} · ${G(x.left,'day')} ${T('left')}`),rvChips(x)),h('button',{class:'btn sm',onclick:()=>reviewForm(x)},T('Edit')))):h('div',{class:'empty'},T('Nothing waiting.'))));
+  if(hist.length)m.append(card('Checked by admin',null,hist.map(x=>{const r=x.row||{},low=r.low==='Yes';return h('div',{class:'row'},h('div',{class:'t'},h('b',null,`${x.booking.guest||'Guest'} · ${nm(x.property_id)}`),
+      h('span',null,'out '+fmtD(x.check_out)+(r.review_text?' · “'+String(r.review_text).slice(0,60)+'”':'')),rvChips(x)),
+    x.status==='received'&&+r.rating>0?h('button',{class:'pill '+(low?'p-bad':'p-ok'),onclick:()=>rateForm(x),'aria-label':'Change rating'},'★ '+r.rating):x.status==='missed'?h('span',{class:'pill p-bad'},T('Missed')):null)})))}
+/* what the guest left: the site's review and / or Google; a screenshot is optional */
+function reviewForm(x){const k=kindsOf(x),r=x.row||{},photos=[],err=h('div',{class:'err',hidden:true}),save_=h('button',{class:'btn primary full'},T('Submit to admin'));
+  const box=(lab,on)=>{const i=h('input',{type:'checkbox',checked:on||null});return[i,h('label',{class:'ck rv-ck'},i,h('span',null,lab))]};
+  const [pI,pL]=k.platform?box(`${k.platform} ${T('review taken')}`,r.platform_taken==='Yes'):[null,null],[gI,gL]=k.google?box(T('Google review taken'),r.google_taken==='Yes'):[null,null];
+  const close=sheet(T('Review taken')+' · '+(x.booking.guest||'Guest'),h('p',{class:'hint'},`${nm(x.property_id)} · out ${fmtD(x.check_out)} · ${x.booking.channel||'Direct'}`),
+    h('div',{class:'form'},pL,gL,h('label',null,T('Screenshot (optional)'),picker(photos)),h('p',{class:'hint'},T('Your admin checks the sites and approves; only what they approve is paid.')),err,save_));
+  save_.addEventListener('click',async()=>{const pv=!!(pI&&pI.checked),gv=!!(gI&&gI.checked);if(!pv&&!gv){err.hidden=false;err.textContent=T('Tick the review the guest left.');return}save_.disabled=true;
+    const f={status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||'',platform_taken:pv?'Yes':'',google_taken:gv?'Yes':''};
+    const ex=photos.length?{photos:strip(photos),photoField:'proof_photo',kind:'task',name:'Review '+(x.booking.guest||'')}:null;
+    const ok=x.row?await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:f},T('Sent to admin'),ex)
+      :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,...f}},T('Sent to admin'),ex);
+    if(!ok){save_.disabled=false;return}close();ok==='sent'?soonLoad():render()})}
 const jobActs=x=>{if(!/^(open|in progress)$/i.test(x.status||'Open')||!inS(x.property_id))return null;
   if(x.mgr_status==='fixed')return h('span',{class:'pill p-ok'},T('You said fixed'));
   return h('div',{class:'acts'},x.mgr_status==='on_it'?h('span',{class:'pill p-warn'},T('On it')):h('button',{class:'btn sm',onclick:()=>jobSheet(x,'on_it')},T('On it')),h('button',{class:'btn sm primary',onclick:()=>jobSheet(x,'fixed')},T('Fixed')))};
@@ -852,7 +960,7 @@ function stockForm(pid,d0){const dk=DR.k('stock',pid),old=d0?null:DR.get(dk);d0=
     if(!ok){save_.disabled=false;save_.textContent=T('Submit stock check');return}kit.done();
     if(bad.length)await write('append','maintenance',{row:{ticket_id:'MR'+Date.now().toString(36).toUpperCase(),property_id:pid,issue:'Not working: '+bad.join(', ')+(bad.some(x=>cm[x])?' ('+bad.filter(x=>cm[x]).map(x=>x+': '+cm[x]).join('; ')+')':''),priority:'Medium',reported_on:TODAY,reported_at:Math.floor(Date.now()/1000),...geo}},'Issue sent to admin');
     close();ok==='sent'?soonLoad():render()})}
-async function askedReview(x){const ok=x.row?await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked')
+async function askedReview(x){   /* kept for older queued taps; the Reviews tab uses reviewForm */const ok=x.row?await write('update','reviews',{match:{booking_id:x.booking.booking_id},fields:{status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked')
   :await write('append','reviews',{row:{booking_id:x.booking.booking_id,property_id:x.property_id,check_out:x.check_out,channel:x.booking.channel,status:'asked',asked_at:nowIso(),asked_by:S.me&&S.me.name||''}},'Marked as asked');if(ok==='sent')soonLoad();else if(ok)render()}
 /* after the admin confirms the review arrived: the stars it got (3 or less is logged as low) and what the guest wrote */
 function rateForm(x){const r=x.row||{};let n=+r.rating||0;const box=h('div',{class:'stars'}),draw=()=>box.replaceChildren(...[1,2,3,4,5].map(k=>h('button',{type:'button','aria-label':k+' stars','aria-pressed':k<=n,onclick:()=>{n=k;draw();lowN.hidden=!(n&&n<=C().lowAt)}},'★')));
