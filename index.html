@@ -2285,6 +2285,7 @@ input[type=radio]:not(:is(.toggle,.sw) *):checked{border-color:var(--ctl-acc,var
 :is(input[type=checkbox],input[type=radio]):not(:is(.toggle,.sw) *):not([role=switch]):active:not(:disabled){transform:scale(.9)}
 :is(input[type=checkbox],input[type=radio]):not(:is(.toggle,.sw) *):not([role=switch]):disabled{opacity:.4;cursor:not-allowed}
 @media (prefers-reduced-motion:reduce){:is(input,select,textarea){transition:none!important}}
+.mix-tot{grid-column:1/-1;font-size:12px;color:var(--muted);padding-top:6px;border-top:1px solid var(--hair);margin-top:4px}
 /* toolbars (filters above a list): a size that sits with the segmented buttons next to them */
 .mg-filters :is(input:is([type=search],[type=text],:not([type])),select){min-height:42px;padding-top:9px;padding-bottom:9px;padding-left:14px;font-size:15px}
 </style>
@@ -2956,13 +2957,16 @@ function bookedWhen(){const f=F(),k=f.from.slice(0,7),whole=f.from===mStart(k)&&
 function prevRange(){const f=F(),n=diff(f.from,f.to)+1;
   if(f.from.endsWith('-01')&&f.to===mEnd(f.to.slice(0,7))){let m=1;for(let k=f.from.slice(0,7);k<f.to.slice(0,7);k=nextM(k))m++;let a=f.from.slice(0,7),z=f.to.slice(0,7);for(let i=0;i<m;i++){a=prevM(a);z=prevM(z)}return[mStart(a),mEnd(z)]}
   return[add(f.from,-n),add(f.from,-1)]}
-const PRESETS=[['month','This month'],['last','Last month'],['next30','Next 30 days'],['last90','Last 90 days'],['season','Whole season'],['custom','Custom']];
+const PRESETS=[['month','This month'],['last','Last month'],['qtr','This quarter'],['lastq','Last quarter'],['ytd','Year to date (from 1 Apr)'],['next30','Next 30 days'],['last90','Last 90 days'],['season','Whole season'],['custom','Custom']];
 function applyPreset(p){
   const f=S.f;f.preset=p;const k=TODAY.slice(0,7);
   if(p==='month'){f.from=mStart(k);f.to=mEnd(k)}
   else if(p==='last'){const q=prevM(k);f.from=mStart(q);f.to=mEnd(q)}
   else if(p==='next30'){f.from=TODAY;f.to=add(TODAY,29)}
   else if(p==='last90'){f.from=add(TODAY,-89);f.to=TODAY}
+  else if(p==='qtr'||p==='lastq'){const y=+k.slice(0,4),m=+k.slice(5),q0=new Date(Date.UTC(y,Math.floor((m-1)/3)*3-(p==='lastq'?3:0),1)).toISOString().slice(0,7);
+    let q2=q0;for(let i=0;i<2;i++)q2=nextM(q2);f.from=mStart(q0);f.to=mEnd(q2)}   /* quarters: Apr-Jun, Jul-Sep, Oct-Dec, Jan-Mar (financial year) */
+  else if(p==='ytd'){const y=+k.slice(0,4),fy=+k.slice(5)>=4?y:y-1;f.from=fy+'-04-01';f.to=TODAY}
   else if(p==='season'&&D){f.from=mStart(D.months[0]);f.to=mEnd(D.months[D.months.length-1])}
 }
 const rangeLabel=()=>{const f=F();if(f.from.endsWith('-01')&&f.to===mEnd(f.from.slice(0,7)))return mLong(f.from.slice(0,7));return fmtD(f.from,{day:'numeric',month:'short'})+' – '+fmtD(f.to,{day:'numeric',month:'short',year:'numeric'})};
@@ -3739,7 +3743,7 @@ const mStat=(l,v,bar,color)=>h('div',{class:'mst'},h('span',null,l),h('b',{class
 const mTop=(lead,title,sub,right)=>h('div',{class:'mtop'},lead,h('div',{class:'mtt'},h('b',null,title),sub?h('span',null,sub):null),right?h('div',{class:'mright'},right):null);
 const thumb=p=>h('span',{class:'mthumb'},scene(p,120,120));
 function propCard(r){const p=D.P[r.id];return[mTop(thumb(p),short(p.property),`${placeOf(p)} · ${p.type} · ${p.bedrooms} BR`,r.inHouse!=null?h('span',{class:'pill '+(r.inHouse?(r.tn&&r.tn.kind==='linked'?'p-warn':'p-ok'):'p-mute'),'data-tip':r.tn&&r.tn.kind==='linked'?`${r.tn.via} is booked tonight`:null},r.inHouse?(r.tn&&r.tn.kind==='block'?'Blocked':r.tn&&r.tn.kind==='linked'?'Unavailable':'Occupied'):'Vacant'):null),
-  h('div',{class:'mstats'},mStat('Occupancy',pct(r.occ),r.occ,r.occ>=.7?'var(--ok)':r.occ<.4?'var(--warn)':'var(--accent)'),mStat('Avg rate',inrK(r.adr)),mStat('Profit',inrK(r.profit))),
+  h('div',{class:'mstats'},mStat('Occupancy',pct(r.occ),r.occ,r.occ>=.7?'var(--ok)':r.occ<.4?'var(--warn)':'var(--accent)'),mStat('Avg rate',inrK(r.adr)),r.net!=null&&S.rankBy!=='profit'?mStat('Total',inrK(r.net)):mStat('Profit',inrK(r.profit))),
   h('div',{class:'mfoot'},r.rating?h('span',{class:'chip-s'},'★ '+r.rating.toFixed(1)+(r.reviews?` (${r.reviews})`:'')):null,r.next?h('span',{class:'chip-s'},'Next check-in '+fmtD(r.next)):null,r.issues?h('span',{class:'pill p-warn'},`${r.issues} open issue${r.issues>1?'s':''}`):null)]}
 function bookCard(b,{showProp=true,amount='gross'}={}){return[mTop(h('span',{class:'av',style:{background:avc(b.guest)}},ini(b.guest)),b.guest,`${b.booking_id} · ${b.guests} guest${b.guests>1?'s':''}`,[h('b',{class:'num'},inr(amount==='net'?b.net:b.gross)),h('small',null,`${b.nights} night${b.nights>1?'s':''}`)]),
   showProp?h('div',{class:'mline'},h('b',null,short(b.pname)),h('span',null,` · ${placeOf(b)}`)):null,
@@ -4210,7 +4214,7 @@ function overview(v){
   const wChips=h('div',{class:'rev-fy'},h('button',{'aria-pressed':S.revFY==null&&!S.revEnd,onclick:()=>{S.revFY=null;S.revEnd=null;render()}},'Latest'),
     wFys.map(y=>h('button',{'aria-pressed':S.revFY===y,onclick:()=>{S.revFY=y;S.revEnd=null;render()}},fyL(y))));
   trendHolder=chart(w=>stacked(w,{cats:wk.map((k,i)=>({label:(wShort1?mLabel(k).slice(0,1):mLabel(k))+(k>nowK?'*':''),tip:()=>`${mLong(k)}${k>nowK?' (booked so far)':''}\n`+byCity.map(c=>`${c.name}: ${inr(c.vals[i])}`).join('\n')+(lyOn?`\nSame month last year: ${inr(wLy[i])}`:'')+(profitOn?`\nProfit: ${inr(mstats[i].profit)}`:'')+'\nTap for details'})),
-    series:byCity,line:profitOn?{vals:mstats.map(m=>m.profit),color:css('--ink')}:null,ghost:lyOn?{vals:wLy,color:tint_(css('--ink'),.09)}:null,future:new Set(wk.map((k,i)=>k>nowK?i:-1).filter(i=>i>=0)),totals:!profitOn,hi,fmt:inrK,onClick:i=>openMonth(wk[i],cities)}));
+    series:byCity,line:profitOn?{vals:mstats.map(m=>m.profit),color:css('--ink')}:null,ghost:lyOn?{vals:wLy,color:tint_(css('--ink'),.09)}:null,future:new Set(wk.map((k,i)=>k>nowK?i:-1).filter(i=>i>=0)),totals:true,hi,fmt:inrK,onClick:i=>openMonth(wk[i],cities)}));
   /* swipe sideways on the chart to move through months */
   let wTx=null,wTy=null;trendHolder.addEventListener('touchstart',e=>{wTx=e.touches[0].clientX;wTy=e.touches[0].clientY},{passive:true});
   trendHolder.addEventListener('touchend',e=>{if(wTx==null)return;const dx=e.changedTouches[0].clientX-wTx,dy=e.changedTouches[0].clientY-wTy;wTx=null;
@@ -4228,7 +4232,7 @@ function overview(v){
   let dh;
   v.append(card('s4','Channel mix',{hint:'tap to filter',acts:[btnPNG(()=>dh,'Channel mix')]},
     h('div',{class:'mix'},dh=h('div',{class:'chart'},donut(150,{parts:chs.map(x=>({...x,color:chColor(x.key),dim:f.channels.length&&!f.channels.includes(x.key),tip:`${x.key}: ${inr(x.value)} · ${x.n} bookings`})),center:pct(chs[3].value/tot),sub:'direct',onClick:p=>toggleIn('channels',p.key)})),
-      h('div',{class:'mix-l'},chs.map(x=>h('button',{class:'hb',style:{gridTemplateColumns:'1fr auto'},onclick:()=>toggleIn('channels',x.key)},h('span',{class:'chd'},h('i',{style:{background:chColor(x.key)}}),x.key),h('span',{class:'v num'},pct(x.value/tot)))))),
+      h('div',{class:'mix-l'},chs.map(x=>h('button',{class:'hb',style:{gridTemplateColumns:'1fr auto'},onclick:()=>toggleIn('channels',x.key)},h('span',{class:'chd'},h('i',{style:{background:chColor(x.key)}}),x.key),h('span',{class:'v num'},`${pct(x.value/tot)} · ${x.n}`))),h('div',{class:'mix-tot'},`${sum(chs,x=>x.n)} bookings in total`))),
     h('div',{class:'foot-note'},`Platforms took ${inrK(sum(chs,x=>x.fees))} in fees this period. Moving 10% of bookings to direct saves about ${inrK(sum(chs,x=>x.fees)*.1)}.`)));
   // check dates: tap a stay for its month calendar (free and booked nights)
   const props=D.props.filter(p=>fP(p)&&active(p));  // also used by the sections below
@@ -4278,24 +4282,24 @@ function overview(v){
       pbar(x),
       h('div',{class:'pace-f'},h('span',null,h('b',null,String(Math.round(x.now))),` of ${x.cap} nights`),x.typ>=1?h('span',null,'usual by now ',h('b',null,String(Math.round(x.typ)))):h('span',null,'no history yet'))))),
     h('div',{class:'legend pace-lg'},h('span',null,h('i',{class:'lg-fill'}),'Booked so far'),h('span',null,h('i',{class:'lg-mark'}),'Usual by this date'))));
-  // empty nights: money missed this month so far, and still to sell in the next 30 days (nights × each stay's usual rate)
+  // empty nights: money missed this month so far, and still to sell in the rest of this month (ticket T-12; nights × each stay's usual rate)
   const blocks=S.data.blocks||[],blockedOn=(pid,d)=>blocks.some(k=>k.property_id===pid&&k.from<=d&&k.to>d);
   const emptyN=(pid,a,z)=>{let n=0;for(let d=a;d<z;d=add(d,1))if(!nightBooking(pid,d)&&!blockedOn(pid,d))n++;return n};
   /* a combo listing (e.g. a 4BHK made of two 2BHKs) is the same rooms as its parts: count the parts only */
   const isCombo=p=>(Array.isArray(p.includes)?p.includes:String(p.includes||'').split(',').map(t=>t.trim()).filter(Boolean)).length>0;
-  const en=props.filter(p=>!isCombo(p)).map(p=>{const r=stats(add(TODAY,-90),add(TODAY,-1),p.property_id).adr||+p.base_rate||0,miss=emptyN(p.property_id,mStart(nowK),TODAY),next=emptyN(p.property_id,TODAY,add(TODAY,30));return{p,r,miss,next,missV:miss*r,nextV:next*r}});
+  const en=props.filter(p=>!isCombo(p)).map(p=>{const r=stats(add(TODAY,-90),add(TODAY,-1),p.property_id).adr||+p.base_rate||0,miss=emptyN(p.property_id,mStart(nowK),TODAY),next=emptyN(p.property_id,TODAY,add(mEnd(nowK),1));return{p,r,miss,next,missV:miss*r,nextV:next*r}});
   const enTop=sortBy(en.filter(x=>x.nextV>0),['nextV',-1]).slice(0,PHONE()?3:4),missV=sum(en,x=>x.missV),missN=sum(en,x=>x.miss),nextV=sum(en,x=>x.nextV),nextN=sum(en,x=>x.next);
   v.append(card('s4','Empty nights',{hint:'value at each stay’s usual rate'},
     h('div',{class:'en-k'},h('div',{class:'en-miss'},h('span',null,'Missed this month'),h('b',{class:'num'},!S.admin?`${missN} night${missN===1?'':'s'}`:TODAY.slice(8)==='01'?'–':inrK(missV)),h('small',null,!S.admin?`empty since 1 ${mLabel(nowK)}`:`${missN} night${missN===1?'':'s'} since 1 ${mLabel(nowK)}`)),
-      h('div',{class:'en-next'},h('span',null,'Still to sell · next 30 days'),h('b',{class:'num'},!S.admin?`${nextN} night${nextN===1?'':'s'}`:inrK(nextV)),h('small',null,!S.admin?'free to sell':`${nextN} night${nextN===1?'':'s'} free`))),
-    enTop.length?h('div',{class:'en-list'},h('span',{class:'en-lh'},'Most to gain'),enTop.map(x=>h('button',{class:'en-row',onclick:()=>openAvail(x.p.property_id)},h('span',null,short(x.p.property)),h('span',{class:'num'},`${x.next} n · ${inrK(x.nextV)}`)))):h('div',{class:'empty'},'Fully booked for the next 30 days.'),
+      h('div',{class:'en-next'},h('span',null,`Still to sell · rest of ${mLabel(nowK)}`),h('b',{class:'num'},!S.admin?`${nextN} night${nextN===1?'':'s'}`:inrK(nextV)),h('small',null,!S.admin?'free to sell':`${nextN} night${nextN===1?'':'s'} free`))),
+    enTop.length?h('div',{class:'en-list'},h('span',{class:'en-lh'},'Most to gain'),enTop.map(x=>h('button',{class:'en-row',onclick:()=>openAvail(x.p.property_id)},h('span',null,short(x.p.property)),h('span',{class:'num'},`${x.next} n · ${inrK(x.nextV)}`)))):h('div',{class:'empty'},'Fully booked for the rest of the month.'),
     h('div',{class:'foot-note'},'Usual rate = the stay’s average nightly rate over the last 90 days. Blocked dates and combo listings (counted through their parts) are left out.')));
   // leaders
   const openIs=new Map();D.M.forEach(m=>{if(m.status!=='Closed')openIs.set(m.property_id,(openIs.get(m.property_id)||0)+1)});   // open issues per stay, counted once
   const rowsP=props.filter(p=>!parentOf(p.property_id)).map(p=>{const st=stats(f.from,f.to,p.property_id,1);const bs=(BP().get(p.property_id)||[]).filter(b=>b.ok);const rated=bs.filter(b=>b.rating);return{id:p.property_id,name:short(p.property),city:p.city,area:p.area,occ:st.occ,adr:st.adr,net:st.net,profit:st.profit,rating:rated.length?sum(rated,b=>b.rating)/rated.length:null,issues:openIs.get(p.property_id)||0}});
-  const ranked=sortBy(rowsP,['profit',-1]);const nL=PHONE()?3:6,list=S.leaders==='top'?ranked.slice(0,nL):ranked.slice(-nL).reverse();
-  const colsL=[{t:'Property',f:r=>who(r.name,`${placeOf(r)}`)},{t:'Occupancy',r:1,f:r=>pct(r.occ)},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Profit',r:1,f:r=>profitCell(r.profit)},{t:'Rating',r:1,f:r=>r.rating?'★ '+r.rating.toFixed(1):'–'},{t:'Issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'}];
-  v.append(card('s7','Property ranking',{hint:'by profit in this period',acts:[h('div',{class:'seg'},h('button',{'aria-pressed':S.leaders==='top',onclick:()=>{S.leaders='top';render()}},'Best'),h('button',{'aria-pressed':S.leaders==='bottom',onclick:()=>{S.leaders='bottom';render()}},'Needs attention')),btnExport(()=>exportRows(ranked.map(r=>({Property:r.name,Area:r.area,City:r.city,'Occupancy %':+(r.occ*100).toFixed(1),'Avg nightly rate':Math.round(r.adr),'Net payout':r.net,Profit:r.profit,Rating:r.rating?+r.rating.toFixed(2):'','Open issues':r.issues})),'Property ranking'))]},
+  const rankBy=S.rankBy==='profit'?'profit':'net',ranked=sortBy(rowsP,[rankBy,-1]);   /* ticket T-14: total by default */const nL=PHONE()?3:6,list=S.leaders==='top'?ranked.slice(0,nL):ranked.slice(-nL).reverse();
+  const colsL=[{t:'Property',f:r=>who(r.name,`${placeOf(r)}`)},{t:'Occupancy',r:1,f:r=>pct(r.occ)},{t:'Avg rate',r:1,f:r=>inr(r.adr)},{t:'Total',r:1,f:r=>inr(r.net)},{t:'Profit',r:1,f:r=>profitCell(r.profit)},{t:'Rating',r:1,f:r=>r.rating?'★ '+r.rating.toFixed(1):'–'},{t:'Issues',r:1,f:r=>r.issues?h('span',{class:'pill p-warn'},r.issues):'–'}];
+  v.append(card('s7','Property ranking',{hint:`by ${rankBy==='net'?'total revenue':'profit'} in this period`,acts:[h('div',{class:'seg'},h('button',{'aria-pressed':rankBy==='net',onclick:()=>{S.rankBy='net';render()}},'Total'),h('button',{'aria-pressed':rankBy==='profit',onclick:()=>{S.rankBy='profit';render()}},'Profit')),h('div',{class:'seg'},h('button',{'aria-pressed':S.leaders==='top',onclick:()=>{S.leaders='top';render()}},'Best'),h('button',{'aria-pressed':S.leaders==='bottom',onclick:()=>{S.leaders='bottom';render()}},'Needs attention')),btnExport(()=>exportRows(ranked.map(r=>({Property:r.name,Area:r.area,City:r.city,'Occupancy %':+(r.occ*100).toFixed(1),'Avg nightly rate':Math.round(r.adr),'Net payout':r.net,Profit:r.profit,Rating:r.rating?+r.rating.toFixed(2):'','Open issues':r.issues})),'Property ranking'))]},
     table(colsL,list,{onRow:r=>go('property',{propId:r.id}),card:propCard}),h('button',{class:'btn sm',style:{alignSelf:'flex-start'},onclick:()=>go('properties')},'See all properties',icon('chev'))));
   // attention
   const urgent=D.M.filter(m=>m.status!=='Closed'&&fP(D.P[m.property_id])).sort((a,b)=>({High:0,Medium:1,Low:2}[a.priority]-{High:0,Medium:1,Low:2}[b.priority])||String(a.reported_on||'').localeCompare(String(b.reported_on||''))).slice(0,4);
