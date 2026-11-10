@@ -1775,7 +1775,7 @@ th.on{color:var(--accent)}
 .cl-t{display:grid;gap:2px;min-width:0}.cl-t span,.cl-t small{color:var(--muted);font-size:12px}.cl-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .cl-pics{display:flex;gap:6px}.cl-pic img{width:40px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--hair-2)}.cl-done summary{cursor:pointer;color:var(--muted);font-size:12.5px;padding-top:10px}
 @media(max-width:700px){.cl-row{grid-template-columns:1fr}.cl-acts{justify-content:flex-start}}
-.ext-pick{display:grid;gap:10px}.ext-opt{display:grid;gap:4px;text-align:left;padding:14px;border:1px solid var(--hair-2);border-radius:16px;background:var(--surface);cursor:pointer;font:inherit;color:inherit}
+.ext-pick{display:grid;gap:10px}.ext-dir{display:grid!important;grid-template-columns:1fr 1fr;width:100%}.ext-dir button{white-space:normal;line-height:1.25;padding:8px 10px}.ext-opt{display:grid;gap:4px;text-align:left;padding:14px;border:1px solid var(--hair-2);border-radius:16px;background:var(--surface);cursor:pointer;font:inherit;color:inherit}
 .ext-opt:hover{border-color:var(--accent);background:var(--accent-soft)}.ext-opt span{color:var(--muted);font-size:12.5px;line-height:1.45}
 .ext-note{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--accent-soft);color:var(--ink-2);font-size:12.5px}.ext-note svg{flex:none;width:16px;height:16px;fill:none;stroke:var(--accent);stroke-width:2}
 .ext-links{display:flex;flex-wrap:wrap;gap:6px}.ext-links .chip-s{cursor:pointer;border:0}
@@ -6188,49 +6188,55 @@ function extCandidates(){const PH=new Map(),ph=b=>{let v=PH.get(b);if(v==null){v
   const endsOn=new Map();L.forEach(x=>{(endsOn.get(x.check_out)||endsOn.set(x.check_out,[]).get(x.check_out)).push(x)});
   L.forEach(b=>{if(b.extends||!ph(b)||ph(b).length<10)return;const a=(endsOn.get(b.check_in)||[]).find(x=>x!==b&&ph(x)===ph(b)&&samePlace(x.property_id,b.property_id));if(a&&!(STAGE[b.booking_id]||{}).extends)out.push([a,b])});return out}
 function extLink(a,b){stage(b.booking_id,{extends:a.booking_id,...(a.channel&&a.channel!=='Direct'&&b.channel==='Direct'?{converted_from:a.channel}:{})});render();toast(`${b.booking_id} staged as an extension of ${a.booking_id} · review & save in Manage`)}
-function extendChoice(id){const b=stg(rawB(id)),plat=b.channel&&b.channel!=='Direct';
-  modal('Extend stay · '+id,h('div',{class:'ext-pick'},
-    h('button',{class:'ext-opt',onclick:()=>{closeLayer();extendAsNew(id)}},h('b',null,'New booking for the extra nights'),h('span',null,plat?`The guest books the extra nights with you directly (not on ${b.channel}). Opens the booking form filled from ${id}; counted as converted to direct.`:'Opens the booking form filled from this one, starting on its check-out day.')),
-    h('button',{class:'ext-opt',onclick:()=>{closeLayer();mgExtend(id)}},h('b',null,'Make this booking longer'),h('span',null,plat?`The extra nights are added on ${b.channel} to the same booking.`:'Changes the check-out and the amounts of this booking.'))),
-    [h('button',{class:'btn',onclick:closeLayer},'Cancel')])}
-function extendAsNew(id){const b=stg(rawB(id));
-  openForm('booking',b.property_id,null,{prefill:{guest:b.guest,phone:b.phone,location:b.location,guests:b.guests,check_in:String(b.check_out).slice(0,10),check_out:add(String(b.check_out).slice(0,10),1),
+/* the extra nights can come after the check-out or BEFORE the check-in (the guest arrived earlier - also back-dated, in
+   the past or before the date of booking) */
+function extendChoice(id){const b=stg(rawB(id)),plat=b.channel&&b.channel!=='Direct';let before=false;
+  const box=h('div',{class:'ext-pick'}),draw=()=>box.replaceChildren(
+    h('div',{class:'seg ext-dir',role:'radiogroup','aria-label':'Where the extra nights go'},[[false,`After check-out (${fmtD(b.check_out)})`],[true,`Before check-in (${fmtD(b.check_in)})`]].map(([v,l])=>h('button',{type:'button',role:'radio','aria-checked':String(before===v),'aria-pressed':before===v,onclick:()=>{before=v;draw()}},l))),
+    h('button',{class:'ext-opt',onclick:()=>{closeLayer();extendAsNew(id,before)}},h('b',null,'New booking for the extra nights'),h('span',null,plat?`The guest books the extra nights with you directly (not on ${b.channel}). Opens the booking form filled from ${id}; counted as converted to direct.`:`Opens the booking form filled from this one, ${before?'ending on its check-in day':'starting on its check-out day'}.`)),
+    h('button',{class:'ext-opt',onclick:()=>{closeLayer();mgExtend(id,before)}},h('b',null,'Make this booking longer'),h('span',null,plat?`The extra nights are added on ${b.channel} to the same booking.`:`Changes the ${before?'check-in':'check-out'} and the amounts of this booking.`)));
+  draw();modal('Extend stay · '+id,box,[h('button',{class:'btn',onclick:closeLayer},'Cancel')])}
+function extendAsNew(id,before){const b=stg(rawB(id)),ci0=String(b.check_in).slice(0,10),co0=String(b.check_out).slice(0,10);
+  openForm('booking',b.property_id,null,{prefill:{guest:b.guest,phone:b.phone,location:b.location,guests:b.guests,check_in:before?add(ci0,-1):co0,check_out:before?ci0:add(co0,1),
     channel:'Direct',payment_terms:b.payment_terms,account:b.account,arrival_time:null,notes:`Extension of ${id}${b.channel&&b.channel!=='Direct'?' (was '+b.channel+')':''}`},extends:id,from:b.channel})}
-function mgExtend(id){
+function mgExtend(id,before){
   const b=stg(rawB(id)),dv=D.B.find(x=>x.booking_id===String(id))||{},direct=b.channel==='Direct';
   const nights0=diff(b.check_in,b.check_out),tariff0=b.tariff!=null&&b.tariff!==''?+b.tariff:dv.gross||0,rec0=b.received!=null&&b.received!==''?+b.received:dv.net||0,bal0=+b.balance_due||0;
   const rate=nights0>0?Math.round(tariff0/nights0):0;
-  const co=h('input',{type:'date',min:add(b.check_out,1),value:add(b.check_out,1)}),amt=h('input',{type:'number',inputmode:'decimal',min:0,step:'1'}),
+  /* `co` is the date that moves: the new check-out, or (before) the new check-in - any earlier day, past ones too */
+  const co=before?h('input',{type:'date',max:add(b.check_in,-1),value:add(b.check_in,-1)}):h('input',{type:'date',min:add(b.check_out,1),value:add(b.check_out,1)}),amt=h('input',{type:'number',inputmode:'decimal',min:0,step:'1'}),
     paid=h('input',{type:'number',inputmode:'decimal',min:0,step:'1'}),recP=h('input',{type:'number',inputmode:'decimal',min:0,step:'1'});
   let amtTouched=false,recTouched=false,pm='half';amt.addEventListener('input',()=>amtTouched=true);recP.addEventListener('input',()=>recTouched=true);
   const err=h('div',{class:'err',hidden:true}),sm=h('div',{class:'ext-sum'}),seg=h('div',{class:'pay-seg',role:'radiogroup','aria-label':'Payment for the extra nights'});
   const tR=h('b',{class:'num'}),tL=h('b',{class:'num'}),fOther=fld('Received for the extra nights (₹)',paid),leftTile=h('div',{class:'left'},h('span',null,'Left to collect'),tL);
-  const quick=h('div',{class:'ext-q'},[1,2,3,7].map(n=>h('button',{type:'button',class:'btn sm',onclick:()=>{co.value=add(b.check_out,n);calc()}},`+${n} night${n>1?'s':''}`)));
+  const quick=h('div',{class:'ext-q'},[1,2,3,7].map(n=>h('button',{type:'button',class:'btn sm',onclick:()=>{co.value=before?add(b.check_in,-n):add(b.check_out,n);calc()}},`${before?'-':'+'}${n} night${n>1?'s':''}`)));
+  const xN=()=>before?diff(co.value,b.check_in):diff(b.check_out,co.value),nCi=()=>before?co.value:b.check_in,nCo=()=>before?b.check_out:co.value;
   let ok=false;
-  const calc=()=>{const extra=diff(b.check_out,co.value);if(!amtTouched)amt.value=extra>0&&rate?rate*extra:'';const a=+amt.value||0;
+  const calc=()=>{const extra=co.value?xN():0;if(!amtTouched)amt.value=extra>0&&rate?rate*extra:'';const a=+amt.value||0;
     if(direct){if(pm==='half')paid.value=a?Math.round(a/2):'';if(pm==='full')paid.value=a||'';const pd=+paid.value||0,left=Math.max(0,a-pd);
       fOther.hidden=pm!=='other';tR.textContent=a?inr(pd):'–';tL.textContent=a?(left?inr(left):'Nothing'):'–';leftTile.classList.toggle('due',left>0);
       seg.replaceChildren(...[['half','Half paid'],['full','Paid in full'],['other','Other amount']].map(([k,l])=>h('button',{type:'button',role:'radio','aria-checked':String(pm===k),onclick:()=>{pm=k;if(k==='other'&&paid.value==='')paid.value=Math.round(a/2)||'';calc();if(k==='other')setTimeout(()=>paid.focus(),0)}},l)))}
     else if(!recTouched)recP.value=a?Math.round(a*(tariff0>0?Math.min(1,rec0/tariff0):1)):'';  // the platform keeps its usual share
-    err.hidden=true;ok=true;const c=extra>0?clashFor({...b,booking_status:'Confirmed',check_out:co.value}):null,bl=extra>0?blockFor(b.property_id,String(b.check_out).slice(0,10),co.value):null;
-    if(!(extra>0)){err.hidden=false;err.textContent='Pick a check-out after '+fmtD(b.check_out)+'.';ok=false}
-    else if(c){err.hidden=false;err.textContent=`Can't extend: ${c.guest} (${c.booking_id}) arrives ${fmtD(c.check_in)}.`;ok=false}
+    err.hidden=true;ok=true;const c=extra>0?clashFor({...b,booking_status:'Confirmed',check_in:nCi(),check_out:nCo()}):null,
+      bl=extra>0?(before?blockFor(b.property_id,co.value,String(b.check_in).slice(0,10)):blockFor(b.property_id,String(b.check_out).slice(0,10),co.value)):null;
+    if(!(extra>0)){err.hidden=false;err.textContent=before?'Pick a check-in before '+fmtD(b.check_in)+'.':'Pick a check-out after '+fmtD(b.check_out)+'.';ok=false}
+    else if(c){err.hidden=false;err.textContent=`Can't extend: ${c.guest} (${c.booking_id}) is there ${fmtD(c.check_in)} → ${fmtD(c.check_out)}.`;ok=false}
     else if(bl){err.hidden=false;err.textContent=`Those nights are blocked (${bl.reason||'blocked'}, ${fmtD(bl.from)} → ${fmtD(bl.to)}).`;ok=false}
-    sm.replaceChildren(h('div',null,h('span',null,'New stay'),h('b',null,`${fmtD(b.check_in)} → ${fmtD(co.value)}`),h('small',null,`${nights0} + ${Math.max(0,extra)} = ${nights0+Math.max(0,extra)} nights`)),
+    sm.replaceChildren(h('div',null,h('span',null,'New stay'),h('b',null,`${fmtD(nCi())} → ${fmtD(nCo())}`),h('small',null,`${nights0} + ${Math.max(0,extra)} = ${nights0+Math.max(0,extra)} nights`)),
       h('div',null,h('span',null,'New total'),h('b',{class:'num'},inr(tariff0+a)),h('small',null,`${inr(tariff0)} + ${inr(a)}`)))};
   [co,amt,paid,recP].forEach(i=>i.addEventListener('input',calc));co.addEventListener('change',calc);
   const body=h('div',{class:'form ext'},
     h('p',{class:'full',style:{margin:0,color:'var(--muted)',fontSize:'13px'}},`${b.guest||'Guest'} · ${short((D.P[b.property_id]||{}).property||b.property_id)} · now ${fmtD(b.check_in)} → ${fmtD(b.check_out)} (${nights0} night${nights0===1?'':'s'})`),
-    h('div',{class:'full'},quick),fld('New check-out',co),fld(`Price for the extra nights (₹)${rate?' · '+inrK(rate)+'/night':''}`,amt),
+    h('div',{class:'full'},quick),fld(before?'New check-in (any earlier day, past ones too)':'New check-out',co),fld(`Price for the extra nights (₹)${rate?' · '+inrK(rate)+'/night':''}`,amt),
     direct?h('div',{class:'full pay-box'},h('span',{class:'pay-q'},'Payment for the extra nights'),seg,fOther,h('div',{class:'pay-tiles'},h('div',null,h('span',null,'Received'),tR),leftTile)):fld('Extra amount received (₹)',recP),
     h('div',{class:'full'},sm),err);
   calc();
   modal('Extend stay · '+id,body,[h('button',{class:'btn',onclick:closeLayer},'Cancel'),h('button',{class:'btn primary',onclick:()=>{calc();if(!ok)return;
-    const extra=diff(b.check_out,co.value),a=+amt.value||0;if(!(a>=0)){err.hidden=false;err.textContent='Add the price for the extra nights.';return}
-    let f={check_out:co.value,tariff:tariff0+a};
+    const extra=xN(),a=+amt.value||0,dir=before?`from ${fmtD(co.value)} (earlier check-in)`:`to ${fmtD(co.value)}`;if(!(a>=0)){err.hidden=false;err.textContent='Add the price for the extra nights.';return}
+    let f={...(before?{check_in:co.value}:{check_out:co.value}),tariff:tariff0+a};
     if(direct){const pd=Math.min(a,+paid.value||0),left=Math.max(0,a-pd);f.received=rec0+a;f.balance_due=bal0+left||null;
-      f.notes=addNote(b.notes,`Extended ${extra} night${extra>1?'s':''} to ${fmtD(co.value)} · +${inr(a)} (${left?inr(pd)+' received, '+inr(left)+' left to collect':'paid in full'})`)}
-    else{const r=+recP.value||0,pf0=b.platform_fee!=null&&b.platform_fee!==''?+b.platform_fee:dv.fee||0;f.received=rec0+r;f.platform_fee=pf0+Math.max(0,a-r);f.notes=addNote(b.notes,`Extended ${extra} night${extra>1?'s':''} to ${fmtD(co.value)} · +${inr(a)} tariff, +${inr(r)} received`)}
+      f.notes=addNote(b.notes,`Extended ${extra} night${extra>1?'s':''} ${dir} · +${inr(a)} (${left?inr(pd)+' received, '+inr(left)+' left to collect':'paid in full'})`)}
+    else{const r=+recP.value||0,pf0=b.platform_fee!=null&&b.platform_fee!==''?+b.platform_fee:dv.fee||0;f.received=rec0+r;f.platform_fee=pf0+Math.max(0,a-r);f.notes=addNote(b.notes,`Extended ${extra} night${extra>1?'s':''} ${dir} · +${inr(a)} tariff, +${inr(r)} received`)}
     closeLayer();stage(id,f)}},'Extend stay')]);
 }
 function mgNote(ids){const nt=h('textarea',{rows:3,placeholder:'e.g. Guest asked for early check-in; paid ₹2,000 extra in cash'});
